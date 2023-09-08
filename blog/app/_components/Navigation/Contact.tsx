@@ -36,7 +36,7 @@ const NavContact = ({ }: Props) => {
             <div className="flex flex-row gap-2 text-sm">
               <div className={`flex items-center overflow-hidden border-b ${isOpen ? "border-sky-400" : "border-rose-400"}`}>
                 <span className="max-sm:hidden animate-text-slide-slow whitespace-nowrap max-w-[250px]">
-                  Our working hours are between 08:00 and 16:00 on weekdays.
+                  My working hours are between 08:00 and 16:00 on weekdays.
                 </span>
                 <span className="max-sm:block hidden">
                   {currentDay}
