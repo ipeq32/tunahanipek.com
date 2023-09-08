@@ -38,6 +38,9 @@
       "@jotai/*": [
         "./jotai/*"
       ],
+      "@libs/*": [
+        "./libs/*"
+      ],
     }
   },
   "include": [

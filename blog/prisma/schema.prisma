@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp"), pgcrypto]
+}
+
+model User {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email          String    @unique
+  hashedPassword String
+  firstName      String
+  lastName       String
+  phone          String
+  address        String
+  website        String?
+  image          String?
+  bio            String?
+  role           Role      @default(USER)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt      DateTime? @db.Timestamptz(3)
+  blogs          Blog[]
+  comments       Comment[]
+
+  @@index([email], name: "email")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Blog {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title      String
+  content    String
+  summary    String
+  image      String
+  shortImage String
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt  DateTime? @db.Timestamptz(3)
+  comments   Comment[]
+  tags       Tag[]
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+  userId     String?   @db.Uuid
+
+  @@index([userId], name: "userId")
+}
+
+model Comment {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content   String
+  likes     Int       @default(0)
+  dislikes  Int       @default(0)
+  status    Status    @default(PENDING)
+  isReply   Boolean   @default(false)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  User      User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?   @db.Uuid
+  Blog      Blog?     @relation(fields: [blogId], references: [id])
+  blogId    String?   @db.Uuid
+  replies   Comment[] @relation("ReplyToComment")
+  comment   Comment?  @relation("ReplyToComment", fields: [commentId], references: [id])
+  commentId String?   @db.Uuid
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Tag {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  blogs     Blog[]
+}
+
+// TODO: Bu aşağıdaki iki kısımda çalışıyor. Farkları yukarıda implict relation var. Aşağıda ise explicit relation var. Burası yeni bir tablo oluşturuyor. Ama yukarıda ise var olan tablolara yeni bir alan ekliyor. Bu yüzden yukarıdaki daha mantıklı gibi. Ama aşağıdaki daha kolay gibi. Aşağıdaki ile ilgili bir şeyler bulursam buraya ekleyeceğim.
+
+// model BlogTag {
+//   blogId String @db.Uuid
+//   tagId  String @db.Uuid
+
+//   blog Blog @relation(fields: [blogId], references: [id])
+//   tag  Tag  @relation(fields: [tagId], references: [id])
+
+//   @@id([blogId, tagId])
+// }
+
+// model BlogTag {
+//   id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+//   createdAt DateTime  @default(now()) @db.Timestamptz(3)
+//   updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+//   deletedAt DateTime? @db.Timestamptz(3)
+
+//   blogId String? @db.Uuid
+//   tagId  String? @db.Uuid
+
+//   blog Blog? @relation(fields: [blogId], references: [id])
+//   tag  Tag?  @relation(fields: [tagId], references: [id])
+
+//   @@unique([blogId, tagId])
+// }
