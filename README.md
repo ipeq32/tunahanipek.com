@@ -5,6 +5,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 First, run the development server:
 
 ```bash
+git clone https://github.com/ipeq32/tunahanipek.com.git
+
 cd ./home 
 #or
 cd ./blog
