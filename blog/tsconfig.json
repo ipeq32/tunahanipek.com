@@ -27,16 +27,16 @@
         "./*"
       ],
       "@components/*": [
-        "./app/_components/*"
+        "./components/*"
       ],
       "@ui/*": [
-        "./app/_ui/*"
+        "./ui/*"
       ],
       "@hooks/*": [
-        "./app/_hooks/*"
+        "./hooks/*"
       ],
       "@jotai/*": [
-        "./app/_jotai/*"
+        "./jotai/*"
       ],
     }
   },
