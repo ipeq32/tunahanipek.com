@@ -1,9 +1,12 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Chakra_Petch } from 'next/font/google'
-import Navbar from './_components/Navigation/Navbar'
-import { Suspense } from 'react';
-import Loading from './_components/Loading/Loading';
+import Navbar from '@components/Navigation/Navbar'
+import NavContact from '@components/Navigation/Contact'
+import ScrollToTopButton from '@components/ScrollToTop/ScrollToTopButton'
+import Footer from '@components/Footer/Footer'
+import RainEffect from '@components/RainDrop/Rain'
+import { Toaster } from 'react-hot-toast'
 
 const chakra = Chakra_Petch({
   subsets: ['latin'],
@@ -12,13 +15,16 @@ const chakra = Chakra_Petch({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tunahanipek.com'),
-  title: 'Tunahan İPEK',
-  description: 'My personal website.',
+  metadataBase: new URL('https://blog.tunahanipek.com'),
+  title: {
+    default: 'Tunahan İPEK',
+    template: '%s | Tunahan İPEK',
+  },
+  description: 'My personal blog.',
   openGraph: {
-    type: 'profile',
+    type: 'website',
     locale: 'en_US',
-    url: 'https://tunahanipek.com',
+    url: 'https://blog.tunahanipek.com',
     emails: ['tnhnipek@gmail.com', 'tunahan@rubiklabs.com'],
     phoneNumbers: ['+905416064488'],
     images: [
@@ -30,16 +36,16 @@ export const metadata: Metadata = {
       },
     ],
     title: 'Tunahan İPEK',
-    description: 'My personal website.',
+    description: 'My personal blog.',
     countryName: 'Turkey',
     siteName: 'Tunahan İPEK',
     ttl: 60 * 60 * 24 * 7,
     alternateLocale: ['tr_TR'],
   },
   twitter: {
-    site: 'https://tunahanipek.com',
+    site: 'https://blog.tunahanipek.com',
     title: 'Tunahan İPEK',
-    description: 'My personal website.',
+    description: 'My personal blog.',
     images: [
       {
         url: '/tunahanipek.jpg',
@@ -49,13 +55,13 @@ export const metadata: Metadata = {
         username: '@tunahanipek',
       },
     ],
-    siteId: 'https://tunahanipek.com',
+    siteId: 'https://blog.tunahanipek.com',
   },
-  category: 'Personal Website',
+  category: 'Personal Blog',
   authors: [
     {
       name: 'Tunahan İPEK',
-      url: 'https://tunahanipek.com',
+      url: 'https://blog.tunahanipek.com',
     },
   ],
   themeColor: '#eba0bf',
@@ -104,7 +110,7 @@ export const metadata: Metadata = {
     telephone: true,
     address: true,
     date: true,
-  },
+  }
 }
 
 export default function RootLayout({
@@ -114,11 +120,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={chakra.className}>
-        <Suspense fallback={<Loading />}>
-          < Navbar />
-          {children}
-        </Suspense>
+      <body className={`${chakra.className} bg-primary text-slate-200`}>
+        <RainEffect />
+        <Toaster position='top-right' />
+        <NavContact />
+        <Navbar />
+        {children}
+        <ScrollToTopButton />
+        <Footer />
       </body>
     </html >
   )

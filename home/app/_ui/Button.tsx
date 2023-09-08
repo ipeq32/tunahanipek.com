@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Button = () => {
   return (
-    <div className="flex flex-wrap-reverse items-center px-8 py-16 max-lg:flex-col max-lg:gap-10">
+    <div className="flex flex-wrap-reverse items-center px-8 py-16 max-sm:py-0 max-lg:flex-col max-lg:gap-10">
       <div className="flex-grow"></div>
       <div className="flex flex-row gap-1 max-sm:gap-10 max-sm:mx-auto flex-wrap max-sm:justify-center">
         <Link target="_blank" href="https://www.instagram.com/tnhnipek" className="flex-none px-1 max-sm:px-0 hover:scale-105">

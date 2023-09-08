@@ -3,9 +3,9 @@ import React from "react";
 
 type Props = {};
 
-const NotFound = (props: Props) => {
+const NotFound = ({ }: Props) => {
   return (
-    <main className="flex justify-center items-center w-full min-h-[calc(100vh-150px)] max-sm:-mt-20">
+    <main className="flex justify-center items-center w-full min-h-[calc(100vh-150px)] -mt-5 max-sm:-mt-20">
       <div className="flex items-center justify-center w-full h-full mt-20">
         <div className="flex items-center justify-center w-4/5 h-[75%] max-lg:h-[60%] m-auto">
           <div className="overflow-hidden rounded-lg shadow shadow-slate-700 bg-slate-950/40">
@@ -17,7 +17,7 @@ const NotFound = (props: Props) => {
                 <Link href={'/'} className="px-6 py-3 mr-6 font-semibold text-white rounded-md bg-gradient-to-r from-purple-400 to-blue-500 hover:from-pink-500 hover:to-orange-500">
                   HOME
                 </Link>
-                <Link href={'https://blog.tunahanipek.com/contact'} className="px-6 py-3 font-semibold text-white rounded-md bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-500">
+                <Link href={'/contact'} className="px-6 py-3 font-semibold text-white rounded-md bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-500">
                   Contact Me
                 </Link>
               </div>
