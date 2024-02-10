@@ -1,4 +1,4 @@
-FROM node:18-alphine AS builder
+FROM node:21 AS builder
 
 LABEL maintainer="Tunahan İPEK <tnhnipek@gmail.com>"
 

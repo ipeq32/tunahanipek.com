@@ -23,14 +23,17 @@
       }
     ],
     "paths": {
-      "@base/*": [
-        "./*"
-      ],
       "@components/*": [
         "./components/*"
       ],
       "@ui/*": [
         "./ui/*"
+      ],
+      "@type/*": [
+        "./types/*"
+      ],
+      "@actions/*": [
+        "./actions/*"
       ],
       "@hooks/*": [
         "./hooks/*"
@@ -40,6 +43,9 @@
       ],
       "@libs/*": [
         "./libs/*"
+      ],
+      "@base/*": [
+        "./*"
       ],
     }
   },

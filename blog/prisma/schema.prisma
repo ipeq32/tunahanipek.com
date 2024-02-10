@@ -39,21 +39,31 @@ enum Role {
 }
 
 model Blog {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id         String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   title      String
   content    String
   summary    String
   image      String
   shortImage String
-  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt  DateTime? @db.Timestamptz(3)
+  createdAt  DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt  DateTime?  @db.Timestamptz(3)
   comments   Comment[]
   tags       Tag[]
-  user       User?     @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
-  userId     String?   @db.Uuid
+  categories Category[]
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+  userId     String?    @db.Uuid
 
   @@index([userId], name: "userId")
+}
+
+model Category {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  blogs     Blog[]
 }
 
 model Comment {

@@ -1,18 +1,23 @@
 import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Chakra_Petch } from 'next/font/google'
 import Navbar from '@components/Navigation/Navbar'
 import NavContact from '@components/Navigation/Contact'
 import ScrollToTopButton from '@components/ScrollToTop/ScrollToTopButton'
 import Footer from '@components/Footer/Footer'
-import RainEffect from '@components/RainDrop/Rain'
 import { Toaster } from 'react-hot-toast'
+import { Provider } from 'jotai'
 
 const chakra = Chakra_Petch({
   subsets: ['latin'],
   weight: ['400'],
   style: ['normal'],
 })
+
+export const viewport: Viewport = {
+  themeColor: '#eba0bf',
+  colorScheme: 'light',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://blog.tunahanipek.com'),
@@ -64,7 +69,6 @@ export const metadata: Metadata = {
       url: 'https://blog.tunahanipek.com',
     },
   ],
-  themeColor: '#eba0bf',
   creator: 'Tunahan İPEK',
   publisher: 'Tunahan İPEK',
   keywords: [
@@ -103,7 +107,6 @@ export const metadata: Metadata = {
       media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)',
     },
   },
-  colorScheme: 'light',
   formatDetection: {
     url: true,
     email: true,
@@ -120,14 +123,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${chakra.className} bg-primary text-slate-200`}>
-        <RainEffect />
-        <Toaster position='top-right' />
-        <NavContact />
-        <Navbar />
-        {children}
-        <ScrollToTopButton />
-        <Footer />
+      <body className={`${chakra.className} relative bg-primary text-slate-200`}>
+        <Provider>
+          <Toaster position='top-right' />
+          <NavContact />
+          <Navbar />
+          {children}
+          <ScrollToTopButton />
+          <Footer />
+        </Provider>
       </body>
     </html >
   )

@@ -5,9 +5,6 @@ import Link from "next/link";
 import { Globe, LogIn, Menu, MenuSquare, Phone } from "lucide-react";
 import { usePathname } from "next/navigation"
 import useClickOutside from "@hooks/useClickOutside";
-import { useAtom } from "jotai";
-import { rain } from "@jotai/atoms";
-import { toast } from "react-hot-toast";
 
 type Props = {};
 
@@ -16,7 +13,6 @@ const Navbar = ({ }: Props) => {
   const [isMenuSquareOpen, setIsMenuSquareOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuSquareRef = useRef<HTMLDivElement>(null);
-  const [rainEffect, setRainEffect] = useAtom(rain.rainEffectAtom);
 
   const pathname = usePathname();
 
@@ -33,29 +29,6 @@ const Navbar = ({ }: Props) => {
       {/* logo */}
       <div className="self-start h-auto text-center max-sm:mr-10">
         <button
-          disabled={rainEffect}
-          onClick={() => {
-            setRainEffect(true);
-            toast.success("Rain effect is enabled.", {
-              icon: "🌧️",
-              style: {
-                backgroundColor: "plum",
-                color: "#fff",
-              },
-              position: "top-center",
-            });
-            setTimeout(() => {
-              // setRainEffect(false); // Zaten rain effecti 5 saniye sonra kapatıyoruz.
-              toast.success("Rain effect is disabled.", {
-                icon: "🌦️",
-                style: {
-                  backgroundColor: "plum",
-                  color: "#fff",
-                },
-                position: "top-center",
-              });
-            }, 5000);
-          }}
           className="transition duration-500 ease-in-out transform mr-44 animate-skew hover:-translate-y-1 hover:-translate-x-2 hover:scale-110 hover:scale-y-125"
         >
           <div className="relative box">
