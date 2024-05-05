@@ -35,8 +35,8 @@ const Body = () => {
               <br />
               <p className="mt-2 text-gray-600">
                 Merhabalar ben Tunahan, kısaca kendimi tanıtmam gerekirse 24
-                yaşındayım ve Denizli'de yaşıyorum. Isparta'da Biyomedikal
-                bölümünden mezun oldum. Yazılım ile hobi olarak ilgileniyorken bu işi meslek olarak yapmaya karar verdim. Şu anda Rubiklabs'da Software Developer olarak çalışıyorum. Aynı zamanda kendi blog sitemde yazılım ile ilgili yazılar yazıyorum. Bu siteyi kurma amacım ise bana ulaşmak isteyenlere yol göstermek ve bilgilendirmek. Sorularınız için mail adreslerimi aşağıya bırakıyorum. Benim hakkımda daha fazla bilgi almak için lüfen Blog sitemi ziyaret et..
+                yaşındayım ve Denizli&apos;de yaşıyorum. Isparta&apos;da Biyomedikal
+                bölümünden mezun oldum. Yazılım ile hobi olarak ilgileniyorken bu işi meslek olarak yapmaya karar verdim. Şu anda Rubiklabs&apos;da Software Developer olarak çalışıyorum. Aynı zamanda kendi blog sitemde yazılım ile ilgili yazılar yazıyorum. Bu siteyi kurma amacım ise bana ulaşmak isteyenlere yol göstermek ve bilgilendirmek. Sorularınız için mail adreslerimi aşağıya bırakıyorum. Benim hakkımda daha fazla bilgi almak için lüfen Blog sitemi ziyaret et..
               </p>
             </header>
             <hr className="mt-6" />
