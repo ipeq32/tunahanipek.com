@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "title": "Merhaba Dünya!"
+  },
+  "LocaleSwitcher": {
+    "label": "Change language",
+    "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
+  },
+  "Metadata": {
+    "description": "Bu, meta veri sayfasının açıklamasıdır."
+  }
+}

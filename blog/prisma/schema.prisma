@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl  = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+model User {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email          String    @unique
+  hashedPassword String
+  name           String
+  phone          String
+  address        String
+  website        String?
+  image          String?
+  bio            String?
+  role           Role      @default(USER)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt      DateTime? @db.Timestamptz(3)
+  blogs          Blog[]
+  comments       Comment[]
+
+  @@index([email], name: "email")
+}
+
+model Blog {
+  id         String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title      String
+  content    String
+  summary    String
+  image      String
+  shortImage String
+  createdAt  DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt  DateTime?  @db.Timestamptz(3)
+  comments   Comment[]
+  tags       Tag[]
+  categories Category[]
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+  userId     String?    @db.Uuid
+
+  @@index([userId], name: "userId")
+}
+
+model Category {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  blogs     Blog[]
+}
+
+model Comment {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  content   String
+  likes     Int       @default(0)
+  dislikes  Int       @default(0)
+  status    Status    @default(PENDING)
+  isReply   Boolean   @default(false)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  User      User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?   @db.Uuid
+  Blog      Blog?     @relation(fields: [blogId], references: [id])
+  blogId    String?   @db.Uuid
+  replies   Comment[] @relation("ReplyToComment")
+  comment   Comment?  @relation("ReplyToComment", fields: [commentId], references: [id])
+  commentId String?   @db.Uuid
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Tag {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  blogs     Blog[]
+}
+
+// TODO: Bu a�a��daki iki k�s�mda �al���yor. Farklar� yukar�da implict relation var. A�a��da ise explicit relation var. Buras� yeni bir tablo olu�turuyor. Ama yukar�da ise var olan tablolara yeni bir alan ekliyor. Bu y�zden yukar�daki daha mant�kl� gibi. Ama a�a��daki daha kolay gibi. A�a��daki ile ilgili bir �eyler bulursam buraya ekleyece�im.
+
+// model BlogTag {
+//   blogId String @db.Uuid
+//   tagId  String @db.Uuid
+
+//   blog Blog @relation(fields: [blogId], references: [id])
+//   tag  Tag  @relation(fields: [tagId], references: [id])
+
+//   @@id([blogId, tagId])
+// }
+
+// model BlogTag {
+//   id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+//   createdAt DateTime  @default(now()) @db.Timestamptz(3)
+//   updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+//   deletedAt DateTime? @db.Timestamptz(3)
+
+//   blogId String? @db.Uuid
+//   tagId  String? @db.Uuid
+
+//   blog Blog? @relation(fields: [blogId], references: [id])
+//   tag  Tag?  @relation(fields: [tagId], references: [id])
+
+//   @@unique([blogId, tagId])
+// }
