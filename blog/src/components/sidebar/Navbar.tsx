@@ -72,7 +72,7 @@ const Navbar = () => {
           ) : status === 'authenticated' ? (
             <Button
               variant="destructive"
-              className="w-full h-12"
+              className="w-max h-12"
               onClick={() => signOut()}
             >
               Logout
