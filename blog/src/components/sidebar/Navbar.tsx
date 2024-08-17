@@ -60,8 +60,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     handleSignout().then(() => {
-      toast.success('Logged out successfully');
       window.location.reload();
+      toast.success('Logged out successfully');
       router.replace(`/auth/login?callback=${encodeURIComponent(from)}`);
     });
   };
