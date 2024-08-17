@@ -22,7 +22,7 @@ import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import MenuLinkFeature from './_features/MenuLink';
 import handleSignout from '@/actions/handleSignout';
-import { usePathname, useRouter } from '@/navigation';
+import { usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 
@@ -46,7 +46,6 @@ const menuLinks = [
 ];
 
 const Navbar = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -62,7 +61,6 @@ const Navbar = () => {
     handleSignout().then(() => {
       window.location.reload();
       toast.success('Logged out successfully');
-      router.replace(`/auth/login?callback=${encodeURIComponent(from)}`);
     });
   };
 
