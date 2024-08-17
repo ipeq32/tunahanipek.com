@@ -18,10 +18,13 @@ import GetContactFeature from './_features/GetContact';
 import Link from 'next/link';
 import LogoFeature from './_features/Logo';
 import { Skeleton } from '../ui/skeleton';
-import { signOut } from '@/auth';
 import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import MenuLinkFeature from './_features/MenuLink';
+import handleSignout from '@/actions/handleSignout';
+import { usePathname, useRouter } from '@/navigation';
+import { toast } from 'sonner';
+import { useSearchParams } from 'next/navigation';
 
 const menuLinks = [
   {
@@ -43,11 +46,25 @@ const menuLinks = [
 ];
 
 const Navbar = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const from = searchParams.get('callback') || pathname;
+
   const { data, status } = useSession({
     required: false,
   });
 
   const user = data?.user;
+
+  const handleLogout = () => {
+    handleSignout().then(() => {
+      toast.success('Logged out successfully');
+      window.location.reload();
+      router.replace(`/auth/login?callback=${encodeURIComponent(from)}`);
+    });
+  };
 
   return (
     <nav className="sticky top-0 z-50 h-28 bg-sky-100 dark:bg-secondary/90 shadow-md shadow-cyan-200 dark:shadow-slate-700 backdrop-blur-sm">
@@ -73,12 +90,15 @@ const Navbar = () => {
             <Button
               variant="destructive"
               className="w-max h-12"
-              onClick={() => signOut()}
+              onClick={handleLogout}
             >
               Logout
             </Button>
           ) : (
-            <Link href={'/auth/login'} className="w-max h-12">
+            <Link
+              href={`/auth/login?callback=${encodeURIComponent(from)}`}
+              className="w-max h-12"
+            >
               <Button variant="ghost" className="h-full">
                 Login
               </Button>
@@ -137,13 +157,16 @@ const Navbar = () => {
                       <Button
                         variant="destructive"
                         className="w-full"
-                        onClick={() => signOut()}
+                        onClick={handleLogout}
                       >
                         Logout
                       </Button>
                     </div>
                   ) : (
-                    <Link href={'/auth/login'} className="w-full">
+                    <Link
+                      href={`/auth/login?callback=${encodeURIComponent(from)}`}
+                      className="w-full"
+                    >
                       <Button variant="secondary" className="w-full">
                         Login
                       </Button>
