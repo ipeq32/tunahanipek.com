@@ -8,7 +8,7 @@ import { ToggleTheme } from '../toggle-theme';
 import ToggleLanguage from '../toggle-language';
 
 const NavContact = () => {
-  const [isOpen, setIsOpen] = useState<'Open' | 'Closed'>('Closed');
+  const [isOpen, setIsOpen] = useState<'Open' | 'Closed'>('Closed'); // Burası backendden getirilecek veriye göre değiştir.
 
   const currentDay = new Date().toLocaleDateString('tr', { weekday: 'long' });
   const currentHour = new Date().getHours();

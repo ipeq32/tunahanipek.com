@@ -82,23 +82,23 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="text-white p-4 md:p-16 border-[1.5px] rounded-lg border-gray-300 bg-slate-500 dark:bg-red-950 flex flex-col items-center justify-center gap-y-6"
+        className="flex flex-col items-start justify-center text-white rounded-lg gap-y-6 mt-5"
       >
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Provide Email</FormLabel>
-              <FormControl>
+            <FormItem className="w-full">
+              <FormLabel className="text-xs">Enter Email</FormLabel>
+              <FormControl className="w-full">
                 <Input
-                  className="text-black dark:text-white"
+                  className="text-black dark:text-white w-full"
                   placeholder="Email"
                   {...field}
-                  type="text"
+                  type="email"
                 />
               </FormControl>
-              <FormMessage {...field} className="text-xs" />
+              <FormMessage {...field} className="text-xs text-rose-300" />
             </FormItem>
           )}
         />
@@ -106,28 +106,35 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Provide Password</FormLabel>
-              <FormControl>
+            <FormItem className="w-full">
+              <FormLabel className="text-xs">Enter Password</FormLabel>
+              <FormControl className="w-full">
                 <Input
-                  className="text-black dark:text-white"
+                  className="text-black dark:text-white w-full"
                   placeholder="Password"
                   {...field}
                   type="password"
                 />
               </FormControl>
-              <FormMessage {...field} className="text-xs" />
+              <FormMessage {...field} className="text-xs text-rose-300" />
             </FormItem>
           )}
         />
         <Button
           type="submit"
-          className="hover:scale-110 hover:bg-cyan-700"
+          className="hover:scale-105 w-full"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
       </form>
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/auth/register')}
+        className="w-full mt-3"
+      >
+        Create Account
+      </Button>
     </Form>
   );
 }

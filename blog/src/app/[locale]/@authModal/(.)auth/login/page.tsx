@@ -39,7 +39,7 @@ export default function LoginModal() {
       // defaultOpen
       onOpenChange={(isOpen) => setIsOpened(isOpen === null ? true : false)}
     >
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] gap-0">
         <DialogHeader>
           <DialogTitle>Login</DialogTitle>
           <DialogDescription>
