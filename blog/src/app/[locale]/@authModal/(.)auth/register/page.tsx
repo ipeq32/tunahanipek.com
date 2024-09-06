@@ -9,12 +9,22 @@ import {
 } from '@/components/ui/dialog';
 
 import RegisterForm from '@/app/[locale]/(authentication)/auth/register/form';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { usePathname, useRouter } from '@/navigation';
 
 export default function RegisterModal() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleClick = () => {
+    if (pathname === '/auth/register') {
+      router.back();
+      setTimeout(() => router.push('/auth/login'), 10);
+    } else {
+      router.push('/auth/login');
+    }
+  };
 
   return (
     <Dialog
@@ -42,11 +52,7 @@ export default function RegisterModal() {
           </DialogDescription>
         </DialogHeader>
         <RegisterForm />
-        <Button
-          variant="ghost"
-          onClick={() => router.push('/auth/login')}
-          className="w-full mt-3"
-        >
+        <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
           Login Instead ?
         </Button>
       </DialogContent>

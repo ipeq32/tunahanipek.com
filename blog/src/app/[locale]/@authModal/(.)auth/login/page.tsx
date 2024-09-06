@@ -8,12 +8,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/form';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { usePathname, useRouter } from '@/navigation';
 
 export default function LoginModal() {
   const [isOpened, setIsOpened] = useState<boolean>(true);
@@ -21,6 +22,17 @@ export default function LoginModal() {
   const searchParams = useSearchParams();
   const session = useSession();
   const router = useRouter();
+
+  const pathname = usePathname();
+
+  const handleClick = () => {
+    if (pathname === '/auth/login') {
+      router.back();
+      setTimeout(() => router.push('/auth/register'), 10);
+    } else {
+      router.push('/auth/register');
+    }
+  };
 
   const callback = searchParams.get('callback') || '/';
 
@@ -62,11 +74,7 @@ export default function LoginModal() {
           </DialogDescription>
         </DialogHeader>
         <LoginForm setOpenModal={setIsOpened} />
-        <Button
-          variant="ghost"
-          onClick={() => router.push('/auth/register')}
-          className="w-full mt-3"
-        >
+        <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
           Create Account
         </Button>
       </DialogContent>
