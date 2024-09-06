@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
 import { sql } from '@vercel/postgres';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
