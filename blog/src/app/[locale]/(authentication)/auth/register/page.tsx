@@ -5,7 +5,7 @@ import FormPage from './form';
 
 export default function RegisterPage() {
   return (
-    <section className="h-[calc(100vh-250px)] flex flex-col items-center justify-start">
+    <section className="h-[calc(100vh-250px)] flex flex-col items-center justify-start gap-2">
       <motion.h1
         animate={{ y: 0 }}
         initial={{ y: -100 }}
@@ -18,7 +18,7 @@ export default function RegisterPage() {
       >
         Register
       </motion.h1>
-      <div className="w-[600px] max-md:w-full">
+      <div className="w-[600px] max-md:w-full md:max-h-[calc(100vh-300px)] h-svh overflow-auto">
         <FormPage />
       </div>
     </section>
