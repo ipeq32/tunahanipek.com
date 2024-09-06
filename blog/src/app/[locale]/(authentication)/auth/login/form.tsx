@@ -89,7 +89,9 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="text-xs">Enter Email</FormLabel>
+              <FormLabel className="text-xs text-black dark:text-white">
+                Enter Email
+              </FormLabel>
               <FormControl className="w-full">
                 <Input
                   className="text-black dark:text-white w-full"
@@ -107,7 +109,9 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel className="text-xs">Enter Password</FormLabel>
+              <FormLabel className="text-xs text-black dark:text-white">
+                Enter Password
+              </FormLabel>
               <FormControl className="w-full">
                 <Input
                   className="text-black dark:text-white w-full"
@@ -128,13 +132,6 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
       </form>
-      <Button
-        variant="ghost"
-        onClick={() => router.push('/auth/register')}
-        className="w-full mt-3"
-      >
-        Create Account
-      </Button>
     </Form>
   );
 }

@@ -10,6 +10,7 @@ import {
 
 import RegisterForm from '@/app/[locale]/(authentication)/auth/register/form';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 export default function RegisterModal() {
   const router = useRouter();
@@ -27,6 +28,13 @@ export default function RegisterModal() {
           </DialogDescription>
         </DialogHeader>
         <RegisterForm />
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/auth/login')}
+          className="w-full mt-3"
+        >
+          Login Instead ?
+        </Button>
       </DialogContent>
     </Dialog>
   );

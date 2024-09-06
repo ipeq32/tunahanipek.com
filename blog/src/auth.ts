@@ -3,6 +3,8 @@ import NextAuth from 'next-auth';
 import { compare } from 'bcryptjs';
 import { prisma } from './lib/prisma';
 
+export const runtime = 'nodejs';
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt',

@@ -44,9 +44,9 @@ const AuthenticationLayout = ({ children }: Props) => {
     // </div>
     <LoadingLogo />
   ) : (
-    <div className="bg-sky-50 dark:bg-primary/90 min-h-dvh">
+    <div className="bg-sky-50 dark:bg-primary/90 h-dvh">
       <div className="container">
-        <div className="flex items-center justify-between py-5">
+        <div className="flex max-md:flex-col items-center justify-between gap-5 py-5">
           <figure
             className="flex justify-center items-center w-32 h-32 cursor-pointer"
             onClick={() => router.push('/')}
@@ -93,13 +93,15 @@ const AuthenticationLayout = ({ children }: Props) => {
               </svg>
             </div>
           </figure>
-          <div className="flex items-center gap-5">
+          <div className="flex max-md:justify-between justify-end items-center gap-5 w-full">
             <ToggleTheme />
             <ToggleLanguage />
           </div>
         </div>
       </div>
-      <div className="container">{children}</div>
+      <div className="container h-[calc(100vh-250px)] overflow-auto">
+        {children}
+      </div>
     </div>
   );
 };

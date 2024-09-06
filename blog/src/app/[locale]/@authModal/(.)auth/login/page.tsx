@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/form';
 import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
 
 export default function LoginModal() {
   const [isOpened, setIsOpened] = useState<boolean>(true);
@@ -47,6 +48,13 @@ export default function LoginModal() {
           </DialogDescription>
         </DialogHeader>
         <LoginForm setOpenModal={setIsOpened} />
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/auth/register')}
+          className="w-full mt-3"
+        >
+          Create Account
+        </Button>
       </DialogContent>
     </Dialog>
   );
