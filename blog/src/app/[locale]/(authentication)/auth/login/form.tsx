@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
+import { motion } from 'framer-motion';
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -80,7 +81,14 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
 
   return (
     <Form {...form}>
-      <form
+      <motion.form
+        animate={{
+          scale: [0.5, 1],
+          opacity: [0, 1],
+        }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col items-start justify-center text-white rounded-lg gap-y-6 mt-5"
       >
@@ -131,7 +139,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         >
           {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
-      </form>
+      </motion.form>
     </Form>
   );
 }

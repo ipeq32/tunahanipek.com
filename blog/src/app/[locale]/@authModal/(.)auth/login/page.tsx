@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/form';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 export default function LoginModal() {
   const [isOpened, setIsOpened] = useState<boolean>(true);
@@ -42,7 +43,20 @@ export default function LoginModal() {
     >
       <DialogContent className="sm:max-w-[425px] gap-0">
         <DialogHeader>
-          <DialogTitle>Login</DialogTitle>
+          <DialogTitle>
+            <motion.div
+              animate={{ x: 0 }}
+              initial={{ x: 200 }}
+              transition={{
+                ease: 'backInOut',
+                duration: 2,
+                y: { duration: 1 },
+              }}
+              className="text-4xl font-bold text-black dark:text-white mt-5"
+            >
+              Login
+            </motion.div>
+          </DialogTitle>
           <DialogDescription>
             Enter your details below to login to your account
           </DialogDescription>

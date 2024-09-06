@@ -18,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
+import { motion } from 'framer-motion';
 
 const FormSchema = z.object({
   email: z
@@ -168,7 +169,14 @@ export default function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form
+      <motion.form
+        animate={{
+          scale: [0.5, 1],
+          opacity: [0, 1],
+        }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-10"
       >
@@ -352,7 +360,7 @@ export default function RegisterForm() {
         <Button type="submit" className="hover:scale-105 w-full">
           Submit
         </Button>
-      </form>
+      </motion.form>
     </Form>
   );
 }
