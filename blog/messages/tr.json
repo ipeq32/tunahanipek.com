@@ -29,7 +29,7 @@
           "placeholder":"Şifrenizi giriniz."
         },
         "Submit":{
-          "label": "Giriş yap",
+          "label": "Giriş Yap",
           "loading":"Giriş yapılıyor..."
         }
       },
