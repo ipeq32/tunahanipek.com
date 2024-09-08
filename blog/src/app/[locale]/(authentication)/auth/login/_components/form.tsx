@@ -21,6 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
 
 type LoginFormProps = {
   setOpenModal?: (value: boolean) => void;
@@ -50,6 +51,14 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
       password: '',
     },
   });
+
+  useEffect(() => {
+    if (form.formState.errors.email)
+      toast(form.formState.errors.email?.message);
+
+    if (form.formState.errors.password)
+      toast(form.formState.errors.password?.message);
+  }, [form.formState.errors]);
 
   const onSubmit = async (data: FormData) => {
     const { email, password } = data;
