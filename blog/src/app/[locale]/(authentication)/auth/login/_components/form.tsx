@@ -20,17 +20,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
 import { motion } from 'framer-motion';
-
-const FormSchema = z.object({
-  email: z.string().email({
-    message: 'Invalid email address.',
-  }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
-  }),
-});
-
-type FormData = z.infer<typeof FormSchema>;
+import { useTranslations } from 'next-intl';
 
 type LoginFormProps = {
   setOpenModal?: (value: boolean) => void;
@@ -39,6 +29,19 @@ type LoginFormProps = {
 export default function LoginForm({ setOpenModal }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const t = useTranslations('Authentication.Login');
+
+  const FormSchema = z.object({
+    email: z.string().email({
+      message: t('Schema.Email.emailMessage'),
+    }),
+    password: z.string().min(6, {
+      message: t('Schema.Password.minMessage'),
+    }),
+  });
+
+  type FormData = z.infer<typeof FormSchema>;
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -64,17 +67,19 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         }
         router.push(searchParams.get('callback') || '/');
         router.refresh();
-        toast('Login successful', { description: 'You have been logged in.' });
+        toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
       }
 
       if (!response?.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(t('Error.Fail.responseError'));
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast('Login failed', { description: error.message });
+        toast(t('Error.Fail.title'), { description: error.message });
       } else {
-        toast('Login failed', { description: 'An unknown error occurred.' });
+        toast(t('Error.Fail.title'), {
+          description: t('Error.Fail.description'),
+        });
       }
     }
   };
@@ -98,14 +103,15 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
-                Enter Email
+                {t('Form.Email.label')} <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl className="w-full">
                 <Input
                   className="text-black dark:text-white w-full"
-                  placeholder="Email"
+                  placeholder={t('Form.Email.placeholder')}
                   {...field}
                   type="email"
+                  required
                 />
               </FormControl>
               <FormMessage {...field} className="text-xs text-rose-300" />
@@ -118,12 +124,13 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
-                Enter Password
+                {t('Form.Password.label')}{' '}
+                <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl className="w-full">
                 <Input
                   className="text-black dark:text-white w-full"
-                  placeholder="Password"
+                  placeholder={t('Form.Password.placeholder')}
                   {...field}
                   type="password"
                 />
@@ -137,7 +144,9 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           className="hover:scale-105 w-full"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
+          {form.formState.isSubmitting
+            ? t('Form.Submit.loading')
+            : t('Form.Submit.label')}
         </Button>
       </motion.form>
     </Form>

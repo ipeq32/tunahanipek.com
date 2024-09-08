@@ -7,6 +7,51 @@
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
   },
   "Metadata": {
-    "description": "Bu, meta veri sayfasının açıklamasıdır."
+    "description": "Burası blog sayfasıdır. İster kendi paylaşımlarım ister sizin paylaşmış olduğunuz blogları insanlara açıyorum. Yararlı bilgi her zaman iyidir."
+  },
+  "Authentication": {
+    "Login": {
+      "Page":{
+        "title":"Giriş Yap",
+        "Modal":{
+          "title":"Giriş Yap",
+          "description":"Hesabınıza giriş yapmak için lütfen aşağıdaki bilgilerinizi giriniz.",
+          "button":"Hesap Oluştur"
+        }
+      },
+      "Form": {
+        "Email": {
+          "label":"E-mail",
+          "placeholder":"E-mail adresinizi giriniz."
+        },
+        "Password": {
+          "label":"Şifre",
+          "placeholder":"Şifrenizi giriniz."
+        },
+        "Submit":{
+          "label": "Giriş yap",
+          "loading":"Giriş yapılıyor..."
+        }
+      },
+      "Error": {
+        "Ok": {
+          "title": "Giriş başarılı.",
+          "description": "Başarılı bir şekilde giriş yaptınız."
+        },
+        "Fail": {
+          "title": "Giriş başarısız oldu.",
+          "description": "Bilinmeyen bir hata oluştu.",
+          "responseError": "Ağ yanıtı iyi değildi."
+        }
+      },
+      "Schema": {
+        "Email": {
+          "emailMessage": "Geçersiz e-posta adresi."
+        },
+        "Password": {
+          "minMessage": "Şifre en az 6 karakter olmalıdır."
+        }
+      }
+    }
   }
 }

@@ -10,11 +10,12 @@ import {
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import LoginForm from '@/app/[locale]/(authentication)/auth/login/form';
+import LoginForm from '@/app/[locale]/(authentication)/auth/login/_components/form';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LoginModal() {
   const [isOpened, setIsOpened] = useState<boolean>(true);
@@ -22,8 +23,9 @@ export default function LoginModal() {
   const searchParams = useSearchParams();
   const session = useSession();
   const router = useRouter();
-
   const pathname = usePathname();
+
+  const t = useTranslations('Authentication.Login.Page.Modal');
 
   const handleClick = () => {
     if (pathname === '/auth/login') {
@@ -66,16 +68,14 @@ export default function LoginModal() {
               }}
               className="text-4xl font-bold text-black dark:text-white mt-5"
             >
-              Login
+              {t('title')}
             </motion.div>
           </DialogTitle>
-          <DialogDescription>
-            Enter your details below to login to your account
-          </DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <LoginForm setOpenModal={setIsOpened} />
         <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
-          Create Account
+          {t('button')}
         </Button>
       </DialogContent>
     </Dialog>

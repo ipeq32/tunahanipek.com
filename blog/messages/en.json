@@ -7,6 +7,51 @@
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
   },
   "Metadata": {
-    "description": "This is a description of the metadata page."
+    "description": "This is a blog page. I open up my own posts or blogs that you have shared to people. Useful information is always good."
+  },
+  "Authentication": {
+    "Login": {
+      "Page": {
+        "title": "Login",
+        "Modal": {
+          "title": "Login",
+          "description": "Please enter your information below to log in to your account.",
+          "button": "Create Account"
+        }
+      },
+      "Form": {
+        "Email": {
+          "label": "E-mail",
+          "placeholder": "Enter your e-mail address."
+        },
+        "Password": {
+          "label": "Password",
+          "placeholder": "Enter your password."
+        },
+        "Submit": {
+          "loading": "Logging in...",
+          "label": "Login"
+        }
+      },
+      "Error": {
+        "Ok": {
+          "title": "Login successful.",
+          "description": "You have successfully logged in."
+        },
+        "Fail": {
+          "title": "Login failed.",
+          "description": "An unknown error occurred.",
+          "responseError": "Network response was not ok."
+        }
+      },
+      "Schema": {
+        "Email": {
+          "emailMessage": "Invalid email address."
+        },
+        "Password": {
+          "minMessage": "Password must be at least 6 characters."
+        }
+      }
+    }
   }
 }
