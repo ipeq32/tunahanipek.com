@@ -111,7 +111,6 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                   placeholder={t('Form.Email.placeholder')}
                   {...field}
                   type="email"
-                  required
                 />
               </FormControl>
               <FormMessage {...field} className="text-xs text-rose-300" />
