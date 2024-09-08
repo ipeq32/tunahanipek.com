@@ -14,7 +14,7 @@ function LayoutChild({ children }: LayoutChildProps) {
     <RecoilRoot>
       <SessionProvider>
         {children}
-        <Toaster position="top-right" />
+        <Toaster position="bottom-right" />
       </SessionProvider>
     </RecoilRoot>
   );
