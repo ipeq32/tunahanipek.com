@@ -6,10 +6,8 @@ import {
 
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/sonner';
-import { RecoilRoot } from 'recoil';
+import LayoutChild from '@/components/layout/root';
 
 export async function generateMetadata({
   params: { locale },
@@ -129,13 +127,10 @@ export default async function LocaleLayout({
       disableTransitionOnChange
     >
       <NextIntlClientProvider messages={messages} locale={locale}>
-        <RecoilRoot>
-          <SessionProvider>
-            {children}
-            {authModal}
-            <Toaster position="top-right" />
-          </SessionProvider>
-        </RecoilRoot>
+        <LayoutChild>
+          {children}
+          {authModal}
+        </LayoutChild>
       </NextIntlClientProvider>
     </ThemeProvider>
   );
