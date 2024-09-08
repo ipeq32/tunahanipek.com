@@ -7,6 +7,7 @@ import NavContact from '@/components/sidebar/Contact';
 import Navbar from '@/components/sidebar/Navbar';
 import LoadingLogo from '@/components/loading-logo';
 import Footer from '@/components/sidebar/Footer';
+import { RecoilRoot } from 'recoil';
 
 type Props = {
   children: React.ReactNode;
@@ -44,12 +45,14 @@ const MainLayout = ({ children }: Props) => {
     // </div>
     <LoadingLogo />
   ) : (
-    <div className="bg-sky-50 dark:bg-primary/90">
-      <NavContact />
-      <Navbar />
-      <div className="container min-h-dvh">{children}</div>
-      <Footer />
-    </div>
+    <RecoilRoot>
+      <div className="bg-sky-50 dark:bg-primary/90">
+        <NavContact />
+        <Navbar />
+        <div className="container min-h-dvh">{children}</div>
+        <Footer />
+      </div>
+    </RecoilRoot>
   );
 };
 
