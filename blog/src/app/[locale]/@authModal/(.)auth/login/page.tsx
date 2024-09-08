@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/_components/form';
@@ -16,9 +16,11 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
+import { useRecoilState } from 'recoil';
+import { authAtom } from '@/recoil';
 
 export default function LoginModal() {
-  const [isOpened, setIsOpened] = useState<boolean>(true);
+  const [isOpened, setIsOpened] = useRecoilState(authAtom.modalState);
 
   const searchParams = useSearchParams();
   const session = useSession();
