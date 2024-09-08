@@ -8,7 +8,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  // FormMessage,
 } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
@@ -122,7 +122,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                   type="email"
                 />
               </FormControl>
-              <FormMessage {...field} className="text-xs text-rose-300" />
+              {/* <FormMessage {...field} className="text-xs text-rose-300" /> */}
             </FormItem>
           )}
         />
@@ -143,7 +143,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                   type="password"
                 />
               </FormControl>
-              <FormMessage {...field} className="text-xs text-rose-300" />
+              {/* <FormMessage {...field} className="text-xs text-rose-300" /> */}
             </FormItem>
           )}
         />
