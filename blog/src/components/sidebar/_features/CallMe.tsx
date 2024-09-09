@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { Phone } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const CallMeFeature = () => {
+  const t = useTranslations('Navbar.Main.Sidebar');
+
   return (
     <div className="flex flex-row items-center group/call w-max max-xl:w-full gap-2 mr-5 h-10">
       <Link
@@ -19,7 +22,7 @@ const CallMeFeature = () => {
       </Link>
       <div className="flex flex-col items-start">
         <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-          Call me now
+          {t('callMe')}
         </div>
         <div className="text-sm font-medium text-gray-400 group-hover/call:text-gray-300">
           +90 (541) 606-4488

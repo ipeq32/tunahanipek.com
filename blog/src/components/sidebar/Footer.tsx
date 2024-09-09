@@ -5,13 +5,18 @@ import React from 'react';
 import Image from 'next/image';
 import { Instagram, Linkedin, Phone, Mail, MapPin, Github } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
   const { data, status } = useSession();
 
+  const t = useTranslations('Footer');
+
   const emailAddress = 'tnhnipek@gmail.com';
-  const emailSubject = 'Tunahan İPEK Sitesinden Gelen Mail';
-  const emailBody = `Merhaba Tunahan İPEK, \n\nBen size bu maili -tunahanipek.com- sitesinden gönderiyorum.\n\n${status === 'authenticated' && `İsmim ${data.user?.name}`}${status === 'unauthenticated' && 'Daha giriş yapmadım.'} \n\nSize bir sorum olacak. \n\nDönüş yaparsanız sevinirim. \n\nİyi çalışmalar.`;
+  const emailSubject = t('Mail.subject');
+  const emailBody = t('Mail.body', {
+    auth: `${status === 'authenticated' && `İsmim ${data.user?.name}`}${status === 'unauthenticated' && 'Daha giriş yapmadım.'}`,
+  });
   const recipientAddress = 'Gültepe, Albayrak Meydanı, Merkezefendi/Denizli';
 
   const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(
@@ -91,12 +96,13 @@ const Footer = () => {
           </figure>
           <div className="relative flex justify-center group/slogan px-2 py-1 rounded-md">
             <span className="absolute bottom-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/slogan:w-full group-hover/slogan:h-full transition-all duration-300 ease-linear rounded-md" />
-            <p className="text-center cursor-default dark:group-hover/slogan:text-slate-300 text-sm flex items-center z-10">
-              Hayat Sevince Güzel &apos;` SEV `&apos;
-            </p>
+            <p
+              dangerouslySetInnerHTML={{ __html: t('motto') }}
+              className="text-center cursor-default dark:group-hover/slogan:text-slate-300 text-sm flex items-center z-10"
+            />
           </div>
           <div className="flex flex-row items-center gap-3">
-            <p className="text-lg">Follow Me</p>
+            <p className="text-lg">{t('follow')}</p>
             <div className="flex flex-row items-center gap-2">
               <Link href="https://github.com/ipeq32" target="_blank">
                 <Github
@@ -130,7 +136,7 @@ const Footer = () => {
           <div className="relative group/info flex items-center justify-center w-full">
             <span className="absolute top-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/info:w-full group-hover/info:h-full transition-all duration-300 ease-linear rounded-md" />
             <p className="text-xl flex items-center z-10 cursor-default">
-              Address Information
+              {t('AddressInfo.title')}
             </p>
           </div>
           <div className="flex flex-col items-center justify-stretch h-full gap-4">
@@ -149,7 +155,7 @@ const Footer = () => {
               </Link>
               <div className="flex flex-col items-start">
                 <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  Call me now
+                  {t('AddressInfo.callMe')}
                 </div>
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
                   +90 (541) 606-4488
@@ -171,7 +177,7 @@ const Footer = () => {
               </Link>
               <div className="flex flex-col items-start">
                 <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  Email Address
+                  {t('AddressInfo.email')}
                 </div>
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
                   tnhnipek@gmail.com
@@ -193,7 +199,7 @@ const Footer = () => {
               </Link>
               <div className="flex flex-col items-start">
                 <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  Address
+                  {t('AddressInfo.address')}
                 </div>
                 <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
                   Gültepe/DENİZLİ
@@ -207,7 +213,7 @@ const Footer = () => {
           <div className="relative group/info flex items-center justify-center w-full">
             <span className="absolute top-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/info:w-full group-hover/info:h-full transition-all duration-300 ease-linear rounded-md" />
             <p className="text-xl flex items-center z-10 cursor-default">
-              Useful Links
+              {t('UsefulLink.title')}
             </p>
           </div>
           <div className="flex flex-col items-center justify-stretch h-full gap-2">
@@ -216,36 +222,36 @@ const Footer = () => {
               <Link
                 href={'/about-me'}
                 className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-              >
-                &gt;&nbsp; About Me
-              </Link>
+                dangerouslySetInnerHTML={{ __html: t.raw('UsefulLink.about') }}
+              />
             </div>
             <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
               <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
               <Link
                 href={'/project'}
                 className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-              >
-                &gt;&nbsp; Projects
-              </Link>
+                dangerouslySetInnerHTML={{
+                  __html: t.raw('UsefulLink.project'),
+                }}
+              />
             </div>
             <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
               <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
               <Link
                 href={'/faq'}
                 className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-              >
-                &gt;&nbsp; Faq
-              </Link>
+                dangerouslySetInnerHTML={{ __html: t.raw('UsefulLink.faq') }}
+              />
             </div>
             <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
               <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
               <Link
                 href={'/contact'}
                 className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-              >
-                &gt;&nbsp; Contact Me
-              </Link>
+                dangerouslySetInnerHTML={{
+                  __html: t.raw('UsefulLink.contact'),
+                }}
+              />
             </div>
           </div>
         </div>
@@ -284,14 +290,17 @@ const Footer = () => {
           <span className="text-emerald-500 font-semibold max-mobile-xl:font-normal">
             Blog
           </span>{' '}
-          is Proudly Owned by{' '}
-          <Link
-            href={'https://tunahanipek.com'}
-            target="_blank"
-            className="text-emerald-500 font-semibold hover:scale-105"
-          >
-            Tunahan İPEK
-          </Link>
+          {t.rich('ownership', {
+            link: (text) => (
+              <Link
+                href={'https://tunahanipek.com'}
+                target="_blank"
+                className="text-emerald-500 font-semibold hover:scale-105"
+              >
+                {text}
+              </Link>
+            ),
+          })}
         </p>
       </div>
     </footer>

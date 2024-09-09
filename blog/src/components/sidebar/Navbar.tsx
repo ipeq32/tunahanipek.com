@@ -25,31 +25,34 @@ import handleSignout from '@/actions/handleSignout';
 import { usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
-
-const menuLinks = [
-  {
-    title: 'Home',
-    href: '/',
-  },
-  {
-    title: 'About',
-    href: '/about-me',
-  },
-  {
-    title: 'Blogs',
-    href: '/blog',
-  },
-  {
-    title: 'Projects',
-    href: '/project',
-  },
-];
+import { useTranslations } from 'next-intl';
 
 const Navbar = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const t = useTranslations('Navbar.Main');
+
   const from = searchParams.get('callback') || pathname;
+
+  const menuLinks = [
+    {
+      title: t('Link.home'),
+      href: '/',
+    },
+    {
+      title: t('Link.about'),
+      href: '/about-me',
+    },
+    {
+      title: t('Link.blog'),
+      href: '/blog',
+    },
+    {
+      title: t('Link.project'),
+      href: '/project',
+    },
+  ];
 
   const { data, status } = useSession({
     required: false,
@@ -90,7 +93,7 @@ const Navbar = () => {
               className="w-max h-12"
               onClick={handleLogout}
             >
-              Logout
+              {t('Sidebar.Profile.logout')}
             </Button>
           ) : (
             <Link
@@ -98,7 +101,7 @@ const Navbar = () => {
               className="w-max h-12"
             >
               <Button variant="ghost" className="h-full">
-                Login
+                {t('Sidebar.login')}
               </Button>
             </Link>
           )}
@@ -113,10 +116,9 @@ const Navbar = () => {
           <SheetContent className="flex flex-col justify-between border-none">
             <div>
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle>{t('Sidebar.title')}</SheetTitle>
                 <SheetDescription>
-                  Blog page for developers and designers. Welcome!{' '}
-                  {user?.name ?? ''}
+                  {t('Sidebar.description')} {user?.name ?? ''}
                 </SheetDescription>
               </SheetHeader>
               <div className="grid gap-5 py-5">
@@ -157,7 +159,7 @@ const Navbar = () => {
                         className="w-full"
                         onClick={handleLogout}
                       >
-                        Logout
+                        {t('Sidebar.Profile.logout')}
                       </Button>
                     </div>
                   ) : (
@@ -166,7 +168,7 @@ const Navbar = () => {
                       className="w-full"
                     >
                       <Button variant="secondary" className="w-full">
-                        Login
+                        {t('Sidebar.login')}
                       </Button>
                     </Link>
                   )}

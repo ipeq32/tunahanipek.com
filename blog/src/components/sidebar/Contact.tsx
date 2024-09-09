@@ -6,9 +6,12 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ToggleTheme } from '../toggle-theme';
 import ToggleLanguage from '../toggle-language';
+import { useTranslations } from 'next-intl';
 
 const NavContact = () => {
-  const [isOpen, setIsOpen] = useState<'Open' | 'Closed'>('Closed'); // Burası backendden getirilecek veriye göre değiştir.
+  const [isOpen, setIsOpen] = useState<boolean | null>(null); // Burası backendden getirilecek veriye göre değiştir.
+
+  const t = useTranslations('Navbar.Contact');
 
   const currentDay = new Date().toLocaleDateString('tr', { weekday: 'long' });
   const currentHour = new Date().getHours();
@@ -18,11 +21,11 @@ const NavContact = () => {
       ((currentDay !== 'Saturday' || 'Sunday') && currentHour < 8) ||
       currentHour > 18
     ) {
-      return setIsOpen('Closed');
+      return setIsOpen(false);
     } else {
-      return setIsOpen('Open');
+      return setIsOpen(true);
     }
-  }, [currentDay, currentHour]);
+  }, [currentDay, currentHour, t]);
 
   return (
     <div className="flex items-center justify-center h-12 bg-cyan-50 dark:bg-indigo-950 max-2xl:px-10">
@@ -31,7 +34,7 @@ const NavContact = () => {
           <Stethoscope width={20} height={20} className="animate-pulse" />
           <div className="flex items-center overflow-hidden">
             <p className="text-sm animate-text-slide whitespace-nowrap">
-              Welcome to my blog page.
+              {t('description')}
             </p>
           </div>
         </div>
@@ -46,18 +49,18 @@ const NavContact = () => {
                 }`}
               >
                 <span className="max-sm:hidden animate-text-slide-slow whitespace-nowrap max-w-[250px]">
-                  My working hours are between 08:00 and 16:00 on weekdays.
+                  {t('time')}
                 </span>
                 <span className="max-sm:block hidden">{currentDay}</span>
               </div>
               <span
                 className={`select-none ${
-                  isOpen === 'Open'
+                  isOpen
                     ? 'text-green-500 cursor-grab'
                     : 'text-red-500 cursor-wait'
                 }`}
               >
-                {isOpen}
+                {isOpen ? t('Status.open') : t('Status.close')}
               </span>
             </div>
           </div>

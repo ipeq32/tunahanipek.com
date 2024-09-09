@@ -53,19 +53,19 @@
         }
       }
     },
-    "Register":{
-      "Page":{
-        "title":"Register",
-        "Modal":{
-          "title":"Register",
+    "Register": {
+      "Page": {
+        "title": "Register",
+        "Modal": {
+          "title": "Register",
           "description": "Enter your details below to login to your account.",
           "button": "Login Instead ?"
         }
       },
-      "Form":{
-        "Email":{
-          "label":"E-mail",
-          "placeholder":"Enter your e-mail address."
+      "Form": {
+        "Email": {
+          "label": "E-mail",
+          "placeholder": "Enter your e-mail address."
         },
         "Password": {
           "label": "Password",
@@ -99,9 +99,9 @@
           "label": "Bio",
           "placeholder": "Enter your bio."
         },
-        "Submit":{
-          "label":"Register",
-          "loading":"Registering..."
+        "Submit": {
+          "label": "Register",
+          "loading": "Registering..."
         }
       },
       "Error": {
@@ -115,70 +115,120 @@
           "responseError": "Network response was not ok."
         }
       },
-      "Schema":{
-        "Email":{
-          "stringRequiredError":"E-mail is required.",
-          "stringInvalidTypeError":"E-mail must be a string.",
-          "emailMessage":"Invalid email address."
+      "Schema": {
+        "Email": {
+          "stringRequiredError": "E-mail is required.",
+          "stringInvalidTypeError": "E-mail must be a string.",
+          "emailMessage": "Invalid email address."
         },
-        "Password":{
-          "stringRequiredError":"Password is required.",
-          "stringInvalidTypeError":"Password must be a string.",
-          "minMessage":"Password must be at least 6 characters."
+        "Password": {
+          "stringRequiredError": "Password is required.",
+          "stringInvalidTypeError": "Password must be a string.",
+          "minMessage": "Password must be at least 6 characters."
         },
-        "PasswordConfirm":{
-          "stringRequiredError":"Password confirm is required.",
-          "stringInvalidTypeError":"Password confirm must be a string.",
-          "minMessage":"Password confirm must be at least 6 characters.",
-          "refineMessage":"Passwords don't match."
+        "PasswordConfirm": {
+          "stringRequiredError": "Password confirm is required.",
+          "stringInvalidTypeError": "Password confirm must be a string.",
+          "minMessage": "Password confirm must be at least 6 characters.",
+          "refineMessage": "Passwords don't match."
         },
-        "Name":{
-          "stringRequiredError":"Name is required.",
-          "stringInvalidTypeError":"Name must be a string.",
-          "minMessage":"Name must be at least 3 characters."
+        "Name": {
+          "stringRequiredError": "Name is required.",
+          "stringInvalidTypeError": "Name must be a string.",
+          "minMessage": "Name must be at least 3 characters."
         },
-        "Phone":{
-          "stringRequiredError":"Phone is required.",
-          "stringInvalidTypeError":"Phone must be a string.",
-          "minMessage":"Phone must be at least 10 characters."
+        "Phone": {
+          "stringRequiredError": "Phone is required.",
+          "stringInvalidTypeError": "Phone must be a string.",
+          "minMessage": "Phone must be at least 10 characters."
         },
-        "Address":{
-          "stringRequiredError":"Address is required.",
-          "stringInvalidTypeError":"Address must be a string.",
-          "minMessage":"Address must be at least 10 characters."
+        "Address": {
+          "stringRequiredError": "Address is required.",
+          "stringInvalidTypeError": "Address must be a string.",
+          "minMessage": "Address must be at least 10 characters."
         },
-        "Website":{
-          "stringRequiredError":"Website is required.",
-          "stringInvalidTypeError":"Website must be a string.",
-          "urlMessage":"Invalid webiste URL."
+        "Website": {
+          "stringRequiredError": "Website is required.",
+          "stringInvalidTypeError": "Website must be a string.",
+          "urlMessage": "Invalid webiste URL."
         },
-        "Image":{
-          "stringRequiredError":"Image is required.",
-          "stringInvalidTypeError":"Image must be a string.",
-          "urlMessage":"Invalid image URL."
+        "Image": {
+          "stringRequiredError": "Image is required.",
+          "stringInvalidTypeError": "Image must be a string.",
+          "urlMessage": "Invalid image URL."
         },
-        "Bio":{
-          "stringRequiredError":"Bio is required.",
-          "stringInvalidTypeError":"Bio must be a string.",
-          "minMessage":"Bio must be at least 10 characters."
+        "Bio": {
+          "stringRequiredError": "Bio is required.",
+          "stringInvalidTypeError": "Bio must be a string.",
+          "minMessage": "Bio must be at least 10 characters."
         }
       }
     }
   },
-  "Error":{
-    "Main":{
-      "Error":{
-        "title":"There was a problem",
-        "Button":{
+  "Error": {
+    "Main": {
+      "Error": {
+        "title": "There was a problem",
+        "Button": {
           "try": "Try Again...",
-          "back":"Go Back Home"
+          "back": "Go Back Home"
         }
       },
-      "NotFound":{
+      "NotFound": {
         "title": "Not Found",
-        "description":"Could not find requested resource.",
-        "button":"Return Home"
+        "description": "Could not find requested resource.",
+        "button": "Return Home"
       }
+    }
+  },
+  "Navbar": {
+    "Contact": {
+      "description": "Welcome to my blog page.",
+      "time": "My working hours are between 08:00 and 16:00 on weekdays.",
+      "Status": {
+        "open": "Open",
+        "close": "Closed"
+      }
+    },
+    "Main": {
+      "Link": {
+        "home": "Home",
+        "about": "About",
+        "blog": "Blogs",
+        "project": "Projects"
+      },
+      "Sidebar": {
+        "callMe": "Call me now",
+        "getContact": "Get Contact Me",
+        "login": "Login",
+        "Profile": {
+          "logout": "Logout"
+        },
+        "title": "Menu",
+        "description": "Blog page for developers and designers. Welcome!"
+      }
+    }
+  },
+  "Footer": {
+    "motto": "Life is Beautiful When You Have &apos;` Joy `&apos;",
+    "follow": "Follow Me",
+    "AddressInfo": {
+      "title": "Address Information",
+      "callMe": "Call me now",
+      "email": "E-mail Address",
+      "address": "Address"
+    },
+    "UsefulLink": {
+      "title": "Useful Links",
+      "about": "&gt;&nbsp; About Me",
+      "project": "&gt;&nbsp; Projects",
+      "faq": "&gt;&nbsp; FAQ",
+      "contact": "&gt;&nbsp; Contact Me"
+    },
+    "ownership": "is Proudly Owned by <link>Tunahan İPEK</link>",
+    "Mail": {
+      "subject": "Email from Tunahan İPEK Website",
+      "body": "Hello Tunahan İPEK, \n\n\nI am sending you this e-mail from the website -tunahanipek.com-.\n\n \n{auth} \n\n\nI have a question for you. \n\n\nI would be happy if you come back. \n\n\nEnjoy your work."
     }
   }
 }

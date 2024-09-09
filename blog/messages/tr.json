@@ -180,5 +180,55 @@
         "button": "Anasayfaya Dön"
       }
     }
+  },
+  "Navbar": {
+    "Contact": {
+      "description": "Blog sayfama hoş geldiniz.",
+      "time": "Hafta içi çalışma saatlerim 08:00-16:00 arasıdır.",
+      "Status": {
+        "close": "Kapalı",
+        "open": "Açık"
+      }
+    },
+    "Main": {
+      "Link": {
+        "home": "Anasayfa",
+        "about": "Hakkında",
+        "blog": "Bloglar",
+        "project": "Projeler"
+      },
+      "Sidebar": {
+        "callMe": "Şimdi beni ara",
+        "getContact": "Benimle İletişime Geçin",
+        "login": "Giriş Yap",
+        "Profile": {
+          "logout": "Oturumu kapat"
+        },
+        "title": "Menü",
+        "description": "Geliştiriciler ve tasarımcılar için blog sayfası. \nHoş geldin!"
+      }
+    }
+  },
+  "Footer": {
+    "motto": "Hayat Sevince Güzel &apos;` SEV `&apos;",
+    "follow": "Beni takip et",
+    "AddressInfo": {
+      "title": "Adres Bilgileri",
+      "callMe": "Şimdi beni ara",
+      "email": "E-posta Adresi",
+      "address": "Adres"
+    },
+    "UsefulLink": {
+      "title": "Faydalı Bağlantılar",
+      "about":"&gt;&nbsp; Hakkımda",
+      "project":"&gt;&nbsp; Projeler",
+      "faq":"&gt;&nbsp; SSS",
+      "contact":"&gt;&nbsp; Bana Ulaşın"
+    },
+    "ownership":"Tüm Hakları <link>Tunahan İPEK'e</link> Aittir",
+    "Mail":{
+      "subject":"Tunahan İPEK Sitesinden Gelen Mail",
+      "body":"Merhaba Tunahan İPEK, \n\nBen size bu maili -tunahanipek.com- sitesinden gönderiyorum.\n\n{auth} \n\nSize bir sorum olacak. \n\nDönüş yaparsanız sevinirim. \n\nİyi çalışmalar."
+     }
   }
 }
