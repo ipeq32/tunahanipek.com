@@ -55,7 +55,7 @@
     },
     "Register": {
       "Page": {
-        "title":"Kayıt Ol",
+        "title": "Kayıt Ol",
         "Modal": {
           "title": "Kayıt Ol",
           "description": "Hesabınıza giriş yapmak için bilgilerinizi aşağıya girin.",
@@ -162,6 +162,22 @@
           "stringInvalidTypeError": "Biografi formatı hatalı.",
           "minMessage": "Biyografi en az 10 karakter olmalıdır."
         }
+      }
+    }
+  },
+  "Error": {
+    "Main": {
+      "Error": {
+        "title": "Bir sorun oluştu",
+        "Button": {
+          "try": "Tekrar Deneyin...",
+          "back": "Ana Sayfaya Geri Dön"
+        }
+      },
+      "NotFound": {
+        "title": "Bulunamadı",
+        "description": "İstenilen kaynak bulunamadı.",
+        "button": "Anasayfaya Dön"
       }
     }
   }

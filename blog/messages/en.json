@@ -164,5 +164,21 @@
         }
       }
     }
+  },
+  "Error":{
+    "Main":{
+      "Error":{
+        "title":"There was a problem",
+        "Button":{
+          "try": "Try Again...",
+          "back":"Go Back Home"
+        }
+      },
+      "NotFound":{
+        "title": "Not Found",
+        "description":"Could not find requested resource.",
+        "button":"Return Home"
+      }
+    }
   }
 }
