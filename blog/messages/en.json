@@ -52,6 +52,117 @@
           "minMessage": "Password must be at least 6 characters."
         }
       }
+    },
+    "Register":{
+      "Page":{
+        "title":"Register",
+        "Modal":{
+          "title":"Register",
+          "description": "Enter your details below to login to your account.",
+          "button": "Login Instead ?"
+        }
+      },
+      "Form":{
+        "Email":{
+          "label":"E-mail",
+          "placeholder":"Enter your e-mail address."
+        },
+        "Password": {
+          "label": "Password",
+          "placeholder": "Enter your password."
+        },
+        "PasswordConfirm": {
+          "label": "Password Confirm",
+          "placeholder": "Re-enter your password."
+        },
+        "Name": {
+          "label": "Name",
+          "placeholder": "Enter your name."
+        },
+        "Phone": {
+          "label": "Phone",
+          "placeholder": "Enter your phone number."
+        },
+        "ImageURL": {
+          "label": "Image URL",
+          "placeholder": "Enter your image url."
+        },
+        "Website": {
+          "label": "Website URL",
+          "placeholder": "Enter your webiste url."
+        },
+        "Address": {
+          "label": "Address",
+          "placeholder": "Enter your address."
+        },
+        "Bio": {
+          "label": "Bio",
+          "placeholder": "Enter your bio."
+        },
+        "Submit":{
+          "label":"Register",
+          "loading":"Registering..."
+        }
+      },
+      "Error": {
+        "Ok": {
+          "title": "Registration Successful.",
+          "description": "You can now login."
+        },
+        "Fail": {
+          "title": "Registration Failed.",
+          "description": "An unknown error occurred.",
+          "responseError": "Network response was not ok."
+        }
+      },
+      "Schema":{
+        "Email":{
+          "stringRequiredError":"E-mail is required.",
+          "stringInvalidTypeError":"E-mail must be a string.",
+          "emailMessage":"Invalid email address."
+        },
+        "Password":{
+          "stringRequiredError":"Password is required.",
+          "stringInvalidTypeError":"Password must be a string.",
+          "minMessage":"Password must be at least 6 characters."
+        },
+        "PasswordConfirm":{
+          "stringRequiredError":"Password confirm is required.",
+          "stringInvalidTypeError":"Password confirm must be a string.",
+          "minMessage":"Password confirm must be at least 6 characters.",
+          "refineMessage":"Passwords don't match."
+        },
+        "Name":{
+          "stringRequiredError":"Name is required.",
+          "stringInvalidTypeError":"Name must be a string.",
+          "minMessage":"Name must be at least 3 characters."
+        },
+        "Phone":{
+          "stringRequiredError":"Phone is required.",
+          "stringInvalidTypeError":"Phone must be a string.",
+          "minMessage":"Phone must be at least 10 characters."
+        },
+        "Address":{
+          "stringRequiredError":"Address is required.",
+          "stringInvalidTypeError":"Address must be a string.",
+          "minMessage":"Address must be at least 10 characters."
+        },
+        "Website":{
+          "stringRequiredError":"Website is required.",
+          "stringInvalidTypeError":"Website must be a string.",
+          "urlMessage":"Invalid webiste URL."
+        },
+        "Image":{
+          "stringRequiredError":"Image is required.",
+          "stringInvalidTypeError":"Image must be a string.",
+          "urlMessage":"Invalid image URL."
+        },
+        "Bio":{
+          "stringRequiredError":"Bio is required.",
+          "stringInvalidTypeError":"Bio must be a string.",
+          "minMessage":"Bio must be at least 10 characters."
+        }
+      }
     }
   }
 }

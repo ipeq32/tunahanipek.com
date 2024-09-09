@@ -16,12 +16,13 @@ import { Input } from '@/components/ui/input';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import { useRouter } from '@/navigation';
 
 type LoginFormProps = {
   setOpenModal?: (value: boolean) => void;

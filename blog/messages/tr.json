@@ -11,26 +11,26 @@
   },
   "Authentication": {
     "Login": {
-      "Page":{
-        "title":"Giriş Yap",
-        "Modal":{
-          "title":"Giriş Yap",
-          "description":"Hesabınıza giriş yapmak için lütfen aşağıdaki bilgilerinizi giriniz.",
-          "button":"Hesap Oluştur"
+      "Page": {
+        "title": "Giriş Yap",
+        "Modal": {
+          "title": "Giriş Yap",
+          "description": "Hesabınıza giriş yapmak için lütfen aşağıdaki bilgilerinizi giriniz.",
+          "button": "Hesap Oluştur"
         }
       },
       "Form": {
         "Email": {
-          "label":"E-mail",
-          "placeholder":"E-mail adresinizi giriniz."
+          "label": "E-posta",
+          "placeholder": "E-posta adresinizi girin."
         },
         "Password": {
-          "label":"Şifre",
-          "placeholder":"Şifrenizi giriniz."
+          "label": "Şifre",
+          "placeholder": "Şifrenizi girin."
         },
-        "Submit":{
+        "Submit": {
           "label": "Giriş Yap",
-          "loading":"Giriş yapılıyor..."
+          "loading": "Giriş yapılıyor..."
         }
       },
       "Error": {
@@ -50,6 +50,117 @@
         },
         "Password": {
           "minMessage": "Şifre en az 6 karakter olmalıdır."
+        }
+      }
+    },
+    "Register": {
+      "Page": {
+        "title":"Kayıt Ol",
+        "Modal": {
+          "title": "Kayıt Ol",
+          "description": "Hesabınıza giriş yapmak için bilgilerinizi aşağıya girin.",
+          "button": "Bunun yerine Giriş Yapılsın mı?"
+        }
+      },
+      "Form": {
+        "Email": {
+          "label": "E-posta",
+          "placeholder": "E-posta adresinizi girin."
+        },
+        "Password": {
+          "label": "Şifre",
+          "placeholder": "Şifrenizi girin."
+        },
+        "PasswordConfirm": {
+          "label": "Şifre Onayla",
+          "placeholder": "Şifrenizi tekrar girin"
+        },
+        "Name": {
+          "label": "İsim",
+          "placeholder": "Adınızı girin."
+        },
+        "Phone": {
+          "label": "Telefon",
+          "placeholder": "Telefon numaranızı girin."
+        },
+        "ImageURL": {
+          "label": "Resim Linki",
+          "placeholder": "Resminizin URL'sini girin."
+        },
+        "Website": {
+          "label": "Web Site Linki",
+          "placeholder": "Web sitenizin URL'sini girin."
+        },
+        "Address": {
+          "label": "Adres",
+          "placeholder": "Adresinizi girin."
+        },
+        "Bio": {
+          "label": "Biyografi",
+          "placeholder": "Biyografinizi girin."
+        },
+        "Submit": {
+          "loading": "Kaydediliyor...",
+          "label": "Kayıt Ol"
+        }
+      },
+      "Error": {
+        "Ok": {
+          "title": "Kayıt Başarılı.",
+          "description": "Artık giriş yapabilirsiniz."
+        },
+        "Fail": {
+          "title": "Kayıt Başarısız.",
+          "description": "Bilinmeyen bir hata oluştu.",
+          "responseError": "Ağ yanıtı iyi değildi."
+        }
+      },
+      "Schema": {
+        "Email": {
+          "stringRequiredError": "E-posta gerekli.",
+          "stringInvalidTypeError": "E-posta formatında yazın.",
+          "emailMessage": "Geçersiz e-posta adresi."
+        },
+        "Password": {
+          "stringRequiredError": "Şifre gerekli.",
+          "stringInvalidTypeError": "Şifre formatı hatalı.",
+          "minMessage": "Şifre en az 6 karakter olmalıdır."
+        },
+        "PasswordConfirm": {
+          "stringRequiredError": "Şifre onayı gereklidir.",
+          "stringInvalidTypeError": "Şifre onayı formatı hatalı.",
+          "minMessage": "Şifre onayı en az 6 karakter olmalıdır.",
+          "refineMessage": "Şifreler eşleşmiyor."
+        },
+        "Name": {
+          "stringRequiredError": "Ad gerekli.",
+          "stringInvalidTypeError": "Ad formatı hatalı.",
+          "minMessage": "İsim en az 6 karakter olmalıdır."
+        },
+        "Phone": {
+          "stringRequiredError": "Telefon gereklidir.",
+          "stringInvalidTypeError": "Telefon formatı hatalı.",
+          "minMessage": "Telefon en az 10 karakter olmalıdır."
+        },
+        "Address": {
+          "stringRequiredError": "Adres gerekli.",
+          "stringInvalidTypeError": "Adres formatı hatalı.",
+          "minMessage": "Adres en az 10 karakter olmalıdır."
+        },
+        "Website": {
+          "stringRequiredError": "Web sitesi gereklidir.",
+          "stringInvalidTypeError": "Web sitesi formatı hatalı.",
+          "urlMessage": "Geçersiz web sitesi URL'si."
+        },
+        "Image": {
+          "stringRequiredError": "Resim gerekli.",
+          "stringInvalidTypeError": "Resim formatı hatalı.",
+          "urlMessage": "Geçersiz resim URL'si."
+        },
+        "Bio": {
+          "stringRequiredError": "Biyografi gereklidir.",
+          "stringInvalidTypeError": "Biografi formatı hatalı.",
+          "minMessage": "Biyografi en az 10 karakter olmalıdır."
         }
       }
     }

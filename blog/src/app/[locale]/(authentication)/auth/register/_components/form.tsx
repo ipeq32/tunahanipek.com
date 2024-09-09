@@ -15,97 +15,110 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
-
-const FormSchema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required.',
-      invalid_type_error: 'Email must be a string.',
-    })
-    .email({
-      message: 'Invalid email address.',
-    }),
-  password: z
-    .string({
-      required_error: 'Password is required.',
-      invalid_type_error: 'Password must be a string.',
-    })
-    .min(6, {
-      message: 'Password must be at least 6 characters.',
-    }),
-  passwordConfirm: z
-    .string({
-      required_error: 'Password Confirm is required.',
-      invalid_type_error: 'Password Confirm must be a string.',
-    })
-    .min(6, {
-      message: 'Password Confirm must be at least 6 characters.',
-    }),
-  name: z
-    .string({
-      required_error: 'Name is required.',
-      invalid_type_error: 'Name must be a string.',
-    })
-    .min(3, {
-      message: 'Name must be at least 3 characters.',
-    }),
-  phone: z
-    .string({
-      required_error: 'Phone number is required.',
-      invalid_type_error: 'Phone number must be a string.',
-    })
-    .min(10, {
-      message: 'Phone number must be at least 10 characters.',
-    }),
-  address: z
-    .string({
-      required_error: 'Address is required.',
-      invalid_type_error: 'Address must be a string.',
-    })
-    .min(10, {
-      message: 'Address must be at least 10 characters.',
-    }),
-  website: z
-    .string({
-      required_error: 'Website URL is required.',
-      invalid_type_error: 'Website URL must be a string.',
-    })
-    .url({
-      message: 'Invalid website URL.',
-    }),
-  image: z
-    .string({
-      required_error: 'Image URL is required.',
-      invalid_type_error: 'Image URL must be a string.',
-    })
-    .url({
-      message: 'Invalid image URL.',
-    }),
-  bio: z
-    .string({
-      required_error: 'Bio is required.',
-      invalid_type_error: 'Bio must be a string.',
-    })
-    .min(10, {
-      message: 'Bio must be at least 10 characters.',
-    }),
-});
-
-type FormData = z.infer<typeof FormSchema>;
+import { useTranslations } from 'next-intl';
 
 export default function RegisterForm() {
   const router = useRouter();
+  const t = useTranslations('Authentication.Register');
+
+  const FormSchema = z.object({
+    email: z
+      .string({
+        required_error: t('Schema.Email.stringRequiredError'),
+        invalid_type_error: t('Schema.Email.stringInvalidTypeError'),
+      })
+      .email({
+        message: t('Schema.Email.emailMessage'),
+      }),
+    passwordForm: z
+      .object({
+        password: z
+          .string({
+            required_error: t('Schema.Password.stringRequiredError'),
+            invalid_type_error: t('Schema.Password.stringInvalidTypeError'),
+          })
+          .min(6, {
+            message: t('Schema.Password.minMessage'),
+          }),
+        passwordConfirm: z
+          .string({
+            required_error: t('Schema.PasswordConfirm.stringRequiredError'),
+            invalid_type_error: t(
+              'Schema.PasswordConfirm.stringInvalidTypeError'
+            ),
+          })
+          .min(6, {
+            message: t('Schema.PasswordConfirm.minMessage'),
+          }),
+      })
+      .refine((data) => data.password === data.passwordConfirm, {
+        message: t('Schema.PasswordConfirm.refineMessage'),
+        path: ['passwordConfirm'],
+      }),
+    name: z
+      .string({
+        required_error: t('Schema.Name.stringRequiredError'),
+        invalid_type_error: t('Schema.Name.stringInvalidTypeError'),
+      })
+      .min(3, {
+        message: t('Schema.Name.minMessage'),
+      }),
+    phone: z
+      .string({
+        required_error: t('Schema.Phone.stringRequiredError'),
+        invalid_type_error: t('Schema.Phone.stringInvalidTypeError'),
+      })
+      .min(10, {
+        message: t('Schema.Phone.minMessage'),
+      }),
+    address: z
+      .string({
+        required_error: t('Schema.Address.stringRequiredError'),
+        invalid_type_error: t('Schema.Address.stringInvalidTypeError'),
+      })
+      .min(10, {
+        message: t('Schema.Address.minMessage'),
+      }),
+    website: z
+      .string({
+        required_error: t('Schema.Website.stringRequiredError'),
+        invalid_type_error: t('Schema.Website.stringInvalidTypeError'),
+      })
+      .url({
+        message: t('Schema.Website.urlMessage'),
+      }),
+    image: z
+      .string({
+        required_error: t('Schema.Image.stringRequiredError'),
+        invalid_type_error: t('Schema.Image.stringInvalidTypeError'),
+      })
+      .url({
+        message: t('Schema.Image.urlMessage'),
+      }),
+    bio: z
+      .string({
+        required_error: t('Schema.Bio.stringRequiredError'),
+        invalid_type_error: t('Schema.Bio.stringInvalidTypeError'),
+      })
+      .min(10, {
+        message: t('Schema.Bio.minMessage'),
+      }),
+  });
+
+  type FormData = z.infer<typeof FormSchema>;
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: '',
-      password: '',
-      passwordConfirm: '',
+      passwordForm: {
+        password: '',
+        passwordConfirm: '',
+      },
       name: '',
       phone: '',
       address: '',
@@ -120,8 +133,7 @@ export default function RegisterForm() {
 
     const {
       email,
-      password,
-      passwordConfirm,
+      passwordForm: { password, passwordConfirm },
       name,
       phone,
       address,
@@ -149,19 +161,19 @@ export default function RegisterForm() {
         }),
       });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(t('Error.Fail.responseError'));
       }
 
       router.push('/auth/login');
 
       // Process response here
-      toast('Registration Successful', { description: 'You can now login.' });
+      toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast('Registration Failed', { description: error.message });
+        toast(t('Error.Fail.title'), { description: error.message });
       } else {
-        toast('Registration Failed', {
-          description: 'An unknown error occurred.',
+        toast(t('Error.Fail.title'), {
+          description: t('Error.Fail.description'),
         });
       }
     }
@@ -187,12 +199,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Email
+                  {t('Form.Email.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Email"
+                    placeholder={t('Form.Email.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -202,16 +214,16 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
-            name="password"
+            name="passwordForm.password"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Password
+                  {t('Form.Password.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Password"
+                    placeholder={t('Form.Password.placeholder')}
                     {...field}
                     type="password"
                   />
@@ -222,16 +234,16 @@ export default function RegisterForm() {
           />
           <FormField
             control={form.control}
-            name="passwordConfirm"
+            name="passwordForm.passwordConfirm"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Password Confirm
+                  {t('Form.PasswordConfirm.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Password Confirm"
+                    placeholder={t('Form.PasswordConfirm.placeholder')}
                     {...field}
                     type="password"
                   />
@@ -246,12 +258,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Name
+                  {t('Form.Name.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Name"
+                    placeholder={t('Form.Name.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -265,12 +277,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Phone
+                  {t('Form.Phone.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Phone"
+                    placeholder={t('Form.Phone.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -284,12 +296,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Image URL
+                  {t('Form.ImageURL.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Image URL"
+                    placeholder={t('Form.ImageURL.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -303,12 +315,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Website
+                  {t('Form.Website.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
                     className="text-black dark:text-white w-full"
-                    placeholder="Website"
+                    placeholder={t('Form.Website.placeholder')}
                     {...field}
                   />
                 </FormControl>
@@ -322,12 +334,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Address
+                  {t('Form.Address.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Textarea
                     className="text-black dark:text-white w-full"
-                    placeholder="Address"
+                    placeholder={t('Form.Address.placeholder')}
                     {...field}
                     rows={3}
                   />
@@ -342,12 +354,12 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  Enter Bio
+                  {t('Form.Bio.label')}
                 </FormLabel>
                 <FormControl className="w-full">
                   <Textarea
                     className="text-black dark:text-white w-full"
-                    placeholder="Bio"
+                    placeholder={t('Form.Bio.placeholder')}
                     {...field}
                     rows={3}
                   />
@@ -357,8 +369,14 @@ export default function RegisterForm() {
             )}
           />
         </div>
-        <Button type="submit" className="hover:scale-105 w-full">
-          Submit
+        <Button
+          type="submit"
+          className="hover:scale-105 w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting
+            ? t('Form.Submit.loading')
+            : t('Form.Submit.label')}
         </Button>
       </motion.form>
     </Form>

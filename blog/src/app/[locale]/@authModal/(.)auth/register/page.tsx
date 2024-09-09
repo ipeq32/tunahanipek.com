@@ -8,14 +8,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-import RegisterForm from '@/app/[locale]/(authentication)/auth/register/form';
+import RegisterForm from '@/app/[locale]/(authentication)/auth/register/_components/form';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function RegisterModal() {
   const router = useRouter();
   const pathname = usePathname();
+
+  const t = useTranslations('Authentication.Register.Page.Modal');
 
   const handleClick = () => {
     if (pathname === '/auth/register') {
@@ -44,16 +47,14 @@ export default function RegisterModal() {
               }}
               className="text-4xl font-bold text-black dark:text-white mt-5"
             >
-              Register
+              {t('title')}
             </motion.div>
           </DialogTitle>
-          <DialogDescription>
-            Enter your details below to login to your account
-          </DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <RegisterForm />
         <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
-          Login Instead ?
+          {t('button')}
         </Button>
       </DialogContent>
     </Dialog>
