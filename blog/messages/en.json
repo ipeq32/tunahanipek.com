@@ -113,7 +113,7 @@
           "title": "Registration Failed.",
           "description": "An unknown error occurred.",
           "responseError": "Network response was not ok.",
-          "exist": "This email is already used by a user."
+          "exist": "This e-mail is already used by a user."
         }
       },
       "Schema": {
