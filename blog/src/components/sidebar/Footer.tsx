@@ -30,22 +30,22 @@ const Footer = () => {
     {
       src: '/insta-photo-1.jpg',
       hFull: false,
-      url: 'https://www.instagram.com/p/BtYoiKplxjKfBcFcpjSfCRhiBgWjmFYyCMQMqM0/?igshid=NzZhOTFlYzFmZQ==',
+      url: 'https://www.instagram.com/p/BtYoiKplxjKfBcFcpjSfCRhiBgWjmFYyCMQMqM0/',
     },
     {
       src: '/insta-photo-2.jpg',
       hFull: false,
-      url: 'https://www.instagram.com/p/BUYljfQA9m2RUxJJGvaapuYUg2lzrl7nyfh1ic0/?igshid=NzZhOTFlYzFmZQ==',
+      url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
     },
     {
       src: '/insta-photo-3.jpg',
       hFull: false,
-      url: 'https://www.instagram.com/p/BtRVtURFUM2kWGGaaq_VektF2mH1Jl81ApwhQg0/?igshid=NzZhOTFlYzFmZQ==',
+      url: 'https://www.instagram.com/p/BtRVtURFUM2kWGGaaq_VektF2mH1Jl81ApwhQg0/',
     },
     {
       src: '/insta-photo-4.jpg',
       hFull: true,
-      url: 'https://www.instagram.com/p/BUYlWbBgnpYYpYdBVfHte36x_Z40DPrChZKmzI0/?igshid=NzZhOTFlYzFmZQ==',
+      url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
     },
   ];
 
