@@ -112,7 +112,8 @@
         "Fail": {
           "title": "Kayıt Başarısız.",
           "description": "Bilinmeyen bir hata oluştu.",
-          "responseError": "Ağ yanıtı iyi değildi."
+          "responseError": "Ağ yanıtı iyi değildi.",
+          "exist": "Bu e-posta zaten bir kullanıcı tarafından kullanılıyor."
         }
       },
       "Schema": {
@@ -148,17 +149,14 @@
           "minMessage": "Adres en az 10 karakter olmalıdır."
         },
         "Website": {
-          "stringRequiredError": "Web sitesi gereklidir.",
           "stringInvalidTypeError": "Web sitesi formatı hatalı.",
           "urlMessage": "Geçersiz web sitesi URL'si."
         },
         "Image": {
-          "stringRequiredError": "Resim gerekli.",
           "stringInvalidTypeError": "Resim formatı hatalı.",
           "urlMessage": "Geçersiz resim URL'si."
         },
         "Bio": {
-          "stringRequiredError": "Biyografi gereklidir.",
           "stringInvalidTypeError": "Biografi formatı hatalı.",
           "minMessage": "Biyografi en az 10 karakter olmalıdır."
         }
@@ -220,15 +218,15 @@
     },
     "UsefulLink": {
       "title": "Faydalı Bağlantılar",
-      "about":"&gt;&nbsp; Hakkımda",
-      "project":"&gt;&nbsp; Projeler",
-      "faq":"&gt;&nbsp; SSS",
-      "contact":"&gt;&nbsp; Bana Ulaşın"
+      "about": "&gt;&nbsp; Hakkımda",
+      "project": "&gt;&nbsp; Projeler",
+      "faq": "&gt;&nbsp; SSS",
+      "contact": "&gt;&nbsp; Bana Ulaşın"
     },
-    "ownership":"Tüm Hakları <link>Tunahan İPEK'e</link> Aittir",
-    "Mail":{
-      "subject":"Tunahan İPEK Sitesinden Gelen Mail",
-      "body":"Merhaba Tunahan İPEK, \n\nBen size bu maili -tunahanipek.com- sitesinden gönderiyorum.\n\n{auth} \n\nSize bir sorum olacak. \n\nDönüş yaparsanız sevinirim. \n\nİyi çalışmalar."
-     }
+    "ownership": "Tüm Hakları <link>Tunahan İPEK'e</link> Aittir",
+    "Mail": {
+      "subject": "Tunahan İPEK Sitesinden Gelen Mail",
+      "body": "Merhaba Tunahan İPEK, \n\nBen size bu maili -tunahanipek.com- sitesinden gönderiyorum.\n\n{auth} \n\nSize bir sorum olacak. \n\nDönüş yaparsanız sevinirim. \n\nİyi çalışmalar."
+    }
   }
 }

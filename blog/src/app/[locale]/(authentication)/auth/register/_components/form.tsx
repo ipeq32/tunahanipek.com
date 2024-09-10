@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { useRouter } from '@/navigation';
+import { usePathname, useRouter } from '@/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
@@ -27,6 +27,7 @@ export default function RegisterForm() {
   const [isOpened] = useRecoilState(authAtom.registerModalState);
 
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('Authentication.Register');
 
   const FormSchema = z.object({
@@ -87,30 +88,33 @@ export default function RegisterForm() {
       .min(10, {
         message: t('Schema.Address.minMessage'),
       }),
-    website: z
-      .string({
-        required_error: t('Schema.Website.stringRequiredError'),
-        invalid_type_error: t('Schema.Website.stringInvalidTypeError'),
-      })
-      .url({
-        message: t('Schema.Website.urlMessage'),
-      }),
-    image: z
-      .string({
-        required_error: t('Schema.Image.stringRequiredError'),
-        invalid_type_error: t('Schema.Image.stringInvalidTypeError'),
-      })
-      .url({
-        message: t('Schema.Image.urlMessage'),
-      }),
-    bio: z
-      .string({
-        required_error: t('Schema.Bio.stringRequiredError'),
-        invalid_type_error: t('Schema.Bio.stringInvalidTypeError'),
-      })
-      .min(10, {
-        message: t('Schema.Bio.minMessage'),
-      }),
+    website: z.optional(
+      z
+        .string({
+          invalid_type_error: t('Schema.Website.stringInvalidTypeError'),
+        })
+        .url({
+          message: t('Schema.Website.urlMessage'),
+        })
+    ),
+    image: z.optional(
+      z
+        .string({
+          invalid_type_error: t('Schema.Image.stringInvalidTypeError'),
+        })
+        .url({
+          message: t('Schema.Image.urlMessage'),
+        })
+    ),
+    bio: z.optional(
+      z
+        .string({
+          invalid_type_error: t('Schema.Bio.stringInvalidTypeError'),
+        })
+        .min(10, {
+          message: t('Schema.Bio.minMessage'),
+        })
+    ),
   });
 
   type FormData = z.infer<typeof FormSchema>;
@@ -126,9 +130,9 @@ export default function RegisterForm() {
       name: '',
       phone: '',
       address: '',
-      website: '',
-      image: '',
-      bio: '',
+      website: undefined,
+      image: undefined,
+      bio: undefined,
     },
   });
 
@@ -165,10 +169,19 @@ export default function RegisterForm() {
         }),
       });
       if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error(t('Error.Fail.exist'));
+        }
+
         throw new Error(t('Error.Fail.responseError'));
       }
 
-      router.push('/auth/login');
+      if (pathname === '/auth/register') {
+        router.back();
+        setTimeout(() => router.push('/auth/login'), 10);
+      } else {
+        router.push('/auth/login');
+      }
 
       // Process response here
       toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });

@@ -112,7 +112,8 @@
         "Fail": {
           "title": "Registration Failed.",
           "description": "An unknown error occurred.",
-          "responseError": "Network response was not ok."
+          "responseError": "Network response was not ok.",
+          "exist": "This email is already used by a user."
         }
       },
       "Schema": {
@@ -148,17 +149,14 @@
           "minMessage": "Address must be at least 10 characters."
         },
         "Website": {
-          "stringRequiredError": "Website is required.",
           "stringInvalidTypeError": "Website must be a string.",
           "urlMessage": "Invalid webiste URL."
         },
         "Image": {
-          "stringRequiredError": "Image is required.",
           "stringInvalidTypeError": "Image must be a string.",
           "urlMessage": "Invalid image URL."
         },
         "Bio": {
-          "stringRequiredError": "Bio is required.",
           "stringInvalidTypeError": "Bio must be a string.",
           "minMessage": "Bio must be at least 10 characters."
         }
