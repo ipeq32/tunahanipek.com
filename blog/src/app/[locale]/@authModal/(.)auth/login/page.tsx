@@ -20,7 +20,7 @@ import { useRecoilState } from 'recoil';
 import { authAtom } from '@/recoil';
 
 export default function LoginModal() {
-  const [isOpened, setIsOpened] = useRecoilState(authAtom.modalState);
+  const [isOpened, setIsOpened] = useRecoilState(authAtom.loginModalState);
 
   const searchParams = useSearchParams();
   const session = useSession();

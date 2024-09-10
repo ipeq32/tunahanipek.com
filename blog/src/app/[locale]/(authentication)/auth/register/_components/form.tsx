@@ -20,8 +20,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useRecoilState } from 'recoil';
+import { authAtom } from '@/recoil';
 
 export default function RegisterForm() {
+  const [isOpened] = useRecoilState(authAtom.registerModalState);
+
   const router = useRouter();
   const t = useTranslations('Authentication.Register');
 
@@ -192,14 +196,17 @@ export default function RegisterForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-10"
       >
-        <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-5 text-white rounded-lg gap-y-6 mt-5 w-full overflow-y-scroll">
+        <div className="flex flex-wrap gap-5 text-white rounded-lg gap-y-6 mt-5 w-full overflow-y-scroll">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Email.label')}
+                  {t('Form.Email.label')}{' '}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
@@ -216,9 +223,12 @@ export default function RegisterForm() {
             control={form.control}
             name="passwordForm.password"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Password.label')}
+                  {t('Form.Password.label')}{' '}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
@@ -236,9 +246,12 @@ export default function RegisterForm() {
             control={form.control}
             name="passwordForm.passwordConfirm"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.PasswordConfirm.label')}
+                  {t('Form.PasswordConfirm.label')}{' '}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
@@ -256,9 +269,11 @@ export default function RegisterForm() {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Name.label')}
+                  {t('Form.Name.label')} <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
@@ -275,9 +290,12 @@ export default function RegisterForm() {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Phone.label')}
+                  {t('Form.Phone.label')}{' '}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Input
@@ -294,7 +312,9 @@ export default function RegisterForm() {
             control={form.control}
             name="image"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem
+                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
+              >
                 <FormLabel className="text-xs text-black dark:text-white">
                   {t('Form.ImageURL.label')}
                 </FormLabel>
@@ -309,32 +329,35 @@ export default function RegisterForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Website.label')}
-                </FormLabel>
-                <FormControl className="w-full">
-                  <Input
-                    className="text-black dark:text-white w-full"
-                    placeholder={t('Form.Website.placeholder')}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
-              </FormItem>
-            )}
-          />
+        </div>
+        <FormField
+          control={form.control}
+          name="website"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="text-xs text-black dark:text-white">
+                {t('Form.Website.label')}
+              </FormLabel>
+              <FormControl className="w-full">
+                <Input
+                  className="text-black dark:text-white w-full"
+                  placeholder={t('Form.Website.placeholder')}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage {...field} className="text-xs text-rose-300" />
+            </FormItem>
+          )}
+        />
+        <div className="flex max-sm:flex-col gap-5">
           <FormField
             control={form.control}
             name="address"
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Address.label')}
+                  {t('Form.Address.label')}{' '}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl className="w-full">
                   <Textarea

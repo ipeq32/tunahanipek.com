@@ -13,8 +13,13 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
+import { useRecoilState } from 'recoil';
+import { authAtom } from '@/recoil';
+import { useEffect } from 'react';
 
 export default function RegisterModal() {
+  const [, setIsOpened] = useRecoilState(authAtom.registerModalState);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -28,6 +33,10 @@ export default function RegisterModal() {
       router.push('/auth/login');
     }
   };
+
+  useEffect(() => {
+    setIsOpened(false); // burası formdaki inputların className'ine etki ediyor. Modal ile alakası yok.
+  }, []);
 
   return (
     <Dialog
