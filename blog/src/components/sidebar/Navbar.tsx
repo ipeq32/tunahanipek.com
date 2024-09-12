@@ -19,13 +19,13 @@ import Link from 'next/link';
 import LogoFeature from './_features/Logo';
 import { Skeleton } from '../ui/skeleton';
 import { useSession } from 'next-auth/react';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import MenuLinkFeature from './_features/MenuLink';
 import handleSignout from '@/actions/handleSignout';
 import { usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import ProfileDropdownMenuFeature from './_features/ProfileDropdownMenu';
 
 const Navbar = () => {
   const searchParams = useSearchParams();
@@ -88,13 +88,7 @@ const Navbar = () => {
           {status === 'loading' ? (
             <Skeleton className="h-12 w-12 rounded-full" />
           ) : status === 'authenticated' ? (
-            <Button
-              variant="destructive"
-              className="w-max h-12"
-              onClick={handleLogout}
-            >
-              {t('Sidebar.Profile.logout')}
-            </Button>
+            <ProfileDropdownMenuFeature user={user} onLogout={handleLogout} />
           ) : (
             <Link
               href={`/auth/login?callback=${encodeURIComponent(from)}`}
@@ -131,8 +125,9 @@ const Navbar = () => {
             </div>
             <SheetFooter>
               <SheetClose asChild>
-                <div className="flex flex-col justify-center items-center w-full gap-3">
-                  <GetContactFeature />
+                <div
+                  className={`w-full gap-3 ${status === 'unauthenticated' ? 'flex flex-col-reverse' : 'flex flex-row-reverse'}`}
+                >
                   {status === 'loading' ? (
                     <div className="flex items-center space-x-4">
                       <Skeleton className="h-12 w-12 rounded-full" />
@@ -142,25 +137,13 @@ const Navbar = () => {
                       </div>
                     </div>
                   ) : status === 'authenticated' ? (
-                    <div className="flex justify-between items-center gap-2 w-full">
-                      <Avatar>
-                        <AvatarImage
-                          src={
-                            user?.image ||
-                            'https://img.icons8.com/?size=100&id=21441&format=png&color=000000'
-                          }
-                        />
-                        <AvatarFallback>
-                          {user?.name?.charAt(0).toUpperCase() ?? '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <Button
-                        variant="destructive"
-                        className="w-full"
-                        onClick={handleLogout}
-                      >
-                        {t('Sidebar.Profile.logout')}
-                      </Button>
+                    <div
+                      className={`flex justify-between items-center gap-2 ${status === 'authenticated' ? '' : 'w-full'}`}
+                    >
+                      <ProfileDropdownMenuFeature
+                        user={user}
+                        onLogout={handleLogout}
+                      />
                     </div>
                   ) : (
                     <Link
@@ -172,6 +155,7 @@ const Navbar = () => {
                       </Button>
                     </Link>
                   )}
+                  <GetContactFeature />
                 </div>
               </SheetClose>
             </SheetFooter>
