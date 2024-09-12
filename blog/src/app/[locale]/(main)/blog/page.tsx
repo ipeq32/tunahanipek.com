@@ -3,8 +3,8 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 function page() {
   return (
     <HeaderTemplate
-      title="Hakkımda"
-      description="Hakkımda sayfası açıklama kısmı."
+      title="Bloglar"
+      description="Bloglar sayfası açıklama kısmı."
     />
   );
 }

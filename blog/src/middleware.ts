@@ -3,7 +3,12 @@ import { defaultLocale, localePrefix, locales, pathnames } from './config';
 import { auth } from '@/auth';
 import createIntlMiddleware from 'next-intl/middleware';
 
-const protectedPages = ['/admin/*', pathnames['/hello/tuna']]; // sadece bunda /* yapmaya izin veriyor yada normal utl /admin/user gibi, nedenini anlamadım.
+// sadece protectedPages'de /* yapmaya izin veriyor yada normal utl /admin/user gibi, nedenini anlamadım.
+const protectedPages = [
+  '/blog/*',
+  '/project/*',
+  // pathnames['/hello/tuna']
+];
 const authPages = [
   // pathnames["/auth"], // Bu sayfada zaten yönlendirme var.
   pathnames['/auth/login'],
