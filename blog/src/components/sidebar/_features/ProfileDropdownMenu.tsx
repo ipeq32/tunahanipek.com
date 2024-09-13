@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { User } from 'next-auth';
 import { Link } from '@/navigation';
+import { useState } from 'react';
 
 type ProfileDropdownMenuProps = {
   onLogout: () => void;
@@ -23,13 +24,18 @@ function ProfileDropdownMenuFeature({
   onLogout,
   user,
 }: ProfileDropdownMenuProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const t = useTranslations('Navbar.Main');
 
   const isAdmin = user?.role === 'SUPER_ADMIN';
   const isModerator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
+  const onClickedLink = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={(e) => setIsOpen(e)}>
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage
@@ -49,17 +55,21 @@ function ProfileDropdownMenuFeature({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/profile" className="w-full">
+          <Link onClick={onClickedLink} href="/profile" className="w-full">
             Profili Görüntüle
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="https://github.com/ipeq32" className="w-full">
+          <Link
+            onClick={onClickedLink}
+            href="https://github.com/ipeq32"
+            className="w-full"
+          >
             GitHub
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/setting" className="w-full">
+          <Link onClick={onClickedLink} href="/setting" className="w-full">
             Ayarlar
           </Link>
         </DropdownMenuItem>
@@ -71,7 +81,7 @@ function ProfileDropdownMenuFeature({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/blog/add" className="w-full">
+              <Link onClick={onClickedLink} href="/blog/add" className="w-full">
                 Blog Ekle
               </Link>
             </DropdownMenuItem>
@@ -85,12 +95,20 @@ function ProfileDropdownMenuFeature({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/admin/blog" className="w-full">
+              <Link
+                onClick={onClickedLink}
+                href="/admin/blog"
+                className="w-full"
+              >
                 Blog Yönetimi
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href="/admin/project" className="w-full">
+              <Link
+                onClick={onClickedLink}
+                href="/admin/project"
+                className="w-full"
+              >
                 Proje Yönetimi
               </Link>
             </DropdownMenuItem>
