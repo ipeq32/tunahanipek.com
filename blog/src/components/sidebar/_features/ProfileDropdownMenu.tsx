@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { User } from 'next-auth';
+import { Link } from '@/navigation';
 
 type ProfileDropdownMenuProps = {
   onLogout: () => void;
@@ -23,6 +24,9 @@ function ProfileDropdownMenuFeature({
   user,
 }: ProfileDropdownMenuProps) {
   const t = useTranslations('Navbar.Main');
+
+  const isAdmin = user?.role === 'SUPER_ADMIN';
+  const isModerator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
   return (
     <DropdownMenu>
@@ -40,11 +44,58 @@ function ProfileDropdownMenuFeature({
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Hesabım</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
+          Hesabım
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profili Görüntüle</DropdownMenuItem>
-        <DropdownMenuItem>GitHub</DropdownMenuItem>
-        <DropdownMenuItem>Ayarlar</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/profile" className="w-full">
+            Profili Görüntüle
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="https://github.com/ipeq32" className="w-full">
+            GitHub
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href="/setting" className="w-full">
+            Ayarlar
+          </Link>
+        </DropdownMenuItem>
+        {isModerator && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
+              Moderasyon
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link href="/blog/add" className="w-full">
+                Blog Ekle
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
+              Yönetici
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link href="/admin/blog" className="w-full">
+                Blog Yönetimi
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/admin/project" className="w-full">
+                Proje Yönetimi
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Button variant="destructive" className="w-full" onClick={onLogout}>
