@@ -15,6 +15,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/auth/login',
   },
 
+  secret: process.env.NEXTAUTH_SECRET,
+
   trustHost: true,
 
   providers: [
@@ -47,10 +49,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error('Password incorrect');
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { hashedPassword, website, image, bio, deletedAt, ...userData } =
+          user;
+
         if (user && passwordCorrect) {
+          console.log('USER: ', userData);
+
           return {
-            id: user.id,
-            email: user.email,
+            ...userData,
+            website: website ?? undefined,
+            image: image ?? undefined,
+            bio: bio ?? undefined,
+            deletedAt: deletedAt ?? undefined,
           };
         }
 
@@ -58,4 +69,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.phone = user.phone;
+        token.address = user.address;
+        token.website = user.website;
+        token.image = user.image;
+        token.bio = user.bio;
+        token.role = user.role;
+        token.createdAt = user.createdAt;
+        token.updatedAt = user.updatedAt;
+        token.deletedAt = user.deletedAt;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+        session.user.phone = token.phone as string;
+        session.user.address = token.address as string;
+        session.user.website = token.website as string;
+        session.user.image = token.image as string;
+        session.user.bio = token.bio as string;
+        session.user.createdAt = token.createdAt as Date;
+        session.user.updatedAt = token.updatedAt as Date;
+        session.user.deletedAt = token.deletedAt as Date;
+      }
+      return session;
+    },
+  },
 });
