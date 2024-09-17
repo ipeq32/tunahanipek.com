@@ -75,7 +75,8 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         if (setOpenModal) {
           setOpenModal(false);
         }
-        router.push(searchParams.get('callback') || '/');
+
+        router.push(searchParams.get('callback')?.slice(3) || '/');
         router.refresh();
         toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
       }
