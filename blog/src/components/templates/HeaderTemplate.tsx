@@ -9,7 +9,7 @@ const HeaderTemplate = ({ description, title }: HeaderTemplateProps) => {
       <h1 className="text-4xl max-md:text-2xl font-semibold max-w-xl">
         {title}
       </h1>
-      <p className="text-lg max-md:text-xs line-clamp-2 truncate max-w-xl">
+      <p className="text-lg max-md:text-xs line-clamp-2 max-w-xl">
         {description}
       </p>
     </header>

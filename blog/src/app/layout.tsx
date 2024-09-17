@@ -1,4 +1,5 @@
 import './globals.css';
+import 'react-quill/dist/quill.snow.css';
 
 import { Chakra_Petch } from 'next/font/google';
 import { ReactNode } from 'react';

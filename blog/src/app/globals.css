@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.ql-snow {
+  @apply first:rounded-t-md last:rounded-b-md !border-slate-200 dark:!border-slate-800 text-black dark:text-white bg-white dark:bg-slate-950;
+}
+
+.ql-container {
+  min-height: 150px;
+  caret-color: #db2777;
+}
+
 @layer base {
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
