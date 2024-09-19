@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -13,12 +12,13 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import { useLocale } from 'next-intl';
-import { useSession } from 'next-auth/react';
+import { useRouter } from '@/navigation';
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -41,6 +41,7 @@ const formSchema = z.object({
 
 const AddBlogFeature = () => {
   const locale = useLocale();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,12 +54,6 @@ const AddBlogFeature = () => {
     },
   });
 
-  const { data, status } = useSession({
-    required: false,
-  });
-
-  const user = data?.user;
-
   useEffect(() => {
     if (form.formState.errors.title)
       toast(form.formState.errors.title?.message);
@@ -68,44 +63,40 @@ const AddBlogFeature = () => {
       toast(form.formState.errors.shortImage?.message);
     if (form.formState.errors.content)
       toast(form.formState.errors.content?.message);
+    if (form.formState.errors.summary)
+      toast(form.formState.errors.summary?.message);
   }, [form.formState.errors]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { content, image, shortImage, summary, title } = values;
 
     try {
-      if (status === 'authenticated') {
-        const res = await prisma?.blog.create({
-          data: {
-            title,
-            image,
-            shortImage,
-            content,
-            summary,
-            userId: user?.id,
-            tags: {
-              connectOrCreate: {
-                where: { name: '' },
-                create: {
-                  name: '',
-                },
-              },
-            },
-            categories: {
-              connectOrCreate: {
-                where: { name: '' },
-                create: {
-                  name: '',
-                },
-              },
-            },
-          },
-        });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+          image,
+          shortImage,
+          summary,
+          title,
+        }),
+      });
 
-        toast('Blog başarıyla eklendi.');
-
-        return res;
+      if (res.status !== 200) {
+        toast('Bir hata oluştu.');
       }
+
+      toast('Blog başarıyla eklendi.', {
+        icon: <CardStackPlusIcon />,
+        description: form.getValues('title'),
+      });
+
+      router.push('/blog');
+
+      return res;
     } catch (error) {
       console.log('AddBlog: ', error);
 

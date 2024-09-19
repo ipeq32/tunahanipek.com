@@ -11,6 +11,7 @@ declare global {
       POSTGRES_USER: string;
       VERCEL: string;
       NEXTAUTH_URL: string;
+      NEXT_PUBLIC_API_URL: string;
       NEXTAUTH_SECRET: string;
       NEXTAUTH_SALT: string;
     }
