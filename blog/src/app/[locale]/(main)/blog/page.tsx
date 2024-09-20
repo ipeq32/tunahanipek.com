@@ -1,5 +1,5 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
-import BlogFeature from './_features/Blog';
+import BlogsFeature from './_features/Blogs';
 
 const blogs = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
@@ -23,7 +23,7 @@ async function page() {
         title="Bloglar"
         description="Bloglar sayfası açıklama kısmı."
       />
-      <BlogFeature data={blogData} />
+      <BlogsFeature data={blogData} />
     </>
   );
 }
