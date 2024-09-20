@@ -2,16 +2,25 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from './_features/Blogs';
 
 const blogs = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // mode: 'cors',
+    });
 
-  const { data } = await res.json();
+    if (!res.ok) {
+      throw new Error(`Failed to fetch, status: ${res.status}`);
+    }
 
-  return data;
+    const { data } = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching blogs:', error);
+    return [];
+  }
 };
 
 async function page() {
