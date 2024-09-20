@@ -5,7 +5,7 @@ import createIntlMiddleware from 'next-intl/middleware';
 
 // sadece protectedPages'de /* yapmaya izin veriyor yada normal utl /admin/user gibi, nedenini anlamadım.
 const protectedPages = [
-  '/blog/*',
+  pathnames['/blog/add'],
   '/project/*',
   // pathnames['/hello/tuna']
 ];
