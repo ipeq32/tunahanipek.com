@@ -19,7 +19,7 @@ export default function Error({
 
   return (
     <main className="w-full min-h-screen bg-sky-50 dark:bg-primary/90">
-      <div className="container grid place-content-center h-full space-y-5 text-center">
+      <div className="container grid place-content-center m-auto space-y-5 text-center">
         <h1 className="text-3xl font-semibold">{t('title')}</h1>
         <p>{error.message}</p>
         <section className="space-x-8">
