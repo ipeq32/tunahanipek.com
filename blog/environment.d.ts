@@ -14,6 +14,8 @@ declare global {
       NEXT_PUBLIC_API_URL: string;
       NEXTAUTH_SECRET: string;
       NEXTAUTH_SALT: string;
+      PORT: string;
+      VERCEL_URL: string;
     }
   }
 }

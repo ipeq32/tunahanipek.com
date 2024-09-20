@@ -19,8 +19,16 @@ export default {
     en: '/auth/forgot-password',
     tr: '/yetkilendirme/sifremi-unuttum',
   },
-  '/hello/tuna': {
-    en: '/hello/tuna',
-    tr: '/merhaba/tuna',
+  '/blog': {
+    en: '/blog',
+    tr: '/blog',
+  },
+  '/blog/[id]': {
+    en: '/blog/[id]',
+    tr: '/blog/[id]',
+  },
+  '/blog/add': {
+    en: '/blog/add',
+    tr: '/blog/ekle',
   },
 } satisfies Pathnames<typeof locales>;

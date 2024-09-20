@@ -54,8 +54,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user;
 
         if (user && passwordCorrect) {
-          console.log('USER: ', userData);
-
           return {
             ...userData,
             website: website ?? undefined,

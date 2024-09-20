@@ -2,7 +2,7 @@ import { getRequestConfig } from 'next-intl/server';
 import { locales } from './config';
 import { notFound } from 'next/navigation';
 
-type Locale = (typeof locales)[number];
+export type Locale = (typeof locales)[number];
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
