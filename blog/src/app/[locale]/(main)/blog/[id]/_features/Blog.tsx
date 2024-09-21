@@ -14,8 +14,6 @@ const BlogFeature = ({ data }: BlogFeatureProps) => {
     return <div>No data available</div>;
   }
 
-  console.log(data);
-
   return (
     <div className="container mt-10 max-md:mt-5 flex flex-col gap-5">
       <figure className="flex justify-center items-center max-h-[500px] overflow-hidden">
