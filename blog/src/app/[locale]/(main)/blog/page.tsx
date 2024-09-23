@@ -1,30 +1,42 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from './_features/Blogs';
+import PaginationComponent from '@/components/pagination';
 
-const blogs = async () => {
+const blogs = async (page: number, limit: number) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // mode: 'cors',
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/blog?page=${page}&limit=${limit}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`Failed to fetch, status: ${res.status}`);
     }
 
-    const { data } = await res.json();
-    return data;
+    const { data, total } = await res.json();
+    return { data, total };
   } catch (error) {
     console.error('Error fetching blogs:', error);
-    return [];
+    return { data: [], total: 0 };
   }
 };
 
-async function page() {
-  const blogData = await blogs();
+type Props = {
+  searchParams: {
+    page: string;
+    limit: string;
+  };
+};
+
+async function page({ searchParams }: Props) {
+  const currentPage = parseInt(searchParams.page || '1');
+  const limit = parseInt(searchParams.limit || '9');
+  const { data: blogData, total } = await blogs(currentPage, limit);
 
   return (
     <>
@@ -33,6 +45,11 @@ async function page() {
         description="Bloglar sayfası açıklama kısmı."
       />
       <BlogsFeature data={blogData} />
+      <PaginationComponent
+        total={total}
+        currentPage={currentPage}
+        limit={limit}
+      />
     </>
   );
 }

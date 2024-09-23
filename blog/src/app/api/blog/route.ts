@@ -2,9 +2,18 @@ import { prisma } from '@/lib/prisma';
 import { IBlog } from '@/types/blog';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '9');
+  const offset = (page - 1) * limit;
+
   try {
+    const totalBlogs = await prisma.blog.count();
+
     const blogs: IBlog[] = await prisma.blog.findMany({
+      skip: offset,
+      take: limit,
       orderBy: { updatedAt: 'desc' },
     });
 
@@ -34,7 +43,10 @@ export async function GET() {
       })
     );
 
-    return NextResponse.json({ data }, { status: 200 });
+    return NextResponse.json(
+      { data, total: totalBlogs, page, limit },
+      { status: 200 }
+    );
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
