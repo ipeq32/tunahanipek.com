@@ -10,8 +10,7 @@
     "prepare": "husky",
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
     "generate-prod": "npx prisma generate && npx prisma db push",
-    "seed": "npx prisma db seed",
-    "vercel-build": "npx prisma generate && npx prisma migrate deploy && next build"
+    "seed": "npx prisma db seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
