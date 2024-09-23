@@ -11,7 +11,7 @@
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
     "generate-prod": "npx prisma generate && npx prisma db push",
     "seed": "npx prisma db seed",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
