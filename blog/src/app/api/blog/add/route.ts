@@ -30,8 +30,6 @@ export async function POST(req: Request) {
       },
     });
 
-    revalidatePath('/');
-
     return NextResponse.json({ success: true, data: res }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {
