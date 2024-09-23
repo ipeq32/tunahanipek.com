@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { IBlog } from '@/types/blog';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 type Params = {
   id: string;
 };
