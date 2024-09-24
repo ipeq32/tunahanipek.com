@@ -33,7 +33,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
             />
             <figcaption className="flex justify-between gap-2">
               <span className="text-sm line-clamp-1">
-                {blog.author.name} -{' '}
+                {blog?.author.name} -{' '}
                 {blog.author.role === 'SUPER_ADMIN' ? 'Yönetici' : 'Yazar'}
               </span>
               <span className="text-xs line-clamp-1 text-opacity-40">
