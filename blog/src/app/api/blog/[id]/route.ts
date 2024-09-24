@@ -22,11 +22,11 @@ export async function GET(request: Request, context: { params: Params }) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { userId, deletedAt, ...rest } = blog;
+    const { authorId, deletedAt, ...rest } = blog;
 
     const user = await prisma.user.findUnique({
       where: {
-        id: userId as string,
+        id: authorId as string,
       },
       select: {
         name: true,

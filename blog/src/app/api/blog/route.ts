@@ -25,10 +25,10 @@ export async function GET(request: Request) {
 
     const data = await Promise.all(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      blogs.map(async ({ userId, deletedAt, ...rest }) => {
+      blogs.map(async ({ authorId, deletedAt, ...rest }) => {
         const user = await prisma.user.findUnique({
           where: {
-            id: userId as string,
+            id: authorId as string,
           },
           select: {
             name: true,

@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         shortImage,
         content,
         summary,
-        user: {
+        author: {
           connect: {
             id: user?.id,
           },

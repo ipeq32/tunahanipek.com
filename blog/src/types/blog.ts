@@ -8,7 +8,7 @@ export interface IBlog {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
-  userId: string | null;
+  authorId: string | null;
 }
 
 export interface IGetBlog {
@@ -20,7 +20,7 @@ export interface IGetBlog {
   shortImage: string;
   createdAt: Date;
   updatedAt: Date;
-  user: {
+  author: {
     name: string;
     image: string;
     role: 'SUPER_ADMIN' | 'ADMIN' | 'USER';

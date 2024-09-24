@@ -49,16 +49,17 @@ model Blog {
   summary    String
   image      String
   shortImage String
+  published  Boolean    @default(false)
   createdAt  DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt  DateTime   @updatedAt @db.Timestamptz(3)
   deletedAt  DateTime?  @db.Timestamptz(3)
   comments   Comment[]
   tags       Tag[]
   categories Category[]
-  user       User?      @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
-  userId     String?    @db.Uuid
+  author     User?      @relation(fields: [authorId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+  authorId   String?    @db.Uuid
 
-  @@index([userId], name: "userId")
+  @@index([authorId], name: "authorId")
 }
 
 model Category {
