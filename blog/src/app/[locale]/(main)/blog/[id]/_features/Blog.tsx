@@ -30,14 +30,14 @@ const BlogFeature = ({ data }: BlogFeatureProps) => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
-                data.user.image ||
+                data.author.image ||
                 'https://img.icons8.com/?size=100&id=21441&format=png&color=000000'
               }
-              alt={data.user.name}
+              alt={data.author.name}
               className="rounded-full h-5 w-5 m-1"
             />
-            {data.user.name} -{' '}
-            {data.user.role === 'SUPER_ADMIN' ? 'Yönetici' : 'Yazar'}
+            {data.author.name} -{' '}
+            {data.author.role === 'SUPER_ADMIN' ? 'Yönetici' : 'Yazar'}
           </h2>
           <time className="max-sm:text-end text-xs ">
             {format.dateTime(new Date(data.createdAt))}
