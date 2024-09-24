@@ -14,6 +14,8 @@ export async function GET(request: Request, context: { params: Params }) {
     const blog: IBlog | null = await prisma.blog.findUnique({
       where: {
         id,
+        deletedAt: null,
+        published: true,
       },
     });
 

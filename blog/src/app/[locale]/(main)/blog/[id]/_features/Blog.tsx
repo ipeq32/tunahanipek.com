@@ -2,16 +2,19 @@
 
 import { IGetBlog } from '@/types/blog';
 import { useFormatter } from 'next-intl';
+import NotfoundComponent from '../../_components/notfound';
 
 type BlogFeatureProps = {
   data: IGetBlog;
 };
 
-const BlogFeature = ({ data }: BlogFeatureProps) => {
+const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
   const format = useFormatter();
 
+  const data = blogData.published ? blogData : null;
+
   if (!data) {
-    return <div>No data available</div>;
+    return <NotfoundComponent />;
   }
 
   return (

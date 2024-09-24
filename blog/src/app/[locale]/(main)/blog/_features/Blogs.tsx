@@ -3,6 +3,7 @@
 import { useRouter } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
 import { useFormatter } from 'next-intl';
+import NotfoundComponent from '../_components/notfound';
 
 type BlogFeatureProps = {
   data: IGetBlog[];
@@ -16,12 +17,18 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
     router.push(`/blog/${id}`);
   };
 
+  const publishedData = data.filter((blog) => blog.published);
+
+  if (!publishedData.length) {
+    return <NotfoundComponent />;
+  }
+
   return (
     <div className="flex flex-wrap justify-evenly gap-5 w-full md:mt-10 mt-5">
-      {data.map((blog) => (
+      {publishedData.map((blog) => (
         <article
           key={blog.id}
-          className="flex flex-col justify-between gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
+          className="flex flex-col gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
         >
           <figure className="flex flex-col justify-between gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}

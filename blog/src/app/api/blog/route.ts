@@ -17,6 +17,10 @@ export async function GET(request: Request) {
       skip: offset,
       take: limit,
       orderBy: { updatedAt: 'desc' },
+      where: {
+        deletedAt: null,
+        published: true,
+      },
     });
 
     if (!blogs) {
