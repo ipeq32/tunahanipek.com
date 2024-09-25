@@ -14,12 +14,14 @@ type PaginationComponentProps = {
   total: number;
   currentPage: number;
   limit: number;
+  isShowPagination?: boolean; // Blog data published length
 };
 
 const PaginationComponent = ({
   total,
   currentPage,
   limit,
+  isShowPagination,
 }: PaginationComponentProps) => {
   const totalPages = Math.ceil(total / limit);
 
@@ -57,7 +59,7 @@ const PaginationComponent = ({
     return pages;
   };
 
-  return (
+  return isShowPagination ? (
     <Pagination className="mt-10">
       <PaginationContent>
         {safeCurrentPage > 1 && (
@@ -94,7 +96,7 @@ const PaginationComponent = ({
         )}
       </PaginationContent>
     </Pagination>
-  );
+  ) : null;
 };
 
 export default PaginationComponent;

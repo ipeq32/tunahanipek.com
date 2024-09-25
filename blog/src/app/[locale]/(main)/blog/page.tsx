@@ -1,6 +1,7 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from './_features/Blogs';
 import PaginationComponent from '@/components/pagination';
+import { IGetBlog } from '@/types/blog';
 
 const blogs = async (page: number, limit: number) => {
   try {
@@ -38,6 +39,12 @@ async function page({ searchParams }: Props) {
   const limit = parseInt(searchParams.limit || '9');
   const { data: blogData, total } = await blogs(currentPage, limit);
 
+  const publishedData: IGetBlog[] = blogData.filter(
+    (blog: IGetBlog) => blog.published
+  );
+
+  const dataLength = publishedData.length > limit;
+
   return (
     <>
       <HeaderTemplate
@@ -49,6 +56,7 @@ async function page({ searchParams }: Props) {
         total={total}
         currentPage={currentPage}
         limit={limit}
+        isShowPagination={dataLength}
       />
     </>
   );
