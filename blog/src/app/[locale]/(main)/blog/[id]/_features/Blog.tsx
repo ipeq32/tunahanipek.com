@@ -22,7 +22,10 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
     <div className="container mt-10 max-md:mt-5 flex flex-col gap-5">
       <figure className="flex justify-center items-center max-h-[500px] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <motion.img
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
           src={data.image || '/blog.jpg'}
           alt={data.title}
           className="object-cover"
