@@ -60,7 +60,10 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
         </div>
         <div className="flex flex-col justify-center gap-5 w-full mt-10 max-md:mt-5">
           <h1 className="text-center text-xl">{data.title}</h1>
-          <p
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             dangerouslySetInnerHTML={{ __html: data.content }}
             className="text-sm"
           />
