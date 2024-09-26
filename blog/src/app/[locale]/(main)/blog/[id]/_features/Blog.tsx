@@ -37,7 +37,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
                   ? data.author.image
                   : 'https://img.icons8.com/?size=100&id=21441&format=png&color=000000'
               }
-              alt={data.author.name}
+              alt={data.author ? data.author.name : 'Anonim'}
               className="rounded-full h-5 w-5 m-1"
             />
             {data.author ? data.author.name : 'Anonim'} -{' '}
