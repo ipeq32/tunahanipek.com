@@ -35,7 +35,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
       {publishedData.map((blog: IGetBlog) => (
         <article
           key={blog.id}
-          className="flex flex-col gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
+          className="group flex flex-col gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
         >
           <figure className="flex flex-col justify-between gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -52,7 +52,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
                   ? 'Yönetici'
                   : 'Yazar'}
               </span>
-              <span className="text-xs line-clamp-1 text-opacity-40">
+              <span className="text-xs line-clamp-1 text-opacity-40 group-hover:animate-pulse">
                 {format.relativeTime(new Date(blog.updatedAt))}
               </span>
             </figcaption>
