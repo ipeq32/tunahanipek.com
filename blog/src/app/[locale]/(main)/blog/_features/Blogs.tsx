@@ -4,6 +4,7 @@ import { useRouter } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
 import { useFormatter } from 'next-intl';
 import NotfoundComponent from '../_components/notfound';
+import { motion } from 'framer-motion';
 
 type BlogFeatureProps = {
   data: IGetBlog[];
@@ -62,9 +63,18 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
               className="text-xs line-clamp-3 h-12"
             />
           </div>
-          <span className="text-[11px] text-slate-800/60 dark:text-slate-300/60 line-clamp-1 pl-1">
+          <motion.span
+            animate={{
+              scale: [0.5, 1],
+              opacity: [0, 1],
+            }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="text-[11px] text-slate-800/60 dark:text-slate-300/60 line-clamp-1 pl-1"
+          >
             Eklenme tarihi: {format.relativeTime(new Date(blog.createdAt))}
-          </span>
+          </motion.span>
         </article>
       ))}
     </div>
