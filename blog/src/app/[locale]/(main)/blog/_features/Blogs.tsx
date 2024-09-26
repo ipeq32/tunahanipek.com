@@ -25,7 +25,13 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-5 w-full md:mt-10 mt-5">
+    <div
+      className="flex flex-wrap gap-5 w-full md:mt-10 mt-5"
+      style={{
+        justifyContent:
+          publishedData.length % 2 === 0 ? 'space-evenly' : 'space-between',
+      }}
+    >
       {publishedData.map((blog: IGetBlog) => (
         <article
           key={blog.id}
