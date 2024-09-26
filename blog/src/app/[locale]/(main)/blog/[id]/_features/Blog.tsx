@@ -3,6 +3,7 @@
 import { IGetBlog } from '@/types/blog';
 import { useFormatter } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
+import { motion } from 'framer-motion';
 
 type BlogFeatureProps = {
   data: IGetBlog;
@@ -29,7 +30,12 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
       </figure>
       <div className="flex flex-col gap-3">
         <div className="flex max-sm:flex-col-reverse justify-between items-center sm:gap-5 shadow-md dark:shadow-slate-700 px-1">
-          <h2 className="flex items-center text-lg font-bold italic">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center text-lg font-bold italic"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
@@ -44,7 +50,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
             {data.author && data.author.role === 'SUPER_ADMIN'
               ? 'Yönetici'
               : 'Yazar'}
-          </h2>
+          </motion.h2>
           <time className="max-sm:text-end text-xs ">
             {format.dateTime(new Date(data.createdAt))}
           </time>
