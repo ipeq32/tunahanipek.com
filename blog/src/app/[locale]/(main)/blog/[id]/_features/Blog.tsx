@@ -31,8 +31,8 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
       <div className="flex flex-col gap-3">
         <div className="flex max-sm:flex-col-reverse justify-between items-center sm:gap-5 shadow-md dark:shadow-slate-700 px-1">
           <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="flex items-center text-lg font-bold italic"
           >
