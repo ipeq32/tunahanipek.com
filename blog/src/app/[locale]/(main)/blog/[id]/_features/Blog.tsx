@@ -53,7 +53,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
           <h1 className="text-center text-xl">{data.title}</h1>
           <p
             dangerouslySetInnerHTML={{ __html: data.content }}
-            className="text-center text-sm"
+            className="text-sm"
           />
         </div>
       </div>
