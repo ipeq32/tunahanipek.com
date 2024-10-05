@@ -26,6 +26,7 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const [isForward, setIsForward] = useState(true); // true for forward, false for backward
+  console.log('🚀 ~ MainFeature ~ isForward:', isForward);
   const sliderRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -57,11 +58,11 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0 && currentSlide > 0) {
         // Sağa kaydırma
-        setIsForward(true);
+        setIsForward(false);
         setCurrentSlide(currentSlide - 1);
       } else if (translateX < 0 && currentSlide < blogs.length - 1) {
         // Sola kaydırma
-        setIsForward(false);
+        setIsForward(true);
         setCurrentSlide(currentSlide + 1);
       }
     }
@@ -92,9 +93,12 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
   const nextSlide = () => {
     setCurrentSlide((prev) => {
       if (prev < blogs.length - 1) {
+        setIsForward(true);
         return prev + 1;
+      } else {
+        setIsForward(false);
+        return prev - 1;
       }
-      return prev;
     });
     setTranslateX(0);
   };
@@ -102,9 +106,12 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
   const prevSlide = () => {
     setCurrentSlide((prev) => {
       if (prev > 0) {
+        setIsForward(false);
         return prev - 1;
+      } else {
+        setIsForward(true);
+        return prev + 1;
       }
-      return prev;
     });
     setTranslateX(0);
   };
