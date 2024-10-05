@@ -42,7 +42,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
             <img
               src={blog.shortImage || '/blog.jpg'}
               alt={blog.title}
-              onClick={() => handleNavigateToBlog(blog.id)}
+              onClick={() => handleNavigateToBlog(blog.slug)}
               className="w-full h-40 rounded-md object-cover hover:object-fill cursor-pointer"
             />
             <figcaption className="flex justify-between gap-2">

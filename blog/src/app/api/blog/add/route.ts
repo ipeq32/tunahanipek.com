@@ -21,12 +21,12 @@ export async function POST(req: Request) {
     const localeMatch = cookies?.match(/NEXT_LOCALE=([^;]*)/);
     const locale = localeMatch ? localeMatch[1] : 'en';
 
-    let slug = slugify(`${title}-${locale}`, { lower: true });
+    let slug = slugify(title, { lower: true, locale });
     let existingBlog = await prisma.blog.findUnique({ where: { slug } });
     let counter = 1;
 
     while (existingBlog) {
-      slug = slugify(`${title}-${locale}-${counter}`, { lower: true });
+      slug = slugify(`${title}-${counter}`, { lower: true, locale });
       existingBlog = await prisma.blog.findUnique({ where: { slug } });
       counter++;
     }
