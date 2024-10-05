@@ -2,9 +2,10 @@
 
 import { useRouter } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
-import { useFormatter } from 'next-intl';
+import { useFormatter, useLocale } from 'next-intl';
 import NotfoundComponent from '../_components/notfound';
 import { motion } from 'framer-motion';
+import slugify from 'slugify';
 
 type BlogFeatureProps = {
   data: IGetBlog[];
@@ -13,9 +14,16 @@ type BlogFeatureProps = {
 const BlogsFeature = ({ data }: BlogFeatureProps) => {
   const router = useRouter();
   const format = useFormatter();
+  const locale = useLocale();
 
   const handleNavigateToBlog = (slug: string) => {
-    router.push(`/blog/${slug}`);
+    const slugData = slugify(slug, {
+      lower: true,
+      locale,
+      remove: /[*+~.,;()'"!:@]/g,
+    });
+
+    router.push(`/blog/${slugData}`);
   };
 
   const publishedData = data.filter((blog) => blog.published);
