@@ -60,7 +60,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
           <div className="p-1 space-y-2">
             <h2
               className="text-lg font-bold cursor-pointer hover:text-teal-300"
-              onClick={() => handleNavigateToBlog(blog.id)}
+              onClick={() => handleNavigateToBlog(blog.slug)}
             >
               {blog.title}
             </h2>
