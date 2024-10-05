@@ -14,8 +14,8 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
   const router = useRouter();
   const format = useFormatter();
 
-  const handleNavigateToBlog = (id: string) => {
-    router.push(`/blog/${id}`);
+  const handleNavigateToBlog = (slug: string) => {
+    router.push(`/blog/${slug}`);
   };
 
   const publishedData = data.filter((blog) => blog.published);

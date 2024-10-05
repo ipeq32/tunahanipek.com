@@ -2,13 +2,13 @@ import BlogFeature from './_features/Blog';
 
 type Props = {
   params: {
-    id: string;
+    slug: string;
   };
 };
 
-const fetchBlog = async (id: string) => {
+const fetchBlog = async (slug: string) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -28,8 +28,8 @@ const fetchBlog = async (id: string) => {
   }
 };
 
-const page = async ({ params: { id } }: Props) => {
-  const blogData = await fetchBlog(id);
+const page = async ({ params: { slug } }: Props) => {
+  const blogData = await fetchBlog(slug);
 
   return <BlogFeature data={blogData} />;
 };

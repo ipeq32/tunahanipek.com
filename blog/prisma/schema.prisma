@@ -49,6 +49,7 @@ model Blog {
   summary    String
   image      String
   shortImage String
+  slug       String     @unique
   published  Boolean    @default(false)
   createdAt  DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt  DateTime   @updatedAt @db.Timestamptz(3)

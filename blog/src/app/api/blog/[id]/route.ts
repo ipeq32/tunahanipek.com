@@ -5,15 +5,15 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 type Params = {
-  id: string;
+  slug: string;
 };
 
 export async function GET(request: Request, context: { params: Params }) {
-  const id = context.params.id;
+  const slug = context.params.slug;
   try {
     const blog: IBlog | null = await prisma.blog.findUnique({
       where: {
-        id,
+        slug,
         deletedAt: null,
         published: true,
       },

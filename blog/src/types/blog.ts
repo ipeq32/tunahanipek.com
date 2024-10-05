@@ -4,6 +4,7 @@ export interface IBlog {
   content: string;
   summary: string;
   image: string;
+  slug: string;
   shortImage: string;
   published: boolean;
   createdAt: Date;
@@ -18,6 +19,7 @@ export interface IGetBlog {
   content: string;
   summary: string;
   image: string;
+  slug: string;
   shortImage: string;
   published: boolean;
   createdAt: Date;
