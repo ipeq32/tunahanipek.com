@@ -30,14 +30,11 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
 
   const format = useFormatter();
 
-  const handleMouseDown = (e: MouseEvent, index: number) => {
+  const handleMouseDown = (e: MouseEvent) => {
     if (currentSlide === 0 && e.pageX > startX) return;
     if (currentSlide === blogs.length - 1 && e.pageX < startX) return;
     setIsDragging(true);
     setStartX(e.pageX - translateX);
-    if (contentRefs.current[index]) {
-      contentRefs.current[index]!.style.cursor = 'grabbing';
-    }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -47,11 +44,11 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
     setTranslateX(currentX);
   };
 
-  const handleMouseUp = (index: number) => {
+  const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
     const threshold = (sliderRef.current?.offsetWidth || 0) * 0.2;
-    const slideWidth = sliderRef.current?.offsetWidth || 0;
+    // const slideWidth = sliderRef.current?.offsetWidth || 0;
 
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0 && currentSlide > 0) {
@@ -64,20 +61,11 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
     }
 
     setTranslateX(0);
-    if (contentRefs.current[index]) {
-      contentRefs.current[index]!.style.cursor = 'auto';
-    }
   };
 
-  const handleMouseLeave = (index: number) => {
+  const handleMouseLeave = () => {
     if (isDragging) {
-      handleMouseUp(index);
-    }
-  };
-
-  const handleMouseEnter = (index: number) => {
-    if (contentRefs.current[index]) {
-      contentRefs.current[index]!.style.cursor = 'grab';
+      handleMouseUp();
     }
   };
 
@@ -121,7 +109,7 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
           prevSlide();
         }
       }
-    }, 1000);
+    }, 5000);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, blogs.length, isForward]);
@@ -151,10 +139,9 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
                   }}
                   key={blog.id + Math.random()}
                   className="min-w-full h-full relative"
-                  onMouseDown={(e) => handleMouseDown(e, index)}
-                  onMouseUp={() => handleMouseUp(index)}
-                  onMouseLeave={() => handleMouseLeave(index)}
-                  onMouseEnter={() => handleMouseEnter(index)}
+                  onMouseDown={(e) => handleMouseDown(e)}
+                  onMouseUp={() => handleMouseUp()}
+                  onMouseLeave={() => handleMouseLeave()}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
