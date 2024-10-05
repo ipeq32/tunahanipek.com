@@ -110,14 +110,6 @@
     margin: 0px;
     padding: 0px;
   }
-
-  ::-webkit-scrollbar {
-    display: none;
-    visibility: hidden;
-    opacity: 0;
-    overflow: hidden;
-    /* background-color: transparent; */
-  }
 }
 
 @layer components {
