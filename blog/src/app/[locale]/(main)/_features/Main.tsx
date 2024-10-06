@@ -31,8 +31,6 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
   const format = useFormatter();
 
   const handleMouseDown = (e: MouseEvent) => {
-    if (currentSlide === 0 && e.pageX > startX) return;
-    if (currentSlide === blogs.length - 1 && e.pageX < startX) return;
     setIsDragging(true);
     setStartX(e.pageX - translateX);
   };
@@ -47,8 +45,8 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
   const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    const threshold = (sliderRef.current?.offsetWidth || 0) * 0.2;
-    // const slideWidth = sliderRef.current?.offsetWidth || 0;
+    const slideWidth = sliderRef.current?.offsetWidth || 0;
+    const threshold = slideWidth / 4;
 
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0 && currentSlide > 0) {
@@ -109,12 +107,12 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
           prevSlide();
         }
       }
-    }, 5000);
+    }, 7000);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, blogs.length, isForward]);
 
-  const limitedBlogs = blogs.slice(0, 10);
+  const limitedBlogs = blogs.slice(0, 6);
 
   return (
     <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -122,7 +120,7 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
         <h1 className="text-3xl font-bold mb-6">Welcome to My Blog Site</h1>
 
         <section className="mb-12 relative">
-          <h2 className="text-2xl font-semibold mb-4">Featured Posts</h2>
+          <h2 className="text-2xl font-semibold mb-4">Featured Blogs</h2>
           <div
             ref={sliderRef}
             className="relative h-[400px] overflow-hidden rounded-lg"
@@ -210,31 +208,31 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
 
         <section className="mb-12">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Latest Posts</h2>
+            <h2 className="text-2xl font-semibold">Latest Blogs</h2>
             <Button asChild>
               <Link href="/blog/add" className="flex items-center">
-                <PenTool className="mr-2 h-4 w-4" /> New Post
+                <PenTool className="mr-2 h-4 w-4" /> New Blog
               </Link>
             </Button>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((post) => (
-              <Card key={post.id + Math.random()}>
+            {blogs.map((blog) => (
+              <Card key={blog.id + Math.random()}>
                 <CardContent className="p-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={post.image}
-                    alt={post.title}
+                    src={blog.image}
+                    alt={blog.title}
                     className="w-full h-48 object-cover"
                   />
                   <div className="p-4">
                     <CardTitle className="text-lg font-semibold mb-2">
-                      {post.title}
+                      {blog.title}
                     </CardTitle>
                     <p
                       className="text-gray-600 mb-4"
                       dangerouslySetInnerHTML={{
-                        __html: post.content.substring(0, 100),
+                        __html: blog.content.substring(0, 100),
                       }}
                     />
                     <div className="flex items-center justify-between">
@@ -245,11 +243,11 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium text-gray-900">
-                          {post.author?.name || 'Anonim'}
+                          {blog.author?.name || 'Anonim'}
                         </span>
                       </div>
                       <span className="text-sm text-gray-500">
-                        {format.relativeTime(new Date(post.createdAt))}
+                        {format.relativeTime(new Date(blog.createdAt))}
                       </span>
                     </div>
                   </div>
