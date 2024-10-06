@@ -135,7 +135,7 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
                   ref={(el) => {
                     contentRefs.current[index] = el;
                   }}
-                  key={blog.id + Math.random()}
+                  key={blog.id}
                   className="min-w-full h-full relative"
                   onMouseDown={(e) => handleMouseDown(e)}
                   onMouseUp={() => handleMouseUp()}
@@ -179,14 +179,14 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
             <button
               onClick={prevSlide}
               disabled={currentSlide === 0}
-              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+              className={`absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full ${currentSlide === 0 && 'opacity-30'}`}
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
             <button
               onClick={nextSlide}
               disabled={currentSlide === blogs.length - 1}
-              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+              className={`absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full ${currentSlide === blogs.length - 1 && 'opacity-30'}`}
             >
               <ChevronRight className="h-6 w-6" />
             </button>
@@ -217,7 +217,7 @@ const MainFeature = ({ blogs }: MainFeatureProps) => {
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog) => (
-              <Card key={blog.id + Math.random()}>
+              <Card key={blog.id}>
                 <CardContent className="p-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
