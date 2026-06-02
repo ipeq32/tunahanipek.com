@@ -89,6 +89,10 @@ const config = {
           '75%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        'text-slide-slow': {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(10%)' },
+        },
         'fade-in-up': {
           from: { opacity: '0', transform: 'translateY(12px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
@@ -98,7 +102,9 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         shimmer: 'shimmer 1s infinite',
+        'spin-slow': 'spin 3s linear infinite',
         'text-slide': 'text-slide 10s ease-out infinite alternate',
+        'text-slide-slow': 'text-slide-slow 10s ease-out infinite alternate',
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
       },
     },

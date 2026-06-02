@@ -31,16 +31,27 @@ const NavContact = () => {
     <div className="border-b border-border/40 bg-brand-muted/50 dark:bg-secondary/50">
       <div className="container flex h-10 items-center justify-between gap-4">
         <div className="hidden items-center gap-2 lg:flex">
-          <Stethoscope width={16} height={16} className="text-teal-600 dark:text-teal-400" />
-          <p className="max-w-md truncate text-xs text-muted-foreground">{t('description')}</p>
+          <Stethoscope width={16} height={16} className="animate-pulse text-teal-600 dark:text-teal-400" />
+          <div className="flex max-w-md items-center overflow-hidden">
+            <p className="animate-text-slide whitespace-nowrap text-xs text-muted-foreground">
+              {t('description')}
+            </p>
+          </div>
         </div>
 
         <div className="flex w-full flex-1 items-center justify-end gap-4 lg:w-auto">
           <div className="hidden items-center gap-2 text-xs lg:flex">
-            <Clock3 width={14} height={14} className="text-muted-foreground" />
-            <span className="hidden max-w-[200px] truncate text-muted-foreground xl:inline">
-              {t('time')}
-            </span>
+            <Clock3 width={14} height={14} className="animate-spin-slow text-muted-foreground" />
+            <div
+              className={`flex items-center overflow-hidden border-b ${
+                isOpen ? 'border-teal-500/50' : 'border-rose-400/50'
+              }`}
+            >
+              <span className="animate-text-slide-slow max-w-[250px] whitespace-nowrap text-muted-foreground max-sm:hidden">
+                {t('time')}
+              </span>
+              <span className="hidden max-sm:block text-muted-foreground">{currentDay}</span>
+            </div>
             <span
               className={
                 isOpen
