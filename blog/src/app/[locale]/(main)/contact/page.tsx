@@ -1,34 +1,43 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
+import { ContactChannelCard } from '@/components/layout/contact-channel-card';
+import { ContentCard } from '@/components/layout/content-card';
 import { getTranslations } from 'next-intl/server';
-import NextLink from 'next/link';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
 export default async function ContactPage() {
   const t = await getTranslations('Pages.Contact');
 
+  const channels = [
+    {
+      label: t('emailLabel'),
+      value: 'hello@tunahanipek.com',
+      href: 'mailto:hello@tunahanipek.com',
+      icon: Mail,
+    },
+    {
+      label: t('githubLabel'),
+      value: 'github.com/ipeq32',
+      href: 'https://github.com/ipeq32',
+      icon: Github,
+    },
+    {
+      label: t('linkedinLabel'),
+      value: 'linkedin.com/in/tunahanipek',
+      href: 'https://www.linkedin.com/in/tunahanipek',
+      icon: Linkedin,
+    },
+  ];
+
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
-      <div className="mt-8 space-y-4">
-        <p>{t('body')}</p>
-        <p>
-          <span className="font-medium">{t('emailLabel')}:</span>{' '}
-          <a
-            href="mailto:hello@tunahanipek.com"
-            className="text-teal-600 dark:text-teal-400 hover:underline"
-          >
-            hello@tunahanipek.com
-          </a>
-        </p>
-        <p>
-          <NextLink
-            href="https://github.com/ipeq32"
-            target="_blank"
-            rel="noreferrer"
-            className="text-teal-600 dark:text-teal-400 hover:underline"
-          >
-            GitHub
-          </NextLink>
-        </p>
+      <ContentCard className="mb-6 mt-2">
+        <p className="text-muted-foreground">{t('body')}</p>
+      </ContentCard>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {channels.map((channel) => (
+          <ContactChannelCard key={channel.href} {...channel} />
+        ))}
       </div>
     </>
   );

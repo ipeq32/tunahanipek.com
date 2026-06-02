@@ -80,6 +80,11 @@
       "rejected": "Comment rejected",
       "approve": "Approve",
       "reject": "Reject"
+    },
+    "Project": {
+      "title": "Project management",
+      "description": "Manage your portfolio projects.",
+      "comingSoon": "The project management panel is coming soon. You will be able to add and edit portfolio projects here."
     }
   },
   "Auth": {
@@ -140,7 +145,18 @@
     "About": {
       "title": "About me",
       "description": "Who am I?",
-      "body": "Hi, I'm Tunahan İPEK. I share my experiences in software development and travel on this blog."
+      "body": "Hi, I'm Tunahan İPEK. I share my experiences in software development and travel on this blog.",
+      "highlight1": "Full-stack development",
+      "highlight2": "Travel",
+      "highlight3": "Content creation"
+    },
+    "Profile": {
+      "title": "Profile",
+      "description": "Your account details",
+      "phone": "Phone",
+      "role": "Role",
+      "address": "Address",
+      "bio": "Bio"
     },
     "Faq": {
       "title": "FAQ",
@@ -162,7 +178,9 @@
       "title": "Contact",
       "description": "Get in touch",
       "body": "For questions and collaborations, use the channels below.",
-      "emailLabel": "Email"
+      "emailLabel": "Email",
+      "githubLabel": "GitHub",
+      "linkedinLabel": "LinkedIn"
     },
     "Project": {
       "title": "Projects",

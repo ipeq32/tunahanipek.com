@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { ContentCard } from '@/components/layout/content-card';
 
 const profileSchema = z.object({
   name: z.string().min(3),
@@ -102,9 +103,9 @@ export default function SettingsForm() {
   };
 
   return (
-    <div className="mt-8 space-y-10 max-w-lg">
-      <section>
-        <h2 className="text-lg font-semibold mb-4">{t('profileTitle')}</h2>
+    <div className="mt-2 max-w-2xl space-y-6">
+      <ContentCard>
+        <h2 className="mb-6 text-lg font-semibold tracking-tight">{t('profileTitle')}</h2>
         <Form {...profileForm}>
           <form
             onSubmit={profileForm.handleSubmit(onProfileSubmit)}
@@ -182,13 +183,15 @@ export default function SettingsForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">{t('saveProfile')}</Button>
+            <Button type="submit" variant="accent">
+              {t('saveProfile')}
+            </Button>
           </form>
         </Form>
-      </section>
+      </ContentCard>
 
-      <section>
-        <h2 className="text-lg font-semibold mb-4">{t('passwordTitle')}</h2>
+      <ContentCard>
+        <h2 className="mb-6 text-lg font-semibold tracking-tight">{t('passwordTitle')}</h2>
         <Form {...passwordForm}>
           <form
             onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
@@ -230,12 +233,12 @@ export default function SettingsForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" variant="secondary">
+            <Button type="submit" variant="accent">
               {t('savePassword')}
             </Button>
           </form>
         </Form>
-      </section>
+      </ContentCard>
     </div>
   );
 }

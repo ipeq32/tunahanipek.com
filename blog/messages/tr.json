@@ -80,6 +80,11 @@
       "rejected": "Yorum reddedildi",
       "approve": "Onayla",
       "reject": "Reddet"
+    },
+    "Project": {
+      "title": "Proje Yönetimi",
+      "description": "Projelerinizi buradan yönetin.",
+      "comingSoon": "Proje yönetim paneli yakında eklenecek. Bu bölümde portfolyo projelerinizi ekleyip düzenleyebileceksiniz."
     }
   },
   "Auth": {
@@ -140,7 +145,18 @@
     "About": {
       "title": "Hakkımda",
       "description": "Ben kimim?",
-      "body": "Merhaba, ben Tunahan İPEK. Yazılım geliştirme ve seyahat tutkumla bu blogda deneyimlerimi paylaşıyorum."
+      "body": "Merhaba, ben Tunahan İPEK. Yazılım geliştirme ve seyahat tutkumla bu blogda deneyimlerimi paylaşıyorum.",
+      "highlight1": "Full-stack geliştirme",
+      "highlight2": "Seyahat",
+      "highlight3": "İçerik üretimi"
+    },
+    "Profile": {
+      "title": "Profil",
+      "description": "Hesap bilgileriniz",
+      "phone": "Telefon",
+      "role": "Rol",
+      "address": "Adres",
+      "bio": "Biyografi"
     },
     "Faq": {
       "title": "Sıkça Sorulan Sorular",
@@ -162,7 +178,9 @@
       "title": "İletişim",
       "description": "Bana ulaşın",
       "body": "Sorularınız ve iş birlikleri için aşağıdaki kanallardan iletişime geçebilirsiniz.",
-      "emailLabel": "E-posta"
+      "emailLabel": "E-posta",
+      "githubLabel": "GitHub",
+      "linkedinLabel": "LinkedIn"
     },
     "Project": {
       "title": "Projeler",

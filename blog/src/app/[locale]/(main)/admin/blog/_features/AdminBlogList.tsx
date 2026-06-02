@@ -6,6 +6,12 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Link } from '@/navigation';
 import { useTranslations } from 'next-intl';
+import {
+  AdminEmptyState,
+  AdminListCard,
+  AdminListSkeleton,
+  AdminStatusBadge,
+} from '@/components/admin/admin-ui';
 
 export default function AdminBlogList() {
   const t = useTranslations('Admin.Blog');
@@ -66,56 +72,59 @@ export default function AdminBlogList() {
   };
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">{t('loading')}</p>;
+    return <AdminListSkeleton rows={4} />;
   }
 
   if (!blogs.length) {
-    return <p className="text-sm">{t('empty')}</p>;
+    return <AdminEmptyState message={t('empty')} />;
   }
 
   return (
-    <div className="space-y-4 mt-6">
+    <div className="mt-6 space-y-3">
       {blogs.map((blog) => (
-        <div
-          key={blog.id}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border rounded-lg dark:border-slate-700"
-        >
-          <div>
-            <p className="font-medium">{blog.title}</p>
-            <p className="text-xs text-muted-foreground">
-              {blog.author.name} ·{' '}
-              {blog.published ? t('statusPublished') : t('statusDraft')}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={{ pathname: '/blog/[id]', params: { id: blog.id } }}>
-                {t('view')}
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                href={{ pathname: '/blog/[id]/edit', params: { id: blog.id } }}
+        <AdminListCard key={blog.id}>
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="font-semibold">{blog.title}</p>
+                <AdminStatusBadge
+                  published={blog.published}
+                  publishedLabel={t('statusPublished')}
+                  draftLabel={t('statusDraft')}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">{blog.author.name}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href={{ pathname: '/blog/[id]', params: { id: blog.id } }}>
+                  {t('view')}
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link
+                  href={{ pathname: '/blog/[id]/edit', params: { id: blog.id } }}
+                >
+                  {t('edit')}
+                </Link>
+              </Button>
+              <Button
+                variant={blog.published ? 'secondary' : 'accent'}
+                size="sm"
+                onClick={() => togglePublished(blog.id, blog.published)}
               >
-                {t('edit')}
-              </Link>
-            </Button>
-            <Button
-              variant={blog.published ? 'secondary' : 'default'}
-              size="sm"
-              onClick={() => togglePublished(blog.id, blog.published)}
-            >
-              {blog.published ? t('unpublish') : t('publish')}
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => deleteBlog(blog.id)}
-            >
-              {t('delete')}
-            </Button>
+                {blog.published ? t('unpublish') : t('publish')}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => deleteBlog(blog.id)}
+              >
+                {t('delete')}
+              </Button>
+            </div>
           </div>
-        </div>
+        </AdminListCard>
       ))}
     </div>
   );

@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
+import {
+  AdminEmptyState,
+  AdminListCard,
+  AdminListSkeleton,
+} from '@/components/admin/admin-ui';
 
 type PendingComment = {
   id: string;
@@ -57,30 +62,30 @@ export default function AdminCommentsList() {
     }
   };
 
-  if (loading) return <p className="text-sm">{t('loading')}</p>;
-  if (!comments.length) return <p className="text-sm">{t('empty')}</p>;
+  if (loading) return <AdminListSkeleton rows={3} />;
+  if (!comments.length) return <AdminEmptyState message={t('empty')} />;
 
   return (
-    <div className="space-y-4 mt-6">
+    <div className="mt-6 space-y-3">
       {comments.map((c) => (
-        <div
-          key={c.id}
-          className="p-4 border rounded-lg dark:border-slate-700 space-y-2"
-        >
-          <p className="text-sm">{c.content}</p>
-          <p className="text-xs text-muted-foreground">
-            {c.user?.name} ({c.user?.email}) ·{' '}
+        <AdminListCard key={c.id}>
+          <p className="text-sm leading-relaxed">{c.content}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {c.user?.name} ({c.user?.email})
             {c.blog && (
-              <Link
-                href={{ pathname: '/blog/[id]', params: { id: c.blog.id } }}
-                className="text-teal-600 hover:underline"
-              >
-                {c.blog.title}
-              </Link>
+              <>
+                {' · '}
+                <Link
+                  href={{ pathname: '/blog/[id]', params: { id: c.blog.id } }}
+                  className="text-teal-600 hover:underline dark:text-teal-400"
+                >
+                  {c.blog.title}
+                </Link>
+              </>
             )}
           </p>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={() => moderate(c.id, 'APPROVED')}>
+          <div className="mt-4 flex gap-2">
+            <Button size="sm" variant="accent" onClick={() => moderate(c.id, 'APPROVED')}>
               {t('approve')}
             </Button>
             <Button
@@ -91,7 +96,7 @@ export default function AdminCommentsList() {
               {t('reject')}
             </Button>
           </div>
-        </div>
+        </AdminListCard>
       ))}
     </div>
   );
