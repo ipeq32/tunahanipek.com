@@ -1,11 +1,13 @@
 type SignatureLogoProps = {
   gradientId?: string;
   className?: string;
+  loopDraw?: boolean;
 };
 
 const SignatureLogo = ({
   gradientId = "signature-gradient",
   className = "h-full w-full",
+  loopDraw = false,
 }: SignatureLogoProps) => {
   return (
     <svg
@@ -22,7 +24,7 @@ const SignatureLogo = ({
         </linearGradient>
       </defs>
       <path
-        className="st1"
+        className={loopDraw ? "st1 st1-loop" : "st1"}
         stroke={`url(#${gradientId})`}
         strokeWidth="2"
         fill="none"
@@ -30,7 +32,7 @@ const SignatureLogo = ({
         transform="translate(-190.41 -253.13)"
       />
       <path
-        className="st0"
+        className={loopDraw ? "st0 st0-loop" : "st0"}
         stroke={`url(#${gradientId})`}
         strokeWidth="2"
         fill="none"

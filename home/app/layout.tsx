@@ -65,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang="tr" className="h-full">
       <body
-        className={`${inter.className} flex min-h-full flex-col bg-slate-50 text-slate-900 antialiased md:h-dvh md:max-h-dvh md:overflow-hidden`}
+        className={`${inter.className} page-canvas flex min-h-full flex-col text-slate-900 antialiased md:h-dvh md:max-h-dvh md:overflow-hidden`}
       >
         <InitialLoader>
           <Navbar />

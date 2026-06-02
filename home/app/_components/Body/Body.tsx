@@ -7,16 +7,7 @@ import SiteFooter from "./SiteFooter";
 const Body = () => {
   return (
     <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-emerald-200/40 blur-3xl" />
-        <div className="absolute right-0 top-32 h-80 w-80 rounded-full bg-sky-200/50 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-violet-200/30 blur-3xl" />
-      </div>
-
-      <div className="home-compact mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-4 py-8 sm:px-5 md:max-w-5xl md:justify-between md:py-5 lg:max-w-6xl">
+      <div className="home-compact mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-4 pb-8 pt-2 sm:px-5 md:max-w-5xl md:justify-between md:pb-5 md:pt-1 lg:max-w-6xl">
         <div className="flex min-h-0 flex-1 flex-col gap-8 md:grid md:grid-cols-[minmax(0,13rem)_1fr] md:items-center md:gap-x-10 md:gap-y-0 lg:grid-cols-[minmax(0,15rem)_1fr] lg:gap-x-12">
           <section className="flex shrink-0 flex-col items-center text-center md:items-start md:text-left">
             <div className="relative mb-5 md:mb-4">

@@ -4,19 +4,23 @@ import SignatureLogo from "@/app/_ui/SignatureLogo";
 
 const Navbar = () => {
   return (
-    <header className="mx-3 mb-6 mt-4 shrink-0 md:mb-4 md:mt-3">
+    <header className="sticky top-0 z-40 mx-3 mb-0 mt-1 shrink-0 md:mb-0 md:mt-1">
       <nav
-        className="flex h-24 items-center rounded-full bg-red-100 shadow-xl md:h-[5.5rem]"
+        className="nav-surface flex h-24 items-center shadow-none max-sm:justify-between max-sm:px-3 md:h-[5.5rem]"
         aria-label="Ana menü"
       >
-        <div className="flex w-24 flex-none items-center self-center max-sm:mr-5 sm:mx-6">
+        <div className="flex w-16 flex-none items-center justify-center self-center sm:w-24 sm:mx-6">
           <div className="max-sm:hidden animate-fadeInDown space-y-2">
             <div className="h-4 w-2/4 rounded bg-gradient-to-r from-blue-400" />
             <div className="h-4 rounded bg-gradient-to-tl from-indigo-400 via-green-300 to-pink-400" />
             <div className="h-4 w-5/6 rounded bg-gradient-to-tr from-yellow-400" />
           </div>
-          <div className="hidden max-sm:block animate-bounce">
-            <SignatureLogo gradientId="nav-signature-gradient" className="h-14 w-14" />
+          <div className="hidden max-sm:flex h-12 w-12 items-center justify-center premium-logo-float nav-logo-emphasis">
+            <SignatureLogo
+              gradientId="nav-signature-gradient"
+              className="h-11 w-11 translate-x-[1px] opacity-100"
+              loopDraw
+            />
           </div>
         </div>
 
@@ -26,10 +30,10 @@ const Navbar = () => {
           <div className="h-8 w-8 rounded-full bg-red-400" />
         </div>
 
-        <div className="flex flex-grow items-center justify-center self-center max-sm:mr-6">
+        <div className="flex flex-grow items-center justify-center self-center max-sm:flex-1">
           <Link
             href="/"
-            className="brand-link flex items-center animate-skew transition duration-500 ease-in-out hover:-translate-x-2 hover:-translate-y-1 hover:scale-110 hover:scale-y-125"
+            className="brand-link flex items-center transition duration-500 ease-out hover:-translate-y-0.5 hover:scale-[1.02]"
             aria-label={site.name}
           >
             <div className="box">
@@ -45,11 +49,20 @@ const Navbar = () => {
           <div className="h-8 w-8 rounded-full bg-pink-400" />
         </div>
 
-        <div className="flex w-24 flex-none animate-fadeInDown items-center self-center max-sm:hidden sm:mx-6">
+        <div className="flex w-16 flex-none items-center justify-center self-center sm:w-24 sm:mx-6">
+          <div className="hidden max-sm:flex h-12 w-12 items-center justify-center premium-logo-float nav-logo-emphasis">
+            <SignatureLogo
+              gradientId="nav-signature-gradient-right"
+              className="h-11 w-11 translate-x-[1px] opacity-100"
+              loopDraw
+            />
+          </div>
+          <div className="flex w-24 flex-none animate-fadeInDown items-center self-center max-sm:hidden">
           <div className="rotate-180 space-y-2">
             <div className="h-4 w-2/4 rounded bg-gradient-to-tr from-yellow-400" />
             <div className="h-4 rounded bg-gradient-to-l from-blue-400 via-red-300 to-green-400" />
             <div className="h-4 w-5/6 rounded bg-gradient-to-tr from-indigo-400" />
+          </div>
           </div>
         </div>
       </nav>
