@@ -24,6 +24,13 @@ export const BLOG_COVER_KEYS = {
   kubernetes: 'kubernetes',
   ai: 'ai',
   webSecurity: 'webSecurity',
+  serverActions: 'serverActions',
+  i18n: 'i18n',
+  graphql: 'graphql',
+  dbMigrations: 'dbMigrations',
+  apiSecurity: 'apiSecurity',
+  contractTesting: 'contractTesting',
+  ddd: 'ddd',
 } as const;
 
 export type BlogCoverKey = keyof typeof BLOG_COVER_KEYS;
@@ -70,6 +77,13 @@ const COVER_SOURCES: Record<BlogCoverKey, string> = {
   ai: '1677442136019-21780ecad995',
   /** Güvenlik / siber savunma */
   webSecurity: '1571171637578-41bc2dd41cd2',
+  serverActions: '1517181768285-0903291409d7',
+  i18n: '1526628953301-3e589a16b82b',
+  graphql: '1555066931-4365d14bab8c',
+  dbMigrations: '1544383835-a02deb0d5a87',
+  apiSecurity: '1563986768605-322da13575f3',
+  contractTesting: '1504639727938-c6b9e0a9a1b3',
+  ddd: '1454165804606-c3d57bc86b40',
 };
 
 export function resolveCoverSource(key: BlogCoverKey): string {

@@ -14,7 +14,7 @@ type BlogCardProps = {
 
 export default function BlogCard({ blog }: BlogCardProps) {
   const format = useFormatter();
-  const now = useNow();
+  const now = useNow({ updateInterval: 60_000 });
   const updatedAt = new Date(blog.updatedAt);
 
   return (
@@ -39,7 +39,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="font-medium text-foreground/80">{blog.author.name}</span>
-          <time dateTime={updatedAt.toISOString()}>
+          <time dateTime={updatedAt.toISOString()} suppressHydrationWarning>
             {format.relativeTime(updatedAt, now)}
           </time>
         </div>

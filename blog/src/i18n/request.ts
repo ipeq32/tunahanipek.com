@@ -21,6 +21,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
+    /** SSR ve hydration için aynı referans zamanı (relativeTime uyumsuzluğunu önler) */
+    now: new Date(),
     messages:
       locale === 'en'
         ? (await import('../../messages/en.json')).default

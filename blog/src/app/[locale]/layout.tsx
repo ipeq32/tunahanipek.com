@@ -1,5 +1,6 @@
 import {
   getMessages,
+  getNow,
   getTranslations,
   setRequestLocale,
 } from 'next-intl/server';
@@ -121,7 +122,11 @@ export default async function LocaleLayout({
 }>) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [messages, session] = await Promise.all([getMessages(), auth()]);
+  const [messages, session, now] = await Promise.all([
+    getMessages(),
+    auth(),
+    getNow(),
+  ]);
 
   return (
     <ThemeProvider
@@ -130,7 +135,7 @@ export default async function LocaleLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <NextIntlClientProvider messages={messages} locale={locale}>
+      <NextIntlClientProvider messages={messages} locale={locale} now={now}>
         <AuthSessionProvider session={session}>
           {children}
           {authModal}
