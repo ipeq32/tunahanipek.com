@@ -1,7 +1,7 @@
 export const site = {
-  name: "Tunahan İpek",
+  name: "Tunahan İPEK",
   role: "Yazılım Geliştirici",
-  tagline: "Denizli · Rubiklabs",
+  tagline: "Full‑stack · DevOps",
   bio: [
     "Denizli merkezli bir yazılım geliştiriciyim. Detay odaklı, ölçeklenebilir ve kullanıcı odaklı web/mobil ürünler geliştirmeye odaklanıyorum.",
     "Frontend ve full‑stack geliştirme tarafında; React, Next.js, Vue.js ve Svelte gibi modern JavaScript ekosistemiyle çalışıyorum. Backend tarafında Node.js/NestJS; veri katmanında PostgreSQL ve GraphQL ile üretim ortamı ihtiyaçlarına uygun çözümler geliştiriyorum.",

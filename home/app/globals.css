@@ -116,4 +116,84 @@
   .brand-link:focus-visible .text2 {
     transform: translate(-50%, calc(-50% + 10px));
   }
+
+  .bio-pending .bio-panel,
+  .bio-pending .bio-line {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .bio-animate .bio-panel {
+    visibility: visible;
+    animation: bio-panel-reveal 700ms ease-out both;
+  }
+
+  .bio-animate .bio-line {
+    visibility: visible;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: bio-line-reveal 700ms ease-out forwards;
+  }
+
+  .bio-animate .bio-line:nth-child(1) {
+    animation-delay: 180ms;
+  }
+
+  .bio-animate .bio-line:nth-child(2) {
+    animation-delay: 320ms;
+  }
+
+  .bio-animate .bio-line:nth-child(3) {
+    animation-delay: 460ms;
+  }
+
+  .bio-animate .bio-line:nth-child(4) {
+    animation-delay: 600ms;
+  }
+
+  .bio-animate .bio-line:nth-child(5) {
+    animation-delay: 740ms;
+  }
+
+  .bio-animate .bio-line:nth-child(6) {
+    animation-delay: 880ms;
+  }
+
+  .bio-animate .bio-line:nth-child(7) {
+    animation-delay: 1020ms;
+  }
+
+  @keyframes bio-panel-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes bio-line-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bio-pending .bio-panel,
+    .bio-pending .bio-line {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .bio-animate .bio-panel,
+    .bio-animate .bio-line {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+    }
+  }
 }

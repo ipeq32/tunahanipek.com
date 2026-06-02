@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { site } from "@/app/_content/site";
+import BioPanel from "./BioPanel";
 import ContactBar from "./ContactBar";
 import SiteFooter from "./SiteFooter";
 
 const Body = () => {
-  const bioText = site.bio.join(" ");
-
   return (
     <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
       <div
@@ -43,16 +42,7 @@ const Body = () => {
             </p>
           </section>
 
-          <section className="min-h-0 text-center md:text-left">
-            <div className="space-y-4 text-base leading-relaxed text-slate-600 md:hidden">
-              {site.bio.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-            <p className="home-bio hidden text-sm leading-relaxed text-slate-600 md:block lg:text-[0.9375rem] lg:leading-6">
-              {bioText}
-            </p>
-          </section>
+          <BioPanel />
         </div>
 
         <div className="mt-8 shrink-0 space-y-5 md:mt-4 md:space-y-4">
