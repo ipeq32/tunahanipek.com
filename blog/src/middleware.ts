@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defaultLocale, locales, pathnames, routing } from './config';
 import { auth } from '@/auth';
+import { isSuperAdmin } from '@/lib/auth-roles';
 import createIntlMiddleware from 'next-intl/middleware';
 
-// sadece protectedPages'de /* yapmaya izin veriyor yada normal utl /admin/user gibi, nedenini anlamadım.
 const protectedPages = [
   pathnames['/blog/add'],
+  pathnames['/profile'],
+  pathnames['/setting'],
   '/project/*',
-  // pathnames['/hello/tuna']
 ];
+
+const adminPages = [pathnames['/admin/blog'], pathnames['/admin/project']];
+
 const authPages = [
-  // pathnames["/auth"], // Bu sayfada zaten yönlendirme var.
   pathnames['/auth/login'],
   pathnames['/auth/register'],
   pathnames['/auth/forgot-password'],
@@ -39,12 +42,13 @@ const testPagesRegex = (
 const handleAuth = async (
   req: NextRequest,
   isAuthPage: boolean,
-  isProtectedPage: boolean
+  isProtectedPage: boolean,
+  isAdminPage: boolean
 ) => {
   const session = await auth();
   const isAuth = !!session?.user;
 
-  if (!isAuth && isProtectedPage) {
+  if (!isAuth && (isProtectedPage || isAdminPage)) {
     let from = req.nextUrl.pathname;
     if (req.nextUrl.search) {
       from += req.nextUrl.search;
@@ -53,6 +57,10 @@ const handleAuth = async (
     return NextResponse.redirect(
       new URL(`/auth/login?callback=${encodeURIComponent(from)}`, req.url)
     );
+  }
+
+  if (isAuth && isAdminPage && !isSuperAdmin(session?.user?.role)) {
+    return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 
   if (isAuth && isAuthPage) {
@@ -65,8 +73,14 @@ const handleAuth = async (
 export default async function middleware(req: NextRequest) {
   const isAuthPage = testPagesRegex(authPages, req.nextUrl.pathname);
   const isProtectedPage = testPagesRegex(protectedPages, req.nextUrl.pathname);
+  const isAdminPage = testPagesRegex(adminPages, req.nextUrl.pathname);
 
-  const response = await handleAuth(req, isAuthPage, isProtectedPage);
+  const response = await handleAuth(
+    req,
+    isAuthPage,
+    isProtectedPage,
+    isAdminPage
+  );
 
   setLocaleCookie(req, response);
 

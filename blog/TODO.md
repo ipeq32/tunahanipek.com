@@ -6,14 +6,14 @@
 
 ## P0 — Kritik düzeltmeler
 
-- [ ] API'de `user` alanını `author` olarak döndür (`/api/blog`, `/api/blog/[id]`)
-- [ ] `IGetBlog` tipi ile API yanıtını hizala
-- [ ] Yayın akışını netleştir: yeni yazılar `published: false` → admin onayı veya role göre otomatik yayın
-- [ ] Quill HTML çıktısını sanitize et (ör. DOMPurify) — `dangerouslySetInnerHTML` öncesi
-- [ ] Menüdeki ölü linkleri gider: sayfa ekle **veya** linkleri kaldır
-  - [ ] `/auth/forgot-password`
-  - [ ] `/profile`, `/setting`
-  - [ ] `/admin/blog`, `/admin/project`
+- [x] API'de `user` alanını `author` olarak döndür (`/api/blog`, `/api/blog/[id]`)
+- [x] `IGetBlog` tipi ile API yanıtını hizala
+- [x] Yayın akışını netleştir: yeni yazılar `published: false` → admin onayı veya role göre otomatik yayın
+- [x] Quill HTML çıktısını sanitize et (ör. DOMPurify) — `dangerouslySetInnerHTML` öncesi
+- [x] Menüdeki ölü linkleri gider: sayfa ekle **veya** linkleri kaldır
+  - [x] `/auth/forgot-password`
+  - [x] `/profile`, `/setting`
+  - [x] `/admin/blog`, `/admin/project`
 
 ---
 
@@ -21,23 +21,23 @@
 
 ### Blog CRUD
 
-- [ ] Blog düzenleme API (PATCH/PUT)
-- [ ] Blog silme API (soft delete — `deletedAt`)
+- [x] Blog düzenleme API (PATCH/PUT)
+- [x] Blog silme API (soft delete — `deletedAt`)
 - [ ] Blog düzenleme sayfası
-- [ ] Blog silme onayı (UI)
+- [x] Blog silme onayı (UI) — admin panelinde
 
 ### Admin paneli
 
-- [ ] `/admin/blog` — yazı listesi, onaylama/reddetme (`published` toggle)
-- [ ] `/admin/project` — proje yönetimi (veya menüden kaldır)
-- [ ] Middleware'de admin rotalarına rol kontrolü (`ADMIN`, `SUPER_ADMIN`)
-- [ ] Blog ekleme API'sinde rol kontrolü
+- [x] `/admin/blog` — yazı listesi, onaylama/reddetme (`published` toggle)
+- [x] `/admin/project` — proje yönetimi (veya menüden kaldır) — stub sayfa
+- [x] Middleware'de admin rotalarına rol kontrolü (`ADMIN`, `SUPER_ADMIN`)
+- [x] Blog ekleme API'sinde rol kontrolü
 
 ### Auth & profil
 
-- [ ] Şifremi unuttum sayfası + akış (e-posta / token)
-- [ ] Profil sayfası (`/profile`)
-- [ ] Ayarlar sayfası (`/setting`) — şifre, profil güncelleme
+- [ ] Şifremi unuttum sayfası + akış (e-posta / token) — sayfa var, e-posta akışı yok
+- [x] Profil sayfası (`/profile`)
+- [ ] Ayarlar sayfası (`/setting`) — şifre, profil güncelleme — stub sayfa
 
 ### İçerik sayfaları
 
@@ -65,10 +65,10 @@
 
 ## P2 — SEO & keşfedilebilirlik
 
-- [ ] Yazı başına `generateMetadata` (title, description, OG image)
-- [ ] `sitemap.ts` — yayınlanmış yazı URL'lerini ekle
-- [ ] `robots.txt` geliştir (sitemap referansı, gerekirse disallow)
-- [ ] RSS / Atom feed (`/feed.xml`)
+- [x] Yazı başına `generateMetadata` (title, description, OG image)
+- [x] `sitemap.ts` — yayınlanmış yazı URL'lerini ekle
+- [x] `robots.txt` geliştir (sitemap referansı, gerekirse disallow)
+- [x] RSS / Atom feed (`/feed.xml`)
 - [ ] Arama (başlık / özet / içerik)
 - [ ] Etiket ve kategori sayfaları (filtreleme)
 
@@ -77,23 +77,23 @@
 ## P2 — Performans & mimari
 
 - [ ] Server Component'lerde self-HTTP fetch kaldır → doğrudan Prisma veya Server Actions
-- [ ] Blog listesi API'de N+1 sorguyu düzelt (`include: { author: true }`)
+- [x] Blog listesi API'de N+1 sorguyu düzelt (`include: { author: true }`)
 - [ ] Uygun yerlerde cache / `revalidate` (yayınlanmış yazılar için ISR düşün)
 - [ ] `force-dynamic` gereksiz kullanımını gözden geçir
 - [ ] Blog görsellerinde `next/image` kullan
-- [ ] Sayfalama görünürlük mantığını düzelt (`isShowPagination`)
-- [ ] Her navigasyondaki ~1 sn yapay loading splash'i kaldır veya sadeleştir
+- [x] Sayfalama görünürlük mantığını düzelt (`isShowPagination`)
+- [x] Her navigasyondaki ~1 sn yapay loading splash'i kaldır veya sadeleştir
 
 ---
 
 ## P2 — Güvenlik
 
 - [ ] Login / register API rate limiting
-- [ ] Kayıt API'sinde sunucu tarafı Zod validasyonu
-- [ ] Şifre politikası (min uzunluk, karmaşıklık)
-- [ ] `next.config` güvenlik header'ları (CSP, HSTS, X-Frame-Options vb.)
-- [ ] `.env.template` — gerçek secret yerine placeholder
-- [ ] `console.error` yerine merkezi loglama (info/warn/error)
+- [x] Kayıt API'sinde sunucu tarafı Zod validasyonu
+- [x] Şifre politikası (min uzunluk, karmaşıklık) — min 6 karakter (Zod)
+- [x] `next.config` güvenlik header'ları (CSP, HSTS, X-Frame-Options vb.)
+- [x] `.env.template` — gerçek secret yerine placeholder
+- [x] `console.error` yerine merkezi loglama (info/warn/error)
 
 ---
 
@@ -101,7 +101,7 @@
 
 - [ ] Hardcoded Türkçe metinleri `messages/en.json` ve `tr.json`'a taşı
 - [ ] Add-blog form placeholder'larını çeviriye al
-- [ ] Blog kartlarında klavye erişilebilirliği (`button` / `Link`, `onClick` on `h2` yerine)
+- [x] Blog kartlarında klavye erişilebilirliği (`button` / `Link`, `onClick` on `h2` yerine)
 - [ ] Eksik `alt` metinlerini tamamla
 
 ---
@@ -112,15 +112,15 @@
 - [ ] Playwright — kritik akışlar (giriş, yazı ekleme, listeleme)
 - [ ] `package.json`'a `test` script'i
 - [ ] GitHub Actions — lint, build, typecheck (isteğe bağlı test)
-- [ ] README — kurulum, env değişkenleri, Docker profilleri, seed admin
-- [ ] Health check endpoint (`/api/health`)
+- [x] README — kurulum, env değişkenleri, Docker profilleri, seed admin
+- [x] Health check endpoint (`/api/health`)
 
 ---
 
 ## P3 — Kod temizliği
 
-- [ ] Kullanılmayan `@vercel/postgres` bağımlılığını kaldır
-- [ ] Kullanılmayan Recoil auth atomlarını kaldır veya kullan
+- [x] Kullanılmayan `@vercel/postgres` bağımlılığını kaldır
+- [x] Kullanılmayan Recoil auth atomlarını kaldır veya kullan
 - [ ] `prisma/seed.ts` yorum bloklarını temizle / seed'i genişlet
 - [ ] `prisma/schema.prisma` içindeki TODO'yu çöz veya kaldır
 - [ ] OpenAPI / basit API dokümantasyonu (isteğe bağlı)
@@ -129,11 +129,11 @@
 
 ## Önerilen sprint planı
 
-| Sprint       | Odak                                              |
-| ------------ | ------------------------------------------------- |
-| **Sprint 1** | P0 tamamı                                         |
-| **Sprint 2** | Admin paneli + yayın akışı + blog edit/delete     |
-| **Sprint 3** | Stub sayfalar + profil/ayarlar                    |
-| **Sprint 4** | SEO + performans refaktörü                        |
-| **Sprint 5** | Yorumlar/etiketler **veya** şema sadeleştirme     |
-| **Sprint 6** | Test + CI + README                                |
+| Sprint       | Odak                                              | Durum        |
+| ------------ | ------------------------------------------------- | ------------ |
+| **Sprint 1** | P0 tamamı                                         | ✅ Tamamlandı |
+| **Sprint 2** | Admin paneli + yayın akışı + blog edit/delete     | 🟡 Kısmen    |
+| **Sprint 3** | Stub sayfalar + profil/ayarlar                    | 🟡 Kısmen    |
+| **Sprint 4** | SEO + performans refaktörü                        | 🟡 Kısmen    |
+| **Sprint 5** | Yorumlar/etiketler **veya** şema sadeleştirme     | ⬜ Bekliyor   |
+| **Sprint 6** | Test + CI + README                                | 🟡 Kısmen    |

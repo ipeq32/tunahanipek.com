@@ -2,9 +2,33 @@ import { MetadataRoute } from 'next';
 import { defaultLocale, host, locales } from '@/config';
 import { getPathname } from '@/navigation';
 import { Locale } from '@/i18n/request';
+import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [getEntry('/'), getEntry('/blog')];
+export const dynamic = 'force-dynamic';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let blogs: { id: string; updatedAt: Date }[] = [];
+
+  try {
+    blogs = await prisma.blog.findMany({
+    where: { published: true, deletedAt: null },
+    select: { id: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+  } catch (error) {
+    logger.warn('Sitemap: could not fetch blogs', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+
+  return [
+    getEntry('/'),
+    getEntry('/blog'),
+    ...blogs.map((blog) =>
+      getEntry({ pathname: '/blog/[id]', params: { id: blog.id } })
+    ),
+  ];
 }
 
 type Href = Parameters<typeof getPathname>[0]['href'];

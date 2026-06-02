@@ -1,6 +1,7 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from './_features/Blogs';
 import PaginationComponent from '@/components/pagination';
+import { logger } from '@/lib/logger';
 import { IGetBlog } from '@/types/blog';
 
 const blogs = async (page: number, limit: number) => {
@@ -22,7 +23,9 @@ const blogs = async (page: number, limit: number) => {
     const { data, total } = await res.json();
     return { data, total };
   } catch (error) {
-    console.error('Error fetching blogs:', error);
+    logger.error('Error fetching blogs', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return { data: [], total: 0 };
   }
 };
@@ -40,24 +43,18 @@ async function page({ searchParams }: Props) {
   const limit = parseInt(resolvedSearchParams.limit || '9');
   const { data: blogData, total } = await blogs(currentPage, limit);
 
-  const publishedData: IGetBlog[] = blogData.filter(
-    (blog: IGetBlog) => blog.published
-  );
-
-  const dataLength = publishedData.length > limit;
-
   return (
     <>
       <HeaderTemplate
         title="Bloglar"
         description="Bloglar sayfası açıklama kısmı."
       />
-      <BlogsFeature data={blogData} />
+      <BlogsFeature data={blogData as IGetBlog[]} />
       <PaginationComponent
         total={total}
         currentPage={currentPage}
         limit={limit}
-        isShowPagination={dataLength}
+        isShowPagination={total > limit}
       />
     </>
   );

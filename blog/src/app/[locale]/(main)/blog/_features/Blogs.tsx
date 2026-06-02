@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter } from '@/navigation';
+import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { useFormatter } from 'next-intl';
 import NotfoundComponent from '../_components/notfound';
 import { motion } from 'framer-motion';
@@ -11,12 +12,7 @@ type BlogFeatureProps = {
 };
 
 const BlogsFeature = ({ data }: BlogFeatureProps) => {
-  const router = useRouter();
   const format = useFormatter();
-
-  const handleNavigateToBlog = (id: string) => {
-    router.push({ pathname: '/blog/[id]', params: { id } });
-  };
 
   const publishedData = data.filter((blog) => blog.published);
 
@@ -38,18 +34,17 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
           className="flex flex-col gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
         >
           <figure className="flex flex-col justify-between gap-2">
-            <img
-              src={blog.shortImage || '/blog.jpg'}
-              alt={blog.title}
-              onClick={() => handleNavigateToBlog(blog.id)}
-              className="w-full h-40 rounded-md object-cover hover:object-fill cursor-pointer"
-            />
+            <Link href={{ pathname: '/blog/[id]', params: { id: blog.id } }}>
+              <img
+                src={blog.shortImage || '/blog.jpg'}
+                alt={blog.title}
+                className="w-full h-40 rounded-md object-cover hover:object-fill"
+              />
+            </Link>
             <figcaption className="flex justify-between gap-2">
               <span className="text-sm line-clamp-1">
-                {blog.author ? blog.author.name : 'Anonim'} -{' '}
-                {blog.author && blog.author.role === 'SUPER_ADMIN'
-                  ? 'Yönetici'
-                  : 'Yazar'}
+                {blog.author.name} -{' '}
+                {blog.author.role === 'SUPER_ADMIN' ? 'Yönetici' : 'Yazar'}
               </span>
               <span className="text-xs line-clamp-1 text-opacity-40">
                 {format.relativeTime(new Date(blog.updatedAt))}
@@ -57,14 +52,18 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
             </figcaption>
           </figure>
           <div className="p-1 space-y-2">
-            <h2
-              className="text-lg font-bold cursor-pointer hover:text-teal-300"
-              onClick={() => handleNavigateToBlog(blog.id)}
-            >
-              {blog.title}
+            <h2 className="text-lg font-bold">
+              <Link
+                href={{ pathname: '/blog/[id]', params: { id: blog.id } }}
+                className="hover:text-teal-300"
+              >
+                {blog.title}
+              </Link>
             </h2>
             <p
-              dangerouslySetInnerHTML={{ __html: blog.summary }}
+              dangerouslySetInnerHTML={{
+                __html: sanitizeHtml(blog.summary),
+              }}
               className="text-xs line-clamp-3 h-12"
             />
           </div>
