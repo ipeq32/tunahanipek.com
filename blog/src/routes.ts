@@ -31,4 +31,36 @@ export default {
     en: '/blog/add',
     tr: '/blog/ekle',
   },
+  '/about-me': {
+    en: '/about-me',
+    tr: '/hakkimda',
+  },
+  '/project': {
+    en: '/project',
+    tr: '/proje',
+  },
+  '/faq': {
+    en: '/faq',
+    tr: '/sss',
+  },
+  '/contact': {
+    en: '/contact',
+    tr: '/iletisim',
+  },
+  '/profile': {
+    en: '/profile',
+    tr: '/profil',
+  },
+  '/setting': {
+    en: '/setting',
+    tr: '/ayarlar',
+  },
+  '/admin/blog': {
+    en: '/admin/blog',
+    tr: '/admin/blog',
+  },
+  '/admin/project': {
+    en: '/admin/project',
+    tr: '/admin/proje',
+  },
 } satisfies Pathnames<typeof locales>;

@@ -16,11 +16,10 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
-import { useRecoilState } from 'recoil';
-import { authAtom } from '@/recoil';
+import { useState } from 'react';
 
 export default function LoginModal() {
-  const [isOpened, setIsOpened] = useRecoilState(authAtom.loginModalState);
+  const [isOpened, setIsOpened] = useState(true);
 
   const searchParams = useSearchParams();
   const session = useSession();

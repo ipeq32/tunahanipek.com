@@ -28,15 +28,16 @@ const blogs = async (page: number, limit: number) => {
 };
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     page: string;
     limit: string;
-  };
+  }>;
 };
 
 async function page({ searchParams }: Props) {
-  const currentPage = parseInt(searchParams.page || '1');
-  const limit = parseInt(searchParams.limit || '9');
+  const resolvedSearchParams = await searchParams;
+  const currentPage = parseInt(resolvedSearchParams.page || '1');
+  const limit = parseInt(resolvedSearchParams.limit || '9');
   const { data: blogData, total } = await blogs(currentPage, limit);
 
   const publishedData: IGetBlog[] = blogData.filter(

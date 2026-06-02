@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl';
 import { User } from 'next-auth';
 import { Link } from '@/navigation';
 import { useState } from 'react';
+import NextLink from 'next/link';
 
 type ProfileDropdownMenuProps = {
   onLogout: () => void;
@@ -60,13 +61,15 @@ function ProfileDropdownMenuFeature({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link
+          <NextLink
             onClick={onClickedLink}
             href="https://github.com/ipeq32"
             className="w-full"
+            target="_blank"
+            rel="noreferrer"
           >
             GitHub
-          </Link>
+          </NextLink>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link onClick={onClickedLink} href="/setting" className="w-full">

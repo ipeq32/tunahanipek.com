@@ -76,7 +76,13 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
           setOpenModal(false);
         }
 
-        router.push(searchParams.get('callback')?.slice(3) || '/');
+        const callbackPath = searchParams.get('callback');
+        if (callbackPath?.startsWith('/')) {
+          window.location.assign(callbackPath);
+          return;
+        }
+
+        router.push('/');
         router.refresh();
         toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
       }
@@ -97,7 +103,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
 
   return (
     <Form {...form}>
-      <motion.form
+      <motion.div
         animate={{
           scale: [0.5, 1],
           opacity: [0, 1],
@@ -105,9 +111,11 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col items-start justify-center text-white rounded-lg gap-y-6 mt-5"
       >
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col items-start justify-center text-white rounded-lg gap-y-6 mt-5"
+        >
         <FormField
           control={form.control}
           name="email"
@@ -158,7 +166,8 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
             ? t('Form.Submit.loading')
             : t('Form.Submit.label')}
         </Button>
-      </motion.form>
+        </form>
+      </motion.div>
     </Form>
   );
 }

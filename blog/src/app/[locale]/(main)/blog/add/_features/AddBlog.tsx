@@ -97,9 +97,7 @@ const AddBlogFeature = () => {
       router.push('/blog');
 
       return res;
-    } catch (error) {
-      console.log('AddBlog: ', error);
-
+    } catch {
       toast('Blog eklemesi başarısız oldu.');
     }
   }

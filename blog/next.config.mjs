@@ -1,26 +1,11 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { DeleteSourceMapsPlugin } from 'webpack-delete-sourcemaps-plugin';
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   webpack(config, { isServer }) {
-    config.module.rules.push({
-      test: /\.(mp3)$/,
-      use: {
-        loader: 'file-loader',
-        options: {
-          publicPath: '/_next/static/sounds/',
-          outputPath: 'static/sounds/',
-          name: '[name].[ext]',
-          esModule: false,
-        },
-      },
-    });
     config.watchOptions = {
       poll: 1000,
       aggregateTimeout: 300,

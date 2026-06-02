@@ -18,7 +18,7 @@ const NavContact = () => {
 
   useEffect(() => {
     if (
-      ((currentDay !== 'Saturday' || 'Sunday') && currentHour < 8) ||
+      ((currentDay !== 'Saturday' && currentDay !== 'Sunday') && currentHour < 8) ||
       currentHour > 18
     ) {
       return setIsOpen(false);

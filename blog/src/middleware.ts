@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { defaultLocale, localePrefix, locales, pathnames } from './config';
+import { defaultLocale, locales, pathnames, routing } from './config';
 import { auth } from '@/auth';
 import createIntlMiddleware from 'next-intl/middleware';
 
@@ -16,12 +16,7 @@ const authPages = [
   pathnames['/auth/forgot-password'],
 ];
 
-const intlMiddleware = createIntlMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix,
-  pathnames,
-});
+const intlMiddleware = createIntlMiddleware(routing);
 
 const testPagesRegex = (
   pages: (string | Record<string, string>)[],

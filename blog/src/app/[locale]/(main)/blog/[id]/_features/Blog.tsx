@@ -21,7 +21,6 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
   return (
     <div className="container mt-10 max-md:mt-5 flex flex-col gap-5">
       <figure className="flex justify-center items-center max-h-[500px] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -39,7 +38,6 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
             transition={{ duration: 0.5 }}
             className="flex items-center text-lg font-bold italic"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={
                 data.author

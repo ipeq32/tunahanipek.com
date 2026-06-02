@@ -15,7 +15,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
   const format = useFormatter();
 
   const handleNavigateToBlog = (id: string) => {
-    router.push(`/blog/${id}`);
+    router.push({ pathname: '/blog/[id]', params: { id } });
   };
 
   const publishedData = data.filter((blog) => blog.published);
@@ -38,7 +38,6 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
           className="flex flex-col gap-2 w-96 max-sm:w-full h-[330px] shadow-md dark:shadow-slate-400/30 p-2 rounded-md hover:scale-105 transition-transform duration-200 ease-linear"
         >
           <figure className="flex flex-col justify-between gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={blog.shortImage || '/blog.jpg'}
               alt={blog.title}

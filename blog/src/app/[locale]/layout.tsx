@@ -1,7 +1,7 @@
 import {
   getMessages,
   getTranslations,
-  unstable_setRequestLocale,
+  setRequestLocale,
 } from 'next-intl/server';
 
 import type { Metadata } from 'next';
@@ -11,10 +11,11 @@ import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/ui/sonner';
 
 export async function generateMetadata({
-  params: { locale },
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
+  const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Metadata' });
 
   return {
@@ -111,13 +112,14 @@ export async function generateMetadata({
 export default async function LocaleLayout({
   children,
   authModal,
-  params: { locale },
+  params,
 }: Readonly<{
   children: React.ReactNode;
   authModal: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }>) {
-  unstable_setRequestLocale(locale);
+  const { locale } = await params;
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   return (

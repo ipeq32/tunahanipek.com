@@ -20,11 +20,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useRecoilState } from 'recoil';
-import { authAtom } from '@/recoil';
 
-export default function RegisterForm() {
-  const [isOpened] = useRecoilState(authAtom.registerModalState);
+type RegisterFormProps = {
+  isModal?: boolean;
+};
+
+export default function RegisterForm({ isModal = false }: RegisterFormProps) {
+  const isOpened = !isModal;
 
   const router = useRouter();
   const pathname = usePathname();

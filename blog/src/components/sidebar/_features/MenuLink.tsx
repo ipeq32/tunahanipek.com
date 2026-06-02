@@ -1,10 +1,10 @@
 'use client';
 
 import { Link, usePathname } from '@/navigation';
-import { ReactNode } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 type MenuLinkProps = {
-  link: string;
+  link: ComponentProps<typeof Link>['href'];
   children: ReactNode;
 };
 

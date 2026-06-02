@@ -8,8 +8,11 @@ type Params = {
   id: string;
 };
 
-export async function GET(request: Request, context: { params: Params }) {
-  const id = context.params.id;
+export async function GET(
+  request: Request,
+  context: { params: Promise<Params> }
+) {
+  const { id } = await context.params;
   try {
     const blog: IBlog | null = await prisma.blog.findUnique({
       where: {
@@ -45,10 +48,7 @@ export async function GET(request: Request, context: { params: Params }) {
     return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message + 'asdaddsada' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     } else {
       return NextResponse.json(
         { error: 'Internal Server Error' },

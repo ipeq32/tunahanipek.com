@@ -1,9 +1,9 @@
 import BlogFeature from './_features/Blog';
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 const fetchBlog = async (id: string) => {
@@ -28,7 +28,8 @@ const fetchBlog = async (id: string) => {
   }
 };
 
-const page = async ({ params: { id } }: Props) => {
+const page = async ({ params }: Props) => {
+  const { id } = await params;
   const blogData = await fetchBlog(id);
 
   return <BlogFeature data={blogData} />;

@@ -35,7 +35,10 @@ const Navbar = () => {
 
   const from = searchParams.get('callback') || pathname;
 
-  const menuLinks = [
+  const menuLinks: Array<{
+    title: string;
+    href: '/' | '/about-me' | '/blog' | '/project';
+  }> = [
     {
       title: t('Link.home'),
       href: '/',

@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next';
 import { defaultLocale, host, locales } from '@/config';
 import { getPathname } from '@/navigation';
-import { Locale } from '@/i18n';
+import { Locale } from '@/i18n/request';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [getEntry('/'), getEntry('/pathnames')];
+  return [getEntry('/'), getEntry('/blog')];
 }
 
 type Href = Parameters<typeof getPathname>[0]['href'];
