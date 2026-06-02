@@ -6,17 +6,22 @@ import {
 } from 'next-intl/server';
 
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { auth } from '@/auth';
 
+type LocaleLayoutProps = Readonly<{
+  children: ReactNode;
+  authModal: ReactNode;
+  params: Promise<{ locale: string }>;
+}>;
+
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+}: LocaleLayoutProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Metadata' });
 
@@ -115,11 +120,7 @@ export default async function LocaleLayout({
   children,
   authModal,
   params,
-}: Readonly<{
-  children: React.ReactNode;
-  authModal: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}>) {
+}: LocaleLayoutProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const [messages, session, now] = await Promise.all([

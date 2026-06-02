@@ -40,8 +40,6 @@ export function useFitChipCount(
       return;
     }
 
-    setIsReady(false);
-
     const measure = measureRef.current;
     const chips = chipsRef.current;
     if (!measure || !chips || items.length === 0) {

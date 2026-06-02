@@ -14,10 +14,16 @@ export default async function SettingPage({
   const t = await getTranslations('Settings');
 
   if (!session?.user) {
-    redirect({ href: '/auth/login?callback=/setting', locale });
+    return redirect({
+      href: {
+        pathname: '/auth/login',
+        query: { callback: '/setting' },
+      },
+      locale,
+    });
   }
 
-  const { user } = session;
+  const user = session.user;
 
   return (
     <>

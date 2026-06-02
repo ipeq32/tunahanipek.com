@@ -311,11 +311,8 @@ export default function TaxonomyFilter({
           >
             <div
               ref={chipsRef}
-              className={cn(
-                'min-h-8 min-w-0 w-full flex-1 overflow-hidden md:w-auto',
-                !isReady && !expanded && 'opacity-0',
-                isReady && 'opacity-100 transition-opacity duration-150'
-              )}
+              className="min-h-8 min-w-0 w-full flex-1 overflow-hidden md:w-auto"
+              aria-busy={!isReady && !expanded}
             >
               {chipList}
             </div>
