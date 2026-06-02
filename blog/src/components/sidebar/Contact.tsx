@@ -43,15 +43,20 @@ const NavContact = () => {
           <div className="hidden items-center gap-2 text-xs lg:flex">
             <Clock3 width={14} height={14} className="animate-spin-slow text-muted-foreground" />
             <div
-              className={`flex items-center overflow-hidden border-b ${
+              className={`max-w-[250px] overflow-hidden border-b max-sm:hidden ${
                 isOpen ? 'border-teal-500/50' : 'border-rose-400/50'
               }`}
+              style={{
+                maskImage:
+                  'linear-gradient(to right, transparent, black 12%, black 88%, transparent)',
+              }}
             >
-              <span className="animate-text-slide-slow max-w-[250px] whitespace-nowrap text-muted-foreground max-sm:hidden">
-                {t('time')}
-              </span>
-              <span className="hidden max-sm:block text-muted-foreground">{currentDay}</span>
+              <div className="animate-hours-ticker flex w-max gap-8 whitespace-nowrap text-muted-foreground">
+                <span>{t('time')}</span>
+                <span aria-hidden="true">{t('time')}</span>
+              </div>
             </div>
+            <span className="hidden text-muted-foreground max-sm:block">{currentDay}</span>
             <span
               className={
                 isOpen
