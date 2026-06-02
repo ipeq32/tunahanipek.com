@@ -1,6 +1,6 @@
 import NavContactShell from '@/components/sidebar/NavContactShell';
 import Navbar from '@/components/sidebar/Navbar';
-import Footer from '@/components/sidebar/Footer';
+import FooterShell from '@/components/sidebar/FooterShell';
 
 type Props = {
   children: React.ReactNode;
@@ -8,11 +8,13 @@ type Props = {
 
 const MainLayout = ({ children }: Props) => {
   return (
-    <div className="mesh-background flex min-h-dvh flex-col">
+    <div className="mesh-background flex flex-col">
       <NavContactShell />
       <Navbar />
-      <main className="container flex flex-1 flex-col pb-16 pt-2">{children}</main>
-      <Footer />
+      <main className="container flex min-h-[calc(100dvh-var(--site-header-height))] flex-col pb-16 pt-2">
+        {children}
+      </main>
+      <FooterShell />
     </div>
   );
 };

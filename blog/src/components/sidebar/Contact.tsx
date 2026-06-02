@@ -1,38 +1,22 @@
 'use client';
 
 import { Clock3, Github, Instagram, Linkedin, Stethoscope } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
 import { ToggleTheme } from '../toggle-theme';
 import ToggleLanguage from '../toggle-language';
 import { useTranslations } from 'next-intl';
-import {
-  getOfficeHoursSnapshot,
-  type OfficeHoursSnapshot,
-} from '@/lib/office-hours';
+import type { Locale } from '@/i18n/request';
+import type { OfficeHoursSnapshot } from '@/lib/office-hours';
 
 type NavContactProps = {
   officeHours: OfficeHoursSnapshot;
+  locale: Locale;
 };
 
-const NavContact = ({ officeHours }: NavContactProps) => {
+const NavContact = ({ officeHours, locale }: NavContactProps) => {
   const t = useTranslations('Navbar.Contact');
-  const [isOpen, setIsOpen] = useState(officeHours.isOpen);
-  const [currentDay, setCurrentDay] = useState(officeHours.currentDay);
-
-  useEffect(() => {
-    const syncOfficeHours = () => {
-      const snapshot = getOfficeHoursSnapshot();
-      setIsOpen(snapshot.isOpen);
-      setCurrentDay(snapshot.currentDay);
-    };
-
-    syncOfficeHours();
-    const intervalId = window.setInterval(syncOfficeHours, 60_000);
-
-    return () => window.clearInterval(intervalId);
-  }, []);
+  const { isOpen, currentDay } = officeHours;
 
   return (
     <div className="border-b border-border/40 bg-brand-muted/50 dark:bg-secondary/50">
@@ -65,7 +49,6 @@ const NavContact = ({ officeHours }: NavContactProps) => {
             </div>
             <span className="hidden text-muted-foreground max-sm:block">{currentDay}</span>
             <span
-              suppressHydrationWarning
               className={
                 isOpen
                   ? 'font-medium text-teal-600 dark:text-teal-400'
@@ -106,7 +89,7 @@ const NavContact = ({ officeHours }: NavContactProps) => {
             </Link>
             <div className="ml-1 flex items-center gap-2 border-l border-border/60 pl-3">
               <ToggleTheme />
-              <ToggleLanguage />
+              <ToggleLanguage locale={locale} />
             </div>
           </div>
         </div>

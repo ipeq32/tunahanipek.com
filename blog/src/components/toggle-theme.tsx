@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,25 +13,6 @@ import { useTheme } from 'next-themes';
 
 export function ToggleTheme() {
   const { setTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="link"
-        size="icon"
-        className="pointer-events-none hover:scale-95"
-        aria-hidden
-        tabIndex={-1}
-      >
-        <span className="h-[1.2rem] w-[1.2rem]" />
-      </Button>
-    );
-  }
 
   return (
     <DropdownMenu>
@@ -41,7 +20,7 @@ export function ToggleTheme() {
         <Button
           variant="link"
           size="icon"
-          className="hover:scale-95 hover:animate-pulse"
+          className="relative hover:scale-95 hover:animate-pulse"
         >
           <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

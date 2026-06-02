@@ -10,23 +10,21 @@ import {
   MapPin,
   Phone,
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
 
-const Footer = () => {
-  const { data, status } = useSession();
+type FooterProps = {
+  isAuthenticated: boolean;
+  userName: string | null;
+};
+
+const Footer = ({ isAuthenticated, userName }: FooterProps) => {
   const t = useTranslations('Footer');
 
   const emailAddress = 'tnhnipek@gmail.com';
   const emailSubject = t('Mail.subject');
   const emailBody = t('Mail.body', {
-    auth:
-      status === 'loading'
-        ? ''
-        : status === 'authenticated'
-          ? `İsmim ${data?.user?.name}`
-          : 'Daha giriş yapmadım.',
+    auth: isAuthenticated ? `İsmim ${userName}` : 'Daha giriş yapmadım.',
   });
   const recipientAddress = 'Gültepe, Albayrak Meydanı, Merkezefendi/Denizli';
 

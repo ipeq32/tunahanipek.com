@@ -1,8 +1,11 @@
 import BlogFeature from './_features/Blog';
 import BlogComments from '@/components/blog/BlogComments';
+import { auth } from '@/auth';
 import { getPublishedBlogById } from '@/lib/data/blogs';
-import { getApprovedComments } from '@/lib/data/comments';
+import { getApprovedCommentViews } from '@/lib/data/comments';
+import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
+import { getLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 export const revalidate = 60;
@@ -36,9 +39,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function page({ params }: Props) {
   const { id } = await params;
-  const [blogData, comments] = await Promise.all([
+  const locale = parseLocale(await getLocale());
+
+  const [blogData, comments, session] = await Promise.all([
     getPublishedBlogById(id),
-    getApprovedComments(id),
+    getApprovedCommentViews(id, locale),
+    auth(),
   ]);
 
   if (!blogData) {
@@ -48,7 +54,12 @@ async function page({ params }: Props) {
   return (
     <>
       <BlogFeature data={blogData} />
-      <BlogComments blogId={id} initialComments={comments} />
+      <BlogComments
+        blogId={id}
+        locale={locale}
+        isAuthenticated={!!session?.user}
+        initialComments={comments}
+      />
     </>
   );
 }

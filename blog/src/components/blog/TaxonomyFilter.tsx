@@ -1,7 +1,6 @@
 'use client';
 
 import { Link } from '@/navigation';
-import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
@@ -10,13 +9,17 @@ type Item = { id: string; name: string };
 type Props = {
   tags: Item[];
   categories: Item[];
+  activeTag?: string;
+  activeCategory?: string;
 };
 
-export default function TaxonomyFilter({ tags, categories }: Props) {
+export default function TaxonomyFilter({
+  tags,
+  categories,
+  activeTag,
+  activeCategory,
+}: Props) {
   const t = useTranslations('Blog.Taxonomy');
-  const searchParams = useSearchParams();
-  const activeTag = searchParams.get('tag');
-  const activeCategory = searchParams.get('category');
 
   if (!tags.length && !categories.length) return null;
 

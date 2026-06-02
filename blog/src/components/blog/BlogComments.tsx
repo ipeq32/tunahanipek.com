@@ -1,25 +1,52 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
-import type { CommentDto } from '@/lib/data/comments';
+import {
+  formatCommentDate,
+  type CommentViewDto,
+} from '@/lib/data/comments';
+import type { Locale } from '@/i18n/request';
 
 type Props = {
   blogId: string;
-  initialComments: CommentDto[];
+  locale: Locale;
+  isAuthenticated: boolean;
+  initialComments: CommentViewDto[];
 };
 
-export default function BlogComments({ blogId, initialComments }: Props) {
+type CommentApiItem = {
+  id: string;
+  content: string;
+  authorName: string;
+  createdAt: string;
+};
+
+export default function BlogComments({
+  blogId,
+  locale,
+  isAuthenticated,
+  initialComments,
+}: Props) {
   const t = useTranslations('Comments');
-  const { data: session } = useSession();
   const [comments, setComments] = useState(initialComments);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const mapApiComments = useCallback(
+    (items: CommentApiItem[]) =>
+      items.map((comment) => ({
+        id: comment.id,
+        content: comment.content,
+        authorName: comment.authorName,
+        createdAtLabel: formatCommentDate(comment.createdAt, locale),
+      })),
+    [locale]
+  );
 
   const refresh = useCallback(async () => {
     const res = await fetch(
@@ -27,9 +54,9 @@ export default function BlogComments({ blogId, initialComments }: Props) {
     );
     if (res.ok) {
       const { data } = await res.json();
-      setComments(data);
+      setComments(mapApiComments(data));
     }
-  }, [blogId]);
+  }, [blogId, mapApiComments]);
 
   useEffect(() => {
     setComments(initialComments);
@@ -71,14 +98,14 @@ export default function BlogComments({ blogId, initialComments }: Props) {
             className="rounded-xl border border-border/60 bg-background/60 p-4"
           >
             <p className="text-sm">{c.content}</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              {c.authorName} · {new Date(c.createdAt).toLocaleDateString()}
+            <p className="mt-2 text-xs text-muted-foreground">
+              {c.authorName} · {c.createdAtLabel}
             </p>
           </li>
         ))}
       </ul>
-      {session?.user ? (
-        <div className="space-y-3 max-w-xl">
+      {isAuthenticated ? (
+        <div className="max-w-xl space-y-3">
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}

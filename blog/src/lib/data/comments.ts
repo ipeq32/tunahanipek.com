@@ -10,6 +10,36 @@ export type CommentDto = {
   status: Status;
 };
 
+export type CommentViewDto = {
+  id: string;
+  content: string;
+  authorName: string;
+  createdAtLabel: string;
+};
+
+const COMMENT_DATE_TIME_ZONE = 'Europe/Istanbul';
+
+export function formatCommentDate(date: Date | string, locale: string): string {
+  const value = typeof date === 'string' ? new Date(date) : date;
+
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeZone: COMMENT_DATE_TIME_ZONE,
+  }).format(value);
+}
+
+function mapCommentToView(
+  comment: CommentDto,
+  locale: string
+): CommentViewDto {
+  return {
+    id: comment.id,
+    content: comment.content,
+    authorName: comment.authorName,
+    createdAtLabel: formatCommentDate(comment.createdAt, locale),
+  };
+}
+
 function mapComment(comment: {
   id: string;
   content: string;
@@ -41,6 +71,15 @@ export async function getApprovedComments(blogId: string): Promise<CommentDto[]>
   });
 
   return comments.map(mapComment);
+}
+
+export async function getApprovedCommentViews(
+  blogId: string,
+  locale: string
+): Promise<CommentViewDto[]> {
+  const comments = await getApprovedComments(blogId);
+
+  return comments.map((comment) => mapCommentToView(comment, locale));
 }
 
 export type PendingCommentDto = {

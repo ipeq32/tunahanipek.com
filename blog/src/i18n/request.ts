@@ -4,6 +4,14 @@ import { locales } from '@/config';
 
 export type Locale = (typeof locales)[number];
 
+export function parseLocale(value: string): Locale {
+  if (!locales.includes(value as Locale)) {
+    notFound();
+  }
+
+  return value as Locale;
+}
+
 export default getRequestConfig(async ({ requestLocale }) => {
   const locale = await requestLocale;
 

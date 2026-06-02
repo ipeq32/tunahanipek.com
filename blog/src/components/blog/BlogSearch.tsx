@@ -4,15 +4,21 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
-import { FormEvent, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { FormEvent, useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 
-export default function BlogSearch() {
+type BlogSearchProps = {
+  initialQuery?: string;
+};
+
+export default function BlogSearch({ initialQuery = '' }: BlogSearchProps) {
   const t = useTranslations('Blog');
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();

@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import type { AppPathnames } from '@/config';
 import { locales } from '@/config';
@@ -22,8 +21,13 @@ type DynamicPathname =
 
 type StaticPathname = Exclude<AppPathnames, DynamicPathname>;
 
-function ToggleLanguage() {
-  const locale = useLocale();
+type ToggleLanguageProps = {
+  locale?: LocaleType;
+};
+
+function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
+  const localeFromHook = useLocale();
+  const locale = localeProp ?? localeFromHook;
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
@@ -67,9 +71,9 @@ function ToggleLanguage() {
   }
 
   return (
-    <Select onValueChange={onSelectChange} defaultValue={locale}>
-      <SelectTrigger className="w-[120px]">
-        <SelectValue placeholder={locale} />
+    <Select value={locale} onValueChange={onSelectChange}>
+      <SelectTrigger className="w-[120px]" aria-label={t('label')}>
+        <span className="truncate">{t('locale', { locale })}</span>
       </SelectTrigger>
       <SelectContent>
         {locales.map((cur) => (
