@@ -3,7 +3,7 @@ import type { EducationalArticleDef } from '../../content-builder';
 export const tutorialsPart3: EducationalArticleDef[] = [
   {
     title: 'Mikroservis ve Modüler Monolit: Mimari Karar Rehberi',
-    photoId: '1451187580459-43490279c0fa',
+    coverKey: 'microservices',
     tags: ['mikroservis', 'monolit', 'mimari', 'ddd'],
     categories: ['Yazılım Mimarisi'],
     stackNote: 'Domain-Driven Design, event-driven messaging, Kubernetes (opsiyonel)',
@@ -75,7 +75,7 @@ export const tutorialsPart3: EducationalArticleDef[] = [
   },
   {
     title: 'Event-Driven Mimari: Outbox, Saga ve Mesaj Kuyruğu',
-    photoId: '1555949963-aa79dcee981c',
+    coverKey: 'eventDriven',
     tags: ['event-driven', 'kafka', 'mimari', 'async'],
     categories: ['Yazılım Mimarisi', 'Backend'],
     stackNote: 'Transactional outbox, Kafka/RabbitMQ kavramları, idempotent consumer',
@@ -131,7 +131,7 @@ export const tutorialsPart3: EducationalArticleDef[] = [
   },
   {
     title: 'SOLID ve Temiz Kod: React/TypeScript Projelerinde Uygulama',
-    photoId: '1504639728390-1319577231394',
+    coverKey: 'solid',
     tags: ['solid', 'clean-code', 'refactoring', 'typescript'],
     categories: ['Programlama', 'Yazılım Mimarisi'],
     stackNote: 'TypeScript 5.9+, React 19, Next.js 16 component modeli',
@@ -191,7 +191,7 @@ export const tutorialsPart3: EducationalArticleDef[] = [
   },
   {
     title: 'Web Erişilebilirliği (WCAG 2.2): Uygulamalı a11y',
-    photoId: '1498050108023-c5249f4df085',
+    coverKey: 'a11y',
     tags: ['accessibility', 'a11y', 'wcag', 'ux'],
     categories: ['Web Geliştirme', 'UX'],
     stackNote: 'WCAG 2.2 AA, axe-core, React 19, keyboard navigation',
@@ -254,7 +254,7 @@ export const tutorialsPart3: EducationalArticleDef[] = [
   },
   {
     title: 'OpenTelemetry: Trace, Metric ve Log Korelasyonu',
-    photoId: '1618477247221-94724831379e',
+    coverKey: 'opentelemetry',
     tags: ['opentelemetry', 'observability', 'monitoring', 'logging'],
     categories: ['DevOps', 'Altyapı'],
     stackNote: 'OpenTelemetry JS SDK, OTLP exporter, structured logging, Next.js 16',
@@ -318,7 +318,7 @@ await tracer.startActiveSpan('syncBlogTaxonomy', async (span) => {
   },
   {
     title: 'Git Workflow: Trunk-Based Development ve Feature Flag',
-    photoId: '1517699154558-42d6f41ee5f6',
+    coverKey: 'gitWorkflow',
     tags: ['git', 'trunk-based', 'feature-flags', 'devops'],
     categories: ['DevOps', 'Ekip Çalışması'],
     stackNote: 'Git 2.x, GitHub PR, feature flag (Unleash/LaunchDarkly kavramı)',
@@ -380,7 +380,7 @@ await tracer.startActiveSpan('syncBlogTaxonomy', async (span) => {
   },
   {
     title: 'Feature Flags: Kademeli Rollout ve Kill Switch',
-    photoId: '1551288049-bebda4e38f71',
+    coverKey: 'featureFlags',
     tags: ['feature-flags', 'rollout', 'devops', 'urun'],
     categories: ['DevOps', 'Ürün'],
     stackNote: 'Unleash / LaunchDarkly kavramları, Next.js middleware, observability',
@@ -438,7 +438,7 @@ return <BlogSearch />;`,
   },
   {
     title: 'Kubernetes Başlangıç: Pod, Deployment ve Ingress',
-    photoId: '1633356122544-f134324a6cee',
+    coverKey: 'kubernetes',
     tags: ['kubernetes', 'k8s', 'container', 'devops'],
     categories: ['DevOps', 'Altyapı'],
     stackNote: 'Kubernetes 1.30+, kubectl, Ingress NGINX, container image from Docker öğretici',
@@ -507,7 +507,7 @@ spec:
   },
   {
     title: 'Yapay Zeka ve LLM Araçları: Geliştirici İçin Güvenli Kullanım',
-    photoId: '1677442136019-21780ecad995',
+    coverKey: 'ai',
     tags: ['ai', 'llm', 'cursor', 'verimlilik'],
     categories: ['Programlama', 'Ürün'],
     stackNote: 'Cursor, Copilot, GPT-4 class modeller (2026), kod review süreçleri',
@@ -566,7 +566,7 @@ spec:
   },
   {
     title: 'Web Güvenliği: OWASP Top 10 ve Next.js Savunmaları',
-    photoId: '1555949963-aa79dcee981c',
+    coverKey: 'webSecurity',
     tags: ['guvenlik', 'owasp', 'xss', 'csrf'],
     categories: ['Güvenlik', 'Web Geliştirme'],
     stackNote: 'OWASP Top 10 (2025), Next.js 16, DOMPurify 3.x, next-auth 5, Prisma 7',

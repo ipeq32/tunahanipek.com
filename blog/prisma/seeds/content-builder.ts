@@ -1,3 +1,5 @@
+import type { BlogCoverKey } from './blog-covers';
+
 export type ArticleSection = {
   heading: string;
   level?: 2 | 3;
@@ -23,7 +25,7 @@ export type TutorialChapter = {
 
 export type EducationalArticleDef = {
   title: string;
-  photoId: string;
+  coverKey: BlogCoverKey;
   tags: string[];
   categories: string[];
   stackNote: string;
@@ -200,4 +202,14 @@ export function toEducationalEntry(def: EducationalArticleDef) {
 
 export function unsplashImage(photoId: string, width = 1200): string {
   return `https://images.unsplash.com/photo-${photoId}?w=${width}&fit=crop&q=80`;
+}
+
+/** Unsplash photoId veya picsum:{seed} — her blog için benzersiz kapak URL */
+export function blogCoverImage(source: string, width = 1200): string {
+  if (source.startsWith('picsum:')) {
+    const seed = source.slice('picsum:'.length);
+    const height = Math.round(width * 0.525);
+    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
+  }
+  return unsplashImage(source, width);
 }

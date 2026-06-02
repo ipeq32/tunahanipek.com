@@ -1,4 +1,5 @@
-import { toEducationalEntry, unsplashImage } from '../../content-builder';
+import { resolveCoverSource } from '../../blog-covers';
+import { blogCoverImage, toEducationalEntry } from '../../content-builder';
 import type { BlogSeedEntry } from '../../blog-types';
 import type { EducationalArticleDef } from '../../content-builder';
 import { tutorialsPart1 } from './part-1';
@@ -13,10 +14,11 @@ const allTutorialDefs: EducationalArticleDef[] = [
 
 function toBlogSeedEntry(def: EducationalArticleDef): BlogSeedEntry {
   const entry = toEducationalEntry(def);
+  const cover = resolveCoverSource(def.coverKey);
   return {
     title: def.title,
-    image: unsplashImage(def.photoId),
-    shortImage: unsplashImage(def.photoId, 600),
+    image: blogCoverImage(cover),
+    shortImage: blogCoverImage(cover, 600),
     tags: def.tags,
     categories: def.categories,
     published: true,

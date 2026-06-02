@@ -3,7 +3,7 @@ import type { EducationalArticleDef } from '../../content-builder';
 export const tutorialsPart2: EducationalArticleDef[] = [
   {
     title: 'Docker ve Docker Compose: Geliştirmeden Production\'a',
-    photoId: '1605743520719-b8d638b704ba',
+    coverKey: 'docker',
     tags: ['docker', 'compose', 'devops', 'container'],
     categories: ['DevOps', 'Altyapı'],
     stackNote: 'Docker 27+, Docker Compose v2, Node.js 22 alpine, PostgreSQL 16',
@@ -91,7 +91,7 @@ CMD ["node", "server.js"]`,
   },
   {
     title: 'GitHub Actions ile CI/CD: Test, Build ve Deploy',
-    photoId: '1618477247221-94724831379e',
+    coverKey: 'cicd',
     tags: ['github-actions', 'ci-cd', 'otomasyon', 'devops'],
     categories: ['DevOps', 'Kalite'],
     stackNote: 'GitHub Actions, Node 22, Yarn, Vitest 4, Playwright 1.60, ESLint 10',
@@ -163,7 +163,7 @@ jobs:
   },
   {
     title: 'Test Piramidi: Vitest, Entegrasyon ve Playwright E2E',
-    photoId: '1461749280684-dccba630e2f6',
+    coverKey: 'testing',
     tags: ['testing', 'vitest', 'playwright', 'kalite'],
     categories: ['Kalite', 'Programlama'],
     stackNote: 'Vitest 4.x, Playwright 1.60+, Testing Library, Prisma test DB',
@@ -231,7 +231,7 @@ describe('parseTagNames', () => {
   },
   {
     title: 'Redis Önbellekleme: Cache-Aside, TTL ve Invalidation',
-    photoId: '1551288049-bebda4e38f71',
+    coverKey: 'redis',
     tags: ['redis', 'cache', 'performans', 'backend'],
     categories: ['Backend', 'Performans'],
     stackNote: 'Redis 7.x, Node ioredis, Next.js cache/revalidateTag',
@@ -300,7 +300,7 @@ describe('parseTagNames', () => {
   },
   {
     title: 'PostgreSQL Performans: Index, EXPLAIN ve Pool Tuning',
-    photoId: '1544383835-96da6f4a0b0a',
+    coverKey: 'postgresql',
     tags: ['postgresql', 'sql', 'performans', 'veritabani'],
     categories: ['Veritabanı', 'Performans'],
     stackNote: 'PostgreSQL 16+, Prisma 7, PgBouncer, EXPLAIN ANALYZE',

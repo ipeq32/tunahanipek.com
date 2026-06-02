@@ -4,6 +4,7 @@ import { IGetBlog } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
+import BlogImage from '@/components/blog/BlogImage';
 import Image from 'next/image';
 import { Link } from '@/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -88,12 +89,11 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
       </header>
 
       <figure className="mb-10 overflow-hidden rounded-2xl border border-border/60 shadow-lg">
-        <Image
-          src={data.image || '/blog.jpg'}
+        <BlogImage
+          src={data.image}
           alt={data.title}
           width={1200}
           height={560}
-          unoptimized
           className="aspect-[21/9] w-full object-cover"
           priority
         />

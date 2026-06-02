@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import BlogImage from '@/components/blog/BlogImage';
 import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
@@ -23,12 +23,11 @@ export default function BlogCard({ blog }: BlogCardProps) {
         href={{ pathname: '/blog/[id]', params: { id: blog.id } }}
         className="relative block aspect-[16/10] overflow-hidden"
       >
-        <Image
-          src={blog.shortImage || '/blog.jpg'}
+        <BlogImage
+          src={blog.shortImage}
           alt={blog.title}
           width={640}
           height={400}
-          unoptimized
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />

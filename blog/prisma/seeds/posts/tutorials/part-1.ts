@@ -3,7 +3,7 @@ import type { EducationalArticleDef } from '../../content-builder';
 export const tutorialsPart1: EducationalArticleDef[] = [
   {
     title: 'TypeScript 5.9+ ve Zod ile Tip Güvenli Full-Stack Geliştirme',
-    photoId: '1516116216624-53e697fedbea',
+    coverKey: 'typescript',
     tags: ['typescript', 'zod', 'tip-guvenligi', 'full-stack'],
     categories: ['Web Geliştirme', 'Programlama'],
     stackNote: 'TypeScript 5.9+, Zod 3.x, Node.js 22 LTS, Next.js 16 App Router',
@@ -127,7 +127,7 @@ async function createBlog(input: unknown): Promise<ApiResult<{ id: string }>> {
   },
   {
     title: 'Prisma 7 ve PostgreSQL: Üretim Kalitesinde Veri Katmanı',
-    photoId: '1544383835-96da6f4a0b0a',
+    coverKey: 'prisma',
     tags: ['prisma', 'postgresql', 'orm', 'veritabani'],
     categories: ['Backend', 'Veritabanı'],
     stackNote: 'Prisma 7.8+, PostgreSQL 16+, PrismaPg adapter, Node.js 22',
@@ -242,7 +242,7 @@ async function createBlog(input: unknown): Promise<ApiResult<{ id: string }>> {
   },
   {
     title: 'Next.js 16 App Router: Server Components Öğreticisi',
-    photoId: '1555066931-4365d14bab8c',
+    coverKey: 'nextjs',
     tags: ['next.js', 'react', 'server-components', 'app-router'],
     categories: ['Web Geliştirme', 'Yazılım Mimarisi'],
     stackNote: 'Next.js 16.2+, React 19.2+, next-intl 4.x',
@@ -334,7 +334,7 @@ export default async function BlogPage() {
   },
   {
     title: 'NextAuth (Auth.js) v5 ile Güvenli Oturum Yönetimi',
-    photoId: '1563013544-86ae1ad094d0',
+    coverKey: 'nextauth',
     tags: ['nextauth', 'auth.js', 'oauth', 'guvenlik'],
     categories: ['Web Geliştirme', 'Güvenlik'],
     stackNote: 'next-auth 5.0 beta, Next.js 16 App Router, bcryptjs, Prisma adapter',
@@ -420,7 +420,7 @@ export default async function BlogPage() {
   },
   {
     title: 'REST API Tasarımı ve Next.js Route Handlers',
-    photoId: '1558494949-ef010cbdcc31',
+    coverKey: 'restApi',
     tags: ['rest', 'api', 'next.js', 'backend'],
     categories: ['Backend', 'API'],
     stackNote: 'Next.js 16 Route Handlers, Zod validation, Prisma 7',
