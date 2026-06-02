@@ -1,7 +1,12 @@
+import SignatureLogo from "@/app/_ui/SignatureLogo";
+
 const Loading = () => {
   return (
     <div id="preloader" role="status" aria-label="Yükleniyor">
-      <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-200 border-t-emerald-600" />
+      <SignatureLogo
+        gradientId="loader-signature-gradient"
+        className="h-24 w-24 sm:h-28 sm:w-28"
+      />
     </div>
   );
 };
