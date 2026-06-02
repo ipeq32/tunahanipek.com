@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
 
 const schema = z.object({
@@ -16,6 +16,7 @@ const schema = z.object({
 
 export default function ForgotPasswordForm() {
   const t = useTranslations('Auth.ForgotPassword');
+  const locale = useLocale();
   const [resetUrl, setResetUrl] = useState<string | null>(null);
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -29,7 +30,7 @@ export default function ForgotPasswordForm() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
+          body: JSON.stringify({ ...values, locale }),
         }
       );
       const data = await res.json();
@@ -42,14 +43,14 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="w-[600px] max-md:w-full space-y-4">
+    <div className="w-full space-y-4">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Input
           type="email"
           placeholder={t('emailPlaceholder')}
           {...form.register('email')}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" variant="accent" className="w-full">
           {t('submit')}
         </Button>
       </form>

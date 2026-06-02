@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 const schema = z.object({
   email: z.string().email(),
+  locale: z.enum(['tr', 'en']).optional(),
 });
 
 export async function POST(request: Request) {
@@ -29,7 +30,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Invalid email' }, { status: 400 });
     }
 
-    const result = await createPasswordResetToken(parsed.data.email);
+    const result = await createPasswordResetToken(
+      parsed.data.email,
+      parsed.data.locale
+    );
 
     return NextResponse.json({
       message: 'If the email exists, a reset link has been sent.',

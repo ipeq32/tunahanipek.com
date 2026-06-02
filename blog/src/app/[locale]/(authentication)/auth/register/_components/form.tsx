@@ -139,7 +139,6 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log('Submitting form', data);
 
     const {
       email,
@@ -409,7 +408,8 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
         </div>
         <Button
           type="submit"
-          className="hover:scale-105 w-full"
+          variant="accent"
+          className="w-full"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting

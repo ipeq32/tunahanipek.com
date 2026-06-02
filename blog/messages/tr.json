@@ -47,6 +47,11 @@
     "Add": {
       "title": "Blog Ekle",
       "description": "Bloglarınızı bu sayfadan ekleyebilirsiniz. Onay sonrası yayınlanır."
+    },
+    "NotFound": {
+      "title": "Blog bulunamadı",
+      "description": "Aradığınız yazı yayında değil veya kaldırılmış olabilir.",
+      "button": "Bloglara dön"
     }
   },
   "Admin": {
@@ -83,8 +88,33 @@
     },
     "Project": {
       "title": "Proje Yönetimi",
-      "description": "Projelerinizi buradan yönetin.",
-      "comingSoon": "Proje yönetim paneli yakında eklenecek. Bu bölümde portfolyo projelerinizi ekleyip düzenleyebileceksiniz."
+      "description": "Projelerinizi ekleyin, düzenleyin ve yayınlayın.",
+      "addTitle": "Yeni proje",
+      "editTitle": "Projeyi düzenle",
+      "fieldTitle": "Başlık",
+      "fieldDescription": "Açıklama",
+      "fieldUrl": "Proje URL",
+      "fieldImage": "Görsel URL",
+      "fieldSort": "Sıra",
+      "fieldPublished": "Yayında",
+      "add": "Ekle",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "edit": "Düzenle",
+      "publish": "Yayınla",
+      "unpublish": "Yayından kaldır",
+      "delete": "Sil",
+      "created": "Proje eklendi",
+      "updated": "Proje güncellendi",
+      "deleted": "Proje silindi",
+      "published": "Proje yayınlandı",
+      "unpublished": "Proje yayından kaldırıldı",
+      "loadError": "Projeler yüklenemedi",
+      "actionError": "İşlem başarısız",
+      "deleteConfirm": "Bu projeyi silmek istediğinize emin misiniz?",
+      "empty": "Henüz proje yok",
+      "statusPublished": "Yayında",
+      "statusDraft": "Taslak"
     }
   },
   "Auth": {
@@ -193,7 +223,9 @@
         "title": "Blog",
         "description": "Teknik ve kişisel yazılar.",
         "link": "Bloga git"
-      }
+      },
+      "dbTitle": "Diğer projeler",
+      "visit": "Projeyi görüntüle"
     }
   },
   "LocaleSwitcher": {

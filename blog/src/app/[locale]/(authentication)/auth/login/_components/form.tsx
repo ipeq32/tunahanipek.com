@@ -159,7 +159,8 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         />
         <Button
           type="submit"
-          className="hover:scale-105 w-full"
+          variant="accent"
+          className="w-full"
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting

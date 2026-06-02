@@ -47,6 +47,11 @@
     "Add": {
       "title": "Add post",
       "description": "Create a new article from this page. It will be published after approval."
+    },
+    "NotFound": {
+      "title": "Blog not found",
+      "description": "This post may be unpublished or has been removed.",
+      "button": "Back to blog"
     }
   },
   "Admin": {
@@ -83,8 +88,33 @@
     },
     "Project": {
       "title": "Project management",
-      "description": "Manage your portfolio projects.",
-      "comingSoon": "The project management panel is coming soon. You will be able to add and edit portfolio projects here."
+      "description": "Add, edit, and publish portfolio projects.",
+      "addTitle": "New project",
+      "editTitle": "Edit project",
+      "fieldTitle": "Title",
+      "fieldDescription": "Description",
+      "fieldUrl": "Project URL",
+      "fieldImage": "Image URL",
+      "fieldSort": "Sort order",
+      "fieldPublished": "Published",
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "delete": "Delete",
+      "created": "Project created",
+      "updated": "Project updated",
+      "deleted": "Project deleted",
+      "published": "Project published",
+      "unpublished": "Project unpublished",
+      "loadError": "Could not load projects",
+      "actionError": "Action failed",
+      "deleteConfirm": "Delete this project?",
+      "empty": "No projects yet",
+      "statusPublished": "Published",
+      "statusDraft": "Draft"
     }
   },
   "Auth": {
@@ -193,7 +223,9 @@
         "title": "Blog",
         "description": "Technical and personal articles.",
         "link": "Go to blog"
-      }
+      },
+      "dbTitle": "More projects",
+      "visit": "View project"
     }
   },
   "LocaleSwitcher": {

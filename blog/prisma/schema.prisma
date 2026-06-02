@@ -110,3 +110,18 @@ model Tag {
   deletedAt DateTime? @db.Timestamptz(3)
   blogs     Blog[]
 }
+
+model Project {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title       String
+  description String
+  url         String?
+  image       String?
+  sortOrder   Int       @default(0)
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt   DateTime? @db.Timestamptz(3)
+
+  @@index([published, sortOrder])
+}

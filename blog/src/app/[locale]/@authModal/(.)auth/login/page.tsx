@@ -9,11 +9,9 @@ import {
 } from '@/components/ui/dialog';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/_components/form';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -53,29 +51,17 @@ export default function LoginModal() {
     <Dialog
       key="login-modal"
       open={isOpened}
-      // defaultOpen
       onOpenChange={(isOpen) => setIsOpened(isOpen === null ? true : false)}
     >
-      <DialogContent className="sm:max-w-[425px] gap-0">
+      <DialogContent className="gap-0 border-border/60 bg-card/95 backdrop-blur-xl sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            <motion.div
-              animate={{ x: 0 }}
-              initial={{ x: 200 }}
-              transition={{
-                ease: 'backInOut',
-                duration: 2,
-                y: { duration: 1 },
-              }}
-              className="text-4xl font-bold text-black dark:text-white mt-5"
-            >
-              {t('title')}
-            </motion.div>
+          <DialogTitle className="text-2xl font-bold tracking-tight">
+            {t('title')}
           </DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <LoginForm setOpenModal={setIsOpened} />
-        <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
+        <Button variant="ghost" onClick={handleClick} className="mt-3 w-full">
           {t('button')}
         </Button>
       </DialogContent>

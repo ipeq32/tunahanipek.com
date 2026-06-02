@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/navigation';
+import { ContentCard } from '@/components/layout/content-card';
 
 const formSchema = z.object({
   title: z.string().min(2),
@@ -84,11 +85,11 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
   }
 
   return (
-    <div className="flex justify-center w-full mt-5">
+    <ContentCard className="mt-2">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-5 w-full md:mt-10"
+          className="flex w-full flex-col gap-5"
         >
           <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
             <FormField
@@ -188,11 +189,11 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
               )}
             />
           </div>
-          <Button type="submit" className="max-w-56 mx-auto">
+          <Button type="submit" variant="accent" className="mx-auto max-w-56">
             {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
           </Button>
         </form>
       </Form>
-    </div>
+    </ContentCard>
   );
 }

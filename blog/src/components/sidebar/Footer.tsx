@@ -1,299 +1,186 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
 import Image from 'next/image';
-import { Instagram, Linkedin, Phone, Mail, MapPin, Github } from 'lucide-react';
+import {
+  Github,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
 
 const Footer = () => {
   const { data, status } = useSession();
-
   const t = useTranslations('Footer');
 
   const emailAddress = 'tnhnipek@gmail.com';
   const emailSubject = t('Mail.subject');
   const emailBody = t('Mail.body', {
-    auth: `${status === 'authenticated' && `İsmim ${data.user?.name}`}${status === 'unauthenticated' && 'Daha giriş yapmadım.'}`,
+    auth: `${status === 'authenticated' && `İsmim ${data?.user?.name}`}${status === 'unauthenticated' && 'Daha giriş yapmadım.'}`,
   });
   const recipientAddress = 'Gültepe, Albayrak Meydanı, Merkezefendi/Denizli';
 
-  const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(
-    emailSubject
-  )}&body=${encodeURIComponent(emailBody)}`;
-  const googleMapsLink = `https://www.google.com/maps/search/${encodeURIComponent(
-    recipientAddress
-  )}`;
+  const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+  const googleMapsLink = `https://www.google.com/maps/search/${encodeURIComponent(recipientAddress)}`;
 
   const instagramLinks = [
     {
       src: '/insta-photo-1.jpg',
-      hFull: false,
       url: 'https://www.instagram.com/p/BtYoiKplxjKfBcFcpjSfCRhiBgWjmFYyCMQMqM0/',
     },
     {
       src: '/insta-photo-2.jpg',
-      hFull: false,
       url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
     },
     {
       src: '/insta-photo-3.jpg',
-      hFull: false,
       url: 'https://www.instagram.com/p/BtRVtURFUM2kWGGaaq_VektF2mH1Jl81ApwhQg0/',
     },
     {
       src: '/insta-photo-4.jpg',
-      hFull: true,
       url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
     },
   ];
 
+  const usefulLinks = [
+    { href: '/about-me', label: t.raw('UsefulLink.about') as string },
+    { href: '/project', label: t.raw('UsefulLink.project') as string },
+    { href: '/faq', label: t.raw('UsefulLink.faq') as string },
+    { href: '/contact', label: t.raw('UsefulLink.contact') as string },
+  ];
+
   return (
-    <footer className="mt-20 flex h-max flex-col items-center justify-between border-t border-border/60 bg-card/40 py-8 backdrop-blur-sm max-2xl:px-10">
-      <div className="max-w-screen-2xl w-full flex flex-row  justify-center items-start flex-wrap mb-5">
-        {/* logo and contact */}
-        <div className="flex flex-col items-center justify-around w-80 h-64 max-md:border-b-2 max-md:border-slate-400 max-md:my-4 max-md:pb-4 z-10">
-          <figure className="flex justify-center items-center w-32 h-32">
-            <div id="preloader" className="!w-full !h-full !bg-transparent">
-              <svg
-                id="logo"
-                data-name="Layer 1"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 203.29 204.17"
-                className="!w-full !h-full"
-              >
-                <defs>
-                  <linearGradient
-                    id="gradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="0%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#00bc9b" />
-                    <stop offset="100%" stopColor="#5eaefd" />
-                  </linearGradient>
-                </defs>
-                <path
-                  className="st1 ![animation-direction:alternate-reverse] ![animation-iteration-count:infinite]"
-                  stroke="url(#gradient)"
-                  strokeWidth="2"
-                  fill="none"
-                  d="M190.42,253.13s1.76,24.46,36.1,24.55l34.34.1s71.44-2.21,70.73,69.92-1.08,79.37-1.08,79.37-2.84,30.61-37.56,30.22c.29-20.25,1.4-106.86,1.4-106.86s-18-10.17-36.65-10.95-38.09-12.13-41.09-15.13a22.3,22.3,0,0,0,8.59.39s-20.33-8-31-32c13.57,15.79,22.05,13.31,22.05,13.31s-26.14-15.74-25.8-32.32C190.66,261.77,190.42,253.13,190.42,253.13Z"
-                  transform="translate(-190.41 -253.13)"
-                />
-                <path
-                  stroke="url(#gradient)"
-                  strokeWidth="2"
-                  fill="none"
-                  className="st0 ![animation-direction:alternate-reverse] ![animation-iteration-count:infinite] ![animation-duration:4s]"
-                  d="M332.24,300.61a95.75,95.75,0,0,1,5.31,34.69h28.18s22.3-1.66,28-27.88v-6.81Z"
-                  transform="translate(-190.41 -253.13)"
-                />
-              </svg>
-            </div>
-          </figure>
-          <div className="relative flex justify-center group/slogan px-2 py-1 rounded-md">
-            <span className="absolute bottom-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/slogan:w-full group-hover/slogan:h-full transition-all duration-300 ease-linear rounded-md" />
-            <RotatingMotto />
-          </div>
-          <div className="flex flex-row items-center gap-3">
-            <p className="text-lg">{t('follow')}</p>
-            <div className="flex flex-row items-center gap-2">
-              <Link href="https://github.com/ipeq32" target="_blank">
-                <Github
-                  className="hover:text-stone-500 transition-colors duration-500 ease-linear"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-              <Link href="https://www.instagram.com/tnhnipek" target="_blank">
-                <Instagram
-                  className="hover:text-rose-500 transition-colors duration-500 ease-linear"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-              <Link
-                href="https://www.linkedin.com/in/tunahanipek"
-                target="_blank"
-              >
-                <Linkedin
-                  className="hover:text-sky-500 transition-colors duration-500 ease-linear"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-            </div>
+    <footer className="mt-20 border-t border-border/60 bg-card/30 backdrop-blur-sm">
+      <div className="container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="space-y-4">
+          <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
+          <RotatingMotto />
+          <div className="flex gap-3">
+            <Link
+              href="https://github.com/ipeq32"
+              target="_blank"
+              rel="noreferrer"
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="GitHub"
+            >
+              <Github className="h-5 w-5" />
+            </Link>
+            <Link
+              href="https://www.instagram.com/tnhnipek"
+              target="_blank"
+              rel="noreferrer"
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </Link>
+            <Link
+              href="https://www.linkedin.com/in/tunahanipek"
+              target="_blank"
+              rel="noreferrer"
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="h-5 w-5" />
+            </Link>
           </div>
         </div>
-        {/* adress information */}
-        <div className="flex flex-col items-center justify-start gap-8 h-64 w-80 max-md:border-b-2 max-md:border-slate-400 max-md:my-4 max-md:pb-4">
-          <div className="relative group/info flex items-center justify-center w-full">
-            <span className="absolute top-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/info:w-full group-hover/info:h-full transition-all duration-300 ease-linear rounded-md" />
-            <p className="text-xl flex items-center z-10 cursor-default">
-              {t('AddressInfo.title')}
-            </p>
-          </div>
-          <div className="flex flex-col items-center justify-stretch h-full gap-4">
-            <div className="flex flex-row items-center group/call w-full gap-2 mr-5 h-10">
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t('AddressInfo.title')}
+          </h3>
+          <ul className="space-y-3 text-sm">
+            <li>
               <Link
-                href={'tel:+905416064488'}
-                target="_blank"
-                className="relative flex justify-center items-center group/phone rounded-md bg-indigo-900 h-full w-10"
+                href="tel:+905416064488"
+                className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
               >
-                <span className="absolute bg-amber-600 bottom-0 w-0 h-0 group-hover/phone:w-full group-hover/phone:h-full rounded-md transition-all duration-300 ease-linear" />
-                <Phone
-                  width={25}
-                  height={25}
-                  className="group-hover/phone:text-slate-200 group-hover/phone:scale-125 text-amber-400 z-10 transition-colors"
-                />
+                <Phone className="h-4 w-4 shrink-0" />
+                +90 (541) 606-4488
               </Link>
-              <div className="flex flex-col items-start">
-                <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  {t('AddressInfo.callMe')}
-                </div>
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
-                  +90 (541) 606-4488
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row items-center group/call w-full gap-2 mr-5 h-10">
+            </li>
+            <li>
               <Link
                 href={mailtoLink}
-                target="_blank"
-                className="relative flex justify-center items-center group/phone rounded-md bg-indigo-900 h-full w-10"
+                className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
               >
-                <span className="absolute bg-amber-600 bottom-0 w-0 h-0 group-hover/phone:w-full group-hover/phone:h-full rounded-md transition-all duration-300 ease-linear" />
-                <Mail
-                  width={25}
-                  height={25}
-                  className="group-hover/phone:text-slate-200 group-hover/phone:scale-125 text-amber-400 z-10 transition-colors"
-                />
+                <Mail className="h-4 w-4 shrink-0" />
+                {emailAddress}
               </Link>
-              <div className="flex flex-col items-start">
-                <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  {t('AddressInfo.email')}
-                </div>
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
-                  tnhnipek@gmail.com
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row items-center group/call w-full gap-2 mr-5 h-10">
+            </li>
+            <li>
               <Link
                 href={googleMapsLink}
                 target="_blank"
-                className="relative flex justify-center items-center group/phone rounded-md bg-indigo-900 h-full w-10"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
               >
-                <span className="absolute bg-amber-600 bottom-0 w-0 h-0 group-hover/phone:w-full group-hover/phone:h-full rounded-md transition-all duration-300 ease-linear" />
-                <MapPin
-                  width={25}
-                  height={25}
-                  className="group-hover/phone:text-slate-200 group-hover/phone:scale-125 text-amber-400 z-10 transition-colors"
-                />
+                <MapPin className="h-4 w-4 shrink-0" />
+                Gültepe/DENİZLİ
               </Link>
-              <div className="flex flex-col items-start">
-                <div className="text-md font-medium text-gray-500 group-hover/call:text-gray-400">
-                  {t('AddressInfo.address')}
-                </div>
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:group-hover/call:text-gray-300">
-                  Gültepe/DENİZLİ
-                </div>
-              </div>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
-        {/* useful links */}
-        <div className="flex flex-col items-center justify-start gap-5 h-64 w-80 max-md:border-b-2 max-md:border-slate-400 max-md:my-4 max-md:pb-4 max-md:h-max">
-          <div className="relative group/info flex items-center justify-center w-full">
-            <span className="absolute top-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/info:w-full group-hover/info:h-full transition-all duration-300 ease-linear rounded-md" />
-            <p className="text-xl flex items-center z-10 cursor-default">
-              {t('UsefulLink.title')}
-            </p>
-          </div>
-          <div className="flex flex-col items-center justify-stretch h-full gap-2">
-            <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
-              <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
-              <Link
-                href={'/about-me'}
-                className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-                dangerouslySetInnerHTML={{ __html: t.raw('UsefulLink.about') }}
-              />
-            </div>
-            <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
-              <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
-              <Link
-                href={'/project'}
-                className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-                dangerouslySetInnerHTML={{
-                  __html: t.raw('UsefulLink.project'),
-                }}
-              />
-            </div>
-            <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
-              <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
-              <Link
-                href={'/faq'}
-                className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-                dangerouslySetInnerHTML={{ __html: t.raw('UsefulLink.faq') }}
-              />
-            </div>
-            <div className="relative flex items-start w-full group/about px-2 py-1 rounded-md">
-              <span className="absolute top-1/2 left-0 translate-y-[-50%] w-0 h-0 bg-amber-400 group-hover/about:w-full group-hover/about:h-full transition-all duration-300 ease-linear rounded-md" />
-              <Link
-                href={'/contact'}
-                className="flex items-center z-10 text-md font-medium text-slate-500 dark:text-slate-300 group-hover/about:text-indigo-950"
-                dangerouslySetInnerHTML={{
-                  __html: t.raw('UsefulLink.contact'),
-                }}
-              />
-            </div>
-          </div>
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {t('UsefulLink.title')}
+          </h3>
+          <ul className="space-y-2 text-sm">
+            {usefulLinks.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
+                  dangerouslySetInnerHTML={{ __html: item.label }}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
-        {/* instagram */}
-        <div className="flex flex-col items-center justify-start gap-8 h-64 w-80 max-md:border-b-2 max-md:last:border-transparent max-md:my-4 max-md:pb-4">
-          <div className="relative group/info flex items-center justify-center w-full">
-            <span className="absolute top-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/info:w-full group-hover/info:h-full transition-all duration-300 ease-linear rounded-md" />
-            <p className="text-xl flex items-center z-10 cursor-default">
-              Instagram
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 w-1/2 h-full max-md:w-3/4">
-            {instagramLinks?.map((link, index) => (
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Instagram
+          </h3>
+          <div className="grid grid-cols-4 gap-2 max-w-[200px]">
+            {instagramLinks.map((link, index) => (
               <Link
                 key={index}
                 href={link.url}
                 target="_blank"
-                className="flex justify-center items-center rounded-md hover:scale-105 hover:shadow-sm hover:shadow-slate-600"
+                rel="noreferrer"
+                className="overflow-hidden rounded-lg border border-border/60 transition-opacity hover:opacity-80"
               >
                 <Image
                   src={link.src}
-                  alt={`photo ${index}`}
-                  width={70}
-                  height={70}
-                  className={`${link.hFull ? 'h-[86%] scale-105' : ''}`}
+                  alt={`Instagram ${index + 1}`}
+                  width={48}
+                  height={48}
+                  className="aspect-square object-cover"
                 />
               </Link>
             ))}
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-5 w-full">
-        <span className="bg-slate-500 max-w-screen-2xl w-full h-[1px]" />
-        <p className="flex items-center justify-center gap-1 max-mobile-xl:text-xs">
-          ©{' '}
-          <span className="text-emerald-500 font-semibold max-mobile-xl:font-normal">
-            Blog
-          </span>{' '}
+
+      <div className="border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
+        <p>
+          © <span className="text-teal-600 dark:text-teal-400">Blog</span>{' '}
           {t.rich('ownership', {
             link: (text) => (
               <Link
-                href={'https://tunahanipek.com'}
+                href="https://tunahanipek.com"
                 target="_blank"
-                className="text-emerald-500 font-semibold hover:scale-105"
+                rel="noreferrer"
+                className="font-medium text-teal-600 hover:underline dark:text-teal-400"
               >
                 {text}
               </Link>

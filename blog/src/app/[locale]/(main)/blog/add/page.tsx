@@ -6,9 +6,9 @@ export default async function Page() {
   const t = await getTranslations('Blog.Add');
 
   return (
-    <div className="container">
+    <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <AddBlogFeature />
-    </div>
+    </>
   );
 }

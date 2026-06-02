@@ -9,7 +9,7 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 ## Auth
 
 - `POST /api/auth/register` — kayıt
-- `POST /api/auth/forgot-password` — şifre sıfırlama token (dev’de `resetUrl` dönebilir)
+- `POST /api/auth/forgot-password` — `{ email, locale? }` şifre sıfırlama e-postası (Resend; dev’de `resetUrl` dönebilir)
 - `POST /api/auth/reset-password` — `{ token, password, passwordConfirm }`
 - `POST /api/auth/[...nextauth]` — NextAuth (giriş/çıkış)
 
@@ -38,3 +38,11 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 
 - `GET /api/tags`
 - `GET /api/categories`
+
+## Projeler
+
+- `GET /api/projects` — yayınlanmış projeler
+- `GET /api/projects/admin` — tüm projeler (SUPER_ADMIN)
+- `POST /api/projects/admin` — proje oluştur
+- `PATCH /api/projects/[id]` — proje güncelle
+- `DELETE /api/projects/[id]` — soft delete

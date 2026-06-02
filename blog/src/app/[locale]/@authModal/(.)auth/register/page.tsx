@@ -10,7 +10,6 @@ import {
 
 import RegisterForm from '@/app/[locale]/(authentication)/auth/register/_components/form';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -34,26 +33,15 @@ export default function RegisterModal() {
       defaultOpen
       onOpenChange={(isOpen) => isOpen === false && router.back()}
     >
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto border-border/60 bg-card/95 backdrop-blur-xl sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            <motion.div
-              animate={{ x: 0 }}
-              initial={{ x: 200 }}
-              transition={{
-                ease: 'backInOut',
-                duration: 2,
-                y: { duration: 1 },
-              }}
-              className="text-4xl font-bold text-black dark:text-white mt-5"
-            >
-              {t('title')}
-            </motion.div>
+          <DialogTitle className="text-2xl font-bold tracking-tight">
+            {t('title')}
           </DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <RegisterForm isModal />
-        <Button variant="ghost" onClick={handleClick} className="w-full mt-3">
+        <Button variant="ghost" onClick={handleClick} className="mt-3 w-full">
           {t('button')}
         </Button>
       </DialogContent>
