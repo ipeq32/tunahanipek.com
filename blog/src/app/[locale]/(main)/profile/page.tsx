@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
-      <ContentCard className="mt-2 max-w-2xl">
+      <ContentCard className="mt-2">
         <div className="mb-6 flex items-center gap-4">
           <Image
             src={

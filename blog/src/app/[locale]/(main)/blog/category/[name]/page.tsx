@@ -1,3 +1,4 @@
+import BlogBackLink from '@/components/blog/BlogBackLink';
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from '../../_features/Blogs';
 import PaginationComponent from '@/components/pagination';
@@ -28,6 +29,7 @@ export default async function BlogCategoryPage({
 
   return (
     <>
+      <BlogBackLink />
       <HeaderTemplate
         title={t('categoryTitle', { name })}
         description={t('categoryDescription', { name })}

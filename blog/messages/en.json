@@ -37,6 +37,7 @@
     "Taxonomy": {
       "tags": "Tags",
       "categories": "Categories",
+      "back": "Go back",
       "tagTitle": "#{name} tag",
       "tagDescription": "Posts tagged with {name}",
       "categoryTitle": "{name} category",

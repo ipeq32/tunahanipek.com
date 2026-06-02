@@ -42,7 +42,7 @@ export default async function EditBlogPage({ params }: Props) {
   }
 
   return (
-    <div className="container">
+    <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <BlogForm
         mode="edit"
@@ -57,6 +57,6 @@ export default async function EditBlogPage({ params }: Props) {
           categories: blog.categories.join(', '),
         }}
       />
-    </div>
+    </>
   );
 }

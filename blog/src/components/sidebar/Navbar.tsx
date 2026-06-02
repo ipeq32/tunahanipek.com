@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import ProfileDropdownMenuFeature from './_features/ProfileDropdownMenu';
+import { SiteContainer } from '@/components/layout/site-container';
 
 const Navbar = () => {
   const searchParams = useSearchParams();
@@ -57,7 +58,10 @@ const Navbar = () => {
 
   return (
     <nav className="glass-nav sticky top-0 z-50">
-      <section className="container flex h-16 items-center justify-between md:h-[4.5rem]">
+      <SiteContainer
+        as="section"
+        className="flex h-16 items-center justify-between md:h-[4.5rem]"
+      >
         <LogoFeature />
 
         <div className="hidden items-center gap-1 rounded-full border border-border/60 bg-muted/40 p-1 xl:flex">
@@ -144,7 +148,7 @@ const Navbar = () => {
             </SheetFooter>
           </SheetContent>
         </Sheet>
-      </section>
+      </SiteContainer>
     </nav>
   );
 };

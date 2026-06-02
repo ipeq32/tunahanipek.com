@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
+import { SiteContainer } from '@/components/layout/site-container';
 
 type FooterProps = {
   isAuthenticated: boolean;
@@ -59,7 +60,7 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
 
   return (
     <footer className="border-t border-border/60 bg-card/30 pt-12 backdrop-blur-sm">
-      <div className="container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+      <SiteContainer className="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
           <RotatingMotto />
@@ -172,9 +173,9 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
             ))}
           </div>
         </div>
-      </div>
+      </SiteContainer>
 
-      <div className="border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
+      <SiteContainer className="border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
         <p>
           © <span className="text-teal-600 dark:text-teal-400">Blog</span>{' '}
           {t.rich('ownership', {
@@ -190,7 +191,7 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
             ),
           })}
         </p>
-      </div>
+      </SiteContainer>
     </footer>
   );
 };

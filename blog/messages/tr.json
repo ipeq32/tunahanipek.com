@@ -37,6 +37,7 @@
     "Taxonomy": {
       "tags": "Etiketler",
       "categories": "Kategoriler",
+      "back": "Geri dön",
       "tagTitle": "#{name} etiketi",
       "tagDescription": "{name} etiketli yazılar",
       "categoryTitle": "{name} kategorisi",

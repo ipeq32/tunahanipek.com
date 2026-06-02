@@ -24,7 +24,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
   }
 
   return (
-    <article className="mx-auto max-w-3xl pb-16 pt-4">
+    <article className="pb-16 pt-4">
       <header className="mb-8 space-y-6">
         {(data.tags.length > 0 || data.categories.length > 0) && (
           <div className="flex flex-wrap justify-center gap-2">

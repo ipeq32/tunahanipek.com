@@ -1,3 +1,4 @@
+import BlogBackLink from '@/components/blog/BlogBackLink';
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from '../../_features/Blogs';
 import PaginationComponent from '@/components/pagination';
@@ -25,6 +26,7 @@ export default async function BlogTagPage({ params, searchParams }: Props) {
 
   return (
     <>
+      <BlogBackLink />
       <HeaderTemplate
         title={t('tagTitle', { name })}
         description={t('tagDescription', { name })}

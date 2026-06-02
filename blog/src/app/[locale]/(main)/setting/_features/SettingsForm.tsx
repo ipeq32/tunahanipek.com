@@ -109,7 +109,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
   };
 
   return (
-    <div className="mt-2 max-w-2xl space-y-6">
+    <div className="mt-2 space-y-6">
       <ContentCard>
         <h2 className="mb-6 text-lg font-semibold tracking-tight">{t('profileTitle')}</h2>
         <Form {...profileForm}>

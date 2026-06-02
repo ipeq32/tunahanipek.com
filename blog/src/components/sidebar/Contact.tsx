@@ -8,6 +8,7 @@ import ToggleLanguage from '../toggle-language';
 import { useTranslations } from 'next-intl';
 import type { Locale } from '@/i18n/request';
 import type { OfficeHoursSnapshot } from '@/lib/office-hours';
+import { SiteContainer } from '@/components/layout/site-container';
 
 type NavContactProps = {
   officeHours: OfficeHoursSnapshot;
@@ -20,7 +21,7 @@ const NavContact = ({ officeHours, locale }: NavContactProps) => {
 
   return (
     <div className="border-b border-border/40 bg-brand-muted/50 dark:bg-secondary/50">
-      <div className="container flex h-10 items-center justify-between gap-4">
+      <SiteContainer className="flex h-10 items-center justify-between gap-4">
         <div className="hidden items-center gap-2 lg:flex">
           <Stethoscope width={16} height={16} className="animate-pulse text-teal-600 dark:text-teal-400" />
           <div className="flex max-w-md items-center overflow-hidden">
@@ -93,7 +94,7 @@ const NavContact = ({ officeHours, locale }: NavContactProps) => {
             </div>
           </div>
         </div>
-      </div>
+      </SiteContainer>
     </div>
   );
 };
