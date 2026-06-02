@@ -9,7 +9,7 @@ const Navbar = () => {
         className="flex h-24 items-center rounded-full bg-red-100 shadow-xl md:h-[5.5rem]"
         aria-label="Ana menü"
       >
-        <div className="mb-4 flex w-24 flex-none items-end self-end max-sm:mr-5 max-sm:self-center sm:mx-6">
+        <div className="flex w-24 flex-none items-center self-center max-sm:mr-5 sm:mx-6">
           <div className="max-sm:hidden animate-fadeInDown space-y-2">
             <div className="h-4 w-2/4 rounded bg-gradient-to-r from-blue-400" />
             <div className="h-4 rounded bg-gradient-to-tl from-indigo-400 via-green-300 to-pink-400" />
@@ -26,13 +26,13 @@ const Navbar = () => {
           <div className="h-8 w-8 rounded-full bg-red-400" />
         </div>
 
-        <div className="flex flex-grow justify-center self-start max-sm:mr-6">
+        <div className="flex flex-grow items-center justify-center self-center max-sm:mr-6">
           <Link
             href="/"
-            className="brand-link animate-skew transition duration-500 ease-in-out hover:-translate-x-2 hover:-translate-y-1 hover:scale-110 hover:scale-y-125"
+            className="brand-link flex items-center animate-skew transition duration-500 ease-in-out hover:-translate-x-2 hover:-translate-y-1 hover:scale-110 hover:scale-y-125"
             aria-label={site.name}
           >
-            <div className="relative box">
+            <div className="box">
               <p className="text text1 text-green-500">tunahan</p>
               <p className="text text2 text-gray-700">tunahan</p>
             </div>
@@ -45,7 +45,7 @@ const Navbar = () => {
           <div className="h-8 w-8 rounded-full bg-pink-400" />
         </div>
 
-        <div className="mb-4 flex w-24 flex-none animate-fadeInDown items-end self-end max-sm:hidden sm:mx-6">
+        <div className="flex w-24 flex-none animate-fadeInDown items-center self-center max-sm:hidden sm:mx-6">
           <div className="rotate-180 space-y-2">
             <div className="h-4 w-2/4 rounded bg-gradient-to-tr from-yellow-400" />
             <div className="h-4 rounded bg-gradient-to-l from-blue-400 via-red-300 to-green-400" />

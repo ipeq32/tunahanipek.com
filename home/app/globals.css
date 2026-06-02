@@ -81,11 +81,11 @@
   }
 
   .box {
-    @apply relative h-12 w-36 sm:h-14 sm:w-44;
+    @apply relative flex h-12 w-36 items-center justify-center sm:h-14 sm:w-44;
   }
 
   .text {
-    @apply absolute uppercase;
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 uppercase;
     font-family: "Satisfy", cursive;
     font-size: clamp(1.75rem, 5vw, 3rem);
     line-height: 1;
@@ -103,11 +103,11 @@
 
   .box:hover .text1,
   .brand-link:focus-visible .text1 {
-    transform: translateY(-10px);
+    transform: translate(-50%, calc(-50% - 10px));
   }
 
   .box:hover .text2,
   .brand-link:focus-visible .text2 {
-    transform: translateY(10px);
+    transform: translate(-50%, calc(-50% + 10px));
   }
 }
