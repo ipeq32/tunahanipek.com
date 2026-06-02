@@ -104,6 +104,38 @@
   }
 }
 
+/* Navbar animated logo */
+@layer components {
+  .logo-brand-box {
+    @apply relative;
+  }
+
+  .logo-brand-text {
+    @apply absolute left-0 top-1/2 w-full -translate-y-1/2 text-center text-xl font-bold lowercase tracking-tight transition-transform duration-200 ease-out;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  .logo-brand-text1 {
+    @apply text-teal-500 dark:text-teal-400;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
+  }
+
+  .logo-brand-text2 {
+    @apply text-slate-600 dark:text-slate-500;
+    clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
+  }
+
+  .group\/logo:hover .logo-brand-text1,
+  .logo-brand-box:hover .logo-brand-text1 {
+    transform: translateY(calc(-50% - 5px));
+  }
+
+  .group\/logo:hover .logo-brand-text2,
+  .logo-brand-box:hover .logo-brand-text2 {
+    transform: translateY(calc(-50% + 5px));
+  }
+}
+
 /* Quill editor */
 .ql-snow {
   @apply first:rounded-t-md last:rounded-b-md !border-border text-foreground bg-card;

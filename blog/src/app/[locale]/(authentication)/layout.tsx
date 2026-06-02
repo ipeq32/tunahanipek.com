@@ -7,6 +7,7 @@ import ToggleLanguage from '@/components/toggle-language';
 import { useRouter } from '@/navigation';
 import { RecoilRoot } from 'recoil';
 import Link from 'next/link';
+import LogoFeature from '@/components/sidebar/_features/Logo';
 
 type Props = {
   children: React.ReactNode;
@@ -24,13 +25,7 @@ const AuthenticationLayout = ({ children }: Props) => {
     <RecoilRoot>
       <div className="mesh-background flex min-h-dvh flex-col">
         <header className="container flex items-center justify-between py-6">
-          <button
-            type="button"
-            onClick={() => router.push('/')}
-            className="text-lg font-bold tracking-tight text-gradient"
-          >
-            Tunahan İPEK
-          </button>
+          <LogoFeature />
           <div className="flex items-center gap-3">
             <ToggleTheme />
             <ToggleLanguage />

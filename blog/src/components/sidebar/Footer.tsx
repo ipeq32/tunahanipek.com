@@ -55,7 +55,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="mt-20 border-t border-border/60 bg-card/30 backdrop-blur-sm">
+    <footer className="mt-auto border-t border-border/60 bg-card/30 pt-12 backdrop-blur-sm">
       <div className="container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
