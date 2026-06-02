@@ -20,10 +20,12 @@ const MainLayout = ({ children }: Props) => {
 
   return (
     <RecoilRoot>
-      <div className="mesh-background flex min-h-dvh flex-col">
+      <div className="mesh-background flex flex-col">
         <NavContact />
         <Navbar />
-        <main className="container flex flex-1 flex-col pb-16 pt-2">{children}</main>
+        <main className="container flex min-h-[calc(100dvh-var(--site-header-height))] flex-col pb-16 pt-2">
+          {children}
+        </main>
         <Footer />
       </div>
     </RecoilRoot>

@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    --site-header-height: 6.5rem;
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
@@ -24,6 +25,12 @@
     --radius: 0.75rem;
     --brand: 173 58% 39%;
     --brand-muted: 173 40% 94%;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --site-header-height: 7rem;
+    }
   }
 
   .dark {
