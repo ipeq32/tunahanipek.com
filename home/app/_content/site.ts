@@ -1,11 +1,11 @@
 export const site = {
   name: "Tunahan İpek",
   role: "Yazılım Geliştirici",
-  tagline: "Kod, öğrenme ve paylaşım üzerine kişisel alanım.",
+  tagline: "Denizli · Rubiklabs",
   bio: [
-    "Denizli'de yaşıyorum. Isparta'da Biyomedikal Mühendisliği mezunuyum.",
-    "Yazılıma hobi olarak başladım; bugün Rubiklabs'ta yazılım geliştirici olarak çalışıyorum.",
-    "Blogumda yazılım notları ve deneyimlerimi paylaşıyorum. Bu site, benimle iletişime geçmek ve bloguma ulaşmak için bir başlangıç noktası.",
+    "Denizli merkezli bir yazılım geliştiriciyim. Isparta Süleyman Demirel Üniversitesi Biyomedikal Mühendisliği bölümünden mezun oldum.",
+    "Yazılıma olan ilgim zamanla profesyonel bir alana dönüştü; şu anda Rubiklabs bünyesinde yazılım geliştirici olarak görev alıyorum.",
+    "Teknik notlarımı ve deneyimlerimi blogumda paylaşıyorum. İletişim bilgilerim aşağıda; detaylı içerikler için blogumu ziyaret edebilirsiniz.",
   ],
   emails: [
     {
@@ -51,6 +51,6 @@ export const site = {
 export const metadataCopy = {
   title: "Tunahan İpek",
   description:
-    "Tunahan İpek — yazılım geliştirici. Blog, iletişim bilgileri ve kişisel web sitesi.",
+    "Tunahan İpek — yazılım geliştirici. Kişisel web sitesi, iletişim ve teknik blog.",
   locale: "tr_TR",
 } as const;

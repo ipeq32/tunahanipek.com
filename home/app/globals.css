@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Satisfy&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,33 +34,80 @@
 }
 
 @layer components {
-  #preloader {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-50;
-  }
-
   #logo {
-    width: 4rem;
-    height: 4rem;
+    width: 50%;
+    height: 50%;
     fill: none;
-    stroke: #059669;
+    stroke: #fff !important;
   }
 
   .st0 {
     stroke-dasharray: 4800;
-    animation: logo-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
+    animation: signature-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
+    width: 100%;
+    z-index: 999;
   }
 
   .st1 {
     stroke-dasharray: 4800;
-    animation: logo-draw 4s ease-in forwards;
+    animation: signature-draw 4s ease-in forwards;
+    width: 100%;
+    z-index: 999;
+    animation-fill-mode: both;
   }
 
-  @keyframes logo-draw {
+  @keyframes signature-draw {
     from {
       stroke-dashoffset: 4800;
     }
     to {
       stroke-dashoffset: 0;
     }
+  }
+
+  #preloader {
+    @apply fixed inset-0 z-[100] flex items-center justify-center;
+    background-color: rgba(196, 118, 135, 0.16);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #preloader {
+      display: none;
+    }
+  }
+
+  .brand-link {
+    @apply inline-block;
+  }
+
+  .box {
+    @apply relative h-12 w-36 sm:h-14 sm:w-44;
+  }
+
+  .text {
+    @apply absolute uppercase;
+    font-family: "Satisfy", cursive;
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    line-height: 1;
+    transition: 0.2s ease;
+    user-select: none;
+  }
+
+  .text1 {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
+  }
+
+  .text2 {
+    clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
+  }
+
+  .box:hover .text1,
+  .brand-link:focus-visible .text1 {
+    transform: translateY(-10px);
+  }
+
+  .box:hover .text2,
+  .brand-link:focus-visible .text2 {
+    transform: translateY(10px);
   }
 }

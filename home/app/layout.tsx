@@ -2,8 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "./_components/Navigation/Navbar";
-import { Suspense } from "react";
-import Loading from "./_components/Loading/Loading";
+import InitialLoader from "./_components/Loading/InitialLoader";
 import { metadataCopy, site } from "./_content/site";
 
 const inter = Inter({
@@ -68,10 +67,10 @@ export default function RootLayout({
       <body
         className={`${inter.className} flex min-h-full flex-col bg-slate-50 text-slate-900 antialiased md:h-dvh md:max-h-dvh md:overflow-hidden`}
       >
-        <Suspense fallback={<Loading />}>
+        <InitialLoader>
           <Navbar />
           {children}
-        </Suspense>
+        </InitialLoader>
       </body>
     </html>
   );
