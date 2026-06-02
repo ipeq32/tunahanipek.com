@@ -71,7 +71,7 @@ const AddBlogFeature = () => {
     const { content, image, shortImage, summary, title } = values;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/add`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

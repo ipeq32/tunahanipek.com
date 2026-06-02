@@ -6,7 +6,7 @@ import { IGetBlog } from '@/types/blog';
 const blogs = async (page: number, limit: number) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/blog?page=${page}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/blog?page=${page}&limit=${limit}`,
       {
         method: 'GET',
         headers: {
