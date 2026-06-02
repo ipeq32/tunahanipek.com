@@ -10,7 +10,7 @@ import {
   AdminListCard,
   AdminListSkeleton,
 } from '@/components/admin/admin-ui';
-import type { PendingCommentDto } from '@/lib/data/comments';
+import type { PendingCommentDto } from '@/lib/comments/types';
 
 type AdminCommentsListProps = {
   initialComments: PendingCommentDto[];

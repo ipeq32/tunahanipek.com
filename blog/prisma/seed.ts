@@ -1,25 +1,29 @@
-import { prisma } from '../src/lib/prisma';
 import { hashSync } from 'bcryptjs';
+import { prisma } from '../src/lib/prisma';
+import { seedBlogs } from './seeds/seed-blogs';
 
-async function main() {
+const ADMIN_EMAIL = 'admin@admin.com';
+
+async function seedAdminUser() {
   const password = hashSync('1234asdf', 12);
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: 'admin@admin.com' },
+  return prisma.user.upsert({
+    where: { email: ADMIN_EMAIL },
+    update: {},
+    create: {
+      email: ADMIN_EMAIL,
+      name: 'Admin',
+      hashedPassword: password,
+      role: 'SUPER_ADMIN',
+      address: 'Admin address',
+      phone: '1234567890',
+    },
   });
+}
 
-  if (!existingUser) {
-    await prisma.user.create({
-      data: {
-        email: 'admin@admin.com',
-        name: 'Admin',
-        hashedPassword: password,
-        role: 'SUPER_ADMIN',
-        address: 'Admin address',
-        phone: '1234567890',
-      },
-    });
-  }
+async function main() {
+  const admin = await seedAdminUser();
+  await seedBlogs(admin.id);
 }
 
 main()

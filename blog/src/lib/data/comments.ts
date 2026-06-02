@@ -1,32 +1,17 @@
+import 'server-only';
+
 import { prisma } from '@/lib/prisma';
 import { sanitizeHtml } from '@/lib/sanitize';
-import { Status } from '@prisma/client';
+import { formatCommentDate } from '@/lib/comments/format-date';
+import type {
+  CommentDto,
+  CommentViewDto,
+  PendingCommentDto,
+} from '@/lib/comments/types';
+import type { Status } from '@prisma/client';
 
-export type CommentDto = {
-  id: string;
-  content: string;
-  createdAt: Date;
-  authorName: string;
-  status: Status;
-};
-
-export type CommentViewDto = {
-  id: string;
-  content: string;
-  authorName: string;
-  createdAtLabel: string;
-};
-
-const COMMENT_DATE_TIME_ZONE = 'Europe/Istanbul';
-
-export function formatCommentDate(date: Date | string, locale: string): string {
-  const value = typeof date === 'string' ? new Date(date) : date;
-
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeZone: COMMENT_DATE_TIME_ZONE,
-  }).format(value);
-}
+export type { CommentDto, CommentViewDto, PendingCommentDto } from '@/lib/comments/types';
+export { formatCommentDate } from '@/lib/comments/format-date';
 
 function mapCommentToView(
   comment: CommentDto,
@@ -81,14 +66,6 @@ export async function getApprovedCommentViews(
 
   return comments.map((comment) => mapCommentToView(comment, locale));
 }
-
-export type PendingCommentDto = {
-  id: string;
-  content: string;
-  createdAt: string;
-  user: { name: string; email: string } | null;
-  blog: { id: string; title: string } | null;
-};
 
 export async function getPendingCommentsDto(): Promise<PendingCommentDto[]> {
   const comments = await getPendingComments();

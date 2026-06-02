@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
-import { useFormatter } from 'next-intl';
+import { useFormatter, useNow } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -14,6 +14,8 @@ type BlogCardProps = {
 
 export default function BlogCard({ blog }: BlogCardProps) {
   const format = useFormatter();
+  const now = useNow();
+  const updatedAt = new Date(blog.updatedAt);
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10">
@@ -38,7 +40,9 @@ export default function BlogCard({ blog }: BlogCardProps) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="font-medium text-foreground/80">{blog.author.name}</span>
-          <time>{format.relativeTime(new Date(blog.updatedAt))}</time>
+          <time dateTime={updatedAt.toISOString()}>
+            {format.relativeTime(updatedAt, now)}
+          </time>
         </div>
 
         <h2 className="text-lg font-semibold leading-snug tracking-tight">

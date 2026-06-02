@@ -6,10 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
-import {
-  formatCommentDate,
-  type CommentViewDto,
-} from '@/lib/data/comments';
+import { formatCommentDate } from '@/lib/comments/format-date';
+import type { CommentViewDto } from '@/lib/comments/types';
 import type { Locale } from '@/i18n/request';
 
 type Props = {
