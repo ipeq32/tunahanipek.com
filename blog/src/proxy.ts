@@ -70,7 +70,7 @@ const handleAuth = async (
   return intlMiddleware(req);
 };
 
-export default async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const isAuthPage = testPagesRegex(authPages, req.nextUrl.pathname);
   const isProtectedPage = testPagesRegex(protectedPages, req.nextUrl.pathname);
   const isAdminPage = testPagesRegex(adminPages, req.nextUrl.pathname);
