@@ -67,7 +67,13 @@
 
   #preloader {
     @apply fixed inset-0 z-[100] flex items-center justify-center;
-    background-color: rgba(196, 118, 135, 0.16);
+    background:
+      radial-gradient(
+        circle at 50% 35%,
+        rgba(244, 114, 182, 0.18),
+        rgba(15, 23, 42, 0.72) 65%
+      );
+    backdrop-filter: blur(6px);
   }
 
   @media (prefers-reduced-motion: reduce) {

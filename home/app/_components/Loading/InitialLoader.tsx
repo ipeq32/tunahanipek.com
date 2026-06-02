@@ -3,58 +3,53 @@
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
 
-/** st1 imza animasyonu ~4s; tam çizim için minimum süre */
-const LOADER_MIN_MS = 4000;
-const FADE_MS = 500;
+const MIN_VISIBLE_MS = 1400;
+const FAILSAFE_MS = 6000;
 
 type InitialLoaderProps = {
   children: React.ReactNode;
 };
 
 const InitialLoader = ({ children }: InitialLoaderProps) => {
-  const [phase, setPhase] = useState<"loading" | "fade" | "done">("loading");
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    let isUnmounted = false;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    if (prefersReducedMotion) {
-      setPhase("done");
+    if (media.matches) {
+      setIsVisible(false);
       return;
     }
 
-    const fadeTimer = window.setTimeout(() => setPhase("fade"), LOADER_MIN_MS);
-    const doneTimer = window.setTimeout(
-      () => setPhase("done"),
-      LOADER_MIN_MS + FADE_MS
-    );
+    const hide = () => {
+      if (!isUnmounted) {
+        setIsVisible(false);
+      }
+    };
+
+    const minTimer = window.setTimeout(hide, MIN_VISIBLE_MS);
+    const failSafeTimer = window.setTimeout(hide, FAILSAFE_MS);
 
     return () => {
-      window.clearTimeout(fadeTimer);
-      window.clearTimeout(doneTimer);
+      isUnmounted = true;
+      window.clearTimeout(minTimer);
+      window.clearTimeout(failSafeTimer);
     };
   }, []);
 
   return (
     <>
-      {phase !== "done" && (
+      {isVisible && (
         <div
-          className={`transition-opacity duration-500 ${
-            phase === "fade" ? "pointer-events-none opacity-0" : "opacity-100"
+          className={`fixed inset-0 z-[100] transition-opacity duration-500 ${
+            isVisible ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
           <Loading />
         </div>
       )}
-      <div
-        className={`flex min-h-0 flex-1 flex-col transition-opacity duration-500 ${
-          phase === "loading" ? "opacity-0" : "opacity-100"
-        }`}
-        aria-hidden={phase === "loading"}
-      >
-        {children}
-      </div>
+      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
     </>
   );
 };

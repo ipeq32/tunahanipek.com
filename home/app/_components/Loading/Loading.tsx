@@ -5,7 +5,7 @@ const Loading = () => {
     <div id="preloader" role="status" aria-label="Yükleniyor">
       <SignatureLogo
         gradientId="loader-signature-gradient"
-        className="h-24 w-24 sm:h-28 sm:w-28"
+        className="h-40 w-40 sm:h-48 sm:w-48"
       />
     </div>
   );
