@@ -1,110 +1,60 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Chakra_Petch } from "next/font/google";
+import { Inter } from "next/font/google";
 import Navbar from "./_components/Navigation/Navbar";
 import { Suspense } from "react";
 import Loading from "./_components/Loading/Loading";
+import { metadataCopy, site } from "./_content/site";
 
-const chakra = Chakra_Petch({
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal"],
+const inter = Inter({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://tunahanipek.com"),
-  title: "Tunahan İPEK",
-  description: "My personal website.",
+  title: {
+    default: metadataCopy.title,
+    template: `%s | ${metadataCopy.title}`,
+  },
+  description: metadataCopy.description,
   openGraph: {
     type: "profile",
-    locale: "en_US",
+    locale: metadataCopy.locale,
     url: "https://tunahanipek.com",
-    emails: ["tnhnipek@gmail.com", "tunahan@rubiklabs.com"],
-    phoneNumbers: ["+905416064488"],
+    emails: site.emails.map((e) => e.address),
     images: [
       {
-        url: "/tunahanipek.jpg",
+        url: site.profileImage,
         width: 512,
         height: 512,
-        alt: "Tunahan İPEK",
+        alt: site.name,
       },
     ],
-    title: "Tunahan İPEK",
-    description: "My personal website.",
+    title: metadataCopy.title,
+    description: metadataCopy.description,
     countryName: "Turkey",
-    siteName: "Tunahan İPEK",
-    ttl: 60 * 60 * 24 * 7,
-    alternateLocale: ["tr_TR"],
+    siteName: site.name,
   },
   twitter: {
-    site: "https://tunahanipek.com",
-    title: "Tunahan İPEK",
-    description: "My personal website.",
-    images: [
-      {
-        url: "/tunahanipek.jpg",
-        width: 512,
-        height: 512,
-        alt: "Tunahan İPEK",
-        username: "@tunahanipek",
-      },
-    ],
-    siteId: "https://tunahanipek.com",
+    card: "summary",
+    title: metadataCopy.title,
+    description: metadataCopy.description,
+    images: [site.profileImage],
   },
-  category: "Personal Website",
-  authors: [
-    {
-      name: "Tunahan İPEK",
-      url: "https://tunahanipek.com",
-    },
-  ],
-  themeColor: "#eba0bf",
-  creator: "Tunahan İPEK",
-  publisher: "Tunahan İPEK",
+  authors: [{ name: site.name, url: "https://tunahanipek.com" }],
+  creator: site.name,
   keywords: [
-    "Tunahan İPEK",
-    "Tunahan",
-    "İPEK",
-    "tnhnipek",
+    "Tunahan İpek",
+    "yazılım geliştirici",
+    "software developer",
     "tunahanipek",
-    "tunahan",
-    "ipek",
-    "tnhn",
-    "tnhnipek.com",
-    "tunahanipek.com",
-    "tunahanipekblog",
     "blog",
-    "personal website",
-    "personal blog",
-    "personal",
-    "website",
-    "ipek tunahan",
+    "kişisel web sitesi",
   ],
   robots: "index, follow",
-  icons: [
-    {
-      url: "/favicon.ico",
-      sizes: "16x16",
-      username: "@tunahanipek",
-    },
-  ],
-  generator: "Tunahan İPEK",
-  appleWebApp: {
-    statusBarStyle: "black-translucent",
-    title: "Tunahan İPEK",
-    startupImage: {
-      url: "/tunahanipek.jpg",
-      media:
-        "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
-    },
-  },
-  colorScheme: "light",
-  formatDetection: {
-    url: true,
-    email: true,
-    telephone: true,
-    address: true,
-    date: true,
+  alternates: {
+    canonical: "https://tunahanipek.com",
   },
 };
 
@@ -114,8 +64,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={chakra.className + " min-h-screen"}>
+    <html lang="tr" className="h-full">
+      <body
+        className={`${inter.className} flex min-h-full flex-col bg-slate-50 text-slate-900 antialiased md:h-dvh md:max-h-dvh md:overflow-hidden`}
+      >
         <Suspense fallback={<Loading />}>
           <Navbar />
           {children}

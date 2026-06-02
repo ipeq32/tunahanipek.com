@@ -1,69 +1,64 @@
-import Button from "@/app/_ui/Button";
 import Image from "next/image";
+import { site } from "@/app/_content/site";
+import ContactBar from "./ContactBar";
+import SiteFooter from "./SiteFooter";
 
 const Body = () => {
+  const bioText = site.bio.join(" ");
+
   return (
-    <main className="flex flex-wrap justify-center w-full h-[calc(100vh-180px)] px-5 bg-gray-200 shadow-lg rounded-tl-3xl rounded-tr-[400px] rounded-br-[200px] rounded-bl-[600px]">
-      <div className="flex flex-col h-full">
-        <div className="duration-200 transform rounded-t-full shadow-lg bg-yellow-50 easy-in-out h-full">
-          <article className="max-w-[1500px] w-full h-40 mx-auto max-2xl:px-10 max-2xl:rounded-full overflow-hidden rounded-xl">
-            <Image
-              width={1500}
-              height={500}
-              className="w-full rounded opacity-tema"
-              src="https://images.unsplash.com/photo-1605379399642-870262d3d051?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-              alt=""
-            />
-          </article>
-          <article className="flex justify-center px-5 -mt-12">
-            <Image
-              className="w-40 h-40 p-2 bg-green-50 rounded-[70%_30%_30%_70%/60%_40%_60%_40%] opacity-profil"
-              src="/tunahanipek.jpg"
-              alt="Profil Fotoğrafı"
-              width="1920"
-              height="1080"
-            />
-          </article>
-          <div className="relative flex flex-col h-[calc(70vh-200px)]">
-            <header className="flex flex-col justify-center items-center text-center px-14 max-sm:px-5 h-full">
-              <h2 className="text-3xl font-bold text-gray-800">Tunahan İPEK</h2>
-              <p className="mt-2 text-gray-400">KİŞİSEL WEB SİTESİ</p>
-              <p className="mt-1 text-gray-400">
-                - kurumsal olma yolunda ilk adımlar -
-              </p>
-              <br />
-              <p className="mt-2 text-gray-600">
-                Merhabalar ben Tunahan, kısaca kendimi tanıtmam gerekirse 24
-                yaşındayım ve Denizli&apos;de yaşıyorum. Isparta&apos;da
-                Biyomedikal bölümünden mezun oldum. Yazılım ile hobi olarak
-                ilgileniyorken bu işi meslek olarak yapmaya karar verdim. Şu
-                anda Rubiklabs&apos;da Software Developer olarak çalışıyorum.
-                Aynı zamanda kendi blog sitemde yazılım ile ilgili yazılar
-                yazıyorum. Bu siteyi kurma amacım ise bana ulaşmak isteyenlere
-                yol göstermek ve bilgilendirmek. Sorularınız için mail
-                adreslerimi aşağıya bırakıyorum. Benim hakkımda daha fazla bilgi
-                almak için lüfen Blog sitemi ziyaret et..
-              </p>
-            </header>
-            <hr className="mt-6" />
-            <div className="flex rounded-t-full max-sm:rounded-t-none bg-gray-50 max-sm:flex-col">
-              <div className="w-1/2 p-4 text-center cursor-default hover:bg-gray-100 max-sm:w-full">
-                <p className="flex flex-row justify-center max-md:flex-col max-sm:text-sm">
-                  <span className="font-semibold mr-1">KURUMSAL E-MAIL</span>
-                  hello@tunahanipek.com
-                </p>
-              </div>
-              <div className="border"></div>
-              <div className="w-1/2 p-4 text-center cursor-default hover:bg-gray-100 max-sm:w-full">
-                <p className="flex flex-row justify-center max-md:flex-col max-sm:text-sm">
-                  <span className="font-semibold mr-1">KİŞİSEL E-MAIL</span>
-                  tnhnipek@gmail.com
-                </p>
-              </div>
+    <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+      >
+        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-emerald-200/40 blur-3xl" />
+        <div className="absolute right-0 top-32 h-80 w-80 rounded-full bg-sky-200/50 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-violet-200/30 blur-3xl" />
+      </div>
+
+      <div className="home-compact mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col px-4 py-8 sm:px-5 md:max-w-5xl md:justify-between md:py-5 lg:max-w-6xl">
+        <div className="flex min-h-0 flex-1 flex-col gap-8 md:grid md:grid-cols-[minmax(0,13rem)_1fr] md:items-center md:gap-x-10 md:gap-y-0 lg:grid-cols-[minmax(0,15rem)_1fr] lg:gap-x-12">
+          <section className="flex shrink-0 flex-col items-center text-center md:items-start md:text-left">
+            <div className="relative mb-5 md:mb-4">
+              <div className="absolute inset-0 scale-110 rounded-full bg-gradient-to-br from-emerald-400/30 to-sky-400/30 blur-md" />
+              <Image
+                src={site.profileImage}
+                alt={`${site.name} profil fotoğrafı`}
+                width={160}
+                height={160}
+                priority
+                className="relative h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg ring-1 ring-slate-200/80 sm:h-32 sm:w-32 md:h-24 md:w-24 lg:h-28 lg:w-28"
+              />
             </div>
-          </div>
+
+            <p className="text-xs font-medium uppercase tracking-widest text-emerald-700 sm:text-sm">
+              {site.role}
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-2xl lg:text-3xl">
+              {site.name}
+            </h1>
+            <p className="mt-2 max-w-xs text-base text-slate-600 sm:text-lg md:mt-1.5 md:max-w-none md:text-sm lg:text-base">
+              {site.tagline}
+            </p>
+          </section>
+
+          <section className="min-h-0 text-center md:text-left">
+            <div className="space-y-4 text-base leading-relaxed text-slate-600 md:hidden">
+              {site.bio.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            <p className="home-bio hidden text-sm leading-relaxed text-slate-600 md:block lg:text-[0.9375rem] lg:leading-6">
+              {bioText}
+            </p>
+          </section>
         </div>
-        <Button />
+
+        <div className="mt-8 shrink-0 space-y-5 md:mt-4 md:space-y-4">
+          <ContactBar />
+          <SiteFooter />
+        </div>
       </div>
     </main>
   );
