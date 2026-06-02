@@ -10,6 +10,8 @@
     "title": "Bloglar",
     "description": "Yayınlanmış blog yazıları ve güncellemeler.",
     "searchPlaceholder": "Bloglarda ara...",
+    "searchSubmit": "Ara",
+    "searchClear": "Aramayı temizle",
     "roleAdmin": "Yönetici",
     "roleAuthor": "Yazar",
     "createdAt": "Eklenme tarihi",

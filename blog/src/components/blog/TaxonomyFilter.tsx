@@ -32,7 +32,7 @@ export default function TaxonomyFilter({
     );
 
   return (
-    <div className="mt-6 space-y-4 rounded-xl border border-border/40 bg-muted/30 p-4">
+    <div className="mt-4 space-y-4 rounded-2xl border border-border/40 bg-muted/20 p-4 sm:p-5">
       {tags.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

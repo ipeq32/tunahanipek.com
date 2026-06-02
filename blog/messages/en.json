@@ -10,6 +10,8 @@
     "title": "Blog",
     "description": "Published articles and updates.",
     "searchPlaceholder": "Search posts...",
+    "searchSubmit": "Search",
+    "searchClear": "Clear search",
     "roleAdmin": "Admin",
     "roleAuthor": "Author",
     "createdAt": "Published",
