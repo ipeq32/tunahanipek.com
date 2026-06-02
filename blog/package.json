@@ -18,7 +18,7 @@
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
     "generate-prod": "npx prisma generate && npx prisma db push",
     "seed": "npx prisma db seed",
-    "db:reset": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/reset.ts",
+    "db:reset": "ts-node -P prisma/tsconfig.json prisma/reset.ts",
     "db:reset:seed": "yarn db:reset --force && yarn seed"
   },
   "dependencies": {
