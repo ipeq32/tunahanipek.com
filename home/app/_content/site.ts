@@ -3,9 +3,13 @@ export const site = {
   role: "Yazılım Geliştirici",
   tagline: "Denizli · Rubiklabs",
   bio: [
-    "Denizli merkezli bir yazılım geliştiriciyim. Isparta Süleyman Demirel Üniversitesi Biyomedikal Mühendisliği bölümünden mezun oldum.",
-    "Yazılıma olan ilgim zamanla profesyonel bir alana dönüştü; şu anda Rubiklabs bünyesinde yazılım geliştirici olarak görev alıyorum.",
-    "Teknik notlarımı ve deneyimlerimi blogumda paylaşıyorum. İletişim bilgilerim aşağıda; detaylı içerikler için blogumu ziyaret edebilirsiniz.",
+    "Denizli merkezli bir yazılım geliştiriciyim. Detay odaklı, ölçeklenebilir ve kullanıcı odaklı web/mobil ürünler geliştirmeye odaklanıyorum.",
+    "Frontend ve full‑stack geliştirme tarafında; React, Next.js, Vue.js ve Svelte gibi modern JavaScript ekosistemiyle çalışıyorum. Backend tarafında Node.js/NestJS; veri katmanında PostgreSQL ve GraphQL ile üretim ortamı ihtiyaçlarına uygun çözümler geliştiriyorum.",
+    "Ayhanlar Holding’de Software Team Lead ve Full‑Stack Developer rollerinde; Next.js, React Native, NestJS, TailwindCSS, Redux ve GraphQL kullanarak web ve mobil projelerde ekip liderliği yaptım, teslimat süreçlerini yönettim ve uygulama yaşam döngüsünü iyileştirdim.",
+    "Rubiklabs’ta Full‑Stack Software Developer olarak performans ve kullanıcı deneyimi odaklı ürünler geliştirdim; UI/UX ekibiyle yakın çalıştım, Figma tasarımlarını üretim kalitesinde arayüzlere dönüştürdüm ve SEO/erişilebilirlik prensiplerine uygun işler çıkardım.",
+    "Freelance olarak farklı sektörlerden müşteriler için özel web uygulamaları geliştirdim; e‑ticaret benzeri uçtan uca çözümler, yönetim panelleri ve kullanıcı dostu arayüzler teslim ettim.",
+    "Teknoloji setim: React/React Native, Next.js, NestJS, Node.js, TailwindCSS, Redux, GraphQL, PostgreSQL; ayrıca Docker ve Git ekosistemiyle teslimat ve ekip içi iş akışlarını destekliyorum.",
+    "DevOps/Platform tarafında Kubernetes ve self‑hosted kurulumlarla da ilgileniyorum: GitLab + GitLab Runner, Rancher ve Harbor gibi bileşenlerle CI/CD ve container registry süreçlerini yönetiyor; otomasyon tarafında n8n ile iş akışları tasarlıyorum. Buradaki teknoloji listesi kullandıklarımın tamamı değil; ürün ihtiyacına göre farklı araç ve servislerle de çalışıyorum. Teknik notlarımı ve deneyimlerimi blogumda paylaşıyorum.",
   ],
   emails: [
     {
@@ -51,6 +55,6 @@ export const site = {
 export const metadataCopy = {
   title: "Tunahan İpek",
   description:
-    "Tunahan İpek — yazılım geliştirici. Kişisel web sitesi, iletişim ve teknik blog.",
+    "Tunahan İpek — yazılım geliştirici. Full‑stack ve frontend geliştirme, ekip liderliği deneyimi, iletişim bilgileri ve teknik blog.",
   locale: "tr_TR",
 } as const;
