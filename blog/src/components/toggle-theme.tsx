@@ -15,6 +15,25 @@ import { useTheme } from 'next-themes';
 
 export function ToggleTheme() {
   const { setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="link"
+        size="icon"
+        className="pointer-events-none hover:scale-95"
+        aria-hidden
+        tabIndex={-1}
+      >
+        <span className="h-[1.2rem] w-[1.2rem]" />
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>

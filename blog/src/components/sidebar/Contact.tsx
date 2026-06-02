@@ -7,25 +7,32 @@ import Link from 'next/link';
 import { ToggleTheme } from '../toggle-theme';
 import ToggleLanguage from '../toggle-language';
 import { useTranslations } from 'next-intl';
+import {
+  getOfficeHoursSnapshot,
+  type OfficeHoursSnapshot,
+} from '@/lib/office-hours';
 
-const NavContact = () => {
-  const [isOpen, setIsOpen] = useState<boolean | null>(null);
+type NavContactProps = {
+  officeHours: OfficeHoursSnapshot;
+};
 
+const NavContact = ({ officeHours }: NavContactProps) => {
   const t = useTranslations('Navbar.Contact');
-
-  const currentDay = new Date().toLocaleDateString('tr', { weekday: 'long' });
-  const currentHour = new Date().getHours();
+  const [isOpen, setIsOpen] = useState(officeHours.isOpen);
+  const [currentDay, setCurrentDay] = useState(officeHours.currentDay);
 
   useEffect(() => {
-    if (
-      ((currentDay !== 'Saturday' && currentDay !== 'Sunday') && currentHour < 8) ||
-      currentHour > 18
-    ) {
-      setIsOpen(false);
-    } else {
-      setIsOpen(true);
-    }
-  }, [currentDay, currentHour]);
+    const syncOfficeHours = () => {
+      const snapshot = getOfficeHoursSnapshot();
+      setIsOpen(snapshot.isOpen);
+      setCurrentDay(snapshot.currentDay);
+    };
+
+    syncOfficeHours();
+    const intervalId = window.setInterval(syncOfficeHours, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="border-b border-border/40 bg-brand-muted/50 dark:bg-secondary/50">
@@ -58,6 +65,7 @@ const NavContact = () => {
             </div>
             <span className="hidden text-muted-foreground max-sm:block">{currentDay}</span>
             <span
+              suppressHydrationWarning
               className={
                 isOpen
                   ? 'font-medium text-teal-600 dark:text-teal-400'

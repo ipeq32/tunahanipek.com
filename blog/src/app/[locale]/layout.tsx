@@ -7,8 +7,9 @@ import {
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '@/components/theme-provider';
-import { SessionProvider } from 'next-auth/react';
+import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { auth } from '@/auth';
 
 export async function generateMetadata({
   params,
@@ -120,7 +121,7 @@ export default async function LocaleLayout({
 }>) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const messages = await getMessages();
+  const [messages, session] = await Promise.all([getMessages(), auth()]);
 
   return (
     <ThemeProvider
@@ -130,11 +131,11 @@ export default async function LocaleLayout({
       disableTransitionOnChange
     >
       <NextIntlClientProvider messages={messages} locale={locale}>
-        <SessionProvider>
+        <AuthSessionProvider session={session}>
           {children}
           {authModal}
           <Toaster position="bottom-right" />
-        </SessionProvider>
+        </AuthSessionProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   );

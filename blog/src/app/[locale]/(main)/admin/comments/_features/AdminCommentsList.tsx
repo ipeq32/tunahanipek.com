@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -10,19 +10,18 @@ import {
   AdminListCard,
   AdminListSkeleton,
 } from '@/components/admin/admin-ui';
+import type { PendingCommentDto } from '@/lib/data/comments';
 
-type PendingComment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  user: { name: string; email: string } | null;
-  blog: { id: string; title: string } | null;
+type AdminCommentsListProps = {
+  initialComments: PendingCommentDto[];
 };
 
-export default function AdminCommentsList() {
+export default function AdminCommentsList({
+  initialComments,
+}: AdminCommentsListProps) {
   const t = useTranslations('Admin.Comments');
-  const [comments, setComments] = useState<PendingComment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState<PendingCommentDto[]>(initialComments);
+  const [loading, setLoading] = useState(false);
 
   const fetchComments = useCallback(async () => {
     setLoading(true);
@@ -39,10 +38,6 @@ export default function AdminCommentsList() {
       setLoading(false);
     }
   }, [t]);
-
-  useEffect(() => {
-    fetchComments();
-  }, [fetchComments]);
 
   const moderate = async (id: string, status: 'APPROVED' | 'REJECTED') => {
     try {

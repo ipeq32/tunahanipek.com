@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,10 +24,16 @@ const emptyForm = {
   published: false,
 };
 
-export default function AdminProjectList() {
+type AdminProjectListProps = {
+  initialProjects: ProjectDto[];
+};
+
+export default function AdminProjectList({
+  initialProjects,
+}: AdminProjectListProps) {
   const t = useTranslations('Admin.Project');
-  const [projects, setProjects] = useState<ProjectDto[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<ProjectDto[]>(initialProjects);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -47,10 +53,6 @@ export default function AdminProjectList() {
       setLoading(false);
     }
   }, [t]);
-
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
 
   const resetForm = () => {
     setForm(emptyForm);

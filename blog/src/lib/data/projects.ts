@@ -9,3 +9,12 @@ export async function getPublishedProjects() {
 
   return projects.map(mapProjectToDto);
 }
+
+export async function getAdminProjects() {
+  const projects = await prisma.project.findMany({
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
+  });
+
+  return projects.map(mapProjectToDto);
+}

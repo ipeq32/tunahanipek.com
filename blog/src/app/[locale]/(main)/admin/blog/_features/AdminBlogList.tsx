@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { IGetBlog } from '@/types/blog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -13,10 +13,14 @@ import {
   AdminStatusBadge,
 } from '@/components/admin/admin-ui';
 
-export default function AdminBlogList() {
+type AdminBlogListProps = {
+  initialBlogs: IGetBlog[];
+};
+
+export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
   const t = useTranslations('Admin.Blog');
-  const [blogs, setBlogs] = useState<IGetBlog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<IGetBlog[]>(initialBlogs);
+  const [loading, setLoading] = useState(false);
 
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
@@ -33,10 +37,6 @@ export default function AdminBlogList() {
       setLoading(false);
     }
   }, [t]);
-
-  useEffect(() => {
-    fetchBlogs();
-  }, [fetchBlogs]);
 
   const togglePublished = async (id: string, published: boolean) => {
     try {

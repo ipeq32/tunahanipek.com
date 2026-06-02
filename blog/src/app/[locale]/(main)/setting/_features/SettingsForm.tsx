@@ -38,20 +38,26 @@ const passwordSchema = z
     path: ['newPasswordConfirm'],
   });
 
-export default function SettingsForm() {
-  const { data: session, update } = useSession();
+export type SettingsUserValues = {
+  name: string;
+  phone: string;
+  address: string;
+  website: string;
+  image: string;
+  bio: string;
+};
+
+type SettingsFormProps = {
+  initialUser: SettingsUserValues;
+};
+
+export default function SettingsForm({ initialUser }: SettingsFormProps) {
+  const { update } = useSession();
   const t = useTranslations('Settings');
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: session?.user?.name ?? '',
-      phone: session?.user?.phone ?? '',
-      address: session?.user?.address ?? '',
-      website: session?.user?.website ?? '',
-      image: session?.user?.image ?? '',
-      bio: session?.user?.bio ?? '',
-    },
+    defaultValues: initialUser,
   });
 
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({

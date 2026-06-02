@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
-import { getPendingComments, updateCommentStatus } from '@/lib/data/comments';
+import { getPendingCommentsDto, updateCommentStatus } from '@/lib/data/comments';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
@@ -14,7 +14,7 @@ export async function GET() {
   }
 
   try {
-    const data = await getPendingComments();
+    const data = await getPendingCommentsDto();
     return NextResponse.json({ data });
   } catch (error) {
     logger.error('Failed to fetch pending comments', {

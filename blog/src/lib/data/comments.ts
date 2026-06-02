@@ -43,6 +43,26 @@ export async function getApprovedComments(blogId: string): Promise<CommentDto[]>
   return comments.map(mapComment);
 }
 
+export type PendingCommentDto = {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: { name: string; email: string } | null;
+  blog: { id: string; title: string } | null;
+};
+
+export async function getPendingCommentsDto(): Promise<PendingCommentDto[]> {
+  const comments = await getPendingComments();
+
+  return comments.map((comment) => ({
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt.toISOString(),
+    user: comment.user,
+    blog: comment.blog,
+  }));
+}
+
 export async function getPendingComments() {
   return prisma.comment.findMany({
     where: { deletedAt: null, status: 'PENDING', commentId: null },

@@ -87,3 +87,13 @@ export async function getBlogById(id: string): Promise<IGetBlog | null> {
 
   return blog ? mapBlogToResponse(blog) : null;
 }
+
+export async function getAdminBlogs(): Promise<IGetBlog[]> {
+  const blogs = await prisma.blog.findMany({
+    where: { deletedAt: null },
+    orderBy: { updatedAt: 'desc' },
+    include: blogListInclude,
+  });
+
+  return blogs.map(mapBlogToResponse);
+}

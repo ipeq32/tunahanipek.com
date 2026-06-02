@@ -1,7 +1,6 @@
 import { auth } from '@/auth';
-import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { getAdminBlogs } from '@/lib/data/blogs';
 import { isSuperAdmin } from '@/lib/auth-roles';
-import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 
@@ -16,14 +15,10 @@ export async function GET() {
   }
 
   try {
-    const blogs = await prisma.blog.findMany({
-      where: { deletedAt: null },
-      orderBy: { updatedAt: 'desc' },
-      include: blogListInclude,
-    });
+    const blogs = await getAdminBlogs();
 
     return NextResponse.json({
-      data: blogs.map(mapBlogToResponse),
+      data: blogs,
     });
   } catch (error) {
     logger.error('Failed to fetch admin blogs', {

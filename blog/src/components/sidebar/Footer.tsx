@@ -21,7 +21,12 @@ const Footer = () => {
   const emailAddress = 'tnhnipek@gmail.com';
   const emailSubject = t('Mail.subject');
   const emailBody = t('Mail.body', {
-    auth: `${status === 'authenticated' && `İsmim ${data?.user?.name}`}${status === 'unauthenticated' && 'Daha giriş yapmadım.'}`,
+    auth:
+      status === 'loading'
+        ? ''
+        : status === 'authenticated'
+          ? `İsmim ${data?.user?.name}`
+          : 'Daha giriş yapmadım.',
   });
   const recipientAddress = 'Gültepe, Albayrak Meydanı, Merkezefendi/Denizli';
 

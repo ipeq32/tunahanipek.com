@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
+import { getAdminProjects } from '@/lib/data/projects';
 import { mapProjectToDto } from '@/lib/project-mapper';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
@@ -24,12 +25,9 @@ export async function GET() {
   }
 
   try {
-    const projects = await prisma.project.findMany({
-      where: { deletedAt: null },
-      orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
-    });
+    const projects = await getAdminProjects();
 
-    return NextResponse.json({ data: projects.map(mapProjectToDto) });
+    return NextResponse.json({ data: projects });
   } catch (error) {
     logger.error('Failed to fetch admin projects', {
       error: error instanceof Error ? error.message : 'Unknown error',
