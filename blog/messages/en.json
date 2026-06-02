@@ -1,6 +1,125 @@
 {
   "HomePage": {
-    "title": "Hello world!"
+    "title": "Tunahan İPEK",
+    "description": "Personal blog and portfolio sharing software, travel, and experiences.",
+    "ctaBlog": "Explore blog",
+    "ctaAbout": "About me",
+    "recentPosts": "Recent posts"
+  },
+  "Blog": {
+    "title": "Blog",
+    "description": "Published articles and updates.",
+    "searchPlaceholder": "Search posts...",
+    "roleAdmin": "Admin",
+    "roleAuthor": "Author",
+    "createdAt": "Published",
+    "Form": {
+      "title": "Title",
+      "titlePlaceholder": "Post title",
+      "image": "Image URL",
+      "imagePlaceholder": "Cover image URL",
+      "shortImage": "Thumbnail URL",
+      "shortImagePlaceholder": "List thumbnail URL",
+      "content": "Content",
+      "summary": "Summary",
+      "submitCreate": "Publish",
+      "submitUpdate": "Update",
+      "createSuccess": "Post created",
+      "updateSuccess": "Post updated",
+      "error": "Operation failed"
+    },
+    "Edit": {
+      "title": "Edit post",
+      "description": "Update the existing article."
+    },
+    "Add": {
+      "title": "Add post",
+      "description": "Create a new article from this page. It will be published after approval."
+    }
+  },
+  "Admin": {
+    "Blog": {
+      "title": "Blog management",
+      "description": "Approve, publish, or delete posts.",
+      "loading": "Loading...",
+      "empty": "No posts yet.",
+      "loadError": "Could not load posts",
+      "actionError": "Action failed",
+      "published": "Post published",
+      "unpublished": "Post unpublished",
+      "deleted": "Post deleted",
+      "deleteConfirm": "Are you sure you want to delete this post?",
+      "statusPublished": "Published",
+      "statusDraft": "Draft / pending approval",
+      "view": "View",
+      "edit": "Edit",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "delete": "Delete"
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Manage your profile and password.",
+    "profileTitle": "Profile",
+    "passwordTitle": "Change password",
+    "name": "Name",
+    "phone": "Phone",
+    "address": "Address",
+    "website": "Website",
+    "image": "Profile image URL",
+    "bio": "Bio",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "newPasswordConfirm": "Confirm new password",
+    "saveProfile": "Save profile",
+    "savePassword": "Update password",
+    "profileSuccess": "Profile updated",
+    "profileError": "Could not update profile",
+    "passwordSuccess": "Password updated",
+    "passwordError": "Could not update password"
+  },
+  "Pages": {
+    "About": {
+      "title": "About me",
+      "description": "Who am I?",
+      "body": "Hi, I'm Tunahan İPEK. I share my experiences in software development and travel on this blog."
+    },
+    "Faq": {
+      "title": "FAQ",
+      "description": "Common questions",
+      "q1": {
+        "question": "How do I add a blog post?",
+        "answer": "After registering, users with moderator or admin roles can create posts from the add blog page."
+      },
+      "q2": {
+        "question": "When are posts published?",
+        "answer": "Posts appear on the blog list after admin approval."
+      },
+      "q3": {
+        "question": "How can I contact you?",
+        "answer": "Use the email on the contact page or reach out via GitHub."
+      }
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "Get in touch",
+      "body": "For questions and collaborations, use the channels below.",
+      "emailLabel": "Email"
+    },
+    "Project": {
+      "title": "Projects",
+      "description": "My work",
+      "portfolio": {
+        "title": "Personal site",
+        "description": "Main portfolio and introduction site."
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Technical and personal articles.",
+        "link": "Go to blog"
+      }
+    }
   },
   "LocaleSwitcher": {
     "label": "Change language",

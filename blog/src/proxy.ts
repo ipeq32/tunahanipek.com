@@ -8,6 +8,8 @@ const protectedPages = [
   pathnames['/blog/add'],
   pathnames['/profile'],
   pathnames['/setting'],
+  '/blog/*/edit',
+  '/blog/*/duzenle',
   '/project/*',
 ];
 

@@ -14,7 +14,8 @@ type PaginationComponentProps = {
   total: number;
   currentPage: number;
   limit: number;
-  isShowPagination?: boolean; // Blog data published length
+  isShowPagination?: boolean;
+  searchQuery?: string;
 };
 
 const PaginationComponent = ({
@@ -22,8 +23,16 @@ const PaginationComponent = ({
   currentPage,
   limit,
   isShowPagination,
+  searchQuery,
 }: PaginationComponentProps) => {
   const totalPages = Math.ceil(total / limit);
+
+  const pageHref = (page: number) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    if (searchQuery?.trim()) params.set('q', searchQuery.trim());
+    return `?${params.toString()}`;
+  };
 
   const safeCurrentPage = isNaN(currentPage) ? 1 : currentPage;
   const safeTotalPages = isNaN(totalPages) ? 1 : totalPages;
@@ -64,7 +73,7 @@ const PaginationComponent = ({
       <PaginationContent>
         {safeCurrentPage > 1 && (
           <PaginationItem>
-            <PaginationPrevious href={`?page=${safeCurrentPage - 1}`} />
+            <PaginationPrevious href={pageHref(safeCurrentPage - 1)} />
           </PaginationItem>
         )}
 
@@ -80,7 +89,7 @@ const PaginationComponent = ({
           return (
             <PaginationItem key={`page-${page}`}>
               <PaginationLink
-                href={`?page=${page}`}
+                href={pageHref(page as number)}
                 isActive={page === safeCurrentPage}
               >
                 {String(page)}
@@ -91,7 +100,7 @@ const PaginationComponent = ({
 
         {safeCurrentPage < safeTotalPages && (
           <PaginationItem>
-            <PaginationNext href={`?page=${safeCurrentPage + 1}`} />
+            <PaginationNext href={pageHref(safeCurrentPage + 1)} />
           </PaginationItem>
         )}
       </PaginationContent>

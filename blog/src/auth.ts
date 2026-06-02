@@ -26,12 +26,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       async authorize(credentials) {
-        const [{ compare }, { prisma }] = await Promise.all([
+        const [{ compare }, { prisma }, { checkRateLimit }] = await Promise.all([
           import('bcryptjs'),
           import('./lib/prisma'),
+          import('./lib/rate-limit'),
         ]);
 
         const { email, password } = credentials;
+        const emailKey = String(email).toLowerCase();
+
+        const { allowed } = checkRateLimit(
+          `login:${emailKey}`,
+          5,
+          15 * 60 * 1000
+        );
+
+        if (!allowed) {
+          throw new Error('Too many login attempts. Please try again later.');
+        }
 
         const user = await prisma.user.findUnique({
           where: {

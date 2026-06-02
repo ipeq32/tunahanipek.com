@@ -9,11 +9,25 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '9');
+  const search = searchParams.get('q') ?? undefined;
   const offset = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
     published: true,
+    ...(search?.trim()
+      ? {
+          OR: [
+            { title: { contains: search.trim(), mode: 'insensitive' as const } },
+            {
+              summary: { contains: search.trim(), mode: 'insensitive' as const },
+            },
+            {
+              content: { contains: search.trim(), mode: 'insensitive' as const },
+            },
+          ],
+        }
+      : {}),
   };
 
   try {

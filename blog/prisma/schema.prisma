@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client-js"
   engineType      = "client"
@@ -103,30 +100,3 @@ model Tag {
   deletedAt DateTime? @db.Timestamptz(3)
   blogs     Blog[]
 }
-
-// TODO: Bu a�a��daki iki k�s�mda �al���yor. Farklar� yukar�da implict relation var. A�a��da ise explicit relation var. Buras� yeni bir tablo olu�turuyor. Ama yukar�da ise var olan tablolara yeni bir alan ekliyor. Bu y�zden yukar�daki daha mant�kl� gibi. Ama a�a��daki daha kolay gibi. A�a��daki ile ilgili bir �eyler bulursam buraya ekleyece�im.
-
-// model BlogTag {
-//   blogId String @db.Uuid
-//   tagId  String @db.Uuid
-
-//   blog Blog @relation(fields: [blogId], references: [id])
-//   tag  Tag  @relation(fields: [tagId], references: [id])
-
-//   @@id([blogId, tagId])
-// }
-
-// model BlogTag {
-//   id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-//   createdAt DateTime  @default(now()) @db.Timestamptz(3)
-//   updatedAt DateTime  @updatedAt @db.Timestamptz(3)
-//   deletedAt DateTime? @db.Timestamptz(3)
-
-//   blogId String? @db.Uuid
-//   tagId  String? @db.Uuid
-
-//   blog Blog? @relation(fields: [blogId], references: [id])
-//   tag  Tag?  @relation(fields: [tagId], references: [id])
-
-//   @@unique([blogId, tagId])
-// }

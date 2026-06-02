@@ -31,6 +31,10 @@ export default {
     en: '/blog/add',
     tr: '/blog/ekle',
   },
+  '/blog/[id]/edit': {
+    en: '/blog/[id]/edit',
+    tr: '/blog/[id]/duzenle',
+  },
   '/about-me': {
     en: '/about-me',
     tr: '/hakkimda',

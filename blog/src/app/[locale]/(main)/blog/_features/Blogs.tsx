@@ -3,9 +3,10 @@
 import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
-import { useFormatter } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../_components/notfound';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 type BlogFeatureProps = {
   data: IGetBlog[];
@@ -13,6 +14,7 @@ type BlogFeatureProps = {
 
 const BlogsFeature = ({ data }: BlogFeatureProps) => {
   const format = useFormatter();
+  const t = useTranslations('Blog');
 
   const publishedData = data.filter((blog) => blog.published);
 
@@ -35,16 +37,21 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
         >
           <figure className="flex flex-col justify-between gap-2">
             <Link href={{ pathname: '/blog/[id]', params: { id: blog.id } }}>
-              <img
+              <Image
                 src={blog.shortImage || '/blog.jpg'}
                 alt={blog.title}
-                className="w-full h-40 rounded-md object-cover hover:object-fill"
+                width={384}
+                height={160}
+                unoptimized
+                className="w-full h-40 rounded-md object-cover"
               />
             </Link>
             <figcaption className="flex justify-between gap-2">
               <span className="text-sm line-clamp-1">
                 {blog.author.name} -{' '}
-                {blog.author.role === 'SUPER_ADMIN' ? 'Yönetici' : 'Yazar'}
+                {blog.author.role === 'SUPER_ADMIN'
+                  ? t('roleAdmin')
+                  : t('roleAuthor')}
               </span>
               <span className="text-xs line-clamp-1 text-opacity-40">
                 {format.relativeTime(new Date(blog.updatedAt))}
@@ -77,7 +84,7 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
             transition={{ duration: 0.3 }}
             className="text-[11px] text-slate-800/60 dark:text-slate-300/60 line-clamp-1 pl-1"
           >
-            Eklenme tarihi: {format.relativeTime(new Date(blog.createdAt))}
+            {t('createdAt')}: {format.relativeTime(new Date(blog.createdAt))}
           </motion.span>
         </article>
       ))}

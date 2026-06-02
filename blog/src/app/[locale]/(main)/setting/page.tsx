@@ -1,22 +1,14 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
-import { Link } from '@/navigation';
-import { Button } from '@/components/ui/button';
+import SettingsForm from './_features/SettingsForm';
+import { getTranslations } from 'next-intl/server';
 
-export default function SettingPage() {
+export default async function SettingPage() {
+  const t = await getTranslations('Settings');
+
   return (
     <>
-      <HeaderTemplate
-        title="Ayarlar"
-        description="Hesap ve uygulama ayarları"
-      />
-      <div className="mt-8 space-y-4 max-w-lg">
-        <p className="text-sm text-muted-foreground">
-          Şifre değiştirme ve profil düzenleme yakında eklenecek.
-        </p>
-        <Button variant="outline" asChild>
-          <Link href="/profile">Profile git</Link>
-        </Button>
-      </div>
+      <HeaderTemplate title={t('title')} description={t('description')} />
+      <SettingsForm />
     </>
   );
 }

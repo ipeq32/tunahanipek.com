@@ -1,56 +1,32 @@
 import BlogFeature from './_features/Blog';
-import { logger } from '@/lib/logger';
-import { IGetBlog } from '@/types/blog';
+import { getPublishedBlogById } from '@/lib/data/blogs';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+export const revalidate = 60;
 
 type Props = {
   params: Promise<{
     id: string;
-    locale: string;
   }>;
-};
-
-const fetchBlog = async (id: string): Promise<IGetBlog | null> => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${id}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (!res.ok) {
-      return null;
-    }
-
-    const { data } = await res.json();
-    return data;
-  } catch (error) {
-    logger.error('Error fetching blog', {
-      id,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-    return null;
-  }
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const blog = await fetchBlog(id);
+  const blog = await getPublishedBlogById(id);
 
   if (!blog) {
     return { title: 'Blog bulunamadı' };
   }
 
+  const plainSummary = blog.summary.replace(/<[^>]*>/g, '').slice(0, 160);
+
   return {
     title: blog.title,
-    description: blog.summary.replace(/<[^>]*>/g, '').slice(0, 160),
+    description: plainSummary,
     openGraph: {
       title: blog.title,
-      description: blog.summary.replace(/<[^>]*>/g, '').slice(0, 160),
+      description: plainSummary,
       images: blog.image ? [blog.image] : [],
     },
   };
@@ -58,10 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function page({ params }: Props) {
   const { id } = await params;
-  const blogData = await fetchBlog(id);
+  const blogData = await getPublishedBlogById(id);
 
   if (!blogData) {
-    return null;
+    notFound();
   }
 
   return <BlogFeature data={blogData} />;

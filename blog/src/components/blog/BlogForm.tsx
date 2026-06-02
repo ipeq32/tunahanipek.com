@@ -1,0 +1,172 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { CardStackPlusIcon } from '@radix-ui/react-icons';
+import { Input } from '@/components/ui/input';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import ReactQuill from 'react-quill';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/navigation';
+
+const formSchema = z.object({
+  title: z.string().min(2),
+  image: z.string().min(2),
+  shortImage: z.string().min(2),
+  content: z.string().min(17),
+  summary: z.string().min(17),
+});
+
+export type BlogFormValues = z.infer<typeof formSchema>;
+
+type BlogFormProps = {
+  mode: 'create' | 'edit';
+  blogId?: string;
+  defaultValues: BlogFormValues;
+};
+
+export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps) {
+  const router = useRouter();
+  const t = useTranslations('Blog.Form');
+
+  const form = useForm<BlogFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+  });
+
+  useEffect(() => {
+    Object.values(form.formState.errors).forEach((error) => {
+      if (error?.message) toast(error.message as string);
+    });
+  }, [form.formState.errors]);
+
+  async function onSubmit(values: BlogFormValues) {
+    const url =
+      mode === 'create'
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/blog/add`
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${blogId}`;
+
+    const method = mode === 'create' ? 'POST' : 'PATCH';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) {
+        toast.error(t('error'));
+        return;
+      }
+
+      toast.success(mode === 'create' ? t('createSuccess') : t('updateSuccess'), {
+        icon: <CardStackPlusIcon />,
+        description: values.title,
+      });
+
+      router.push('/blog');
+    } catch {
+      toast.error(t('error'));
+    }
+  }
+
+  return (
+    <div className="flex justify-center w-full mt-5">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-5 w-full md:mt-10"
+        >
+          <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">
+                    {t('title')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('titlePlaceholder')} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">
+                    {t('image')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('imagePlaceholder')} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="shortImage"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">
+                    {t('shortImage')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('shortImagePlaceholder')} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
+            <Controller
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">
+                    {t('content')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <ReactQuill theme="snow" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Controller
+              control={form.control}
+              name="summary"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">
+                    {t('summary')} <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <ReactQuill theme="snow" {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button type="submit" className="max-w-56 mx-auto">
+            {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}

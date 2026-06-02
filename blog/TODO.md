@@ -23,29 +23,29 @@
 
 - [x] Blog düzenleme API (PATCH/PUT)
 - [x] Blog silme API (soft delete — `deletedAt`)
-- [ ] Blog düzenleme sayfası
+- [x] Blog düzenleme sayfası (`/blog/[id]/edit`)
 - [x] Blog silme onayı (UI) — admin panelinde
 
 ### Admin paneli
 
 - [x] `/admin/blog` — yazı listesi, onaylama/reddetme (`published` toggle)
 - [x] `/admin/project` — proje yönetimi (veya menüden kaldır) — stub sayfa
-- [x] Middleware'de admin rotalarına rol kontrolü (`ADMIN`, `SUPER_ADMIN`)
+- [x] Proxy'de admin rotalarına rol kontrolü (`SUPER_ADMIN`)
 - [x] Blog ekleme API'sinde rol kontrolü
 
 ### Auth & profil
 
 - [ ] Şifremi unuttum sayfası + akış (e-posta / token) — sayfa var, e-posta akışı yok
 - [x] Profil sayfası (`/profile`)
-- [ ] Ayarlar sayfası (`/setting`) — şifre, profil güncelleme — stub sayfa
+- [x] Ayarlar sayfası (`/setting`) — profil + şifre güncelleme
 
 ### İçerik sayfaları
 
-- [ ] Anasayfa içeriği (şu an sadece "Anasayfa")
-- [ ] Hakkımda (`/about-me`)
-- [ ] SSS (`/faq`)
-- [ ] İletişim (`/contact`) — form veya iletişim bilgileri
-- [ ] Proje (`/project`)
+- [x] Anasayfa içeriği
+- [x] Hakkımda (`/about-me`)
+- [x] SSS (`/faq`)
+- [x] İletişim (`/contact`)
+- [x] Proje (`/project`)
 
 ---
 
@@ -67,52 +67,52 @@
 
 - [x] Yazı başına `generateMetadata` (title, description, OG image)
 - [x] `sitemap.ts` — yayınlanmış yazı URL'lerini ekle
-- [x] `robots.txt` geliştir (sitemap referansı, gerekirse disallow)
+- [x] `robots.txt` geliştir (sitemap referansı)
 - [x] RSS / Atom feed (`/feed.xml`)
-- [ ] Arama (başlık / özet / içerik)
+- [x] Arama (başlık / özet / içerik)
 - [ ] Etiket ve kategori sayfaları (filtreleme)
 
 ---
 
 ## P2 — Performans & mimari
 
-- [ ] Server Component'lerde self-HTTP fetch kaldır → doğrudan Prisma veya Server Actions
+- [x] Server Component'lerde self-HTTP fetch kaldır → doğrudan Prisma (`lib/data/blogs.ts`)
 - [x] Blog listesi API'de N+1 sorguyu düzelt (`include: { author: true }`)
-- [ ] Uygun yerlerde cache / `revalidate` (yayınlanmış yazılar için ISR düşün)
-- [ ] `force-dynamic` gereksiz kullanımını gözden geçir
-- [ ] Blog görsellerinde `next/image` kullan
+- [x] Uygun yerlerde cache / `revalidate` (blog listesi + detay: 60s)
+- [ ] `force-dynamic` gereksiz kullanımını gözden geçir (root layout)
+- [x] Blog görsellerinde `next/image` kullan
 - [x] Sayfalama görünürlük mantığını düzelt (`isShowPagination`)
-- [x] Her navigasyondaki ~1 sn yapay loading splash'i kaldır veya sadeleştir
+- [x] Her navigasyondaki ~1 sn yapay loading splash'i kaldır
 
 ---
 
 ## P2 — Güvenlik
 
-- [ ] Login / register API rate limiting
+- [x] Login / register API rate limiting
 - [x] Kayıt API'sinde sunucu tarafı Zod validasyonu
-- [x] Şifre politikası (min uzunluk, karmaşıklık) — min 6 karakter (Zod)
-- [x] `next.config` güvenlik header'ları (CSP, HSTS, X-Frame-Options vb.)
-- [x] `.env.template` — gerçek secret yerine placeholder
-- [x] `console.error` yerine merkezi loglama (info/warn/error)
+- [x] Şifre politikası (min 6 karakter — Zod)
+- [x] `next.config` güvenlik header'ları
+- [x] `.env.template` — placeholder secret'lar
+- [x] `console.error` yerine merkezi loglama
 
 ---
 
 ## P2 — i18n & UX
 
-- [ ] Hardcoded Türkçe metinleri `messages/en.json` ve `tr.json`'a taşı
-- [ ] Add-blog form placeholder'larını çeviriye al
-- [x] Blog kartlarında klavye erişilebilirliği (`button` / `Link`, `onClick` on `h2` yerine)
-- [ ] Eksik `alt` metinlerini tamamla
+- [x] Hardcoded Türkçe metinleri `messages` dosyalarına taşı (blog, admin, sayfalar)
+- [x] Add-blog form çevirileri (`Blog.Form`)
+- [x] Blog kartlarında klavye erişilebilirliği
+- [x] Görsellerde `alt` metinleri (blog title)
 
 ---
 
 ## P3 — Test, CI/CD & dokümantasyon
 
-- [ ] Vitest — API ve yardımcı fonksiyon testleri
+- [x] Vitest — sanitize, rate-limit, auth-roles testleri
 - [ ] Playwright — kritik akışlar (giriş, yazı ekleme, listeleme)
-- [ ] `package.json`'a `test` script'i
-- [ ] GitHub Actions — lint, build, typecheck (isteğe bağlı test)
-- [x] README — kurulum, env değişkenleri, Docker profilleri, seed admin
+- [x] `package.json`'a `test` script'i
+- [x] GitHub Actions — lint, test, build
+- [x] README — kurulum, env, Docker, seed admin
 - [x] Health check endpoint (`/api/health`)
 
 ---
@@ -120,9 +120,9 @@
 ## P3 — Kod temizliği
 
 - [x] Kullanılmayan `@vercel/postgres` bağımlılığını kaldır
-- [x] Kullanılmayan Recoil auth atomlarını kaldır veya kullan
-- [ ] `prisma/seed.ts` yorum bloklarını temizle / seed'i genişlet
-- [ ] `prisma/schema.prisma` içindeki TODO'yu çöz veya kaldır
+- [x] Kullanılmayan Recoil auth atomlarını kaldır
+- [x] `prisma/seed.ts` yorum bloklarını temizle
+- [x] `prisma/schema.prisma` içindeki TODO / yorum bloklarını kaldır
 - [ ] OpenAPI / basit API dokümantasyonu (isteğe bağlı)
 
 ---
@@ -132,8 +132,8 @@
 | Sprint       | Odak                                              | Durum        |
 | ------------ | ------------------------------------------------- | ------------ |
 | **Sprint 1** | P0 tamamı                                         | ✅ Tamamlandı |
-| **Sprint 2** | Admin paneli + yayın akışı + blog edit/delete     | 🟡 Kısmen    |
-| **Sprint 3** | Stub sayfalar + profil/ayarlar                    | 🟡 Kısmen    |
-| **Sprint 4** | SEO + performans refaktörü                        | 🟡 Kısmen    |
+| **Sprint 2** | Admin paneli + yayın akışı + blog edit/delete     | ✅ Tamamlandı |
+| **Sprint 3** | Stub sayfalar + profil/ayarlar                    | ✅ Tamamlandı |
+| **Sprint 4** | SEO + performans refaktörü                        | ✅ Tamamlandı |
 | **Sprint 5** | Yorumlar/etiketler **veya** şema sadeleştirme     | ⬜ Bekliyor   |
 | **Sprint 6** | Test + CI + README                                | 🟡 Kısmen    |

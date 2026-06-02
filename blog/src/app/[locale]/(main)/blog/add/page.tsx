@@ -1,16 +1,14 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AddBlogFeature from './_features/AddBlog';
+import { getTranslations } from 'next-intl/server';
 
-const Page = () => {
+export default async function Page() {
+  const t = await getTranslations('Blog.Add');
+
   return (
     <div className="container">
-      <HeaderTemplate
-        title="Blog Ekle"
-        description="Bloglarınızı bu sayfadan ekleyebilirsiniz. Bloglar eklendikten sonra onaya gider. Onaylanan bloglar, bloglar sayfasında görüntülenecektir."
-      />
+      <HeaderTemplate title={t('title')} description={t('description')} />
       <AddBlogFeature />
     </div>
   );
-};
-
-export default Page;
+}

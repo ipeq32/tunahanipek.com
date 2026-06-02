@@ -1,6 +1,125 @@
 {
   "HomePage": {
-    "title": "Merhaba Dünya!"
+    "title": "Tunahan İPEK",
+    "description": "Yazılım, seyahat ve deneyimlerimi paylaştığım kişisel blog ve portfolyo.",
+    "ctaBlog": "Blogları keşfet",
+    "ctaAbout": "Hakkımda",
+    "recentPosts": "Son yazılar"
+  },
+  "Blog": {
+    "title": "Bloglar",
+    "description": "Yayınlanmış blog yazıları ve güncellemeler.",
+    "searchPlaceholder": "Bloglarda ara...",
+    "roleAdmin": "Yönetici",
+    "roleAuthor": "Yazar",
+    "createdAt": "Eklenme tarihi",
+    "Form": {
+      "title": "Başlık",
+      "titlePlaceholder": "Blog başlığı",
+      "image": "Resim URL",
+      "imagePlaceholder": "Kapak görseli URL",
+      "shortImage": "Küçük resim URL",
+      "shortImagePlaceholder": "Liste görseli URL",
+      "content": "İçerik",
+      "summary": "Özet",
+      "submitCreate": "Yayınla",
+      "submitUpdate": "Güncelle",
+      "createSuccess": "Blog eklendi",
+      "updateSuccess": "Blog güncellendi",
+      "error": "İşlem başarısız"
+    },
+    "Edit": {
+      "title": "Blog Düzenle",
+      "description": "Mevcut yazıyı güncelleyin."
+    },
+    "Add": {
+      "title": "Blog Ekle",
+      "description": "Bloglarınızı bu sayfadan ekleyebilirsiniz. Onay sonrası yayınlanır."
+    }
+  },
+  "Admin": {
+    "Blog": {
+      "title": "Blog Yönetimi",
+      "description": "Yazıları onaylayın, yayınlayın veya silin.",
+      "loading": "Yükleniyor...",
+      "empty": "Henüz blog yazısı yok.",
+      "loadError": "Blog listesi yüklenemedi",
+      "actionError": "İşlem başarısız",
+      "published": "Yazı yayınlandı",
+      "unpublished": "Yazı yayından kaldırıldı",
+      "deleted": "Yazı silindi",
+      "deleteConfirm": "Bu yazıyı silmek istediğinize emin misiniz?",
+      "statusPublished": "Yayında",
+      "statusDraft": "Taslak / onay bekliyor",
+      "view": "Görüntüle",
+      "edit": "Düzenle",
+      "publish": "Yayınla",
+      "unpublish": "Yayından kaldır",
+      "delete": "Sil"
+    }
+  },
+  "Settings": {
+    "title": "Ayarlar",
+    "description": "Profil ve şifre ayarlarınızı yönetin.",
+    "profileTitle": "Profil bilgileri",
+    "passwordTitle": "Şifre değiştir",
+    "name": "Ad",
+    "phone": "Telefon",
+    "address": "Adres",
+    "website": "Web sitesi",
+    "image": "Profil görseli URL",
+    "bio": "Biyografi",
+    "currentPassword": "Mevcut şifre",
+    "newPassword": "Yeni şifre",
+    "newPasswordConfirm": "Yeni şifre (tekrar)",
+    "saveProfile": "Profili kaydet",
+    "savePassword": "Şifreyi güncelle",
+    "profileSuccess": "Profil güncellendi",
+    "profileError": "Profil güncellenemedi",
+    "passwordSuccess": "Şifre güncellendi",
+    "passwordError": "Şifre güncellenemedi"
+  },
+  "Pages": {
+    "About": {
+      "title": "Hakkımda",
+      "description": "Ben kimim?",
+      "body": "Merhaba, ben Tunahan İPEK. Yazılım geliştirme ve seyahat tutkumla bu blogda deneyimlerimi paylaşıyorum."
+    },
+    "Faq": {
+      "title": "Sıkça Sorulan Sorular",
+      "description": "Merak edilenler",
+      "q1": {
+        "question": "Blog yazısı nasıl eklenir?",
+        "answer": "Kayıt olduktan sonra moderatör veya yönetici rolüyle blog ekleme sayfasından yazı oluşturabilirsiniz."
+      },
+      "q2": {
+        "question": "Yazılarım ne zaman yayınlanır?",
+        "answer": "Yönetici onayından sonra yazılar blog listesinde görünür."
+      },
+      "q3": {
+        "question": "İletişime nasıl geçerim?",
+        "answer": "İletişim sayfasındaki e-posta adresinden veya GitHub üzerinden ulaşabilirsiniz."
+      }
+    },
+    "Contact": {
+      "title": "İletişim",
+      "description": "Bana ulaşın",
+      "body": "Sorularınız ve iş birlikleri için aşağıdaki kanallardan iletişime geçebilirsiniz.",
+      "emailLabel": "E-posta"
+    },
+    "Project": {
+      "title": "Projeler",
+      "description": "Çalışmalarım",
+      "portfolio": {
+        "title": "Kişisel site",
+        "description": "Ana portfolyo ve tanıtım sitesi."
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Teknik ve kişisel yazılar.",
+        "link": "Bloga git"
+      }
+    }
   },
   "LocaleSwitcher": {
     "label": "Change language",
