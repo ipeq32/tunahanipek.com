@@ -1,25 +1,17 @@
-FROM node:18-alphine AS builder
-
-LABEL maintainer="Tunahan İPEK <tnhnipek@gmail.com>"
-
-WORKDIR /usr/src/app/
+FROM node:20-alpine
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
 COPY package.json yarn.lock ./
-
 RUN yarn install --frozen-lockfile
 
 COPY . .
 
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn build
 
-FROM nginx:latest
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-COPY nginx.conf /etc/nginx/nginx.conf
-
-RUN rm -rf /usr/share/nginx/html/*
-
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
-
-EXPOSE 3000 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["yarn", "start"]

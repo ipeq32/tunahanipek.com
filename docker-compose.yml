@@ -1,0 +1,113 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: tunahanipek-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tuna213}
+      POSTGRES_DB: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  blog:
+    build:
+      context: ./blog
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    container_name: tunahanipek-blog
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "${BLOG_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-in-production}
+      NEXTAUTH_SALT: ${NEXTAUTH_SALT:-change-me-in-production}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      VERCEL_URL: ${VERCEL_URL:-blog.tunahanipek.com}
+      POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+      POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+    profiles:
+      - full
+
+  home:
+    build:
+      context: ./home
+      dockerfile: Dockerfile
+    container_name: tunahanipek-home
+    restart: unless-stopped
+    ports:
+      - "${HOME_PORT:-3001}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    profiles:
+      - full
+
+  blog-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tunahanipek-blog-dev
+    working_dir: /app
+    command: sh -c "yarn install && yarn prisma generate && yarn prisma db push && yarn seed && yarn dev"
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "${BLOG_PORT:-3000}:3000"
+    volumes:
+      - ./blog:/app
+      - blog_node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-in-production}
+      NEXTAUTH_SALT: ${NEXTAUTH_SALT:-change-me-in-production}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      VERCEL_URL: ${VERCEL_URL:-blog.tunahanipek.com}
+      POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+      POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+      WATCHPACK_POLLING: "true"
+      HUSKY: "0"
+    profiles:
+      - dev
+
+  home-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tunahanipek-home-dev
+    working_dir: /app
+    command: sh -c "yarn install && yarn dev"
+    ports:
+      - "${HOME_PORT:-3001}:3000"
+    volumes:
+      - ./home:/app
+      - home_node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      WATCHPACK_POLLING: "true"
+      HUSKY: "0"
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+  blog_node_modules:
+  home_node_modules:
