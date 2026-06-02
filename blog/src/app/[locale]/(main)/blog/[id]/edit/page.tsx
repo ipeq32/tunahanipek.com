@@ -53,6 +53,8 @@ export default async function EditBlogPage({ params }: Props) {
           shortImage: blog.shortImage,
           content: blog.content,
           summary: blog.summary,
+          tags: blog.tags.join(', '),
+          categories: blog.categories.join(', '),
         }}
       />
     </div>

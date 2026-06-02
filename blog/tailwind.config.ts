@@ -12,15 +12,58 @@ const config = {
   theme: {
     container: {
       center: true,
-      padding: '.5rem',
+      padding: '1rem',
       screens: {
-        '2xl': '1400px',
+        '2xl': '1280px',
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+      },
       colors: {
-        primary: '#0b0d28',
-        secondary: '#080A20',
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(0 84% 60%)',
+          foreground: 'hsl(0 0% 98%)',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        brand: {
+          DEFAULT: 'hsl(var(--brand))',
+          muted: 'hsl(var(--brand-muted))',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       screens: {
         'mobile-sm': '320px',
@@ -37,131 +80,31 @@ const config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
-        skew: {
-          '0% 100%': {
-            transform: 'skewX(0deg)',
-          },
-          '50%': {
-            transform: 'skewX(6deg)',
-          },
-        },
-        'fade-in-down': {
-          '0%': {
-            opacity: '0',
-            transform: 'translateY(-8px)',
-          },
-          '50%': {
-            opacity: '0.5',
-            transform: 'translateY(4px)',
-          },
-          '100%': {
-            opacity: '1',
-            transform: 'translateY(0)',
-          },
-        },
-        'bell-ringer': {
-          '0%': {
-            transform: 'translateX(0px)',
-          },
-          '50%': {
-            transform: 'translateX(10px)',
-          },
-          '100%': {
-            transform: 'translateX(0px)',
-          },
-        },
-        'slide-in-right': {
-          '0%': {
-            transform: 'translateX(70%)',
-          },
-          '100%': {
-            transform: 'translateX(0)',
-          },
-        },
-        'slide-in-right-slow': {
-          '0%': {
-            transform: 'translateX(0%)',
-          },
-          '25%': {
-            transform: 'translateX(10%)',
-          },
-          '50%': {
-            transform: 'translateX(-10%)',
-          },
-          '100%': {
-            transform: 'translateX(0%)',
-          },
-        },
         shimmer: {
-          '100%': {
-            transform: 'translateX(100%)',
-          },
-        },
-        loader: {
-          to: {
-            opacity: '0.1',
-            transform: 'translate3d(0, -1rem, 0)',
-          },
+          '100%': { transform: 'translateX(100%)' },
         },
         'text-slide': {
-          '0%': {
-            transform: 'translateX(-100%)',
-          },
-          '25%': {
-            transform: 'translateX(0)',
-          },
-          '75%': {
-            transform: 'translateX(100%)',
-          },
-          '100%': {
-            transform: 'translateX(0)',
-          },
+          '0%': { transform: 'translateX(-100%)' },
+          '25%': { transform: 'translateX(0)' },
+          '75%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
         },
-        'text-slide-slow': {
-          from: {
-            transform: 'translateX(-100%)',
-          },
-          to: {
-            transform: 'translateX(10%)',
-          },
-        },
-        'fade-down': {
-          from: {
-            transform: 'scale(0)',
-          },
-          to: {
-            transform: 'scale(1)',
-          },
-        },
-        drop: {
-          from: {
-            top: '-5vh',
-          },
-          to: {
-            top: '100vh',
-          },
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'spin-slow': 'spin 3s linear infinite',
-        skew: 'skew 2s linear infinite',
-        'fade-in-down': 'fade-in-down 0.5s ease-out infinite',
-        'bell-ringer': 'bell-ringer 0.5s ease-out infinite',
-        'slide-in-right': 'slide-in-right 1s ease-out infinite',
-        'slide-in-right-slow': 'slide-in-right-slow 3.5s ease-out infinite',
         shimmer: 'shimmer 1s infinite',
-        loader: 'loader 0.6s infinite alternate',
         'text-slide': 'text-slide 10s ease-out infinite alternate',
-        'text-slide-slow': 'text-slide-slow 10s ease-out infinite alternate',
-        'fade-down': 'fade-down 0.5s ease-in forwards',
-        drop: 'drop 1.7s cubic-bezier(0.7, 0, 0.84, 0) forwards',
+        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
       },
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
 } satisfies Config;
 
 export default config;

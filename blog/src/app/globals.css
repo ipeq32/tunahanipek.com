@@ -1,66 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.ql-snow {
-  @apply first:rounded-t-md last:rounded-b-md !border-slate-200 dark:!border-slate-800 text-black dark:text-white bg-white dark:bg-slate-950;
-}
-
-.ql-container {
-  min-height: 150px;
-  caret-color: #db2777;
-}
-
 @layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 173 58% 39%;
+    --accent-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 173 58% 39%;
+    --radius: 0.75rem;
+    --brand: 173 58% 39%;
+    --brand-muted: 173 40% 94%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 14%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 173 58% 45%;
+    --accent-foreground: 222 47% 6%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 173 58% 45%;
+    --brand: 173 58% 45%;
+    --brand-muted: 173 30% 12%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    /* -webkit-text-fill-color: rgba(148, 163, 184, 1); */
-    /* -webkit-box-shadow: 0 0 0 30px #0b0d28 inset !important; */
-    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
-  }
-
+  input:-webkit-autofill:active,
   textarea:-webkit-autofill,
   textarea:-webkit-autofill:hover,
   textarea:-webkit-autofill:focus,
   textarea:-webkit-autofill:active {
-    /* -webkit-text-fill-color: rgba(148, 163, 184, 1); */
-    /* -webkit-box-shadow: 0 0 0 30px #0b0d28 inset !important; */
-    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-box-shadow: 0 0 0 30px hsl(var(--background)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground));
   }
 }
 
 @layer base {
   *:not(.geScrollable)::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
 
-  * ::-webkit-scrollbar-corner {
-    background-color: transparent;
-  }
-
-  * ::-webkit-scrollbar-thumb {
-    background-color: rgba(74, 222, 128, 0.2);
-    background-clip: padding-box;
-    border: solid transparent;
-    border-radius: 10px;
-  }
-
-  * ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(74, 222, 128, 0.5);
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-teal-500/25 hover:bg-teal-500/40;
   }
 
   *::-webkit-scrollbar-track {
-    background-clip: padding-box;
-    border: solid transparent;
-    border-width: 1px;
+    @apply bg-transparent;
   }
 }
 
+@layer utilities {
+  .mesh-background {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(at 0% 0%, hsl(var(--brand) / 0.12) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(199 89% 48% / 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(var(--brand) / 0.06) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(262 83% 58% / 0.05) 0px, transparent 50%);
+  }
+
+  .glass-nav {
+    @apply border-b border-border/50 bg-background/70 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-background/60;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent dark:from-teal-400 dark:to-cyan-400;
+  }
+}
+
+/* Quill editor */
+.ql-snow {
+  @apply first:rounded-t-md last:rounded-b-md !border-border text-foreground bg-card;
+}
+
+.ql-container {
+  min-height: 150px;
+  caret-color: hsl(var(--accent));
+}
+
+/* Auth logo animation (legacy) */
 @layer components {
   #logo {
     width: 50%;
@@ -71,78 +125,34 @@
 
   .st0 {
     stroke-dasharray: 4800;
-    animation: animate 8s;
+    animation: logo-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72);
     width: 100%;
     z-index: 999;
-    animation-timing-function: cubic-bezier(0.47, 0, 0.75, 0.72);
   }
 
   .st1 {
     stroke-dasharray: 4800;
-    animation: animate 4s;
+    animation: logo-draw 4s ease-in both;
     width: 100%;
     z-index: 999;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in;
   }
 
-  @keyframes animate {
+  @keyframes logo-draw {
     from {
       stroke-dashoffset: 4800;
     }
-
     to {
       stroke-dashoffset: 0;
     }
   }
 
   #preloader {
-    z-index: -1;
-    @apply bg-sky-50 dark:bg-primary/90;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  * {
-    margin: 0px;
-    padding: 0px;
-  }
-
-  ::-webkit-scrollbar {
-    display: none;
-    visibility: hidden;
-    opacity: 0;
-    overflow: hidden;
-    /* background-color: transparent; */
+    @apply flex h-full w-full items-center justify-center bg-transparent;
   }
 }
 
 @layer components {
-  .text {
-    position: absolute;
-    text-transform: uppercase;
-    user-select: none;
-    font-size: 3rem;
-    transition: 0.2s ease;
-    font-family: 'Satisfy', cursive;
-  }
-
-  .text1 {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
-  }
-
-  .text2 {
-    clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
-  }
-
-  .box:hover .text1 {
-    transform: translateY(-10px);
-  }
-
-  .box:hover .text2 {
-    transform: translateY(10px);
+  .prose-blog {
+    @apply prose prose-slate max-w-none dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-teal-400 prose-img:rounded-xl;
   }
 }

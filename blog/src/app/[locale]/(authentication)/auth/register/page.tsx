@@ -3,9 +3,9 @@ import HeaderComponent from './_components/header';
 
 export default async function RegisterPage() {
   return (
-    <section className="h-[calc(100vh-250px)] flex flex-col items-center justify-start gap-2">
+    <section className="space-y-6">
       <HeaderComponent />
-      <div className="w-[600px] max-md:w-full md:max-h-[calc(100vh-300px)] h-svh overflow-auto">
+      <div className="max-h-[60vh] overflow-y-auto pr-1">
         <FormPage />
       </div>
     </section>

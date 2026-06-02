@@ -18,7 +18,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="w-full min-h-screen bg-sky-50 dark:bg-primary/90">
+    <main className="w-full min-h-screen mesh-background">
       <div className="container grid place-content-center min-h-screen m-auto space-y-5 text-center">
         <h1 className="text-3xl font-semibold">{t('title')}</h1>
         <p>{error.message}</p>

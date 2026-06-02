@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   engineType      = "client"
@@ -19,23 +16,36 @@ enum Role {
 }
 
 model User {
-  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  email          String    @unique
-  hashedPassword String
-  name           String
-  phone          String
-  address        String
-  website        String?
-  image          String?
-  bio            String?
-  role           Role      @default(USER)
-  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt      DateTime? @db.Timestamptz(3)
-  blogs          Blog[]
-  comments       Comment[]
+  id                  String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email               String               @unique
+  hashedPassword      String
+  name                String
+  phone               String
+  address             String
+  website             String?
+  image               String?
+  bio                 String?
+  role                Role                 @default(USER)
+  createdAt           DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime             @updatedAt @db.Timestamptz(3)
+  deletedAt           DateTime?            @db.Timestamptz(3)
+  blogs               Blog[]
+  comments            Comment[]
+  passwordResetTokens PasswordResetToken[]
 
   @@index([email], name: "email")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token     String   @unique
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([token])
 }
 
 model Blog {
@@ -77,12 +87,12 @@ model Comment {
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime  @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
-  User      User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   userId    String?   @db.Uuid
-  Blog      Blog?     @relation(fields: [blogId], references: [id])
+  blog      Blog?     @relation(fields: [blogId], references: [id])
   blogId    String?   @db.Uuid
   replies   Comment[] @relation("ReplyToComment")
-  comment   Comment?  @relation("ReplyToComment", fields: [commentId], references: [id])
+  parent    Comment?  @relation("ReplyToComment", fields: [commentId], references: [id])
   commentId String?   @db.Uuid
 }
 

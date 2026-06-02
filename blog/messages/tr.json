@@ -26,7 +26,19 @@
       "submitUpdate": "Güncelle",
       "createSuccess": "Blog eklendi",
       "updateSuccess": "Blog güncellendi",
-      "error": "İşlem başarısız"
+      "error": "İşlem başarısız",
+      "tags": "Etiketler",
+      "tagsPlaceholder": "javascript, nextjs (virgülle)",
+      "categories": "Kategoriler",
+      "categoriesPlaceholder": "Teknoloji, Seyahat (virgülle)"
+    },
+    "Taxonomy": {
+      "tags": "Etiketler",
+      "categories": "Kategoriler",
+      "tagTitle": "#{name} etiketi",
+      "tagDescription": "{name} etiketli yazılar",
+      "categoryTitle": "{name} kategorisi",
+      "categoryDescription": "{name} kategorisindeki yazılar"
     },
     "Edit": {
       "title": "Blog Düzenle",
@@ -56,7 +68,52 @@
       "publish": "Yayınla",
       "unpublish": "Yayından kaldır",
       "delete": "Sil"
+    },
+    "Comments": {
+      "title": "Yorum moderasyonu",
+      "description": "Onay bekleyen yorumları yönetin",
+      "loading": "Yükleniyor...",
+      "empty": "Bekleyen yorum yok",
+      "loadError": "Yorumlar yüklenemedi",
+      "actionError": "İşlem başarısız",
+      "approved": "Yorum onaylandı",
+      "rejected": "Yorum reddedildi",
+      "approve": "Onayla",
+      "reject": "Reddet"
     }
+  },
+  "Auth": {
+    "ForgotPassword": {
+      "title": "Şifremi Unuttum",
+      "description": "E-posta adresinize sıfırlama bağlantısı gönderilir",
+      "emailPlaceholder": "E-posta adresiniz",
+      "submit": "Sıfırlama bağlantısı gönder",
+      "success": "Talebiniz alındı. E-postanızı kontrol edin.",
+      "error": "İşlem başarısız",
+      "devLink": "Geliştirme ortamı bağlantısı",
+      "backToLogin": "Giriş sayfasına dön"
+    },
+    "ResetPassword": {
+      "title": "Yeni Şifre",
+      "description": "Yeni şifrenizi belirleyin",
+      "loading": "Yükleniyor...",
+      "passwordPlaceholder": "Yeni şifre",
+      "passwordConfirmPlaceholder": "Yeni şifre (tekrar)",
+      "submit": "Şifreyi güncelle",
+      "success": "Şifreniz güncellendi",
+      "error": "Şifre güncellenemedi",
+      "invalidToken": "Geçersiz veya süresi dolmuş bağlantı.",
+      "requestNew": "Yeni bağlantı iste"
+    }
+  },
+  "Comments": {
+    "title": "Yorumlar",
+    "empty": "Henüz yorum yok.",
+    "placeholder": "Yorumunuzu yazın...",
+    "submit": "Yorum gönder",
+    "pendingApproval": "Yorumunuz onay için gönderildi",
+    "submitError": "Yorum gönderilemedi",
+    "loginToComment": "Yorum yapmak için giriş yapın"
   },
   "Settings": {
     "title": "Ayarlar",

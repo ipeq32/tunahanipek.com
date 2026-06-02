@@ -20,10 +20,10 @@ const MainLayout = ({ children }: Props) => {
 
   return (
     <RecoilRoot>
-      <div className="bg-sky-50 dark:bg-primary/90">
+      <div className="mesh-background min-h-dvh">
         <NavContact />
         <Navbar />
-        <div className="container min-h-dvh">{children}</div>
+        <main className="container pb-16 pt-2">{children}</main>
         <Footer />
       </div>
     </RecoilRoot>

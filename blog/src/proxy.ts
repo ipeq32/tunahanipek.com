@@ -13,12 +13,17 @@ const protectedPages = [
   '/project/*',
 ];
 
-const adminPages = [pathnames['/admin/blog'], pathnames['/admin/project']];
+const adminPages = [
+  pathnames['/admin/blog'],
+  pathnames['/admin/project'],
+  pathnames['/admin/comments'],
+];
 
 const authPages = [
   pathnames['/auth/login'],
   pathnames['/auth/register'],
   pathnames['/auth/forgot-password'],
+  pathnames['/auth/reset-password'],
 ];
 
 const intlMiddleware = createIntlMiddleware(routing);

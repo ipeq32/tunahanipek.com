@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { blogAuthorSelect, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { isSuperAdmin } from '@/lib/auth-roles';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
@@ -19,7 +19,7 @@ export async function GET() {
     const blogs = await prisma.blog.findMany({
       where: { deletedAt: null },
       orderBy: { updatedAt: 'desc' },
-      include: { author: blogAuthorSelect },
+      include: blogListInclude,
     });
 
     return NextResponse.json({

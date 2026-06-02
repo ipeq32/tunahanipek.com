@@ -12,6 +12,7 @@
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "prepare": "husky",
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
     "generate-prod": "npx prisma generate && npx prisma db push",
@@ -56,6 +57,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.7",
     "@types/negotiator": "^0.6.3",

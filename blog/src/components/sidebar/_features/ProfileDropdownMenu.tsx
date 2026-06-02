@@ -115,6 +115,15 @@ function ProfileDropdownMenuFeature({
                 Proje Yönetimi
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                onClick={onClickedLink}
+                href="/admin/comments"
+                className="w-full"
+              >
+                Yorum Moderasyonu
+              </Link>
+            </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />

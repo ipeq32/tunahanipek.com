@@ -9,7 +9,7 @@ import ToggleLanguage from '../toggle-language';
 import { useTranslations } from 'next-intl';
 
 const NavContact = () => {
-  const [isOpen, setIsOpen] = useState<boolean | null>(null); // Burası backendden getirilecek veriye göre değiştir.
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
 
   const t = useTranslations('Navbar.Contact');
 
@@ -21,78 +21,69 @@ const NavContact = () => {
       ((currentDay !== 'Saturday' && currentDay !== 'Sunday') && currentHour < 8) ||
       currentHour > 18
     ) {
-      return setIsOpen(false);
+      setIsOpen(false);
     } else {
-      return setIsOpen(true);
+      setIsOpen(true);
     }
-  }, [currentDay, currentHour, t]);
+  }, [currentDay, currentHour]);
 
   return (
-    <div className="flex items-center justify-center h-12 bg-cyan-50 dark:bg-indigo-950 max-2xl:px-10">
-      <div className="flex flex-row justify-between max-w-screen-xl w-full">
-        <div className="flex flex-row items-center gap-2 max-lg:hidden">
-          <Stethoscope width={20} height={20} className="animate-pulse" />
-          <div className="flex items-center overflow-hidden">
-            <p className="text-sm animate-text-slide whitespace-nowrap">
-              {t('description')}
-            </p>
-          </div>
+    <div className="border-b border-border/40 bg-brand-muted/50 dark:bg-secondary/50">
+      <div className="container flex h-10 items-center justify-between gap-4">
+        <div className="hidden items-center gap-2 lg:flex">
+          <Stethoscope width={16} height={16} className="text-teal-600 dark:text-teal-400" />
+          <p className="max-w-md truncate text-xs text-muted-foreground">{t('description')}</p>
         </div>
-        {/* contact */}
-        <div className="flex flex-row justify-end max-md:justify-evenly items-center w-full gap-10">
-          <div className="flex flex-row items-center gap-2 max-lg:hidden">
-            <Clock3 width={20} height={20} className="animate-spin-slow" />
-            <div className="flex flex-row gap-2 text-sm">
-              <div
-                className={`flex items-center overflow-hidden border-b ${
-                  isOpen ? 'border-sky-400' : 'border-rose-400'
-                }`}
-              >
-                <span className="max-sm:hidden animate-text-slide-slow whitespace-nowrap max-w-[250px]">
-                  {t('time')}
-                </span>
-                <span className="max-sm:block hidden">{currentDay}</span>
-              </div>
-              <span
-                className={`select-none ${
-                  isOpen
-                    ? 'text-green-500 cursor-grab'
-                    : 'text-red-500 cursor-wait'
-                }`}
-              >
-                {isOpen ? t('Status.open') : t('Status.close')}
-              </span>
-            </div>
+
+        <div className="flex w-full flex-1 items-center justify-end gap-4 lg:w-auto">
+          <div className="hidden items-center gap-2 text-xs lg:flex">
+            <Clock3 width={14} height={14} className="text-muted-foreground" />
+            <span className="hidden max-w-[200px] truncate text-muted-foreground xl:inline">
+              {t('time')}
+            </span>
+            <span
+              className={
+                isOpen
+                  ? 'font-medium text-teal-600 dark:text-teal-400'
+                  : 'font-medium text-rose-500'
+              }
+            >
+              {isOpen ? t('Status.open') : t('Status.close')}
+            </span>
           </div>
-          <div className="flex max-md:flex-row-reverse justify-center items-center gap-2">
-            <ToggleTheme />
-            <ToggleLanguage />
-          </div>
-          <div className="flex flex-row items-center justify-evenly w-28">
-            <Link href="https://github.com/ipeq32" target="_blank">
-              <Github
-                className="hover:text-stone-500 transition-colors duration-500 ease-linear"
-                width={20}
-                height={20}
-              />
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="https://github.com/ipeq32"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="GitHub"
+            >
+              <Github width={16} height={16} />
             </Link>
-            <Link href="https://www.instagram.com/tnhnipek" target="_blank">
-              <Instagram
-                className="hover:text-rose-500 transition-colors duration-500 ease-linear"
-                width={20}
-                height={20}
-              />
+            <Link
+              href="https://www.instagram.com/tnhnipek"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Instagram"
+            >
+              <Instagram width={16} height={16} />
             </Link>
             <Link
               href="https://www.linkedin.com/in/tunahanipek"
               target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="LinkedIn"
             >
-              <Linkedin
-                className="hover:text-sky-500 transition-colors duration-500 ease-linear"
-                width={20}
-                height={20}
-              />
+              <Linkedin width={16} height={16} />
             </Link>
+            <div className="ml-1 flex items-center gap-2 border-l border-border/60 pl-3">
+              <ToggleTheme />
+              <ToggleLanguage />
+            </div>
           </div>
         </div>
       </div>

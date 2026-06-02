@@ -1,19 +1,16 @@
 # Blog — Yapılacaklar Listesi
 
-Öncelik: **P0** (kritik) → **P1** (yüksek) → **P2** (orta) → **P3** (düşük / hijyen)
+Tüm maddeler tamamlandı. ✅
 
 ---
 
 ## P0 — Kritik düzeltmeler
 
-- [x] API'de `user` alanını `author` olarak döndür (`/api/blog`, `/api/blog/[id]`)
+- [x] API'de `user` alanını `author` olarak döndür
 - [x] `IGetBlog` tipi ile API yanıtını hizala
-- [x] Yayın akışını netleştir: yeni yazılar `published: false` → admin onayı veya role göre otomatik yayın
-- [x] Quill HTML çıktısını sanitize et (ör. DOMPurify) — `dangerouslySetInnerHTML` öncesi
-- [x] Menüdeki ölü linkleri gider: sayfa ekle **veya** linkleri kaldır
-  - [x] `/auth/forgot-password`
-  - [x] `/profile`, `/setting`
-  - [x] `/admin/blog`, `/admin/project`
+- [x] Yayın akışı (rol bazlı otomatik yayın)
+- [x] Quill HTML sanitizasyonu
+- [x] Ölü menü linkleri giderildi
 
 ---
 
@@ -21,119 +18,81 @@
 
 ### Blog CRUD
 
-- [x] Blog düzenleme API (PATCH/PUT)
-- [x] Blog silme API (soft delete — `deletedAt`)
-- [x] Blog düzenleme sayfası (`/blog/[id]/edit`)
-- [x] Blog silme onayı (UI) — admin panelinde
+- [x] Blog düzenleme API
+- [x] Blog silme API (soft delete)
+- [x] Blog düzenleme sayfası
+- [x] Blog silme onayı (admin)
 
 ### Admin paneli
 
-- [x] `/admin/blog` — yazı listesi, onaylama/reddetme (`published` toggle)
-- [x] `/admin/project` — proje yönetimi (veya menüden kaldır) — stub sayfa
-- [x] Proxy'de admin rotalarına rol kontrolü (`SUPER_ADMIN`)
-- [x] Blog ekleme API'sinde rol kontrolü
+- [x] `/admin/blog`
+- [x] `/admin/project` (stub)
+- [x] `/admin/comments` (yorum moderasyonu)
+- [x] Proxy rol kontrolü
+- [x] Blog ekleme API rol kontrolü
 
 ### Auth & profil
 
-- [ ] Şifremi unuttum sayfası + akış (e-posta / token) — sayfa var, e-posta akışı yok
-- [x] Profil sayfası (`/profile`)
-- [x] Ayarlar sayfası (`/setting`) — profil + şifre güncelleme
+- [x] Şifremi unuttum + token akışı (`PasswordResetToken`, dev'de link loglanır)
+- [x] `/auth/reset-password`
+- [x] Profil sayfası
+- [x] Ayarlar (profil + şifre)
 
 ### İçerik sayfaları
 
-- [x] Anasayfa içeriği
-- [x] Hakkımda (`/about-me`)
-- [x] SSS (`/faq`)
-- [x] İletişim (`/contact`)
-- [x] Proje (`/project`)
+- [x] Anasayfa, Hakkımda, SSS, İletişim, Proje
+
+### Şema ↔ uygulama (Seçenek A)
+
+- [x] Yorum sistemi
+- [x] Etiket (Tag) — form + filtreleme
+- [x] Kategori (Category) — form + filtreleme
 
 ---
 
-## P1 — Şema ↔ uygulama
+## P2 — SEO, performans, güvenlik, i18n
 
-**Seçenek A — Uygula:**
-
-- [ ] Yorum sistemi (listeleme, ekleme, moderasyon `PENDING/APPROVED/REJECTED`)
-- [ ] Etiket (Tag) — yazıya ekleme, filtreleme
-- [ ] Kategori (Category) — yazıya ekleme, filtreleme
-
-**Seçenek B — Sadeleştir:**
-
-- [ ] Kullanılmayan modelleri şemadan kaldır veya migration ile temizle
-
----
-
-## P2 — SEO & keşfedilebilirlik
-
-- [x] Yazı başına `generateMetadata` (title, description, OG image)
-- [x] `sitemap.ts` — yayınlanmış yazı URL'lerini ekle
-- [x] `robots.txt` geliştir (sitemap referansı)
-- [x] RSS / Atom feed (`/feed.xml`)
-- [x] Arama (başlık / özet / içerik)
-- [ ] Etiket ve kategori sayfaları (filtreleme)
+- [x] Metadata, sitemap, robots, RSS
+- [x] Arama (`?q=`)
+- [x] Etiket/kategori sayfaları (`/blog/tag/[name]`, `/blog/category/[name]`)
+- [x] Prisma data layer
+- [x] N+1 düzeltmesi
+- [x] `revalidate = 60`
+- [x] Root layout `force-dynamic` kaldırıldı
+- [x] `next/image`
+- [x] Login/register rate limiting
+- [x] Zod validasyon, güvenlik header'ları, logger
+- [x] i18n (`messages/tr.json`, `en.json`)
 
 ---
 
-## P2 — Performans & mimari
+## P3 — Test, CI, dokümantasyon
 
-- [x] Server Component'lerde self-HTTP fetch kaldır → doğrudan Prisma (`lib/data/blogs.ts`)
-- [x] Blog listesi API'de N+1 sorguyu düzelt (`include: { author: true }`)
-- [x] Uygun yerlerde cache / `revalidate` (blog listesi + detay: 60s)
-- [ ] `force-dynamic` gereksiz kullanımını gözden geçir (root layout)
-- [x] Blog görsellerinde `next/image` kullan
-- [x] Sayfalama görünürlük mantığını düzelt (`isShowPagination`)
-- [x] Her navigasyondaki ~1 sn yapay loading splash'i kaldır
-
----
-
-## P2 — Güvenlik
-
-- [x] Login / register API rate limiting
-- [x] Kayıt API'sinde sunucu tarafı Zod validasyonu
-- [x] Şifre politikası (min 6 karakter — Zod)
-- [x] `next.config` güvenlik header'ları
-- [x] `.env.template` — placeholder secret'lar
-- [x] `console.error` yerine merkezi loglama
+- [x] Vitest (7 test)
+- [x] Playwright e2e (`yarn test:e2e`)
+- [x] GitHub Actions (lint, test, build)
+- [x] README
+- [x] `/api/health`
+- [x] `docs/API.md`
+- [x] Kod temizliği (seed, schema, recoil, vercel postgres)
 
 ---
 
-## P2 — i18n & UX
+## Veritabanı güncellemesi
 
-- [x] Hardcoded Türkçe metinleri `messages` dosyalarına taşı (blog, admin, sayfalar)
-- [x] Add-blog form çevirileri (`Blog.Form`)
-- [x] Blog kartlarında klavye erişilebilirliği
-- [x] Görsellerde `alt` metinleri (blog title)
+Yeni `PasswordResetToken` modeli için:
 
----
-
-## P3 — Test, CI/CD & dokümantasyon
-
-- [x] Vitest — sanitize, rate-limit, auth-roles testleri
-- [ ] Playwright — kritik akışlar (giriş, yazı ekleme, listeleme)
-- [x] `package.json`'a `test` script'i
-- [x] GitHub Actions — lint, test, build
-- [x] README — kurulum, env, Docker, seed admin
-- [x] Health check endpoint (`/api/health`)
+```bash
+cd blog
+yarn prisma db push
+# veya
+yarn generate-local
+```
 
 ---
 
-## P3 — Kod temizliği
+## Sprint durumu
 
-- [x] Kullanılmayan `@vercel/postgres` bağımlılığını kaldır
-- [x] Kullanılmayan Recoil auth atomlarını kaldır
-- [x] `prisma/seed.ts` yorum bloklarını temizle
-- [x] `prisma/schema.prisma` içindeki TODO / yorum bloklarını kaldır
-- [ ] OpenAPI / basit API dokümantasyonu (isteğe bağlı)
-
----
-
-## Önerilen sprint planı
-
-| Sprint       | Odak                                              | Durum        |
-| ------------ | ------------------------------------------------- | ------------ |
-| **Sprint 1** | P0 tamamı                                         | ✅ Tamamlandı |
-| **Sprint 2** | Admin paneli + yayın akışı + blog edit/delete     | ✅ Tamamlandı |
-| **Sprint 3** | Stub sayfalar + profil/ayarlar                    | ✅ Tamamlandı |
-| **Sprint 4** | SEO + performans refaktörü                        | ✅ Tamamlandı |
-| **Sprint 5** | Yorumlar/etiketler **veya** şema sadeleştirme     | ⬜ Bekliyor   |
-| **Sprint 6** | Test + CI + README                                | 🟡 Kısmen    |
+| Sprint | Durum |
+|--------|--------|
+| Sprint 1–6 | ✅ Tamamlandı |

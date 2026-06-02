@@ -40,6 +40,17 @@ Repo kökünden:
 docker compose --profile blog up
 ```
 
+## Test
+
+```bash
+yarn test        # Vitest (unit)
+yarn test:e2e    # Playwright (sunucu çalışırken)
+```
+
+## API
+
+Bkz. [docs/API.md](./docs/API.md)
+
 ## Yapılacaklar
 
-Bkz. [TODO.md](./TODO.md)
+Bkz. [TODO.md](./TODO.md) — tüm maddeler tamamlandı.

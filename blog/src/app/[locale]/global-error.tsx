@@ -9,7 +9,7 @@ export default function GlobalError({
 }) {
   return (
     <html>
-      <body className="bg-sky-50 dark:bg-primary/90">
+      <body className="mesh-background">
         <Error statusCode={500} />
         {/* bu error.digesti silebilirsin sonradan ekledim ne döndüğünü bilmiyorum */}
         <p>{error.digest}</p>

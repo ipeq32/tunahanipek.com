@@ -2,7 +2,9 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from './_features/Blogs';
 import PaginationComponent from '@/components/pagination';
 import BlogSearch from '@/components/blog/BlogSearch';
+import TaxonomyFilter from '@/components/blog/TaxonomyFilter';
 import { getPublishedBlogs } from '@/lib/data/blogs';
+import { getAllCategories, getAllTags } from '@/lib/blog-taxonomy';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 
@@ -13,6 +15,8 @@ type Props = {
     page?: string;
     limit?: string;
     q?: string;
+    tag?: string;
+    category?: string;
   }>;
 };
 
@@ -21,13 +25,15 @@ async function page({ searchParams }: Props) {
   const currentPage = parseInt(resolvedSearchParams.page || '1');
   const limit = parseInt(resolvedSearchParams.limit || '9');
   const query = resolvedSearchParams.q;
+  const tag = resolvedSearchParams.tag;
+  const category = resolvedSearchParams.category;
   const t = await getTranslations('Blog');
 
-  const { data: blogData, total } = await getPublishedBlogs(
-    currentPage,
-    limit,
-    query
-  );
+  const [tags, categories, { data: blogData, total }] = await Promise.all([
+    getAllTags(),
+    getAllCategories(),
+    getPublishedBlogs(currentPage, limit, { search: query, tag, category }),
+  ]);
 
   return (
     <>
@@ -35,6 +41,7 @@ async function page({ searchParams }: Props) {
       <Suspense fallback={null}>
         <BlogSearch />
       </Suspense>
+      <TaxonomyFilter tags={tags} categories={categories} />
       <BlogsFeature data={blogData} />
       <PaginationComponent
         total={total}
@@ -42,6 +49,8 @@ async function page({ searchParams }: Props) {
         limit={limit}
         isShowPagination={total > limit}
         searchQuery={query}
+        activeTag={tag}
+        activeCategory={category}
       />
     </>
   );

@@ -27,4 +27,6 @@ export interface IGetBlog {
     image: string;
     role: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
   };
+  tags: string[];
+  categories: string[];
 }

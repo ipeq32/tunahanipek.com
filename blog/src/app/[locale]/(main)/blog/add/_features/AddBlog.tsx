@@ -15,6 +15,8 @@ const AddBlogFeature = () => {
         shortImage: '',
         content: locale === 'tr' ? '<p>İçerik</p>' : '<p>Content</p>',
         summary: locale === 'tr' ? '<p>Özet</p>' : '<p>Summary</p>',
+        tags: '',
+        categories: '',
       }}
     />
   );

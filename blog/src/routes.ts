@@ -19,6 +19,10 @@ export default {
     en: '/auth/forgot-password',
     tr: '/yetkilendirme/sifremi-unuttum',
   },
+  '/auth/reset-password': {
+    en: '/auth/reset-password',
+    tr: '/yetkilendirme/sifre-sifirla',
+  },
   '/blog': {
     en: '/blog',
     tr: '/blog',
@@ -34,6 +38,14 @@ export default {
   '/blog/[id]/edit': {
     en: '/blog/[id]/edit',
     tr: '/blog/[id]/duzenle',
+  },
+  '/blog/tag/[name]': {
+    en: '/blog/tag/[name]',
+    tr: '/blog/etiket/[name]',
+  },
+  '/blog/category/[name]': {
+    en: '/blog/category/[name]',
+    tr: '/blog/kategori/[name]',
   },
   '/about-me': {
     en: '/about-me',
@@ -66,5 +78,9 @@ export default {
   '/admin/project': {
     en: '/admin/project',
     tr: '/admin/proje',
+  },
+  '/admin/comments': {
+    en: '/admin/comments',
+    tr: '/admin/yorumlar',
   },
 } satisfies Pathnames<typeof locales>;

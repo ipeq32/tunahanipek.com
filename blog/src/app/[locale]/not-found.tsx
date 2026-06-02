@@ -8,7 +8,7 @@ export default function NotFound() {
   const t = useTranslations('Error.Main.NotFound');
 
   return (
-    <main className="grid min-h-screen place-content-center space-y-5 text-center bg-sky-50 dark:bg-primary/90">
+    <main className="grid min-h-screen place-content-center space-y-5 text-center mesh-background">
       <h2 className="text-3xl font-semibold">{t('title')}</h2>
       <p>{t('description')}</p>
       <Button asChild variant="outline" className="font-semibold">

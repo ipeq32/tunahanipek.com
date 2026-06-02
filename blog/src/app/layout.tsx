@@ -6,8 +6,13 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import pick from 'lodash/pick';
 import { locales } from '@/config';
+import { Inter } from 'next/font/google';
 
-export const dynamic = 'force-dynamic';
+const inter = Inter({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 type Props = {
   children: ReactNode;
@@ -22,7 +27,7 @@ export default async function RootLayout({ children }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
+      <body className={`${inter.variable} font-sans`}>
         <NextIntlClientProvider
           locale={locale}
           messages={pick(messages, 'Error')}

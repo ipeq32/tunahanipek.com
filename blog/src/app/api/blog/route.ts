@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { blogAuthorSelect, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 
@@ -10,11 +10,23 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '9');
   const search = searchParams.get('q') ?? undefined;
+  const tag = searchParams.get('tag') ?? undefined;
+  const category = searchParams.get('category') ?? undefined;
   const offset = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
     published: true,
+    ...(tag?.trim()
+      ? { tags: { some: { name: tag.trim().toLowerCase(), deletedAt: null } } }
+      : {}),
+    ...(category?.trim()
+      ? {
+          categories: {
+            some: { name: category.trim(), deletedAt: null },
+          },
+        }
+      : {}),
     ...(search?.trim()
       ? {
           OR: [
@@ -38,9 +50,7 @@ export async function GET(request: Request) {
         take: limit,
         orderBy: { updatedAt: 'desc' },
         where,
-        include: {
-          author: blogAuthorSelect,
-        },
+        include: blogListInclude,
       }),
     ]);
 

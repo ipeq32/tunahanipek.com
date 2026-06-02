@@ -4,8 +4,10 @@ import { IGetBlog } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { Link } from '@/navigation';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, User } from 'lucide-react';
 
 type BlogFeatureProps = {
   data: IGetBlog;
@@ -22,65 +24,88 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
   }
 
   return (
-    <div className="container mt-10 max-md:mt-5 flex flex-col gap-5">
-      <figure className="flex justify-center items-center max-h-[500px] overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Image
-            src={data.image || '/blog.jpg'}
-            alt={data.title}
-            width={1200}
-            height={500}
-            unoptimized
-            className="object-cover w-full max-h-[500px]"
-          />
-        </motion.div>
-      </figure>
-      <div className="flex flex-col gap-3">
-        <div className="flex max-sm:flex-col-reverse justify-between items-center sm:gap-5 shadow-md dark:shadow-slate-700 px-1">
-          <motion.h2
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center text-lg font-bold italic"
-          >
+    <article className="mx-auto max-w-3xl pb-16 pt-4">
+      <header className="mb-8 space-y-6">
+        {(data.tags.length > 0 || data.categories.length > 0) && (
+          <div className="flex flex-wrap justify-center gap-2">
+            {data.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={{ pathname: '/blog/tag/[name]', params: { name: tag } }}
+              >
+                <Badge variant="accent">#{tag}</Badge>
+              </Link>
+            ))}
+            {data.categories.map((cat) => (
+              <Link
+                key={cat}
+                href={{ pathname: '/blog/category/[name]', params: { name: cat } }}
+              >
+                <Badge variant="outline">{cat}</Badge>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <h1 className="text-center text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+          {data.title}
+        </h1>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-2">
             <Image
               src={
                 data.author.image ||
                 'https://img.icons8.com/?size=100&id=21441&format=png&color=000000'
               }
               alt={data.author.name}
-              width={20}
-              height={20}
+              width={28}
+              height={28}
               unoptimized
-              className="rounded-full h-5 w-5 m-1"
+              className="h-7 w-7 rounded-full ring-2 ring-border"
             />
-            {data.author.name} -{' '}
-            {data.author.role === 'SUPER_ADMIN'
-              ? t('roleAdmin')
-              : t('roleAuthor')}
-          </motion.h2>
-          <time className="max-sm:text-end text-xs ">
-            {format.dateTime(new Date(data.createdAt))}
-          </time>
+            <User className="h-4 w-4 md:hidden" />
+            <span className="font-medium text-foreground">
+              {data.author.name}
+              <span className="font-normal text-muted-foreground">
+                {' '}
+                ·{' '}
+                {data.author.role === 'SUPER_ADMIN'
+                  ? t('roleAdmin')
+                  : t('roleAuthor')}
+              </span>
+            </span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Calendar className="h-4 w-4" />
+            <time dateTime={new Date(data.createdAt).toISOString()}>
+              {format.dateTime(new Date(data.createdAt), {
+                dateStyle: 'long',
+              })}
+            </time>
+          </span>
         </div>
-        <div className="flex flex-col justify-center gap-5 w-full mt-10 max-md:mt-5">
-          <h1 className="text-center text-xl">{data.title}</h1>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(data.content),
-            }}
-            className="text-sm prose dark:prose-invert max-w-none"
-          />
-        </div>
-      </div>
-    </div>
+      </header>
+
+      <figure className="mb-10 overflow-hidden rounded-2xl border border-border/60 shadow-lg">
+        <Image
+          src={data.image || '/blog.jpg'}
+          alt={data.title}
+          width={1200}
+          height={560}
+          unoptimized
+          className="aspect-[21/9] w-full object-cover"
+          priority
+        />
+      </figure>
+
+      <div
+        className="prose-blog"
+        dangerouslySetInnerHTML={{
+          __html: sanitizeHtml(data.content),
+        }}
+      />
+    </article>
   );
 };
 

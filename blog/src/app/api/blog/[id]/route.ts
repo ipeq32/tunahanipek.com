@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { blogAuthorSelect, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
@@ -25,9 +26,7 @@ export async function GET(
         deletedAt: null,
         published: true,
       },
-      include: {
-        author: blogAuthorSelect,
-      },
+      include: blogListInclude,
     });
 
     if (!blog) {
@@ -97,10 +96,25 @@ export async function PATCH(
     const updated = await prisma.blog.update({
       where: { id },
       data,
-      include: { author: blogAuthorSelect },
+      include: blogListInclude,
     });
 
-    return NextResponse.json({ data: mapBlogToResponse(updated) });
+    if (typeof body.tags === 'string' || typeof body.categories === 'string') {
+      await syncBlogTaxonomy(
+        id,
+        typeof body.tags === 'string' ? body.tags : undefined,
+        typeof body.categories === 'string' ? body.categories : undefined
+      );
+    }
+
+    const withTaxonomy = await prisma.blog.findUnique({
+      where: { id },
+      include: blogListInclude,
+    });
+
+    return NextResponse.json({
+      data: mapBlogToResponse(withTaxonomy ?? updated),
+    });
   } catch (error) {
     logger.error('Failed to update blog', {
       id,

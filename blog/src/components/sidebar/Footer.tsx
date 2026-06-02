@@ -51,7 +51,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="flex flex-col justify-between py-5 items-center max-2xl:px-10 mt-20 h-max bg-sky-100 dark:bg-secondary/90">
+    <footer className="mt-20 flex h-max flex-col items-center justify-between border-t border-border/60 bg-card/40 py-8 backdrop-blur-sm max-2xl:px-10">
       <div className="max-w-screen-2xl w-full flex flex-row  justify-center items-start flex-wrap mb-5">
         {/* logo and contact */}
         <div className="flex flex-col items-center justify-around w-80 h-64 max-md:border-b-2 max-md:border-slate-400 max-md:my-4 max-md:pb-4 z-10">

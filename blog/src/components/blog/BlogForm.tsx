@@ -25,6 +25,8 @@ const formSchema = z.object({
   shortImage: z.string().min(2),
   content: z.string().min(17),
   summary: z.string().min(17),
+  tags: z.string().optional(),
+  categories: z.string().optional(),
 });
 
 export type BlogFormValues = z.infer<typeof formSchema>;
@@ -127,6 +129,30 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   </FormLabel>
                   <FormControl>
                     <Input placeholder={t('shortImagePlaceholder')} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">{t('tags')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('tagsPlaceholder')} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="categories"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="text-xs">{t('categories')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('categoriesPlaceholder')} {...field} />
                   </FormControl>
                 </FormItem>
               )}

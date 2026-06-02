@@ -14,7 +14,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 
 type LocaleType = (typeof locales)[number];
-type StaticPathname = Exclude<AppPathnames, '/blog/[id]' | '/blog/[id]/edit'>;
+type DynamicPathname =
+  | '/blog/[id]'
+  | '/blog/[id]/edit'
+  | '/blog/tag/[name]'
+  | '/blog/category/[name]';
+
+type StaticPathname = Exclude<AppPathnames, DynamicPathname>;
 
 function ToggleLanguage() {
   const locale = useLocale();
@@ -36,6 +42,22 @@ function ToggleLanguage() {
     if (pathname === '/blog/[id]/edit' && typeof params.id === 'string') {
       router.replace(
         { pathname: '/blog/[id]/edit', params: { id: params.id } },
+        { locale: value },
+      );
+      return;
+    }
+
+    if (pathname === '/blog/tag/[name]' && typeof params.name === 'string') {
+      router.replace(
+        { pathname: '/blog/tag/[name]', params: { name: params.name } },
+        { locale: value },
+      );
+      return;
+    }
+
+    if (pathname === '/blog/category/[name]' && typeof params.name === 'string') {
+      router.replace(
+        { pathname: '/blog/category/[name]', params: { name: params.name } },
         { locale: value },
       );
       return;

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { blogAuthorSelect, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { IGetBlog } from '@/types/blog';
 
 type BlogListResult = {
@@ -9,30 +9,45 @@ type BlogListResult = {
   limit: number;
 };
 
-export async function getPublishedBlogs(
-  page = 1,
-  limit = 9,
-  search?: string
-): Promise<BlogListResult> {
-  const offset = (page - 1) * limit;
+type BlogFilters = {
+  search?: string;
+  tag?: string;
+  category?: string;
+};
 
-  const where = {
+function buildWhere(filters: BlogFilters) {
+  const search = filters.search?.trim();
+  const tag = filters.tag?.trim().toLowerCase();
+  const category = filters.category?.trim();
+
+  return {
     deletedAt: null,
     published: true,
-    ...(search?.trim()
+    ...(tag
+      ? { tags: { some: { name: tag, deletedAt: null } } }
+      : {}),
+    ...(category
+      ? { categories: { some: { name: category, deletedAt: null } } }
+      : {}),
+    ...(search
       ? {
           OR: [
-            { title: { contains: search.trim(), mode: 'insensitive' as const } },
-            {
-              summary: { contains: search.trim(), mode: 'insensitive' as const },
-            },
-            {
-              content: { contains: search.trim(), mode: 'insensitive' as const },
-            },
+            { title: { contains: search, mode: 'insensitive' as const } },
+            { summary: { contains: search, mode: 'insensitive' as const } },
+            { content: { contains: search, mode: 'insensitive' as const } },
           ],
         }
       : {}),
   };
+}
+
+export async function getPublishedBlogs(
+  page = 1,
+  limit = 9,
+  filters: BlogFilters = {}
+): Promise<BlogListResult> {
+  const offset = (page - 1) * limit;
+  const where = buildWhere(filters);
 
   const [total, blogs] = await Promise.all([
     prisma.blog.count({ where }),
@@ -41,7 +56,7 @@ export async function getPublishedBlogs(
       take: limit,
       orderBy: { updatedAt: 'desc' },
       where,
-      include: { author: blogAuthorSelect },
+      include: blogListInclude,
     }),
   ]);
 
@@ -58,7 +73,7 @@ export async function getPublishedBlogById(
 ): Promise<IGetBlog | null> {
   const blog = await prisma.blog.findUnique({
     where: { id, deletedAt: null, published: true },
-    include: { author: blogAuthorSelect },
+    include: blogListInclude,
   });
 
   return blog ? mapBlogToResponse(blog) : null;
@@ -67,7 +82,7 @@ export async function getPublishedBlogById(
 export async function getBlogById(id: string): Promise<IGetBlog | null> {
   const blog = await prisma.blog.findUnique({
     where: { id, deletedAt: null },
-    include: { author: blogAuthorSelect },
+    include: blogListInclude,
   });
 
   return blog ? mapBlogToResponse(blog) : null;

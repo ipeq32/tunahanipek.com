@@ -3,6 +3,7 @@ import { canAutoPublish, isModerator } from '@/lib/auth-roles';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { content, image, shortImage, summary, title } = await req.json();
+    const { content, image, shortImage, summary, title, tags, categories } =
+      await req.json();
 
     if (!title || !content || !summary || !image || !shortImage) {
       return NextResponse.json(
@@ -42,6 +44,8 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    await syncBlogTaxonomy(res.id, tags, categories);
 
     return NextResponse.json({ success: true, data: res }, { status: 200 });
   } catch (error) {

@@ -16,6 +16,8 @@ type PaginationComponentProps = {
   limit: number;
   isShowPagination?: boolean;
   searchQuery?: string;
+  activeTag?: string;
+  activeCategory?: string;
 };
 
 const PaginationComponent = ({
@@ -24,6 +26,8 @@ const PaginationComponent = ({
   limit,
   isShowPagination,
   searchQuery,
+  activeTag,
+  activeCategory,
 }: PaginationComponentProps) => {
   const totalPages = Math.ceil(total / limit);
 
@@ -31,6 +35,8 @@ const PaginationComponent = ({
     const params = new URLSearchParams();
     params.set('page', String(page));
     if (searchQuery?.trim()) params.set('q', searchQuery.trim());
+    if (activeTag?.trim()) params.set('tag', activeTag.trim());
+    if (activeCategory?.trim()) params.set('category', activeCategory.trim());
     return `?${params.toString()}`;
   };
 

@@ -26,7 +26,19 @@
       "submitUpdate": "Update",
       "createSuccess": "Post created",
       "updateSuccess": "Post updated",
-      "error": "Operation failed"
+      "error": "Operation failed",
+      "tags": "Tags",
+      "tagsPlaceholder": "javascript, nextjs (comma-separated)",
+      "categories": "Categories",
+      "categoriesPlaceholder": "Technology, Travel (comma-separated)"
+    },
+    "Taxonomy": {
+      "tags": "Tags",
+      "categories": "Categories",
+      "tagTitle": "#{name} tag",
+      "tagDescription": "Posts tagged with {name}",
+      "categoryTitle": "{name} category",
+      "categoryDescription": "Posts in {name} category"
     },
     "Edit": {
       "title": "Edit post",
@@ -56,7 +68,52 @@
       "publish": "Publish",
       "unpublish": "Unpublish",
       "delete": "Delete"
+    },
+    "Comments": {
+      "title": "Comment moderation",
+      "description": "Review pending comments",
+      "loading": "Loading...",
+      "empty": "No pending comments",
+      "loadError": "Could not load comments",
+      "actionError": "Action failed",
+      "approved": "Comment approved",
+      "rejected": "Comment rejected",
+      "approve": "Approve",
+      "reject": "Reject"
     }
+  },
+  "Auth": {
+    "ForgotPassword": {
+      "title": "Forgot password",
+      "description": "We will send a reset link to your email",
+      "emailPlaceholder": "Your email",
+      "submit": "Send reset link",
+      "success": "Request received. Check your email.",
+      "error": "Operation failed",
+      "devLink": "Development reset link",
+      "backToLogin": "Back to login"
+    },
+    "ResetPassword": {
+      "title": "New password",
+      "description": "Set your new password",
+      "loading": "Loading...",
+      "passwordPlaceholder": "New password",
+      "passwordConfirmPlaceholder": "Confirm new password",
+      "submit": "Update password",
+      "success": "Password updated",
+      "error": "Could not update password",
+      "invalidToken": "Invalid or expired link.",
+      "requestNew": "Request a new link"
+    }
+  },
+  "Comments": {
+    "title": "Comments",
+    "empty": "No comments yet.",
+    "placeholder": "Write your comment...",
+    "submit": "Post comment",
+    "pendingApproval": "Your comment was submitted for approval",
+    "submitError": "Could not post comment",
+    "loginToComment": "Sign in to comment"
   },
   "Settings": {
     "title": "Settings",

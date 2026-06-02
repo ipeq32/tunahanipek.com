@@ -1,5 +1,7 @@
 import BlogFeature from './_features/Blog';
+import BlogComments from '@/components/blog/BlogComments';
 import { getPublishedBlogById } from '@/lib/data/blogs';
+import { getApprovedComments } from '@/lib/data/comments';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
@@ -34,13 +36,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function page({ params }: Props) {
   const { id } = await params;
-  const blogData = await getPublishedBlogById(id);
+  const [blogData, comments] = await Promise.all([
+    getPublishedBlogById(id),
+    getApprovedComments(id),
+  ]);
 
   if (!blogData) {
     notFound();
   }
 
-  return <BlogFeature data={blogData} />;
+  return (
+    <>
+      <BlogFeature data={blogData} />
+      <BlogComments blogId={id} initialComments={comments} />
+    </>
+  );
 }
 
 export default page;

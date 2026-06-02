@@ -39,28 +39,13 @@ const Navbar = () => {
     title: string;
     href: '/' | '/about-me' | '/blog' | '/project';
   }> = [
-    {
-      title: t('Link.home'),
-      href: '/',
-    },
-    {
-      title: t('Link.about'),
-      href: '/about-me',
-    },
-    {
-      title: t('Link.blog'),
-      href: '/blog',
-    },
-    {
-      title: t('Link.project'),
-      href: '/project',
-    },
+    { title: t('Link.home'), href: '/' },
+    { title: t('Link.about'), href: '/about-me' },
+    { title: t('Link.blog'), href: '/blog' },
+    { title: t('Link.project'), href: '/project' },
   ];
 
-  const { data, status } = useSession({
-    required: false,
-  });
-
+  const { data, status } = useSession({ required: false });
   const user = data?.user;
 
   const handleLogout = () => {
@@ -71,46 +56,45 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 h-28 bg-sky-100 dark:bg-secondary/90 shadow-md shadow-cyan-200 dark:shadow-slate-700 backdrop-blur-sm">
-      <section className="container h-full flex items-center justify-between">
-        {/* logo */}
+    <nav className="glass-nav sticky top-0 z-50">
+      <section className="container flex h-16 items-center justify-between md:h-[4.5rem]">
         <LogoFeature />
-        {/* nav links */}
-        <div className="flex justify-center items-center gap-5 max-xl:hidden">
+
+        <div className="hidden items-center gap-1 rounded-full border border-border/60 bg-muted/40 p-1 xl:flex">
           {menuLinks.map((link) => (
             <MenuLinkFeature key={link.title} link={link.href}>
               {link.title}
             </MenuLinkFeature>
           ))}
         </div>
-        {/* contact */}
-        {/* XL and above */}
-        <div className="flex flow-row items-center gap-5 max-xl:hidden">
+
+        <div className="hidden items-center gap-3 xl:flex">
           <CallMeFeature />
           <GetContactFeature />
           {status === 'loading' ? (
-            <Skeleton className="h-12 w-12 rounded-full" />
+            <Skeleton className="h-10 w-10 rounded-full" />
           ) : status === 'authenticated' ? (
             <ProfileDropdownMenuFeature user={user} onLogout={handleLogout} />
           ) : (
             <Link
               href={`/auth/login?callback=${encodeURIComponent(from)}`}
-              className="w-max h-12"
+              className="w-max"
             >
-              <Button variant="ghost" className="h-full">
+              <Button variant="accent" size="sm">
                 {t('Sidebar.login')}
               </Button>
             </Link>
           )}
         </div>
-        {/* below XL */}
+
         <Sheet>
           <SheetTrigger asChild className="xl:hidden">
-            <Button variant="ghost" className="p-2 h-max">
-              <Menu width={40} height={40} />
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">{t('Sidebar.title')}</span>
             </Button>
           </SheetTrigger>
-          <SheetContent className="flex flex-col justify-between border-none">
+          <SheetContent className="flex flex-col border-border/60 bg-background/95 backdrop-blur-xl">
             <div>
               <SheetHeader>
                 <SheetTitle>{t('Sidebar.title')}</SheetTitle>
@@ -118,7 +102,7 @@ const Navbar = () => {
                   {t('Sidebar.description')} {user?.name ?? ''}
                 </SheetDescription>
               </SheetHeader>
-              <div className="grid gap-5 py-5">
+              <div className="mt-6 flex flex-col gap-1">
                 {menuLinks.map((link) => (
                   <MenuLinkFeature key={link.title} link={link.href}>
                     {link.title}
@@ -133,27 +117,23 @@ const Navbar = () => {
                 >
                   {status === 'loading' ? (
                     <div className="flex items-center space-x-4">
-                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <Skeleton className="h-10 w-10 rounded-full" />
                       <div className="space-y-2">
-                        <Skeleton className="h-4 w-[250px]" />
                         <Skeleton className="h-4 w-[200px]" />
+                        <Skeleton className="h-4 w-[160px]" />
                       </div>
                     </div>
                   ) : status === 'authenticated' ? (
-                    <div
-                      className={`flex justify-between items-center gap-2 ${status === 'authenticated' ? '' : 'w-full'}`}
-                    >
-                      <ProfileDropdownMenuFeature
-                        user={user}
-                        onLogout={handleLogout}
-                      />
-                    </div>
+                    <ProfileDropdownMenuFeature
+                      user={user}
+                      onLogout={handleLogout}
+                    />
                   ) : (
                     <Link
                       href={`/auth/login?callback=${encodeURIComponent(from)}`}
                       className="w-full"
                     >
-                      <Button variant="secondary" className="w-full">
+                      <Button variant="accent" className="w-full">
                         {t('Sidebar.login')}
                       </Button>
                     </Link>
