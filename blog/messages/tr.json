@@ -37,6 +37,13 @@
     "Taxonomy": {
       "tags": "Etiketler",
       "categories": "Kategoriler",
+      "filtersLabel": "Etiket ve kategori filtreleri",
+      "active": "Aktif",
+      "clearFilters": "Temizle",
+      "showAll": "Tümü",
+      "showLess": "Daralt",
+      "expandFilters": "{count} filtre daha, tümünü göster",
+      "collapseFilters": "Filtre listesini daralt",
       "back": "Geri dön",
       "tagTitle": "#{name} etiketi",
       "tagDescription": "{name} etiketli yazılar",

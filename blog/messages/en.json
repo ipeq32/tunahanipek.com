@@ -37,6 +37,13 @@
     "Taxonomy": {
       "tags": "Tags",
       "categories": "Categories",
+      "filtersLabel": "Tag and category filters",
+      "active": "Active",
+      "clearFilters": "Clear",
+      "showAll": "All",
+      "showLess": "Collapse",
+      "expandFilters": "Show {count} more filters",
+      "collapseFilters": "Collapse filter list",
       "back": "Go back",
       "tagTitle": "#{name} tag",
       "tagDescription": "Posts tagged with {name}",
