@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Instagram, Linkedin, Phone, Mail, MapPin, Github } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { RotatingMotto } from './_features/RotatingMotto';
 
 const Footer = () => {
   const { data, status } = useSession();
@@ -96,10 +97,7 @@ const Footer = () => {
           </figure>
           <div className="relative flex justify-center group/slogan px-2 py-1 rounded-md">
             <span className="absolute bottom-0 left-1/2 translate-x-[-50%] w-0 h-0 bg-emerald-300 dark:bg-green-800 group-hover/slogan:w-full group-hover/slogan:h-full transition-all duration-300 ease-linear rounded-md" />
-            <p
-              dangerouslySetInnerHTML={{ __html: t('motto') }}
-              className="text-center cursor-default dark:group-hover/slogan:text-slate-300 text-sm flex items-center z-10"
-            />
+            <RotatingMotto />
           </div>
           <div className="flex flex-row items-center gap-3">
             <p className="text-lg">{t('follow')}</p>
