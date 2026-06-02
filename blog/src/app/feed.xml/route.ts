@@ -1,23 +1,21 @@
+import type { Prisma } from '@prisma/client';
 import { host } from '@/config';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
-  const blogs = await prisma.blog.findMany({
-    where: { published: true, deletedAt: null },
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-    include: {
-      author: { select: { name: true } },
-    },
-  });
+const feedBlogInclude = {
+  author: { select: { name: true } },
+} as const satisfies Prisma.BlogInclude;
 
-  const items = blogs
-    .map((blog) => {
-      const link = `${host}/tr/blog/${blog.id}`;
-      const description = blog.summary.replace(/<[^>]*>/g, '');
-      return `
+type FeedBlogRow = Prisma.BlogGetPayload<{
+  include: typeof feedBlogInclude;
+}>;
+
+function buildRssItem(blog: FeedBlogRow): string {
+  const link = `${host}/tr/blog/${blog.id}`;
+  const description = blog.summary.replace(/<[^>]*>/g, '');
+  return `
     <item>
       <title><![CDATA[${blog.title}]]></title>
       <link>${link}</link>
@@ -26,8 +24,17 @@ export async function GET() {
       <description><![CDATA[${description}]]></description>
       <author>${blog.author?.name ?? 'Anonim'}</author>
     </item>`;
-    })
-    .join('');
+}
+
+export async function GET() {
+  const blogs: FeedBlogRow[] = await prisma.blog.findMany({
+    where: { published: true, deletedAt: null },
+    orderBy: { createdAt: 'desc' },
+    take: 20,
+    include: feedBlogInclude,
+  });
+
+  const items = blogs.map(buildRssItem).join('');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
