@@ -17,7 +17,9 @@
     "prepare": "husky",
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
     "generate-prod": "npx prisma generate && npx prisma db push",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "db:reset": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/reset.ts",
+    "db:reset:seed": "yarn db:reset --force && yarn seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
