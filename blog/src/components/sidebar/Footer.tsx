@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Link as LocaleLink } from '@/navigation';
 import Image from 'next/image';
 import {
   ChevronRight,
@@ -52,11 +53,16 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
     },
   ];
 
-  const usefulLinks = [
+  const usefulLinks: Array<{
+    href: '/about-me' | '/project' | '/faq' | '/contact' | '/privacy' | '/terms';
+    label: string;
+  }> = [
     { href: '/about-me', label: t.raw('UsefulLink.about') as string },
     { href: '/project', label: t.raw('UsefulLink.project') as string },
     { href: '/faq', label: t.raw('UsefulLink.faq') as string },
     { href: '/contact', label: t.raw('UsefulLink.contact') as string },
+    { href: '/privacy', label: t.raw('UsefulLink.privacy') as string },
+    { href: '/terms', label: t.raw('UsefulLink.terms') as string },
   ];
 
   const socials = [
@@ -143,13 +149,13 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
           <ul className="space-y-2.5 text-sm">
             {usefulLinks.map((item) => (
               <li key={item.href}>
-                <Link
+                <LocaleLink
                   href={item.href}
                   className="group inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-teal-600 dark:hover:text-teal-400"
                 >
                   <ChevronRight className="h-3.5 w-3.5 -translate-x-1 text-teal-500/0 transition-all group-hover:translate-x-0 group-hover:text-teal-500" />
                   <span dangerouslySetInnerHTML={{ __html: item.label }} />
-                </Link>
+                </LocaleLink>
               </li>
             ))}
           </ul>

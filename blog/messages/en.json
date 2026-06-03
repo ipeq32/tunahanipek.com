@@ -136,6 +136,7 @@
       "fieldTitle": "Title",
       "fieldDescription": "Description",
       "fieldUrl": "Project URL",
+      "urlPlaceholder": "https://",
       "fieldImage": "Image",
       "fieldSort": "Sort order",
       "fieldPublished": "Published",
@@ -212,6 +213,7 @@
     "phone": "Phone",
     "address": "Address",
     "website": "Website",
+    "urlPlaceholder": "https://...",
     "image": "Profile image",
     "bio": "Bio",
     "currentPassword": "Current password",
@@ -467,7 +469,22 @@
     "emailLabel": "Email",
     "githubLabel": "GitHub",
     "linkedinLabel": "LinkedIn",
-    "instagramLabel": "Instagram"
+    "instagramLabel": "Instagram",
+      "Form": {
+        "title": "Send a message",
+        "nameLabel": "Your name",
+        "namePlaceholder": "Full name",
+        "emailLabel": "Email",
+        "emailPlaceholder": "you@example.com",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Write your message...",
+        "submit": "Send",
+        "submitting": "Sending...",
+        "success": "Your message was received. I will get back to you soon.",
+        "error": "Could not send your message. Please try again.",
+        "unavailable": "Email service is not configured. You can reach me directly by email.",
+        "rateLimited": "Too many attempts. Please try again later."
+      }
     },
     "Project": {
       "title": "Projects",
@@ -501,6 +518,13 @@
     "label": "Change language",
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
   },
+  "ThemeSwitcher": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggleAria": "Toggle theme"
+  },
   "Upload": {
     "cta": "Upload image",
     "hint": "PNG, JPG or WEBP · max 8MB",
@@ -519,6 +543,9 @@
     "description": "This is a blog page. I open up my own posts or blogs that you have shared to people. Useful information is always good."
   },
   "Authentication": {
+    "Layout": {
+      "backToHome": "← Back to home"
+    },
     "Login": {
       "Page": {
         "title": "Login",
@@ -598,7 +625,7 @@
         },
         "Website": {
           "label": "Website URL",
-          "placeholder": "Enter your webiste url."
+          "placeholder": "Enter your website URL."
         },
         "Address": {
           "label": "Address",
@@ -659,7 +686,7 @@
         },
         "Website": {
           "stringInvalidTypeError": "Website must be a string.",
-          "urlMessage": "Invalid webiste URL."
+          "urlMessage": "Invalid website URL."
         },
         "Image": {
           "stringInvalidTypeError": "Image must be a string.",
@@ -872,8 +899,84 @@
         },
         "title": "Menu",
         "description": "Blog page for developers and designers. Welcome!"
+      },
+      "logoutSuccess": "Logged out successfully"
+    }
+  },
+  "Legal": {
+    "Shared": {
+      "lastUpdatedLabel": "Last updated",
+      "tocTitle": "On this page",
+      "questionsTitle": "Have questions?",
+      "questionsDescription": "If anything in our privacy policy or terms needs clarification, reach out directly.",
+      "contactCta": "Contact us",
+      "relatedTitle": "Related document",
+      "privacyLink": "Privacy Policy",
+      "termsLink": "Terms of Use"
+    },
+    "Privacy": {
+      "badge": "Privacy",
+      "title": "Privacy Policy",
+      "description": "Transparent information about how we collect, use, and protect your personal data.",
+      "lastUpdated": "June 4, 2026",
+      "relatedDescription": "Read the rules and responsibilities that apply when using the service.",
+      "sections": {
+        "intro": {
+          "title": "Overview",
+          "body": "This policy explains how personal data is processed on blog.tunahanipek.com and related services. We use your data only to provide the service, maintain security, and respond to your requests. We do not sell your data to third parties."
+        },
+        "data": {
+          "title": "Data we collect",
+          "body": "When you register, we may process email, name, profile details, and session records. Messages sent via the contact form (name, email, and content) are kept only to respond to you. Limited technical logs (IP, browser type) may be retained for security and performance."
+        },
+        "cookies": {
+          "title": "Cookies and analytics",
+          "body": "Essential cookies are required for the site to function. Preference and analytics cookies are enabled only after you accept them in the cookie banner. You can withdraw consent at any time via browser settings or the banner."
+        },
+        "rights": {
+          "title": "Your rights",
+          "body": "You may request access, correction, deletion, or object to processing under applicable privacy laws. We review and respond to requests within a reasonable timeframe."
+        },
+        "contact": {
+          "title": "Contact the data controller",
+          "body": "For any privacy-related request, email hello@tunahanipek.com. We may ask for additional information to verify your identity solely to handle your request securely."
+        }
+      }
+    },
+    "Terms": {
+      "badge": "Terms",
+      "title": "Terms of Use",
+      "description": "Rules, responsibilities, and scope of service when using this website.",
+      "lastUpdated": "June 4, 2026",
+      "relatedDescription": "Learn how your personal data is handled.",
+      "sections": {
+        "intro": {
+          "title": "Acceptance and scope",
+          "body": "By accessing the site or creating an account, you confirm that you have read and accept these terms. They apply to the blog, portfolio, and all related pages."
+        },
+        "content": {
+          "title": "Content and intellectual property",
+          "body": "Articles, images, and project content are provided for informational purposes and may not be copied or distributed commercially without permission. Users are responsible for content they submit; infringing or unlawful material may be removed."
+        },
+        "account": {
+          "title": "Account and security",
+          "body": "You are responsible for keeping your credentials confidential. Accounts may be suspended or permanently closed if spam, abuse, or security violations are detected."
+        },
+        "liability": {
+          "title": "Limitation of liability",
+          "body": "The site is provided \"as is.\" We aim to resolve outages and maintenance issues promptly but are not liable for indirect or unforeseeable damages."
+        },
+        "changes": {
+          "title": "Updates",
+          "body": "These terms may be updated from time to time. The current version is always published on this page; the date above reflects material changes. Continued use constitutes acceptance of the updated terms."
+        }
       }
     }
+  },
+  "CookieConsent": {
+    "message": "We use cookies and analytics to improve your experience.",
+    "accept": "Accept",
+    "decline": "Essential only"
   },
   "Footer": {
     "mottos": [
@@ -941,7 +1044,9 @@
       "about": "&gt;&nbsp; About Me",
       "project": "&gt;&nbsp; Projects",
       "faq": "&gt;&nbsp; FAQ",
-      "contact": "&gt;&nbsp; Contact Me"
+      "contact": "&gt;&nbsp; Contact Me",
+      "privacy": "&gt;&nbsp; Privacy",
+      "terms": "&gt;&nbsp; Terms of Use"
     },
     "ownership": "is Proudly Owned by <link>Tunahan İPEK</link>",
     "Mail": {

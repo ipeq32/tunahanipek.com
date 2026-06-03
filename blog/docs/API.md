@@ -4,7 +4,11 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 
 ## Health
 
-- `GET /api/health` — servis durumu
+- `GET /api/health` — `{ status, db }` servis ve veritabanı durumu
+
+## İletişim
+
+- `POST /api/contact` — `{ name, email, message }` iletişim formu (rate limit; Resend gerekli)
 
 ## Auth
 
@@ -28,6 +32,7 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 - `POST /api/blog/[id]/comments` — yorum ekle (auth, `PENDING`)
 - `GET /api/admin/comments` — bekleyen yorumlar (SUPER_ADMIN)
 - `PATCH /api/admin/comments` — `{ id, status: APPROVED|REJECTED }`
+- `POST /api/comments/[id]/reaction` — `{ type: LIKE|DISLIKE }` (auth)
 
 ## Kullanıcı
 
@@ -46,3 +51,8 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 - `POST /api/projects/admin` — proje oluştur
 - `PATCH /api/projects/[id]` — proje güncelle
 - `DELETE /api/projects/[id]` — soft delete
+
+## Upload
+
+- `POST /api/uploadthing` — UploadThing handler
+- `POST /api/uploadthing/delete` — `{ fileKey }` orphan dosya silme (auth)

@@ -140,7 +140,7 @@ export default function ProjectForm({
                 <FormItem>
                   <FormLabel className="text-xs">{t('fieldUrl')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://" {...field} />
+                    <Input placeholder={t('urlPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

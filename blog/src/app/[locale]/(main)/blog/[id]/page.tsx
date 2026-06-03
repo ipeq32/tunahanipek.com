@@ -7,6 +7,9 @@ import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { JsonLd } from '@/components/json-ld';
+import { buildArticleJsonLd } from '@/lib/json-ld';
+import { getLocalizedPathname } from '@/lib/localized-path';
 
 export const revalidate = 60;
 
@@ -68,8 +71,25 @@ async function page({ params }: Props) {
     notFound();
   }
 
+  const blogPath = getLocalizedPathname('/blog/[id]', locale).replace(
+    '[id]',
+    id,
+  );
+  const plainSummary = blogData.summary.replace(/<[^>]*>/g, '').slice(0, 160);
+
   return (
     <>
+      <JsonLd
+        data={buildArticleJsonLd({
+          locale,
+          path: blogPath,
+          title: blogData.title,
+          description: plainSummary,
+          image: blogData.image,
+          datePublished: blogData.createdAt,
+          dateModified: blogData.updatedAt,
+        })}
+      />
       <BlogFeature data={blogData} />
       <BlogComments
         blogId={id}

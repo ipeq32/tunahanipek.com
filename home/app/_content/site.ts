@@ -23,6 +23,8 @@ export const site = {
   ],
   blogUrl: "https://blog.tunahanipek.com",
   profileImage: "/tunahanipek.jpg",
+  /** Sosyal önizleme; kişisel fotoğraf */
+  openGraphImage: "/tunahanipek.jpg",
   social: [
     {
       name: "Instagram",

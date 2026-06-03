@@ -2,6 +2,24 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { ContactChannelCard } from '@/components/layout/contact-channel-card';
 import { Button } from '@/components/ui/button';
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/page-metadata';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Pages.Contact' });
+  return buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/contact',
+  });
+}
+import { ContactForm } from './_components/ContactForm';
 import {
   ArrowRight,
   Clock,
@@ -83,6 +101,8 @@ export default async function ContactPage() {
             </p>
           </div>
         </section>
+
+        <ContactForm />
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight">

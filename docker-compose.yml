@@ -40,6 +40,10 @@ services:
       VERCEL_URL: ${VERCEL_URL:-blog.tunahanipek.com}
       POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
       POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+      UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      ALLOW_PUBLIC_REGISTRATION: ${ALLOW_PUBLIC_REGISTRATION:-true}
     profiles:
       - full
 
@@ -94,7 +98,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: tunahanipek-home-dev
     working_dir: /app
-    command: sh -c "yarn install && yarn dev"
+    command: sh -c "yarn install && yarn next dev -H 0.0.0.0 -p 3000"
     ports:
       - "${HOME_PORT:-3001}:3000"
     volumes:

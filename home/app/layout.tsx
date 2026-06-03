@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     emails: site.emails.map((e) => e.address),
     images: [
       {
-        url: site.profileImage,
+        url: site.openGraphImage,
         width: 512,
         height: 512,
         alt: site.name,
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     siteName: site.name,
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: metadataCopy.title,
     description: metadataCopy.description,
-    images: [site.profileImage],
+    images: [site.openGraphImage],
   },
   authors: [{ name: site.name, url: "https://tunahanipek.com" }],
   creator: site.name,

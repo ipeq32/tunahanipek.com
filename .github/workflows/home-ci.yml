@@ -1,0 +1,36 @@
+name: Home CI
+
+on:
+  push:
+    paths:
+      - 'home/**'
+      - '.github/workflows/home-ci.yml'
+  pull_request:
+    paths:
+      - 'home/**'
+      - '.github/workflows/home-ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: home
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: home/.nvmrc
+          cache: yarn
+          cache-dependency-path: home/yarn.lock
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build

@@ -1,6 +1,23 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { ContentCard } from '@/components/layout/content-card';
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/page-metadata';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Pages.About' });
+  return buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/about-me',
+  });
+}
 import { Badge } from '@/components/ui/badge';
 import { DidYouKnow } from '@/components/ui/did-you-know';
 import { Link } from '@/navigation';

@@ -6,6 +6,23 @@ import { Link } from '@/navigation';
 import { getPublishedProjects } from '@/lib/data/projects';
 import type { ProjectDto } from '@/lib/project-mapper';
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/page-metadata';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Pages.Project' });
+  return buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/project',
+  });
+}
 import { ArrowUpRight, BookOpen, FolderGit2, Globe } from 'lucide-react';
 
 function FeaturedProject({

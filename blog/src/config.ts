@@ -6,7 +6,6 @@ export const locales = ['en', 'tr'] as const;
 
 export const pathnames = routes satisfies Pathnames<typeof locales>;
 
-// Use the default: `always`
 export const localePrefix = 'always';
 export const routing = defineRouting({
   locales,
@@ -19,6 +18,16 @@ export type AppPathnames = keyof typeof pathnames;
 
 export const port = process.env.PORT || 3000;
 
-export const host = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : `http://localhost:${port}`;
+export function getSiteUrl(): string {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
+  }
+  if (process.env.VERCEL_URL) {
+    const url = process.env.VERCEL_URL;
+    return url.startsWith('http') ? url.replace(/\/$/, '') : `https://${url}`;
+  }
+  return `http://localhost:${port}`;
+}
+
+/** @deprecated Use getSiteUrl() */
+export const host = getSiteUrl();

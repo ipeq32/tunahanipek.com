@@ -3,6 +3,23 @@ import { FaqAccordion } from '@/components/layout/faq-accordion';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/page-metadata';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Pages.Faq' });
+  return buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/faq',
+  });
+}
 import {
   ArrowRight,
   FileText,

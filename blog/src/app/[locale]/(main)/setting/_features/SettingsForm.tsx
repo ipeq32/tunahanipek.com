@@ -257,7 +257,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
                   name="website"
                   label={t('website')}
                   icon={Globe}
-                  placeholder="https://..."
+                  placeholder={t('urlPlaceholder')}
                 />
 
                 <IconField

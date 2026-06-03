@@ -6,8 +6,25 @@ import TaxonomyFilter from '@/components/blog/TaxonomyFilter';
 import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getAllCategories, getAllTags } from '@/lib/blog-taxonomy';
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/page-metadata';
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Blog' });
+  return buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/blog',
+  });
+}
 
 type Props = {
   searchParams: Promise<{

@@ -5,6 +5,9 @@ import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { JsonLd } from '@/components/json-ld';
+import { buildCreativeWorkJsonLd } from '@/lib/json-ld';
+import { getLocalizedPathname } from '@/lib/localized-path';
 import NextLink from 'next/link';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
@@ -56,6 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { id } = await params;
+  const locale = parseLocale(await getLocale());
   const [project, t] = await Promise.all([
     getPublishedProjectById(id),
     getTranslations('Pages.Project'),
@@ -65,8 +69,26 @@ export default async function ProjectDetailPage({ params }: Props) {
     notFound();
   }
 
+  const projectPath = getLocalizedPathname('/project/[id]', locale).replace(
+    '[id]',
+    id,
+  );
+  const plainDescription = project.description
+    .replace(/<[^>]*>/g, '')
+    .slice(0, 160);
+
   return (
     <article className="mx-auto max-w-3xl">
+      <JsonLd
+        data={buildCreativeWorkJsonLd({
+          locale,
+          path: projectPath,
+          title: project.title,
+          description: plainDescription,
+          image: project.image,
+          url: project.url,
+        })}
+      />
       <Link
         href="/project"
         className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-teal-600 dark:hover:text-teal-400"

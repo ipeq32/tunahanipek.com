@@ -2,11 +2,11 @@
 
 import { ToggleTheme } from '@/components/toggle-theme';
 import ToggleLanguage from '@/components/toggle-language';
-import Link from 'next/link';
 import LogoFeature from '@/components/sidebar/_features/Logo';
 import type { locales } from '@/config';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/navigation';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 type LocaleType = (typeof locales)[number];
 
@@ -18,6 +18,7 @@ type Props = {
 const AuthenticationLayout = ({ children, locale }: Props) => {
   const pathname = usePathname();
   const isRegister = pathname?.includes('/auth/register');
+  const t = useTranslations('Authentication.Layout');
 
   return (
     <div className="mesh-background flex min-h-dvh flex-col">
@@ -35,8 +36,11 @@ const AuthenticationLayout = ({ children, locale }: Props) => {
             {children}
           </div>
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            <Link href="/" className="hover:text-teal-600 dark:hover:text-teal-400">
-              ← Ana sayfaya dön
+            <Link
+              href="/"
+              className="hover:text-teal-600 dark:hover:text-teal-400"
+            >
+              {t('backToHome')}
             </Link>
           </p>
         </div>

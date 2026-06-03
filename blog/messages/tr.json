@@ -136,6 +136,7 @@
       "fieldTitle": "Başlık",
       "fieldDescription": "Açıklama",
       "fieldUrl": "Proje URL",
+      "urlPlaceholder": "https://",
       "fieldImage": "Görsel",
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
@@ -212,6 +213,7 @@
     "phone": "Telefon",
     "address": "Adres",
     "website": "Web sitesi",
+    "urlPlaceholder": "https://...",
     "image": "Profil görseli",
     "bio": "Biyografi",
     "currentPassword": "Mevcut şifre",
@@ -467,7 +469,22 @@
     "emailLabel": "E-posta",
     "githubLabel": "GitHub",
     "linkedinLabel": "LinkedIn",
-    "instagramLabel": "Instagram"
+    "instagramLabel": "Instagram",
+      "Form": {
+        "title": "Mesaj gönder",
+        "nameLabel": "Adınız",
+        "namePlaceholder": "Ad Soyad",
+        "emailLabel": "E-posta",
+        "emailPlaceholder": "ornek@email.com",
+        "messageLabel": "Mesaj",
+        "messagePlaceholder": "Mesajınızı yazın...",
+        "submit": "Gönder",
+        "submitting": "Gönderiliyor...",
+        "success": "Mesajınız alındı. En kısa sürede dönüş yapacağım.",
+        "error": "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
+        "unavailable": "E-posta servisi yapılandırılmamış. Doğrudan e-posta ile ulaşabilirsiniz.",
+        "rateLimited": "Çok fazla deneme. Lütfen daha sonra tekrar deneyin."
+      }
     },
     "Project": {
       "title": "Projeler",
@@ -498,8 +515,15 @@
     }
   },
   "LocaleSwitcher": {
-    "label": "Change language",
+    "label": "Dili değiştir",
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
+  },
+  "ThemeSwitcher": {
+    "label": "Tema",
+    "light": "Açık",
+    "dark": "Koyu",
+    "system": "Sistem",
+    "toggleAria": "Temayı değiştir"
   },
   "Upload": {
     "cta": "Görsel yükle",
@@ -519,6 +543,9 @@
     "description": "Burası blog sayfasıdır. İster kendi paylaşımlarım ister sizin paylaşmış olduğunuz blogları insanlara açıyorum. Yararlı bilgi her zaman iyidir."
   },
   "Authentication": {
+    "Layout": {
+      "backToHome": "← Ana sayfaya dön"
+    },
     "Login": {
       "Page": {
         "title": "Giriş Yap",
@@ -872,8 +899,84 @@
         },
         "title": "Menü",
         "description": "Geliştiriciler ve tasarımcılar için blog sayfası. \nHoş geldin!"
+      },
+      "logoutSuccess": "Oturum başarıyla kapatıldı"
+    }
+  },
+  "Legal": {
+    "Shared": {
+      "lastUpdatedLabel": "Son güncelleme",
+      "tocTitle": "İçindekiler",
+      "questionsTitle": "Sorularınız mı var?",
+      "questionsDescription": "Gizlilik veya kullanım koşulları hakkında netleştirmek istediğiniz bir konu varsa doğrudan bize yazın.",
+      "contactCta": "İletişime geç",
+      "relatedTitle": "İlgili belge",
+      "privacyLink": "Gizlilik Politikası",
+      "termsLink": "Kullanım Koşulları"
+    },
+    "Privacy": {
+      "badge": "Gizlilik",
+      "title": "Gizlilik Politikası",
+      "description": "Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında şeffaf bilgi.",
+      "lastUpdated": "4 Haziran 2026",
+      "relatedDescription": "Hizmeti kullanırken geçerli kuralları ve sorumlulukları okuyun.",
+      "sections": {
+        "intro": {
+          "title": "Genel bakış",
+          "body": "Bu politika, blog.tunahanipek.com ve ilişkili hizmetlerde kişisel verilerinizin nasıl işlendiğini açıklar. Verilerinizi yalnızca hizmet sunmak, güvenliği sağlamak ve taleplerinize yanıt vermek için kullanırız; üçüncü taraflara satmayız."
+        },
+        "data": {
+          "title": "Toplanan veriler",
+          "body": "Hesap oluşturduğunuzda e-posta, ad, profil bilgileri ve oturum kayıtları işlenebilir. İletişim formu aracılığıyla gönderdiğiniz ad, e-posta ve mesaj içeriği yalnızca yanıt amacıyla saklanır. Teknik loglar (IP, tarayıcı türü) güvenlik ve performans için sınırlı süre tutulabilir."
+        },
+        "cookies": {
+          "title": "Çerezler ve analitik",
+          "body": "Zorunlu çerezler sitenin çalışması için gereklidir. Tercih ve analitik çerezleri yalnızca çerez banner'ında onay vermeniz halinde etkinleştirilir. Onayınızı istediğiniz zaman tarayıcı ayarlarından veya banner üzerinden geri alabilirsiniz."
+        },
+        "rights": {
+          "title": "Haklarınız",
+          "body": "KVKK ve ilgili mevzuat kapsamında verilerinize erişim, düzeltme, silme ve işlemeye itiraz talebinde bulunabilirsiniz. Taleplerinizi makul sürede değerlendirip yanıtlarız."
+        },
+        "contact": {
+          "title": "Veri sorumlusuna ulaşın",
+          "body": "Gizlilikle ilgili tüm talepler için hello@tunahanipek.com adresine yazabilirsiniz. Kimliğinizi doğrulamak amacıyla ek bilgi istenebilir; bu yalnızca talebinizi güvenle işlemek içindir."
+        }
+      }
+    },
+    "Terms": {
+      "badge": "Kullanım",
+      "title": "Kullanım Koşulları",
+      "description": "Siteyi kullanırken geçerli kurallar, sorumluluklar ve hizmet kapsamı.",
+      "lastUpdated": "4 Haziran 2026",
+      "relatedDescription": "Kişisel verilerinizin nasıl işlendiğini öğrenin.",
+      "sections": {
+        "intro": {
+          "title": "Kabul ve kapsam",
+          "body": "Siteye erişerek veya hesap oluşturarak bu koşulları okuduğunuzu ve kabul ettiğinizi beyan etmiş olursunuz. Koşullar blog, portfolyo ve ilgili sayfaların tamamı için geçerlidir."
+        },
+        "content": {
+          "title": "İçerik ve fikri mülkiyet",
+          "body": "Yayınlanan yazı, görsel ve proje içerikleri bilgilendirme amaçlıdır; izinsiz kopyalanamaz veya ticari amaçla dağıtılamaz. Kullanıcıların eklediği içeriklerden ilgili kullanıcı sorumludur; telif veya yasa dışı paylaşımlar kaldırılabilir."
+        },
+        "account": {
+          "title": "Hesap ve güvenlik",
+          "body": "Hesap bilgilerinizin gizliliğinden ve şifrenizin güvenliğinden siz sorumlusunuz. Spam, kötüye kullanım veya güvenlik ihlali tespit edilirse hesap askıya alınabilir veya kalıcı olarak kapatılabilir."
+        },
+        "liability": {
+          "title": "Sorumluluk sınırı",
+          "body": "Site \"olduğu gibi\" sunulur. Bakım, güncelleme veya teknik arızalardan kaynaklanan kesintilerde mümkün olan en kısa sürede müdahale edilir; ancak dolaylı veya öngörülemeyen zararlardan sorumluluk kabul edilmez."
+        },
+        "changes": {
+          "title": "Güncellemeler",
+          "body": "Koşullar zaman zaman güncellenebilir. Güncel metin her zaman bu sayfada yayımlanır; önemli değişikliklerde sayfa üzerindeki tarih güncellenir. Kullanıma devam etmeniz güncel koşulları kabul ettiğiniz anlamına gelir."
+        }
       }
     }
+  },
+  "CookieConsent": {
+    "message": "Deneyimi iyileştirmek için çerez ve analitik kullanıyoruz.",
+    "accept": "Kabul et",
+    "decline": "Yalnızca gerekli"
   },
   "Footer": {
     "mottos": [
@@ -941,7 +1044,9 @@
       "about": "&gt;&nbsp; Hakkımda",
       "project": "&gt;&nbsp; Projeler",
       "faq": "&gt;&nbsp; SSS",
-      "contact": "&gt;&nbsp; Bana Ulaşın"
+      "contact": "&gt;&nbsp; Bana Ulaşın",
+      "privacy": "&gt;&nbsp; Gizlilik",
+      "terms": "&gt;&nbsp; Kullanım Koşulları"
     },
     "ownership": "Tüm Hakları <link>Tunahan İPEK'e</link> Aittir",
     "Mail": {

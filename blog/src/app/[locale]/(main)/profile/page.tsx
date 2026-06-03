@@ -2,8 +2,8 @@ import { auth } from '@/auth';
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Link } from '@/navigation';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { Link, redirect } from '@/navigation';
+import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import {
   CalendarDays,
@@ -58,13 +58,23 @@ function InfoItem({ icon: Icon, label, value, href, className }: InfoItemProps) 
   return content;
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const session = await auth();
   const t = await getTranslations('Pages.Profile');
-  const locale = await getLocale();
 
   if (!session?.user) {
-    return null;
+    return redirect({
+      href: {
+        pathname: '/auth/login',
+        query: { callback: '/profile' },
+      },
+      locale,
+    });
   }
 
   const { user } = session;

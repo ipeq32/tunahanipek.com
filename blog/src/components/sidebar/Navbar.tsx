@@ -24,15 +24,19 @@ import handleSignout from '@/actions/handleSignout';
 import { usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import ProfileDropdownMenuFeature from './_features/ProfileDropdownMenu';
 import { SiteContainer } from '@/components/layout/site-container';
+import { ToggleTheme } from '@/components/toggle-theme';
+import ToggleLanguage from '@/components/toggle-language';
+import type { Locale } from '@/i18n/request';
 
 const Navbar = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
   const t = useTranslations('Navbar.Main');
+  const locale = useLocale() as Locale;
 
   const from = searchParams.get('callback') || pathname;
 
@@ -52,7 +56,7 @@ const Navbar = () => {
   const handleLogout = () => {
     handleSignout().then(() => {
       window.location.reload();
-      toast.success('Logged out successfully');
+      toast.success(t('logoutSuccess'));
     });
   };
 
@@ -112,6 +116,10 @@ const Navbar = () => {
                     {link.title}
                   </MenuLinkFeature>
                 ))}
+              </div>
+              <div className="mt-6 flex items-center justify-center gap-3 border-t border-border/60 pt-6">
+                <ToggleTheme />
+                <ToggleLanguage locale={locale} />
               </div>
             </div>
             <SheetFooter>

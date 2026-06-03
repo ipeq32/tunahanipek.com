@@ -26,7 +26,14 @@ yarn dev
 | `NEXTAUTH_URL` | Uygulama URL (ör. `http://localhost:3000`) |
 | `NEXTAUTH_SECRET` | NextAuth secret |
 | `POSTGRES_PRISMA_URL` | Prisma bağlantı URL |
+| `POSTGRES_URL_NON_POOLING` | Prisma direct URL |
 | `NEXT_PUBLIC_API_URL` | SSR fetch için API base URL |
+| `NEXT_PUBLIC_SITE_URL` | Prod canonical URL (sitemap, OG) |
+| `UPLOADTHING_TOKEN` | Görsel yükleme |
+| `RESEND_API_KEY` | E-posta (şifre sıfırlama, iletişim formu) |
+| `EMAIL_FROM` | Gönderen adres (Resend) |
+| `VERCEL_URL` | Host fallback (Vercel / Docker) |
+| `ALLOW_PUBLIC_REGISTRATION` | `false` ile kayıt kapatılır |
 
 ## Seed admin (geliştirme)
 
@@ -37,7 +44,11 @@ yarn dev
 Repo kökünden:
 
 ```bash
-docker compose --profile blog up
+# Geliştirme (blog + DB)
+docker compose --profile dev up
+
+# Üretim (blog + home + DB)
+docker compose --profile full up
 ```
 
 ## Test

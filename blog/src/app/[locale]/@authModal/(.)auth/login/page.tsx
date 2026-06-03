@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { usePathname, useRouter } from '@/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { isPublicRegistrationEnabledClient } from '@/lib/public-registration-client';
 
 export default function LoginModal() {
   const [isOpened, setIsOpened] = useState(true);
@@ -61,9 +62,11 @@ export default function LoginModal() {
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <LoginForm setOpenModal={setIsOpened} />
-        <Button variant="ghost" onClick={handleClick} className="mt-3 w-full">
-          {t('button')}
-        </Button>
+        {isPublicRegistrationEnabledClient && (
+          <Button variant="ghost" onClick={handleClick} className="mt-3 w-full">
+            {t('button')}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -12,6 +12,10 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { auth } from '@/auth';
+import { CookieConsent } from '@/components/cookie-consent';
+import { SiteAnalytics } from '@/components/site-analytics';
+import { getMetadataBase } from '@/lib/page-metadata';
+import { getSiteUrl } from '@/config';
 
 type LocaleLayoutProps = Readonly<{
   children: ReactNode;
@@ -24,15 +28,18 @@ export async function generateMetadata({
 }: LocaleLayoutProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Metadata' });
+  const siteUrl = getSiteUrl();
+  const description = `Tunahan İPEK - ${t('description')}`;
 
   return {
+    metadataBase: getMetadataBase(),
     title: {
       default: 'Tunahan İPEK',
       template: '%s | Tunahan İPEK',
     },
-    description: `Tunahan İPEK - ${t('description')}`,
+    description,
     alternates: {
-      canonical: '/',
+      canonical: `/${locale}`,
       languages: {
         tr: '/tr',
         en: '/en',
@@ -40,15 +47,15 @@ export async function generateMetadata({
     },
     openGraph: {
       title: 'Tunahan İPEK',
-      description: `Tunahan İPEK - ${t('description')}`,
+      description,
       type: 'website',
       locale: locale,
       siteName: 'Tunahan İPEK',
       alternateLocale: ['tr', 'en'],
-      url: 'https://tunahanipek.com',
+      url: `${siteUrl}/${locale}`,
       images: [
         {
-          url: 'https://tunahanipek.com/logo.png',
+          url: '/opengraph-image',
           width: 1200,
           height: 630,
           alt: 'Tunahan İPEK',
@@ -64,36 +71,19 @@ export async function generateMetadata({
     authors: [
       {
         name: 'Tunahan İPEK',
-        url: 'https://tunahanipek.com',
+        url: siteUrl,
       },
     ],
-    category: 'Travel',
+    category: 'technology',
     creator: 'Tunahan İPEK',
-    generator: 'Tunahan İPEK',
-    icons: [
-      {
-        sizes: '64x64',
-        type: 'image/x-icon',
-        url: '/favicon.ico',
-        host: 'tunahanipek.com',
-        protocol: 'https',
-        origin: 'https://tunahanipek.com',
-      },
-    ],
+    generator: 'Next.js',
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       site: '@tunahanipek',
       creator: '@tunahanipek',
       title: 'Tunahan İPEK',
-      description: `Tunahan İPEK - ${t('description')}`,
-      images: [
-        {
-          url: 'https://tunahanipek.com/logo.png',
-          width: 1200,
-          height: 630,
-          alt: 'Tunahan İPEK',
-        },
-      ],
+      description,
+      images: ['/opengraph-image'],
     },
     robots: {
       googleBot: {
@@ -141,6 +131,8 @@ export default async function LocaleLayout({
           {children}
           {authModal}
           <Toaster position="bottom-right" />
+          <CookieConsent />
+          <SiteAnalytics />
         </AuthSessionProvider>
       </NextIntlClientProvider>
     </ThemeProvider>

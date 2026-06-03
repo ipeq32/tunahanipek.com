@@ -67,6 +67,14 @@ export default {
     en: '/contact',
     tr: '/iletisim',
   },
+  '/privacy': {
+    en: '/privacy',
+    tr: '/gizlilik',
+  },
+  '/terms': {
+    en: '/terms',
+    tr: '/kullanim-kosullari',
+  },
   '/profile': {
     en: '/profile',
     tr: '/profil',
