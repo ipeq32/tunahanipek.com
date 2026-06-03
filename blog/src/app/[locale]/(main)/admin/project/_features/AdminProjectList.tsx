@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import BlogImage from '@/components/blog/BlogImage';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -33,7 +32,6 @@ const emptyForm = {
   description: '',
   url: '',
   image: '',
-  sortOrder: '0',
   published: false,
 };
 
@@ -109,7 +107,6 @@ export default function AdminProjectList({
       description: project.description,
       url: project.url ?? '',
       image: project.image ?? '',
-      sortOrder: String(project.sortOrder),
       published: project.published,
     });
     if (typeof window !== 'undefined') {
@@ -126,7 +123,6 @@ export default function AdminProjectList({
       description: form.description.trim(),
       url: form.url.trim() || '',
       image: form.image.trim() || '',
-      sortOrder: parseInt(form.sortOrder, 10) || 0,
       published: form.published,
     };
 
@@ -284,16 +280,6 @@ export default function AdminProjectList({
                 required
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium">{t('fieldSort')}</label>
-              <Input
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) =>
-                  setForm({ ...form, sortOrder: e.target.value })
-                }
-              />
-            </div>
             <label className="flex items-center gap-2 self-end rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
               <input
                 type="checkbox"
@@ -404,9 +390,6 @@ export default function AdminProjectList({
                     publishedLabel={t('statusPublished')}
                     draftLabel={t('statusDraft')}
                   />
-                  <Badge variant="outline" className="text-[10px]">
-                    {t('orderLabel')}: {project.sortOrder}
-                  </Badge>
                 </div>
                 <p className="line-clamp-2 text-sm text-muted-foreground">
                   {project.description}

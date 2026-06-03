@@ -18,6 +18,17 @@ const createSchema = z.object({
   published: z.boolean().optional(),
 });
 
+/** Sıra belirtilmezse listenin sonuna ekle (mevcut en yüksek sıra + 1). */
+async function getNextSortOrder(): Promise<number> {
+  const last = await prisma.project.findFirst({
+    where: { deletedAt: null },
+    orderBy: { sortOrder: 'desc' },
+    select: { sortOrder: true },
+  });
+
+  return (last?.sortOrder ?? 0) + 1;
+}
+
 export async function GET() {
   const session = await auth();
   if (!session?.user || !isSuperAdmin(session.user.role)) {
@@ -55,13 +66,15 @@ export async function POST(request: Request) {
 
     const { title, description, url, image, sortOrder, published } = parsed.data;
 
+    const resolvedSortOrder = sortOrder ?? (await getNextSortOrder());
+
     const project = await prisma.project.create({
       data: {
         title,
         description,
         url: url || null,
         image: image || null,
-        sortOrder: sortOrder ?? 0,
+        sortOrder: resolvedSortOrder,
         published: published ?? false,
       },
     });
