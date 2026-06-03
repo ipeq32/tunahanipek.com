@@ -1,5 +1,5 @@
 import './globals.css';
-import 'react-quill/dist/quill.snow.css';
+import 'react-quill-new/dist/quill.snow.css';
 
 import { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';

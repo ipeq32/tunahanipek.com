@@ -15,10 +15,17 @@ import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import ReactQuill from 'react-quill';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/navigation';
 import { ContentCard } from '@/components/layout/content-card';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-40 w-full animate-pulse rounded-md border border-border/60 bg-muted/40" />
+  ),
+});
 
 const formSchema = z.object({
   title: z.string().min(2),
