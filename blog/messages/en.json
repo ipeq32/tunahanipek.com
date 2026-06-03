@@ -410,7 +410,15 @@
         "link": "Go to blog"
       },
       "dbTitle": "More projects",
-      "visit": "View project"
+      "visit": "View project",
+      "eyebrow": "Portfolio",
+      "worksTitle": "Selected work",
+      "worksSubtitle": "Projects I've built and products I've worked on.",
+      "featured": "Featured",
+      "linksTitle": "Links",
+      "linksSubtitle": "Explore more from here.",
+      "empty": "No published projects yet.",
+      "countLabel": "{count, plural, one {# project} other {# projects}}"
     }
   },
   "LocaleSwitcher": {
