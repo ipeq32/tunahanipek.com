@@ -13,9 +13,7 @@ import {
 import BlogImage from '@/components/blog/BlogImage';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
-import type { OurFileRouter } from '@/app/api/uploadthing/core';
-
-type UploadEndpoint = keyof OurFileRouter;
+import { UPLOAD_CONFIG, type UploadEndpoint } from '@/lib/upload-config';
 
 type ImageUploadProps = {
   value?: string;
@@ -63,9 +61,15 @@ export default function ImageUpload({
 
   const handleSelect = (files: FileList | null) => {
     const file = files?.[0];
-    if (file) {
-      void startUpload([file]);
+    if (!file) return;
+
+    const { maxFileSizeBytes, maxFileSizeLabel } = UPLOAD_CONFIG[endpoint];
+    if (file.size > maxFileSizeBytes) {
+      toast.error(t('tooLarge', { size: maxFileSizeLabel }));
+      return;
     }
+
+    void startUpload([file]);
   };
 
   const fileInput = (

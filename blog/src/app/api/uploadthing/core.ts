@@ -2,6 +2,7 @@ import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
 import { auth } from '@/auth';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { UPLOAD_CONFIG } from '@/lib/upload-config';
 
 const f = createUploadthing();
 
@@ -10,7 +11,10 @@ const AVATAR_UPLOAD_WINDOW_MS = 15 * 60 * 1000;
 
 export const ourFileRouter = {
   imageUploader: f({
-    image: { maxFileSize: '4MB', maxFileCount: 1 },
+    image: {
+      maxFileSize: UPLOAD_CONFIG.imageUploader.maxFileSize,
+      maxFileCount: 1,
+    },
   })
     .middleware(async () => {
       const session = await auth();
@@ -32,7 +36,10 @@ export const ourFileRouter = {
    * sınırlamak adına IP bazlı oran sınırı ve küçük dosya boyutu uygulanır.
    */
   avatarUploader: f({
-    image: { maxFileSize: '2MB', maxFileCount: 1 },
+    image: {
+      maxFileSize: UPLOAD_CONFIG.avatarUploader.maxFileSize,
+      maxFileCount: 1,
+    },
   })
     .middleware(async ({ req }) => {
       const ip = getClientIp(req);

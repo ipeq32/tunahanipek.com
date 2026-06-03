@@ -491,14 +491,15 @@
   },
   "Upload": {
     "cta": "Görsel yükle",
-    "hint": "PNG, JPG veya WEBP · en fazla 4MB",
+    "hint": "PNG, JPG veya WEBP · en fazla 8MB",
     "avatarHint": "PNG, JPG veya WEBP · en fazla 2MB",
     "replace": "Değiştir",
     "remove": "Kaldır",
     "uploaded": "Yüklendi",
     "uploading": "Yükleniyor",
     "success": "Görsel yüklendi",
-    "error": "Görsel yüklenemedi"
+    "error": "Görsel yüklenemedi",
+    "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz."
   },
   "Metadata": {
     "description": "Burası blog sayfasıdır. İster kendi paylaşımlarım ister sizin paylaşmış olduğunuz blogları insanlara açıyorum. Yararlı bilgi her zaman iyidir."

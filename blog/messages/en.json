@@ -491,14 +491,15 @@
   },
   "Upload": {
     "cta": "Upload image",
-    "hint": "PNG, JPG or WEBP · max 4MB",
+    "hint": "PNG, JPG or WEBP · max 8MB",
     "avatarHint": "PNG, JPG or WEBP · max 2MB",
     "replace": "Replace",
     "remove": "Remove",
     "uploaded": "Uploaded",
     "uploading": "Uploading",
     "success": "Image uploaded",
-    "error": "Image upload failed"
+    "error": "Image upload failed",
+    "tooLarge": "File is too large. You can upload up to {size}."
   },
   "Metadata": {
     "description": "This is a blog page. I open up my own posts or blogs that you have shared to people. Useful information is always good."
