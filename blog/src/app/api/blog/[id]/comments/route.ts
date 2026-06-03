@@ -1,5 +1,9 @@
 import { auth } from '@/auth';
-import { createComment, getApprovedComments } from '@/lib/data/comments';
+import {
+  createComment,
+  getApprovedComments,
+  isValidReplyParent,
+} from '@/lib/data/comments';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
@@ -9,6 +13,7 @@ export const dynamic = 'force-dynamic';
 
 const schema = z.object({
   content: z.string().min(3).max(2000),
+  parentId: z.string().uuid().optional(),
 });
 
 const COMMENT_LIMIT = 5;
@@ -19,9 +24,10 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
+  const session = await auth();
 
   try {
-    const data = await getApprovedComments(id);
+    const data = await getApprovedComments(id, session?.user?.id);
     return NextResponse.json({ data });
   } catch (error) {
     logger.error('Failed to fetch comments', {
@@ -72,10 +78,22 @@ export async function POST(
       );
     }
 
+    const { content, parentId } = parsed.data;
+
+    // Yanıt isteklerinde üst yorumun bu bloğa ait, onaylı ve üst seviye
+    // olduğunu doğrulayarak geçersiz/çapraz referansları reddederiz.
+    if (parentId && !(await isValidReplyParent(parentId, blogId))) {
+      return NextResponse.json(
+        { error: 'Invalid parent comment' },
+        { status: 400 }
+      );
+    }
+
     const data = await createComment(
       blogId,
       session.user.id,
-      parsed.data.content
+      content,
+      parentId
     );
 
     return NextResponse.json({ data }, { status: 201 });

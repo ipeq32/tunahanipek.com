@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
 import { z } from 'zod';
 import { resetPasswordWithToken } from '@/lib/password-reset';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,15 @@ const schema = z
   });
 
 export async function POST(request: Request) {
+  // Token ile şifre sıfırlama brute-force'a açık olduğu için IP başına
+  // pencere içinde deneme sayısını sınırlarız.
+  const ip = getClientIp(request);
+  const { allowed } = checkRateLimit(`reset:${ip}`, 5, 15 * 60 * 1000);
+
+  if (!allowed) {
+    return NextResponse.json({ message: 'Too many requests' }, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const parsed = schema.safeParse(body);

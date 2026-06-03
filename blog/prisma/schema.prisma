@@ -31,6 +31,7 @@ model User {
   deletedAt           DateTime?            @db.Timestamptz(3)
   blogs               Blog[]
   comments            Comment[]
+  commentReactions    CommentReaction[]
   passwordResetTokens PasswordResetToken[]
 
   @@index([email], name: "email")
@@ -78,28 +79,47 @@ model Category {
 }
 
 model Comment {
-  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id        String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   content   String
-  likes     Int       @default(0)
-  dislikes  Int       @default(0)
-  status    Status    @default(PENDING)
-  isReply   Boolean   @default(false)
-  createdAt DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt DateTime? @db.Timestamptz(3)
-  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  userId    String?   @db.Uuid
-  blog      Blog?     @relation(fields: [blogId], references: [id])
-  blogId    String?   @db.Uuid
-  replies   Comment[] @relation("ReplyToComment")
-  parent    Comment?  @relation("ReplyToComment", fields: [commentId], references: [id])
-  commentId String?   @db.Uuid
+  status    Status            @default(PENDING)
+  isReply   Boolean           @default(false)
+  createdAt DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime          @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime?         @db.Timestamptz(3)
+  user      User?             @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  userId    String?           @db.Uuid
+  blog      Blog?             @relation(fields: [blogId], references: [id])
+  blogId    String?           @db.Uuid
+  replies   Comment[]         @relation("ReplyToComment")
+  parent    Comment?          @relation("ReplyToComment", fields: [commentId], references: [id])
+  commentId String?           @db.Uuid
+  reactions CommentReaction[]
 }
 
 enum Status {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+model CommentReaction {
+  id        String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  type      ReactionType
+  comment   Comment      @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String       @db.Uuid
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String       @db.Uuid
+  createdAt DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime     @updatedAt @db.Timestamptz(3)
+
+  // Bir kullanıcı bir yoruma en fazla tek tepki bırakabilir.
+  @@unique([commentId, userId])
+  @@index([commentId])
 }
 
 model Tag {

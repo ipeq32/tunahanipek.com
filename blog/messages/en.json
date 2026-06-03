@@ -190,7 +190,15 @@
     "submit": "Post comment",
     "pendingApproval": "Your comment was submitted for approval",
     "submitError": "Could not post comment",
-    "loginToComment": "Sign in to comment"
+    "loginToComment": "Sign in to comment",
+    "reply": "Reply",
+    "cancel": "Cancel",
+    "replyPlaceholder": "Write your reply...",
+    "replySubmit": "Send reply",
+    "like": "Like",
+    "dislike": "Dislike",
+    "loginToReact": "Sign in to react",
+    "reactError": "Could not save your reaction"
   },
   "Settings": {
     "title": "Settings",

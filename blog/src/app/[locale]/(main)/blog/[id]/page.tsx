@@ -29,15 +29,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const locale = parseLocale(await getLocale());
   const plainSummary = blog.summary.replace(/<[^>]*>/g, '').slice(0, 160);
+  const images = blog.image ? [blog.image] : [];
 
   return {
     title: blog.title,
     description: plainSummary,
+    alternates: {
+      canonical: `/${locale}/blog/${id}`,
+    },
     openGraph: {
       title: blog.title,
       description: plainSummary,
+      type: 'article',
       locale,
-      images: blog.image ? [blog.image] : [],
+      url: `/${locale}/blog/${id}`,
+      images,
+    },
+    twitter: {
+      card: blog.image ? 'summary_large_image' : 'summary',
+      title: blog.title,
+      description: plainSummary,
+      images,
     },
   };
 }
@@ -46,10 +58,10 @@ async function page({ params }: Props) {
   const { id } = await params;
   const locale = parseLocale(await getLocale());
 
-  const [blogData, comments, session] = await Promise.all([
+  const session = await auth();
+  const [blogData, comments] = await Promise.all([
     getPublishedBlogById(id),
-    getApprovedCommentViews(id, locale),
-    auth(),
+    getApprovedCommentViews(id, locale, session?.user?.id),
   ]);
 
   if (!blogData) {

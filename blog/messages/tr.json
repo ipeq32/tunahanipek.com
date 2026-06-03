@@ -190,7 +190,15 @@
     "submit": "Yorum gönder",
     "pendingApproval": "Yorumunuz onay için gönderildi",
     "submitError": "Yorum gönderilemedi",
-    "loginToComment": "Yorum yapmak için giriş yapın"
+    "loginToComment": "Yorum yapmak için giriş yapın",
+    "reply": "Yanıtla",
+    "cancel": "İptal",
+    "replyPlaceholder": "Yanıtınızı yazın...",
+    "replySubmit": "Yanıt gönder",
+    "like": "Beğen",
+    "dislike": "Beğenme",
+    "loginToReact": "Tepki vermek için giriş yapın",
+    "reactError": "Tepkiniz kaydedilemedi"
   },
   "Settings": {
     "title": "Ayarlar",
