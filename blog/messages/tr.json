@@ -367,12 +367,21 @@
       ]
     },
     "Profile": {
-      "title": "Profil",
-      "description": "Hesap bilgileriniz",
-      "phone": "Telefon",
-      "role": "Rol",
-      "address": "Adres",
-      "bio": "Biyografi"
+    "title": "Profil",
+    "description": "Hesap bilgileriniz",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "role": "Rol",
+    "address": "Adres",
+    "website": "Web sitesi",
+    "joined": "Katılım tarihi",
+    "bio": "Biyografi",
+    "editProfile": "Profili düzenle",
+    "roles": {
+      "USER": "Üye",
+      "ADMIN": "Yönetici",
+      "SUPER_ADMIN": "Süper Yönetici"
+    }
     },
     "Faq": {
       "title": "Sıkça Sorulan Sorular",

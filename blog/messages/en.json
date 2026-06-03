@@ -367,12 +367,21 @@
       ]
     },
     "Profile": {
-      "title": "Profile",
-      "description": "Your account details",
-      "phone": "Phone",
-      "role": "Role",
-      "address": "Address",
-      "bio": "Bio"
+    "title": "Profile",
+    "description": "Your account details",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "address": "Address",
+    "website": "Website",
+    "joined": "Joined",
+    "bio": "Bio",
+    "editProfile": "Edit profile",
+    "roles": {
+      "USER": "Member",
+      "ADMIN": "Admin",
+      "SUPER_ADMIN": "Super Admin"
+    }
     },
     "Faq": {
       "title": "FAQ",
