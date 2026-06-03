@@ -5,7 +5,16 @@
     "description": "Yazılım, seyahat ve deneyimlerimi paylaştığım kişisel blog ve portfolyo.",
     "ctaBlog": "Blogları keşfet",
     "ctaAbout": "Hakkımda",
-    "recentPosts": "Son yazılar"
+    "ctaProjects": "Projeler",
+    "recentPosts": "Son yazılar",
+    "statPosts": "Yazı",
+    "statProjects": "Proje",
+    "statTopics": "Konu",
+    "featuredProjects": "Öne çıkan projeler",
+    "viewAll": "Tümünü gör",
+    "ctaSectionTitle": "Birlikte çalışalım",
+    "ctaSectionDescription": "Bir proje fikrin mi var, yoksa sadece merhaba mı demek istiyorsun? Bana ulaş.",
+    "ctaContact": "İletişime geç"
   },
   "Blog": {
     "title": "Bloglar",

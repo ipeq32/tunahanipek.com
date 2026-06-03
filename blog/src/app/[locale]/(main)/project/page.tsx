@@ -1,6 +1,7 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { FeatureCard } from '@/components/layout/feature-card';
 import BlogImage from '@/components/blog/BlogImage';
+import ProjectCard from '@/components/project/ProjectCard';
 import { getPublishedProjects } from '@/lib/data/projects';
 import type { ProjectDto } from '@/lib/project-mapper';
 import { getTranslations } from 'next-intl/server';
@@ -67,51 +68,6 @@ function FeaturedProject({
             <span className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-2 text-sm font-medium text-teal-600 transition-colors group-hover:bg-teal-500/20 dark:text-teal-400">
               {visitLabel}
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </span>
-          )}
-        </div>
-      </article>
-    </ProjectLink>
-  );
-}
-
-function ProjectCard({
-  project,
-  visitLabel,
-}: {
-  project: ProjectDto;
-  visitLabel: string;
-}) {
-  return (
-    <ProjectLink url={project.url}>
-      <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10">
-        <div className="relative aspect-[16/10] overflow-hidden">
-          <BlogImage
-            src={project.image}
-            alt={project.title}
-            width={640}
-            height={400}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-          {project.url && (
-            <span className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900 opacity-0 shadow-lg transition-all group-hover:opacity-100">
-              <ArrowUpRight className="h-4 w-4" />
-            </span>
-          )}
-        </div>
-        <div className="flex flex-1 flex-col gap-2 p-5">
-          <h3 className="text-lg font-semibold leading-snug tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400">
-            {project.title}
-          </h3>
-          <div
-            className="line-clamp-3 flex-1 text-sm text-muted-foreground [&_p]:inline"
-            dangerouslySetInnerHTML={{ __html: project.description }}
-          />
-          {project.url && (
-            <span className="mt-1 inline-flex items-center text-sm font-medium text-teal-600 dark:text-teal-400">
-              {visitLabel}
-              <ArrowUpRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </span>
           )}
         </div>

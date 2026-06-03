@@ -5,7 +5,16 @@
     "description": "Personal blog and portfolio sharing software, travel, and experiences.",
     "ctaBlog": "Explore blog",
     "ctaAbout": "About me",
-    "recentPosts": "Recent posts"
+    "ctaProjects": "Projects",
+    "recentPosts": "Recent posts",
+    "statPosts": "Posts",
+    "statProjects": "Projects",
+    "statTopics": "Topics",
+    "featuredProjects": "Featured projects",
+    "viewAll": "View all",
+    "ctaSectionTitle": "Let's work together",
+    "ctaSectionDescription": "Have a project in mind or just want to say hi? Get in touch.",
+    "ctaContact": "Get in touch"
   },
   "Blog": {
     "title": "Blog",

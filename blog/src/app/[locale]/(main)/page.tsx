@@ -1,14 +1,85 @@
 import { Link } from '@/navigation';
 import { getPublishedBlogs } from '@/lib/data/blogs';
+import { getPublishedProjects } from '@/lib/data/projects';
+import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import BlogCard from '@/components/blog/BlogCard';
+import ProjectCard from '@/components/project/ProjectCard';
 import { DidYouKnow } from '@/components/ui/did-you-know';
-import { ArrowRight, PenLine } from 'lucide-react';
+import {
+  ArrowRight,
+  FileText,
+  FolderGit2,
+  type LucideIcon,
+  PenLine,
+  Sparkles,
+  Tags,
+} from 'lucide-react';
+
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: LucideIcon;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/70 px-5 py-4 shadow-sm backdrop-blur-sm">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400">
+        <Icon className="h-5 w-5" />
+      </span>
+      <div>
+        <p className="text-2xl font-bold leading-none tabular-nums">{value}</p>
+        <p className="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {label}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SectionHeading({
+  title,
+  href,
+  linkLabel,
+}: {
+  title: string;
+  href: '/blog' | '/project';
+  linkLabel: string;
+}) {
+  return (
+    <div className="flex items-end justify-between gap-4">
+      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="text-teal-600 hover:bg-teal-500/10 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
+      >
+        <Link href={href}>
+          {linkLabel}
+          <ArrowRight className="ml-1 h-4 w-4" />
+        </Link>
+      </Button>
+    </div>
+  );
+}
 
 export default async function HomePage() {
   const t = await getTranslations('HomePage');
-  const { data: recentBlogs } = await getPublishedBlogs(1, 3);
+  const tProject = await getTranslations('Pages.Project');
+
+  const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount] =
+    await Promise.all([
+      getPublishedBlogs(1, 3),
+      getPublishedProjects(),
+      prisma.category.count({ where: { deletedAt: null } }),
+    ]);
+
+  const featuredProjects = projects.slice(0, 3);
 
   return (
     <div className="space-y-12 py-6 md:py-8">
@@ -40,30 +111,51 @@ export default async function HomePage() {
               </Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
+              <Link href="/project">{t('ctaProjects')}</Link>
+            </Button>
+            <Button variant="ghost" size="lg" asChild>
               <Link href="/about-me">{t('ctaAbout')}</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      <DidYouKnow size="lg" />
+      <section className="grid gap-4 sm:grid-cols-3">
+        <StatCard icon={FileText} value={postsTotal} label={t('statPosts')} />
+        <StatCard
+          icon={FolderGit2}
+          value={projects.length}
+          label={t('statProjects')}
+        />
+        <StatCard icon={Tags} value={topicsCount} label={t('statTopics')} />
+      </section>
+
+      {featuredProjects.length > 0 && (
+        <section className="space-y-6">
+          <SectionHeading
+            title={t('featuredProjects')}
+            href="/project"
+            linkLabel={t('viewAll')}
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featuredProjects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                visitLabel={tProject('visit')}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {recentBlogs.length > 0 && (
         <section className="space-y-6">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-semibold tracking-tight">{t('recentPosts')}</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="text-teal-600 hover:bg-teal-500/10 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
-            >
-              <Link href="/blog">
-                {t('ctaBlog')}
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+          <SectionHeading
+            title={t('recentPosts')}
+            href="/blog"
+            linkLabel={t('ctaBlog')}
+          />
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {recentBlogs.map((blog) => (
               <BlogCard key={blog.id} blog={blog} />
@@ -71,6 +163,30 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <DidYouKnow size="lg" />
+
+      <section className="relative overflow-hidden rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-cyan-500/10 to-transparent p-8 text-center shadow-sm md:p-12">
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-teal-500/20 blur-3xl"
+          aria-hidden
+        />
+        <div className="relative mx-auto flex max-w-xl flex-col items-center gap-4">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-500/15 text-teal-600 dark:text-teal-400">
+            <Sparkles className="h-6 w-6" />
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            {t('ctaSectionTitle')}
+          </h2>
+          <p className="text-muted-foreground">{t('ctaSectionDescription')}</p>
+          <Button variant="accent" size="lg" asChild className="mt-1">
+            <Link href="/contact">
+              {t('ctaContact')}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
