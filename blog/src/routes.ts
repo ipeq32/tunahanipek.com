@@ -55,6 +55,10 @@ export default {
     en: '/project',
     tr: '/proje',
   },
+  '/project/[id]': {
+    en: '/project/[id]',
+    tr: '/proje/[id]',
+  },
   '/faq': {
     en: '/faq',
     tr: '/sss',

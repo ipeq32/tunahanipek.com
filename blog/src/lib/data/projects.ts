@@ -10,6 +10,16 @@ export async function getPublishedProjects(): Promise<ProjectDto[]> {
   return projects.map(mapProjectToDto);
 }
 
+export async function getPublishedProjectById(
+  id: string
+): Promise<ProjectDto | null> {
+  const project = await prisma.project.findFirst({
+    where: { id, published: true, deletedAt: null },
+  });
+
+  return project ? mapProjectToDto(project) : null;
+}
+
 export async function getAdminProjects(): Promise<ProjectDto[]> {
   const projects = await prisma.project.findMany({
     where: { deletedAt: null },

@@ -1,40 +1,19 @@
 import BlogImage from '@/components/blog/BlogImage';
+import { Link } from '@/navigation';
 import type { ProjectDto } from '@/lib/project-mapper';
 import { ArrowUpRight } from 'lucide-react';
-import NextLink from 'next/link';
-import type { ReactNode } from 'react';
 
 type ProjectCardProps = {
   project: ProjectDto;
   visitLabel: string;
 };
 
-function ProjectLink({
-  url,
-  children,
-}: {
-  url: string | null;
-  children: ReactNode;
-}) {
-  if (!url) {
-    return <div className="h-full">{children}</div>;
-  }
-
-  return (
-    <NextLink
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      className="block h-full"
-    >
-      {children}
-    </NextLink>
-  );
-}
-
 export default function ProjectCard({ project, visitLabel }: ProjectCardProps) {
   return (
-    <ProjectLink url={project.url}>
+    <Link
+      href={{ pathname: '/project/[id]', params: { id: project.id } }}
+      className="block h-full"
+    >
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10">
         <div className="relative aspect-[16/10] overflow-hidden">
           <BlogImage
@@ -67,6 +46,6 @@ export default function ProjectCard({ project, visitLabel }: ProjectCardProps) {
           )}
         </div>
       </article>
-    </ProjectLink>
+    </Link>
   );
 }

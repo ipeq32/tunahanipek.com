@@ -2,34 +2,11 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { FeatureCard } from '@/components/layout/feature-card';
 import BlogImage from '@/components/blog/BlogImage';
 import ProjectCard from '@/components/project/ProjectCard';
+import { Link } from '@/navigation';
 import { getPublishedProjects } from '@/lib/data/projects';
 import type { ProjectDto } from '@/lib/project-mapper';
 import { getTranslations } from 'next-intl/server';
 import { ArrowUpRight, BookOpen, FolderGit2, Globe } from 'lucide-react';
-import NextLink from 'next/link';
-import type { ReactNode } from 'react';
-
-type ProjectLinkProps = {
-  url: string | null;
-  children: ReactNode;
-};
-
-function ProjectLink({ url, children }: ProjectLinkProps) {
-  if (!url) {
-    return <div className="h-full">{children}</div>;
-  }
-
-  return (
-    <NextLink
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      className="block h-full"
-    >
-      {children}
-    </NextLink>
-  );
-}
 
 function FeaturedProject({
   project,
@@ -41,7 +18,10 @@ function FeaturedProject({
   visitLabel: string;
 }) {
   return (
-    <ProjectLink url={project.url}>
+    <Link
+      href={{ pathname: '/project/[id]', params: { id: project.id } }}
+      className="block h-full"
+    >
       <article className="group relative grid h-full overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10 lg:grid-cols-2">
         <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[340px]">
           <BlogImage
@@ -72,7 +52,7 @@ function FeaturedProject({
           )}
         </div>
       </article>
-    </ProjectLink>
+    </Link>
   );
 }
 

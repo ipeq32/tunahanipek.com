@@ -3,6 +3,10 @@ import 'server-only';
 import { prisma } from '@/lib/prisma';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { formatCommentDate } from '@/lib/comments/format-date';
+import {
+  resolveReactionAction,
+  summarizeReactions,
+} from '@/lib/comments/reactions';
 import type {
   CommentDto,
   CommentReactionSummary,
@@ -34,26 +38,6 @@ type RawComment = {
 const reactionInclude = {
   select: { type: true, userId: true },
 } as const;
-
-function summarizeReactions(
-  reactions: RawReaction[],
-  viewerId?: string
-): CommentReactionSummary {
-  let likeCount = 0;
-  let dislikeCount = 0;
-  let myReaction: ReactionType | null = null;
-
-  for (const reaction of reactions) {
-    if (reaction.type === 'LIKE') likeCount += 1;
-    else if (reaction.type === 'DISLIKE') dislikeCount += 1;
-
-    if (viewerId && reaction.userId === viewerId) {
-      myReaction = reaction.type;
-    }
-  }
-
-  return { likeCount, dislikeCount, myReaction };
-}
 
 function mapCommentToView(
   comment: CommentDto,
@@ -224,13 +208,15 @@ export async function toggleCommentReaction(
     select: { id: true, type: true },
   });
 
-  if (!existing) {
+  const action = resolveReactionAction(existing?.type ?? null, type);
+
+  if (action === 'create') {
     await prisma.commentReaction.create({ data: { commentId, userId, type } });
-  } else if (existing.type === type) {
-    await prisma.commentReaction.delete({ where: { id: existing.id } });
+  } else if (action === 'remove') {
+    await prisma.commentReaction.delete({ where: { id: existing!.id } });
   } else {
     await prisma.commentReaction.update({
-      where: { id: existing.id },
+      where: { id: existing!.id },
       data: { type },
     });
   }

@@ -490,7 +490,11 @@
       "linksTitle": "Bağlantılar",
       "linksSubtitle": "Daha fazlasını keşfetmek için.",
       "empty": "Henüz yayımlanmış bir proje yok.",
-      "countLabel": "{count, plural, other {# proje}}"
+      "countLabel": "{count, plural, other {# proje}}",
+      "back": "Projelere dön",
+      "visitSite": "Siteyi ziyaret et",
+      "aboutTitle": "Bu proje hakkında",
+      "notFoundTitle": "Proje bulunamadı"
     }
   },
   "LocaleSwitcher": {

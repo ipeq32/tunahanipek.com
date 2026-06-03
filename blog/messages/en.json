@@ -490,7 +490,11 @@
       "linksTitle": "Links",
       "linksSubtitle": "Explore more from here.",
       "empty": "No published projects yet.",
-      "countLabel": "{count, plural, one {# project} other {# projects}}"
+      "countLabel": "{count, plural, one {# project} other {# projects}}",
+      "back": "Back to projects",
+      "visitSite": "Visit site",
+      "aboutTitle": "About this project",
+      "notFoundTitle": "Project not found"
     }
   },
   "LocaleSwitcher": {

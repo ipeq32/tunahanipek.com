@@ -11,9 +11,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogs: { id: string; updatedAt: Date }[] = [];
   let tags: { name: string }[] = [];
   let categories: { name: string }[] = [];
+  let projects: { id: string }[] = [];
 
   try {
-    [blogs, tags, categories] = await Promise.all([
+    [blogs, tags, categories, projects] = await Promise.all([
       prisma.blog.findMany({
         where: { published: true, deletedAt: null },
         select: { id: true, updatedAt: true },
@@ -28,6 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         where: { deletedAt: null, blogs: { some: { published: true, deletedAt: null } } },
         select: { name: true },
         orderBy: { name: 'asc' },
+      }),
+      prisma.project.findMany({
+        where: { published: true, deletedAt: null },
+        select: { id: true },
+        orderBy: { sortOrder: 'asc' },
       }),
     ]);
   } catch (error) {
@@ -54,6 +60,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         pathname: '/blog/category/[name]',
         params: { name: category.name },
       })
+    ),
+    ...projects.map((project) =>
+      getEntry({ pathname: '/project/[id]', params: { id: project.id } })
     ),
   ];
 }
