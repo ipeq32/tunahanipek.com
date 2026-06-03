@@ -65,9 +65,17 @@ export function RotatingTerminalText({
 }: RotatingTerminalTextProps) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // SSR'da 0. satır görünmez (opacity-0) render edilir; mount olunca
+    // rastgele bir satır seçilip görünür kılınır. Böylece hydration
+    // uyumsuzluğu da, 0. satırın kısa süreli görünmesi de engellenir.
+    setMounted(true);
+
     if (lines.length <= 1) return;
+
+    setIndex(Math.floor(Math.random() * lines.length));
 
     let transitionTimeout: ReturnType<typeof setTimeout>;
 
@@ -90,7 +98,7 @@ export function RotatingTerminalText({
       dangerouslySetInnerHTML={{ __html: lines[index] ?? '' }}
       className={cn(
         'inline transition-opacity duration-300 ease-out',
-        visible ? 'opacity-100' : 'opacity-0',
+        mounted && visible ? 'opacity-100' : 'opacity-0',
       )}
       aria-live="polite"
     />
@@ -135,7 +143,7 @@ export function RotatingTerminalText({
           )}
         >
           {text}
-          <TerminalCursor />
+          {mounted && <TerminalCursor />}
         </p>
       </div>
     </TerminalCard>

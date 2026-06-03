@@ -26,9 +26,16 @@ export function RotatingMotto() {
   const mottos = t.raw('mottos') as string[];
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // SSR'da 0. satır görünmez render edilir; mount olunca rastgele bir
+    // satır seçilip görünür kılınır (hydration uyumsuzluğu olmadan).
+    setMounted(true);
+
     if (mottos.length <= 1) return;
+
+    setIndex(Math.floor(Math.random() * mottos.length));
 
     let transitionTimeout: ReturnType<typeof setTimeout>;
 
@@ -59,11 +66,11 @@ export function RotatingMotto() {
           <span
             dangerouslySetInnerHTML={{ __html: mottos[index] ?? '' }}
             className={`inline transition-opacity duration-300 ease-out ${
-              visible ? 'opacity-100' : 'opacity-0'
+              mounted && visible ? 'opacity-100' : 'opacity-0'
             }`}
             aria-live="polite"
           />
-          <TerminalCursor />
+          {mounted && <TerminalCursor />}
         </p>
       </div>
     </TerminalCard>
