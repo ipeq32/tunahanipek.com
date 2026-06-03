@@ -411,10 +411,15 @@
     "Contact": {
       "title": "Contact",
       "description": "Get in touch",
-      "body": "For questions and collaborations, use the channels below.",
-      "emailLabel": "Email",
-      "githubLabel": "GitHub",
-      "linkedinLabel": "LinkedIn"
+    "body": "For questions and collaborations, use the channels below.",
+    "availabilityBadge": "Open to new projects",
+    "responseNote": "I usually reply within 24 hours.",
+    "ctaEmail": "Send email",
+    "ctaLinkedin": "Connect on LinkedIn",
+    "channelsTitle": "Find me on",
+    "emailLabel": "Email",
+    "githubLabel": "GitHub",
+    "linkedinLabel": "LinkedIn"
     },
     "Project": {
       "title": "Projects",

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
+import { ArrowUpRight, LucideIcon } from 'lucide-react';
 import NextLink from 'next/link';
 
 type ContactChannelCardProps = {
@@ -30,7 +30,7 @@ export function ContactChannelCard({
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400">
         <Icon className="h-5 w-5" />
       </div>
-      <div className="min-w-0 space-y-1">
+      <div className="min-w-0 flex-1 space-y-1">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </p>
@@ -38,6 +38,7 @@ export function ContactChannelCard({
           {value}
         </p>
       </div>
+      <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground/40 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-500" />
     </NextLink>
   );
 }
