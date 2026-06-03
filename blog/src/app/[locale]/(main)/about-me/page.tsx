@@ -17,7 +17,7 @@ export default async function AboutPage() {
             Tİ
           </div>
           <div className="space-y-5">
-            <p className="text-lg leading-relaxed text-muted-foreground">{t('body')}</p>
+            <p className="text-base leading-relaxed text-muted-foreground">{t('body')}</p>
             <div className="flex flex-wrap gap-2">
               {highlights.map((item) => (
                 <Badge key={item} variant="accent">

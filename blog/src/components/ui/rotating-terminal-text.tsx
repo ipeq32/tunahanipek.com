@@ -32,11 +32,11 @@ const SIZE_STYLES: Record<
     padding: '',
   },
   lg: {
-    body: 'text-base md:text-lg',
-    code: '[&_code]:text-[15px]',
-    prompt: 'text-base md:text-lg',
-    minH: 'min-h-[4.5rem]',
-    padding: 'px-5 py-5',
+    body: 'text-sm md:text-base',
+    code: '[&_code]:text-[13px]',
+    prompt: 'text-sm md:text-base',
+    minH: 'min-h-[4rem]',
+    padding: 'px-4 py-4',
   },
 };
 

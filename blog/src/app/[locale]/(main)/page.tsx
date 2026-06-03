@@ -11,8 +11,8 @@ export default async function HomePage() {
   const { data: recentBlogs } = await getPublishedBlogs(1, 3);
 
   return (
-    <div className="space-y-16 py-8 md:py-12">
-      <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-sm md:p-12 lg:p-14">
+    <div className="space-y-12 py-6 md:py-8">
+      <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-sm md:p-10">
         <div
           className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl"
           aria-hidden
@@ -26,10 +26,12 @@ export default async function HomePage() {
             <PenLine className="h-3.5 w-3.5" />
             Blog & Portfolyo
           </div>
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             <span className="text-gradient">{t('title')}</span>
           </h1>
-          <p className="text-lg text-muted-foreground md:text-xl">{t('description')}</p>
+          <p className="max-w-2xl text-base text-muted-foreground md:text-lg">
+            {t('description')}
+          </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Button variant="accent" size="lg" asChild>
               <Link href="/blog">
