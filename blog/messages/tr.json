@@ -16,6 +16,7 @@
     "roleAdmin": "Yönetici",
     "roleAuthor": "Yazar",
     "createdAt": "Eklenme tarihi",
+    "notFoundTitle": "Blog bulunamadı",
     "Form": {
       "title": "Başlık",
       "titlePlaceholder": "Blog başlığı",

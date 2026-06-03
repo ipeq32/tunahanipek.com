@@ -3,6 +3,11 @@ type RateLimitEntry = {
   resetAt: number;
 };
 
+/**
+ * Süreç içi (in-memory) sayaç. Tek instance için yeterlidir; yatay ölçeklemede
+ * her instance kendi sayacını tuttuğu için limitler instance başına uygulanır.
+ * Çok-instance dağıtımda paylaşımlı bir store (ör. Redis) ile değiştirilmelidir.
+ */
 const store = new Map<string, RateLimitEntry>();
 
 export function checkRateLimit(

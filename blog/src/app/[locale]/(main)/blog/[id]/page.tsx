@@ -5,7 +5,7 @@ import { getPublishedBlogById } from '@/lib/data/blogs';
 import { getApprovedCommentViews } from '@/lib/data/comments';
 import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 export const revalidate = 60;
@@ -18,12 +18,16 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const blog = await getPublishedBlogById(id);
+  const [blog, t] = await Promise.all([
+    getPublishedBlogById(id),
+    getTranslations('Blog'),
+  ]);
 
   if (!blog) {
-    return { title: 'Blog bulunamadı' };
+    return { title: t('notFoundTitle') };
   }
 
+  const locale = parseLocale(await getLocale());
   const plainSummary = blog.summary.replace(/<[^>]*>/g, '').slice(0, 160);
 
   return {
@@ -32,6 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: blog.title,
       description: plainSummary,
+      locale,
       images: blog.image ? [blog.image] : [],
     },
   };

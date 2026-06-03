@@ -15,4 +15,16 @@ test.describe('Public pages', () => {
     await page.goto('/en/auth/login');
     await expect(page.getByRole('button')).toBeVisible();
   });
+
+  test('about page loads', async ({ page }) => {
+    await page.goto('/en/about-me');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
+
+  test('rss feed responds with valid xml', async ({ request }) => {
+    const response = await request.get('/feed.xml');
+    expect(response.ok()).toBeTruthy();
+    expect(response.headers()['content-type']).toContain('xml');
+    expect(await response.text()).toContain('<rss');
+  });
 });

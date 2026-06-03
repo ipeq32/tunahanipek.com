@@ -9,15 +9,29 @@ export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogs: { id: string; updatedAt: Date }[] = [];
+  let tags: { name: string }[] = [];
+  let categories: { name: string }[] = [];
 
   try {
-    blogs = await prisma.blog.findMany({
-    where: { published: true, deletedAt: null },
-    select: { id: true, updatedAt: true },
-      orderBy: { updatedAt: 'desc' },
-    });
+    [blogs, tags, categories] = await Promise.all([
+      prisma.blog.findMany({
+        where: { published: true, deletedAt: null },
+        select: { id: true, updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.tag.findMany({
+        where: { deletedAt: null, blogs: { some: { published: true, deletedAt: null } } },
+        select: { name: true },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.category.findMany({
+        where: { deletedAt: null, blogs: { some: { published: true, deletedAt: null } } },
+        select: { name: true },
+        orderBy: { name: 'asc' },
+      }),
+    ]);
   } catch (error) {
-    logger.warn('Sitemap: could not fetch blogs', {
+    logger.warn('Sitemap: could not fetch dynamic entries', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
@@ -25,8 +39,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     getEntry('/'),
     getEntry('/blog'),
+    getEntry('/about-me'),
+    getEntry('/project'),
+    getEntry('/faq'),
+    getEntry('/contact'),
     ...blogs.map((blog) =>
       getEntry({ pathname: '/blog/[id]', params: { id: blog.id } })
+    ),
+    ...tags.map((tag) =>
+      getEntry({ pathname: '/blog/tag/[name]', params: { name: tag.name } })
+    ),
+    ...categories.map((category) =>
+      getEntry({
+        pathname: '/blog/category/[name]',
+        params: { name: category.name },
+      })
     ),
   ];
 }

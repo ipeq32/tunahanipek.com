@@ -16,6 +16,7 @@
     "roleAdmin": "Admin",
     "roleAuthor": "Author",
     "createdAt": "Published",
+    "notFoundTitle": "Blog not found",
     "Form": {
       "title": "Title",
       "titlePlaceholder": "Post title",
