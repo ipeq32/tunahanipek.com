@@ -70,7 +70,7 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/blog/admin`
+        `/api/blog/admin`
       );
       if (!res.ok) throw new Error('Failed to load');
       const { data } = await res.json();
@@ -85,7 +85,7 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
   const togglePublished = async (id: string, published: boolean) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${id}`,
+        `/api/blog/${id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -104,7 +104,7 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
     if (!confirm(t('deleteConfirm'))) return;
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${id}`,
+        `/api/blog/${id}`,
         { method: 'DELETE' }
       );
       if (!res.ok) throw new Error('Delete failed');

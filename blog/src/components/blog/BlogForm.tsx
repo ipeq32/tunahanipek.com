@@ -66,8 +66,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
   async function onSubmit(values: BlogFormValues) {
     const url =
       mode === 'create'
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/blog/add`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${blogId}`;
+        ? `/api/blog/add`
+        : `/api/blog/${blogId}`;
 
     const method = mode === 'create' ? 'POST' : 'PATCH';
 

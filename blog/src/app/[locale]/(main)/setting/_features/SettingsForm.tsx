@@ -163,7 +163,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
   const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`,
+        `/api/user/profile`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -183,7 +183,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
   const onPasswordSubmit = async (values: z.infer<typeof passwordSchema>) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/password`,
+        `/api/user/password`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },

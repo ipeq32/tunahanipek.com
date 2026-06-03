@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 
-const DELETE_ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/api/uploadthing/delete`;
+const DELETE_ENDPOINT = '/api/uploadthing/delete';
 
 /**
  * UploadThing'den dosya silinmesini ister. Temizleme arka plan işlemi olduğu

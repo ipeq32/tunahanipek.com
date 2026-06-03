@@ -88,7 +88,7 @@ export default function BlogComments({
 
   const refresh = useCallback(async () => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${blogId}/comments`
+      `/api/blog/${blogId}/comments`
     );
     if (res.ok) {
       const { data } = await res.json();
@@ -108,7 +108,7 @@ export default function BlogComments({
       setSubmittingFor(parentId ?? ROOT_FORM);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/blog/${blogId}/comments`,
+          `/api/blog/${blogId}/comments`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -142,7 +142,7 @@ export default function BlogComments({
       }
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}/reaction`,
+          `/api/comments/${commentId}/reaction`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

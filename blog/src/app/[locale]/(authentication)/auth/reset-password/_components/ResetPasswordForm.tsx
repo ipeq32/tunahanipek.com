@@ -45,7 +45,7 @@ export default function ResetPasswordForm() {
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`,
+        `/api/auth/reset-password`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

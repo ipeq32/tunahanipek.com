@@ -70,7 +70,7 @@ export default function AdminProjectList({
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/admin`
+        `/api/projects/admin`
       );
       if (!res.ok) throw new Error('Failed');
       const { data } = await res.json();
@@ -85,7 +85,7 @@ export default function AdminProjectList({
   const togglePublished = async (project: ProjectDto) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${project.id}`,
+        `/api/projects/${project.id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -104,7 +104,7 @@ export default function AdminProjectList({
     if (!confirm(t('deleteConfirm'))) return;
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${id}`,
+        `/api/projects/${id}`,
         { method: 'DELETE' }
       );
       if (!res.ok) throw new Error('Failed');

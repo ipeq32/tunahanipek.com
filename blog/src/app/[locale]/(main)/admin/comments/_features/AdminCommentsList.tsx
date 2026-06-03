@@ -27,7 +27,7 @@ export default function AdminCommentsList({
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/comments`
+        `/api/admin/comments`
       );
       if (!res.ok) throw new Error('Failed');
       const { data } = await res.json();
@@ -42,7 +42,7 @@ export default function AdminCommentsList({
   const moderate = async (id: string, status: 'APPROVED' | 'REJECTED') => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/comments`,
+        `/api/admin/comments`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },

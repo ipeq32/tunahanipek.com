@@ -61,8 +61,8 @@ export default function ProjectForm({
   async function onSubmit(values: ProjectFormValues) {
     const url =
       mode === 'create'
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/projects/admin`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${projectId}`;
+        ? `/api/projects/admin`
+        : `/api/projects/${projectId}`;
 
     const payload = {
       title: values.title.trim(),
