@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import BlogImage from '@/components/blog/BlogImage';
+import ImageUpload from '@/components/upload/ImageUpload';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
@@ -56,9 +56,6 @@ export default function ProjectForm({
     defaultValues,
   });
 
-  const watchedImage = form.watch('image');
-  const watchedTitle = form.watch('title');
-
   async function onSubmit(values: ProjectFormValues) {
     const url =
       mode === 'create'
@@ -99,31 +96,21 @@ export default function ProjectForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex w-full flex-col gap-5"
         >
-          <div className="flex items-center gap-4 rounded-xl border border-border/40 bg-background/40 p-4">
-            <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-border/50">
-              <BlogImage
-                key={watchedImage || 'placeholder'}
-                src={watchedImage}
-                alt={watchedTitle || 'project'}
-                width={96}
-                height={64}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel className="text-xs">{t('fieldImage')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs">{t('fieldImage')}</FormLabel>
+                <ImageUpload
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={form.formState.isSubmitting}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField

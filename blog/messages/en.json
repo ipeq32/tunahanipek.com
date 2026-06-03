@@ -20,9 +20,10 @@
     "Form": {
       "title": "Title",
       "titlePlaceholder": "Post title",
-      "image": "Image URL",
+      "imagesSection": "Images",
+      "image": "Cover image",
       "imagePlaceholder": "Cover image URL",
-      "shortImage": "Thumbnail URL",
+      "shortImage": "Thumbnail",
       "shortImagePlaceholder": "List thumbnail URL",
       "content": "Content",
       "summary": "Summary",
@@ -126,7 +127,7 @@
       "fieldTitle": "Title",
       "fieldDescription": "Description",
       "fieldUrl": "Project URL",
-      "fieldImage": "Image URL",
+      "fieldImage": "Image",
       "fieldSort": "Sort order",
       "fieldPublished": "Published",
       "add": "Add",
@@ -194,7 +195,7 @@
     "phone": "Phone",
     "address": "Address",
     "website": "Website",
-    "image": "Profile image URL",
+    "image": "Profile image",
     "bio": "Bio",
     "currentPassword": "Current password",
     "newPassword": "New password",
@@ -424,6 +425,16 @@
   "LocaleSwitcher": {
     "label": "Change language",
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
+  },
+  "Upload": {
+    "cta": "Upload image",
+    "hint": "PNG, JPG or WEBP · max 4MB",
+    "replace": "Replace",
+    "remove": "Remove",
+    "uploaded": "Uploaded",
+    "uploading": "Uploading",
+    "success": "Image uploaded",
+    "error": "Image upload failed"
   },
   "Metadata": {
     "description": "This is a blog page. I open up my own posts or blogs that you have shared to people. Useful information is always good."
@@ -771,6 +782,7 @@
           "admin": "Admin",
           "manageBlog": "Blog Management",
           "manageProject": "Project Management",
+          "addProject": "New project",
           "moderateComments": "Comment Moderation",
           "logout": "Logout",
           "roles": {

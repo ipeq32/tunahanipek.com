@@ -16,6 +16,7 @@ import { Link } from '@/navigation';
 import { ComponentProps, useState } from 'react';
 import {
   FolderKanban,
+  FolderPlus,
   LayoutDashboard,
   LogOut,
   type LucideIcon,
@@ -133,6 +134,14 @@ function ProfileDropdownMenuFeature({
               label={t('addBlog')}
               onClick={close}
             />
+            {isSuperAdmin && (
+              <MenuLink
+                href="/admin/project/add"
+                icon={FolderPlus}
+                label={t('addProject')}
+                onClick={close}
+              />
+            )}
           </>
         )}
 

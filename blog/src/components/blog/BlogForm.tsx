@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form';
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
+import ImageUpload from '@/components/upload/ImageUpload';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
@@ -98,49 +99,22 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex w-full flex-col gap-5"
         >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="text-xs">
+                  {t('title')} <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder={t('titlePlaceholder')} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel className="text-xs">
-                    {t('title')} <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('titlePlaceholder')} {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel className="text-xs">
-                    {t('image')} <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('imagePlaceholder')} {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="shortImage"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel className="text-xs">
-                    {t('shortImage')} <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('shortImagePlaceholder')} {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="tags"
@@ -165,6 +139,48 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-border/40 bg-background/30 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t('imagesSection')}
+            </p>
+            <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel className="text-xs">
+                      {t('image')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={form.formState.isSubmitting}
+                      heightClassName="h-48"
+                    />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="shortImage"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel className="text-xs">
+                      {t('shortImage')} <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={form.formState.isSubmitting}
+                      heightClassName="h-48"
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
             <Controller

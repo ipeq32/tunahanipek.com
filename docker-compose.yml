@@ -82,6 +82,7 @@ services:
       VERCEL_URL: ${VERCEL_URL:-blog.tunahanipek.com}
       POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
       POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD:-tuna213}@database:5432/postgres?schema=public
+      UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
       WATCHPACK_POLLING: "true"
       HUSKY: "0"
     profiles:

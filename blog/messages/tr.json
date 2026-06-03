@@ -20,9 +20,10 @@
     "Form": {
       "title": "Başlık",
       "titlePlaceholder": "Blog başlığı",
-      "image": "Resim URL",
+      "imagesSection": "Görseller",
+      "image": "Kapak görseli",
       "imagePlaceholder": "Kapak görseli URL",
-      "shortImage": "Küçük resim URL",
+      "shortImage": "Küçük görsel",
       "shortImagePlaceholder": "Liste görseli URL",
       "content": "İçerik",
       "summary": "Özet",
@@ -126,7 +127,7 @@
       "fieldTitle": "Başlık",
       "fieldDescription": "Açıklama",
       "fieldUrl": "Proje URL",
-      "fieldImage": "Görsel URL",
+      "fieldImage": "Görsel",
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
       "add": "Ekle",
@@ -194,7 +195,7 @@
     "phone": "Telefon",
     "address": "Adres",
     "website": "Web sitesi",
-    "image": "Profil görseli URL",
+    "image": "Profil görseli",
     "bio": "Biyografi",
     "currentPassword": "Mevcut şifre",
     "newPassword": "Yeni şifre",
@@ -424,6 +425,16 @@
   "LocaleSwitcher": {
     "label": "Change language",
     "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
+  },
+  "Upload": {
+    "cta": "Görsel yükle",
+    "hint": "PNG, JPG veya WEBP · en fazla 4MB",
+    "replace": "Değiştir",
+    "remove": "Kaldır",
+    "uploaded": "Yüklendi",
+    "uploading": "Yükleniyor",
+    "success": "Görsel yüklendi",
+    "error": "Görsel yüklenemedi"
   },
   "Metadata": {
     "description": "Burası blog sayfasıdır. İster kendi paylaşımlarım ister sizin paylaşmış olduğunuz blogları insanlara açıyorum. Yararlı bilgi her zaman iyidir."
@@ -771,6 +782,7 @@
           "admin": "Yönetici",
           "manageBlog": "Blog Yönetimi",
           "manageProject": "Proje Yönetimi",
+          "addProject": "Yeni proje",
           "moderateComments": "Yorum Moderasyonu",
           "logout": "Oturumu kapat",
           "roles": {

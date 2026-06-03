@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ImageUpload from '@/components/upload/ImageUpload';
 import {
   Form,
   FormControl,
@@ -99,9 +99,6 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
     },
   });
 
-  const watchedImage = profileForm.watch('image');
-  const watchedName = profileForm.watch('name');
-
   const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
       const res = await fetch(
@@ -154,27 +151,23 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
             onSubmit={profileForm.handleSubmit(onProfileSubmit)}
             className="space-y-5"
           >
-            <div className="flex items-center gap-4 rounded-xl border border-border/40 bg-background/40 p-4">
-              <Avatar className="h-16 w-16 rounded-2xl ring-2 ring-teal-500/20">
-                <AvatarImage src={watchedImage || undefined} alt={watchedName} />
-                <AvatarFallback className="rounded-2xl text-lg">
-                  {watchedName?.charAt(0).toUpperCase() ?? '?'}
-                </AvatarFallback>
-              </Avatar>
-              <FormField
-                control={profileForm.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>{t('image')}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={profileForm.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('image')}</FormLabel>
+                  <ImageUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={profileForm.formState.isSubmitting}
+                    heightClassName="h-44"
+                    className="max-w-[220px]"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FieldGrid>
               <FormField

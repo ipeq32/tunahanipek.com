@@ -7,6 +7,9 @@ import { getLocale, getMessages } from 'next-intl/server';
 import pick from 'lodash/pick';
 import { locales } from '@/config';
 import { Inter } from 'next/font/google';
+import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin';
+import { extractRouterConfig } from 'uploadthing/server';
+import { ourFileRouter } from '@/app/api/uploadthing/core';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -28,6 +31,7 @@ export default async function RootLayout({ children }: Props) {
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <NextIntlClientProvider
           locale={locale}
           messages={pick(messages, 'Error')}
