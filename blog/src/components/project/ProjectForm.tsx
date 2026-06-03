@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
+import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
@@ -50,6 +51,7 @@ export default function ProjectForm({
 }: ProjectFormProps) {
   const router = useRouter();
   const t = useTranslations('Admin.Project');
+  const imageCleanup = useUploadCleanup();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
@@ -82,6 +84,8 @@ export default function ProjectForm({
         return;
       }
 
+      // Görsel kaydedildi; oturum temizliğinde silinmesini engelle.
+      imageCleanup.commit();
       toast.success(mode === 'create' ? t('created') : t('updated'));
       router.push('/admin/project');
     } catch {
@@ -106,6 +110,7 @@ export default function ProjectForm({
                   value={field.value}
                   onChange={field.onChange}
                   disabled={form.formState.isSubmitting}
+                  cleanup={imageCleanup}
                 />
                 <FormMessage />
               </FormItem>

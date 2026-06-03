@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import ImageUpload from '@/components/upload/ImageUpload';
+import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import {
   Form,
   FormControl,
@@ -143,6 +144,7 @@ function IconField<T extends FieldValues>({
 export default function SettingsForm({ initialUser }: SettingsFormProps) {
   const { update } = useSession();
   const t = useTranslations('Settings');
+  const imageCleanup = useUploadCleanup();
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -169,6 +171,8 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
         }
       );
       if (!res.ok) throw new Error('Failed');
+      // Görsel kaydedildi; oturum temizliğinde silinmesini engelle.
+      imageCleanup.commit();
       await update();
       toast.success(t('profileSuccess'));
     } catch {
@@ -225,6 +229,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
                       onChange={field.onChange}
                       disabled={profileSubmitting}
                       heightClassName="h-48"
+                      cleanup={imageCleanup}
                     />
                     <FormMessage />
                   </FormItem>

@@ -1,16 +1,21 @@
 'use client';
 
+import { Check, Globe } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type { AppPathnames } from '@/config';
 import { locales } from '@/config';
 import { usePathname, useRouter } from '@/navigation';
-import { useLocale, useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 type LocaleType = (typeof locales)[number];
 type DynamicPathname =
@@ -37,6 +42,10 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
   const t = useTranslations('LocaleSwitcher');
 
   function onSelectChange(value: LocaleType) {
+    if (value === locale) {
+      return;
+    }
+
     if (pathname === '/blog/[id]' && typeof params.id === 'string') {
       router.replace(
         { pathname: '/blog/[id]', params: { id: params.id } },
@@ -92,18 +101,46 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
   }
 
   return (
-    <Select value={locale} onValueChange={onSelectChange}>
-      <SelectTrigger className="w-[120px]" aria-label={t('label')}>
-        <span className="truncate">{t('locale', { locale })}</span>
-      </SelectTrigger>
-      <SelectContent>
-        {locales.map((cur) => (
-          <SelectItem key={cur} value={cur}>
-            {t('locale', { locale: cur })}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label={t('label')}
+        className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-3 text-sm font-medium text-muted-foreground shadow-sm backdrop-blur transition-all hover:border-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        <Globe className="h-4 w-4" />
+        <span className="uppercase tracking-wide">{locale}</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="w-44 rounded-xl border-border/60 bg-popover/95 p-1.5 shadow-lg backdrop-blur-xl"
+      >
+        <DropdownMenuLabel className="px-2 py-1 text-xs font-medium text-muted-foreground">
+          {t('label')}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-border/60" />
+        {locales.map((cur) => {
+          const isActive = cur === locale;
+
+          return (
+            <DropdownMenuItem
+              key={cur}
+              onClick={() => onSelectChange(cur)}
+              className={cn(
+                'flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors',
+                isActive
+                  ? 'bg-teal-500/10 font-medium text-foreground'
+                  : 'text-muted-foreground',
+              )}
+            >
+              <span className="flex-1">{t('locale', { locale: cur })}</span>
+              {isActive && (
+                <Check className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              )}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

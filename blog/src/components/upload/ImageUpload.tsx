@@ -15,6 +15,7 @@ import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type UploadEndpoint } from '@/lib/upload-config';
 import { compressImage } from '@/lib/image-compression';
+import type { UploadCleanup } from '@/components/upload/use-upload-cleanup';
 
 type ImageUploadProps = {
   value?: string;
@@ -24,6 +25,11 @@ type ImageUploadProps = {
   heightClassName?: string;
   endpoint?: UploadEndpoint;
   variant?: 'rect' | 'avatar';
+  /**
+   * Verildiğinde, oturumda yüklenen görseller izlenir; form gönderilmeden
+   * iptal edilir/değiştirilirse orphan dosyalar otomatik silinir.
+   */
+  cleanup?: UploadCleanup;
 };
 
 export default function ImageUpload({
@@ -34,6 +40,7 @@ export default function ImageUpload({
   heightClassName = 'h-44',
   endpoint = 'imageUploader',
   variant = 'rect',
+  cleanup,
 }: ImageUploadProps) {
   const t = useTranslations('Upload');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,6 +52,9 @@ export default function ImageUpload({
     onClientUploadComplete: (res) => {
       const url = res?.[0]?.ufsUrl;
       if (url) {
+        // Mevcut görsel bu oturumda yüklenmişse (değiştirme), onu hemen sil.
+        if (value) cleanup?.release(value);
+        cleanup?.track(url);
         onChange(url);
         toast.success(t('success'));
       }
@@ -55,6 +65,11 @@ export default function ImageUpload({
       setProgress(0);
     },
   });
+
+  const handleRemove = () => {
+    if (value) cleanup?.release(value);
+    onChange('');
+  };
 
   const busy = isUploading || isCompressing;
 
@@ -169,7 +184,7 @@ export default function ImageUpload({
               <button
                 type="button"
                 disabled={disabled}
-                onClick={() => onChange('')}
+                onClick={handleRemove}
                 aria-label={t('remove')}
                 title={t('remove')}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition hover:bg-red-600 disabled:opacity-50"
@@ -217,7 +232,7 @@ export default function ImageUpload({
             <button
               type="button"
               disabled={disabled || busy}
-              onClick={() => onChange('')}
+              onClick={handleRemove}
               aria-label={t('remove')}
               title={t('remove')}
               className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/80 text-white backdrop-blur-sm transition hover:bg-red-600 disabled:opacity-50"

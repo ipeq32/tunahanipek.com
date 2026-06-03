@@ -14,6 +14,7 @@ import {
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
+import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
@@ -49,6 +50,7 @@ type BlogFormProps = {
 export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps) {
   const router = useRouter();
   const t = useTranslations('Blog.Form');
+  const imageCleanup = useUploadCleanup();
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(formSchema),
@@ -81,6 +83,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
         return;
       }
 
+      // Görseller kaydedildi; oturum temizliğinde silinmesini engelle.
+      imageCleanup.commit();
       toast.success(mode === 'create' ? t('createSuccess') : t('updateSuccess'), {
         icon: <CardStackPlusIcon />,
         description: values.title,
@@ -159,6 +163,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       onChange={field.onChange}
                       disabled={form.formState.isSubmitting}
                       heightClassName="h-48"
+                      cleanup={imageCleanup}
                     />
                   </FormItem>
                 )}
@@ -176,6 +181,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       onChange={field.onChange}
                       disabled={form.formState.isSubmitting}
                       heightClassName="h-48"
+                      cleanup={imageCleanup}
                     />
                   </FormItem>
                 )}
