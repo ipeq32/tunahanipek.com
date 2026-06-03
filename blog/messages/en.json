@@ -492,6 +492,7 @@
   "Upload": {
     "cta": "Upload image",
     "hint": "PNG, JPG or WEBP · max 4MB",
+    "avatarHint": "PNG, JPG or WEBP · max 2MB",
     "replace": "Replace",
     "remove": "Remove",
     "uploaded": "Uploaded",
@@ -549,9 +550,10 @@
     "Register": {
       "Page": {
         "title": "Register",
+        "subtitle": "Fill in your details to create an account.",
         "Modal": {
           "title": "Register",
-          "description": "Enter your details below to login to your account.",
+          "description": "Enter your details below to create your account.",
           "button": "Login Instead ?"
         }
       },
@@ -576,9 +578,8 @@
           "label": "Phone",
           "placeholder": "Enter your phone number."
         },
-        "ImageURL": {
-          "label": "Image URL",
-          "placeholder": "Enter your image url."
+        "Avatar": {
+          "label": "Profile Picture"
         },
         "Website": {
           "label": "Website URL",

@@ -3,11 +3,9 @@ import HeaderComponent from './_components/header';
 
 export default async function RegisterPage() {
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       <HeaderComponent />
-      <div className="max-h-[60vh] overflow-y-auto pr-1">
-        <FormPage />
-      </div>
+      <FormPage />
     </section>
   );
 }

@@ -7,18 +7,17 @@ function HeaderComponent() {
   const t = useTranslations('Authentication.Register.Page');
 
   return (
-    <motion.h1
-      animate={{ y: 0 }}
-      initial={{ y: -100 }}
-      transition={{
-        ease: 'circInOut',
-        duration: 2,
-        y: { duration: 1 },
-      }}
-      className="sticky top-0 text-4xl font-bold text-black dark:text-white mt-5 backdrop-blur-md max-md:w-full max-md:text-center"
+    <motion.div
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className="space-y-1.5 text-center sm:text-left"
     >
-      {t('title')}
-    </motion.h1>
+      <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        {t('title')}
+      </h1>
+      <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+    </motion.div>
   );
 }
 

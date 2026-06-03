@@ -20,14 +20,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import ImageUpload from '@/components/upload/ImageUpload';
 
-type RegisterFormProps = {
-  isModal?: boolean;
-};
-
-export default function RegisterForm({ isModal = false }: RegisterFormProps) {
-  const isOpened = !isModal;
-
+export default function RegisterForm() {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('Authentication.Register');
@@ -200,82 +195,53 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
   return (
     <Form {...form}>
       <motion.form
-        animate={{
-          scale: [0.5, 1],
-          opacity: [0, 1],
-        }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-10"
+        className="flex flex-col gap-6"
       >
-        <div className="flex flex-wrap gap-5 text-white rounded-lg gap-y-6 mt-5 w-full overflow-y-scroll">
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem className="flex flex-col items-center gap-2">
+              <FormLabel className="text-xs font-medium text-muted-foreground">
+                {t('Form.Avatar.label')}
+              </FormLabel>
+              <FormControl>
+                <ImageUpload
+                  variant="avatar"
+                  endpoint="avatarUploader"
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage className="text-xs text-rose-400" />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
                   {t('Form.Email.label')}{' '}
-                  <span className="text-red-500">*</span>
+                  <span className="text-rose-500">*</span>
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Input
-                    className="text-black dark:text-white w-full"
+                    className="w-full"
+                    type="email"
                     placeholder={t('Form.Email.placeholder')}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="passwordForm.password"
-            render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Password.label')}{' '}
-                  <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl className="w-full">
-                  <Input
-                    className="text-black dark:text-white w-full"
-                    placeholder={t('Form.Password.placeholder')}
-                    {...field}
-                    type="password"
-                  />
-                </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="passwordForm.passwordConfirm"
-            render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.PasswordConfirm.label')}{' '}
-                  <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl className="w-full">
-                  <Input
-                    className="text-black dark:text-white w-full"
-                    placeholder={t('Form.PasswordConfirm.placeholder')}
-                    {...field}
-                    type="password"
-                  />
-                </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
@@ -283,20 +249,61 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.Name.label')} <span className="text-red-500">*</span>
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
+                  {t('Form.Name.label')}{' '}
+                  <span className="text-rose-500">*</span>
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Input
-                    className="text-black dark:text-white w-full"
+                    className="w-full"
                     placeholder={t('Form.Name.placeholder')}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="passwordForm.password"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
+                  {t('Form.Password.label')}{' '}
+                  <span className="text-rose-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="w-full"
+                    type="password"
+                    placeholder={t('Form.Password.placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs text-rose-400" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="passwordForm.passwordConfirm"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
+                  {t('Form.PasswordConfirm.label')}{' '}
+                  <span className="text-rose-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="w-full"
+                    type="password"
+                    placeholder={t('Form.PasswordConfirm.placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
@@ -304,84 +311,62 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
             control={form.control}
             name="phone"
             render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
                   {t('Form.Phone.label')}{' '}
-                  <span className="text-red-500">*</span>
+                  <span className="text-rose-500">*</span>
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Input
-                    className="text-black dark:text-white w-full"
+                    className="w-full"
                     placeholder={t('Form.Phone.placeholder')}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="image"
+            name="website"
             render={({ field }) => (
-              <FormItem
-                className={`${isOpened ? 'md:max-w-[48.3%]' : ''} w-full`}
-              >
-                <FormLabel className="text-xs text-black dark:text-white">
-                  {t('Form.ImageURL.label')}
+              <FormItem className="w-full">
+                <FormLabel className="text-xs text-foreground">
+                  {t('Form.Website.label')}
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Input
-                    className="text-black dark:text-white w-full"
-                    placeholder={t('Form.ImageURL.placeholder')}
+                    className="w-full"
+                    placeholder={t('Form.Website.placeholder')}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="website"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel className="text-xs text-black dark:text-white">
-                {t('Form.Website.label')}
-              </FormLabel>
-              <FormControl className="w-full">
-                <Input
-                  className="text-black dark:text-white w-full"
-                  placeholder={t('Form.Website.placeholder')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage {...field} className="text-xs text-rose-300" />
-            </FormItem>
-          )}
-        />
-        <div className="flex max-sm:flex-col gap-5">
+
+        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="address"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="text-xs text-black dark:text-white">
+                <FormLabel className="text-xs text-foreground">
                   {t('Form.Address.label')}{' '}
-                  <span className="text-red-500">*</span>
+                  <span className="text-rose-500">*</span>
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Textarea
-                    className="text-black dark:text-white w-full"
+                    className="w-full resize-none"
                     placeholder={t('Form.Address.placeholder')}
                     {...field}
                     rows={3}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
@@ -390,22 +375,23 @@ export default function RegisterForm({ isModal = false }: RegisterFormProps) {
             name="bio"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="text-xs text-black dark:text-white">
+                <FormLabel className="text-xs text-foreground">
                   {t('Form.Bio.label')}
                 </FormLabel>
-                <FormControl className="w-full">
+                <FormControl>
                   <Textarea
-                    className="text-black dark:text-white w-full"
+                    className="w-full resize-none"
                     placeholder={t('Form.Bio.placeholder')}
                     {...field}
                     rows={3}
                   />
                 </FormControl>
-                <FormMessage {...field} className="text-xs text-rose-300" />
+                <FormMessage className="text-xs text-rose-400" />
               </FormItem>
             )}
           />
         </div>
+
         <Button
           type="submit"
           variant="accent"
