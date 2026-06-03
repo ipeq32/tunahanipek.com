@@ -84,7 +84,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     .slice(0, 160);
 
   return (
-    <article className="mx-auto w-full max-w-3xl">
+    <article className="mx-auto w-full">
       <JsonLd
         data={buildCreativeWorkJsonLd({
           locale,
