@@ -55,12 +55,25 @@ const SANITIZE_OPTIONS: IOptions = {
   },
   allowedSchemes: ['http', 'https', 'mailto', 'tel'],
   transformTags: {
-    // Dış bağlantılarda reverse tabnabbing'i engelle.
-    a: sanitizeHtmlLib.simpleTransform(
-      'a',
-      { rel: 'noopener noreferrer' },
-      true
-    ),
+    a: (tagName, attribs) => {
+      const rawHref = (attribs.href ?? '').trim();
+      // Protokolsüz girilen bağlantılar (ör. "example.com") tarayıcıda göreli
+      // yol sayılıp kırıldığı için eksik şemayı tamamlarız.
+      const hasKnownScheme = /^(https?:|mailto:|tel:|\/|#|\?)/i.test(rawHref);
+      const href = rawHref && !hasKnownScheme ? `https://${rawHref}` : rawHref;
+      const isExternal = /^https?:\/\//i.test(href);
+
+      return {
+        tagName: 'a',
+        attribs: {
+          ...attribs,
+          ...(href ? { href } : {}),
+          rel: 'noopener noreferrer',
+          // Dış bağlantılar yeni sekmede açılır; iç/mailto/tel aynı sekmede.
+          ...(isExternal ? { target: '_blank' } : {}),
+        },
+      };
+    },
   },
 };
 

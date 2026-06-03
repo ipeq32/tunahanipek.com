@@ -143,14 +143,135 @@
   }
 }
 
-/* Quill editor */
-.ql-snow {
-  @apply first:rounded-t-md last:rounded-b-md !border-border text-foreground bg-card;
+/* Rich text editor (Quill snow) — tema uyumlu modern görünüm */
+.rich-editor .ql-toolbar.ql-snow {
+  border-color: hsl(var(--border));
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  background: hsl(var(--muted) / 0.45);
+  padding: 0.5rem 0.625rem;
 }
 
-.ql-container {
-  min-height: 150px;
+.rich-editor .ql-container.ql-snow {
+  border-color: hsl(var(--border));
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.rich-editor .ql-editor {
+  min-height: 200px;
+  line-height: 1.7;
   caret-color: hsl(var(--accent));
+}
+
+.rich-editor .ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+}
+
+/* Toolbar düğme ve ikonları */
+.rich-editor .ql-snow .ql-stroke {
+  stroke: hsl(var(--muted-foreground));
+}
+
+.rich-editor .ql-snow .ql-fill {
+  fill: hsl(var(--muted-foreground));
+}
+
+.rich-editor .ql-snow .ql-picker {
+  color: hsl(var(--muted-foreground));
+}
+
+.rich-editor .ql-snow button:hover .ql-stroke,
+.rich-editor .ql-snow button.ql-active .ql-stroke,
+.rich-editor .ql-snow .ql-picker-label:hover .ql-stroke,
+.rich-editor .ql-snow .ql-picker-label.ql-active .ql-stroke {
+  stroke: hsl(var(--accent));
+}
+
+.rich-editor .ql-snow button:hover .ql-fill,
+.rich-editor .ql-snow button.ql-active .ql-fill {
+  fill: hsl(var(--accent));
+}
+
+.rich-editor .ql-snow button:hover,
+.rich-editor .ql-snow button.ql-active,
+.rich-editor .ql-snow .ql-picker-label:hover,
+.rich-editor .ql-snow .ql-picker-item:hover,
+.rich-editor .ql-snow .ql-picker-item.ql-selected {
+  color: hsl(var(--accent));
+}
+
+.rich-editor .ql-snow button {
+  border-radius: 0.375rem;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.rich-editor .ql-snow button:hover {
+  background: hsl(var(--accent) / 0.1);
+}
+
+/* Başlık seçici açılır menüsü */
+.rich-editor .ql-snow .ql-picker-options {
+  background: hsl(var(--popover));
+  border-color: hsl(var(--border)) !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  padding: 0.25rem;
+}
+
+/* İçerik biçimlendirmesi */
+.rich-editor .ql-editor a {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+}
+
+.rich-editor .ql-editor blockquote {
+  border-left: 3px solid hsl(var(--accent));
+  color: hsl(var(--muted-foreground));
+  padding-left: 1rem;
+}
+
+.rich-editor .ql-editor pre,
+.rich-editor .ql-editor pre.ql-syntax {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Bağlantı ipucu (link tooltip) */
+.rich-editor .ql-snow .ql-tooltip {
+  background: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.22);
+}
+
+.rich-editor .ql-snow .ql-tooltip input[type='text'] {
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.rich-editor .ql-snow .ql-tooltip a.ql-action,
+.rich-editor .ql-snow .ql-tooltip a.ql-remove,
+.rich-editor .ql-snow .ql-tooltip a.ql-preview {
+  color: hsl(var(--accent));
+}
+
+.rich-editor .ql-snow.ql-toolbar button:focus-visible,
+.rich-editor .ql-snow .ql-container:focus-within {
+  outline: none;
 }
 
 /* Auth logo animation (legacy) */

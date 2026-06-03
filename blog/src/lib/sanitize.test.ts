@@ -12,4 +12,26 @@ describe('sanitizeHtml', () => {
     const dirty = '<p><strong>Bold</strong></p>';
     expect(sanitizeHtml(dirty)).toContain('<strong>');
   });
+
+  it('adds https scheme to protocol-less links', () => {
+    const result = sanitizeHtml('<a href="example.com">link</a>');
+    expect(result).toContain('href="https://example.com"');
+    expect(result).toContain('target="_blank"');
+    expect(result).toContain('rel="noopener noreferrer"');
+  });
+
+  it('keeps absolute and relative links intact', () => {
+    expect(sanitizeHtml('<a href="https://x.com">x</a>')).toContain(
+      'href="https://x.com"',
+    );
+    const relative = sanitizeHtml('<a href="/blog">b</a>');
+    expect(relative).toContain('href="/blog"');
+    expect(relative).not.toContain('target="_blank"');
+  });
+
+  it('preserves mailto links without forcing https', () => {
+    const result = sanitizeHtml('<a href="mailto:a@b.com">mail</a>');
+    expect(result).toContain('href="mailto:a@b.com"');
+    expect(result).not.toContain('target="_blank"');
+  });
 });

@@ -17,17 +17,10 @@ import ImageUpload from '@/components/upload/ImageUpload';
 import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/navigation';
 import { ContentCard } from '@/components/layout/content-card';
-
-const ReactQuill = dynamic(() => import('react-quill-new'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-40 w-full animate-pulse rounded-md border border-border/60 bg-muted/40" />
-  ),
-});
+import RichTextEditor from '@/components/blog/RichTextEditor';
 
 const formSchema = z.object({
   title: z.string().min(2),
@@ -198,7 +191,11 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     {t('content')} <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <ReactQuill theme="snow" {...field} />
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t('titlePlaceholder')}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -212,7 +209,10 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     {t('summary')} <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <ReactQuill theme="snow" {...field} />
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                 </FormItem>
               )}
