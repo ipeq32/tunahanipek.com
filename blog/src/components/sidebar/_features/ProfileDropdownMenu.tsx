@@ -27,6 +27,7 @@ function ProfileDropdownMenuFeature({
 }: ProfileDropdownMenuProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const t = useTranslations('Navbar.Main');
+  const tProfile = useTranslations('Navbar.Main.Sidebar.Profile');
 
   const isAdmin = user?.role === 'SUPER_ADMIN';
   const isModerator = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
@@ -52,12 +53,12 @@ function ProfileDropdownMenuFeature({
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
-          Hesabım
+          {tProfile('account')}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Link onClick={onClickedLink} href="/profile" className="w-full">
-            Profili Görüntüle
+            {tProfile('viewProfile')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
@@ -73,19 +74,19 @@ function ProfileDropdownMenuFeature({
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link onClick={onClickedLink} href="/setting" className="w-full">
-            Ayarlar
+            {tProfile('settings')}
           </Link>
         </DropdownMenuItem>
         {isModerator && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
-              Moderasyon
+              {tProfile('moderation')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link onClick={onClickedLink} href="/blog/add" className="w-full">
-                Blog Ekle
+                {tProfile('addBlog')}
               </Link>
             </DropdownMenuItem>
           </>
@@ -94,7 +95,7 @@ function ProfileDropdownMenuFeature({
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-slate-400/50 dark:text-slate-200/50">
-              Yönetici
+              {tProfile('admin')}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
@@ -103,7 +104,7 @@ function ProfileDropdownMenuFeature({
                 href="/admin/blog"
                 className="w-full"
               >
-                Blog Yönetimi
+                {tProfile('manageBlog')}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -112,7 +113,7 @@ function ProfileDropdownMenuFeature({
                 href="/admin/project"
                 className="w-full"
               >
-                Proje Yönetimi
+                {tProfile('manageProject')}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -121,7 +122,7 @@ function ProfileDropdownMenuFeature({
                 href="/admin/comments"
                 className="w-full"
               >
-                Yorum Moderasyonu
+                {tProfile('moderateComments')}
               </Link>
             </DropdownMenuItem>
           </>

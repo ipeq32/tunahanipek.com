@@ -24,7 +24,7 @@ export default async function HomePage() {
         <div className="relative max-w-2xl space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal-300">
             <PenLine className="h-3.5 w-3.5" />
-            Blog & Portfolyo
+            {t('badge')}
           </div>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
             <span className="text-gradient">{t('title')}</span>

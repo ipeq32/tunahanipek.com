@@ -1,5 +1,6 @@
 {
   "HomePage": {
+    "badge": "Blog & Portfolyo",
     "title": "Tunahan İPEK",
     "description": "Yazılım, seyahat ve deneyimlerimi paylaştığım kişisel blog ve portfolyo.",
     "ctaBlog": "Blogları keşfet",
@@ -730,6 +731,15 @@
         "getContact": "Benimle İletişime Geçin",
         "login": "Giriş Yap",
         "Profile": {
+          "account": "Hesabım",
+          "viewProfile": "Profili Görüntüle",
+          "settings": "Ayarlar",
+          "moderation": "Moderasyon",
+          "addBlog": "Blog Ekle",
+          "admin": "Yönetici",
+          "manageBlog": "Blog Yönetimi",
+          "manageProject": "Proje Yönetimi",
+          "moderateComments": "Yorum Moderasyonu",
           "logout": "Oturumu kapat"
         },
         "title": "Menü",

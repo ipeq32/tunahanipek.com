@@ -1,5 +1,6 @@
 {
   "HomePage": {
+    "badge": "Blog & Portfolio",
     "title": "Tunahan İPEK",
     "description": "Personal blog and portfolio sharing software, travel, and experiences.",
     "ctaBlog": "Explore blog",
@@ -730,6 +731,15 @@
         "getContact": "Get Contact Me",
         "login": "Login",
         "Profile": {
+          "account": "My Account",
+          "viewProfile": "View Profile",
+          "settings": "Settings",
+          "moderation": "Moderation",
+          "addBlog": "Add Blog",
+          "admin": "Admin",
+          "manageBlog": "Blog Management",
+          "manageProject": "Project Management",
+          "moderateComments": "Comment Moderation",
           "logout": "Logout"
         },
         "title": "Menu",

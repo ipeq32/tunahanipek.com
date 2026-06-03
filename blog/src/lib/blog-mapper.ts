@@ -1,5 +1,6 @@
 import { Role } from '@prisma/client';
 import { IGetBlog } from '@/types/blog';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 type AuthorSelect = {
   name: string;
@@ -26,8 +27,8 @@ export function mapBlogToResponse(blog: BlogWithRelations): IGetBlog {
   return {
     id: blog.id,
     title: blog.title,
-    content: blog.content,
-    summary: blog.summary,
+    content: sanitizeHtml(blog.content),
+    summary: sanitizeHtml(blog.summary),
     image: blog.image,
     shortImage: blog.shortImage,
     published: blog.published,
