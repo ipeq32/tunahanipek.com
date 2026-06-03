@@ -184,11 +184,161 @@
   "Pages": {
     "About": {
       "title": "About me",
-      "description": "Who am I?",
-      "body": "Hi, I'm Tunahan İPEK. I share my experiences in software development and travel on this blog.",
-      "highlight1": "Full-stack development",
-      "highlight2": "Travel",
-      "highlight3": "Content creation"
+      "description": "Senior Full Stack developer specialized in microservices, real-time systems and DevOps.",
+      "role": "Senior Full Stack Developer & DevOps Architect",
+      "location": "Denizli, Turkey",
+      "intro": "Hi, I'm Tunahan İPEK. I'm a solution-oriented Senior Full Stack developer specialized in complex microservice architectures, real-time data streams and advanced DevOps processes. I have deep technical knowledge of the modern JavaScript ecosystem (Next.js, NestJS, Svelte) and container orchestration (Kubernetes). My experience spans end-to-end product development — from self-hosted infrastructure I run on my own physical servers to leading technical teams — and clean architecture, scalability and maintainable code are always my priorities.",
+      "highlights": [
+        "Senior Full-Stack",
+        "DevOps & Infrastructure",
+        "Kubernetes & Self-hosted",
+        "Real-time systems",
+        "Microservice architecture",
+        "Team leadership"
+      ],
+      "experienceTitle": "Experience",
+      "experience": [
+        {
+          "company": "Independent (Senior Software & DevOps Engineer)",
+          "role": "Senior Software & DevOps Engineer",
+          "period": "Jan 2026 - Present",
+          "summary": "Ongoing freelance work",
+          "points": [
+            "Built a real-time courier & QR menu system with a cross-platform mobile app in Flutter, advanced admin panels in Next.js and a high-performance backend architecture in NestJS.",
+            "Set up Self-hosted GitLab, GitLab Runner, Harbor and MinIO on my own physical servers; managed Kubernetes (K8s) configurations via Lens and Rancher to ensure high availability.",
+            "Developed WebSocket-based bridges that stream in-game metrics to a user panel in real time, plus real-time auction apps, using Java (Netty/Protobuf).",
+            "Built custom deployment scripts with Go and set up AI-based workflow automations with n8n."
+          ]
+        },
+        {
+          "company": "Ayhanlar Holding - İşin Olacak",
+          "role": "Software Team Lead & Technical Leader",
+          "period": "Apr 2025 - Dec 2025",
+          "summary": "",
+          "points": [
+            "Led the Frontend, Backend, Mobile and AI (Python) teams technically; ran team management and task distribution for 7 months.",
+            "Built scalable web solutions with a Next.js and GraphQL architecture and performance-focused mobile apps with React Native.",
+            "Provided architectural support for the digital transformation projects of other companies within the holding; continued developing high-traffic personal projects outside of work hours."
+          ]
+        },
+        {
+          "company": "Freelance / Contract",
+          "role": "Full Stack Developer",
+          "period": "Sep 2024 - Mar 2025",
+          "summary": "",
+          "points": [
+            "Built highly secure and well-documented enterprise API services with .NET Core and NestJS.",
+            "Built SEO-friendly corporate blog sites and web applications from scratch with Next.js.",
+            "Integrated the iyzico payment infrastructure into existing projects to enable secure payment flows."
+          ]
+        },
+        {
+          "company": "Gezer Grup İnsan Kaynakları",
+          "role": "Frontend Web Developer",
+          "period": "Aug 2024 - Sep 2024",
+          "summary": "",
+          "points": [
+            "Made UX-improving interface enhancements on a Next.js-based HR platform and optimized and fixed complex bugs."
+          ]
+        },
+        {
+          "company": "Freelance",
+          "role": "Software Consultant & Developer",
+          "period": "Jul 2024 - Aug 2024",
+          "summary": "",
+          "points": [
+            "Added payment systems to Node.js and PHP-based legacy projects and resolved performance bottlenecks.",
+            "Provided debugging and architectural-improvement support to projects across different technology stacks."
+          ]
+        },
+        {
+          "company": "Rubiklabs Yazılım Bilişim San. ve Tic. Ltd. Şti.",
+          "role": "Fullstack Software Developer",
+          "period": "Nov 2022 - Jul 2024",
+          "summary": "",
+          "points": [
+            "Bizeheryer.com: Single-handedly built a comprehensive trilingual (TR, EN, NL) portal for a travel agency; set up the backend and frontend architecture and connected panel statistics with a real-time data stream.",
+            "Migrated the company's main website from Vue.js to a Next.js architecture, improving performance.",
+            "Built Svelte backoffice and TV apps for Turkcell branches, game prototypes with Three.js and custom NestJS-based packages for Proxmox.",
+            "Managed complex database schemas using RabbitMQ, Redis and GraphQL together with the Prisma, TypeORM and Knex.js ORMs."
+          ]
+        },
+        {
+          "company": "Freelance",
+          "role": "Software Developer",
+          "period": "2019 - 2022",
+          "summary": "",
+          "points": [
+            "Built desktop automation software with C# and Python (PyQt5).",
+            "Built modern, responsive websites and e-commerce platforms with HTML/CSS and React/Next.js."
+          ]
+        }
+      ],
+      "educationTitle": "Education",
+      "education": [
+        {
+          "school": "Isparta University of Applied Sciences (ISUBU)",
+          "field": "Biomedical Device Technology",
+          "period": "2019 - 2023"
+        },
+        {
+          "school": "Gölhisar Vocational and Technical Anatolian High School",
+          "field": "Medical Secretariat",
+          "period": "2013 - 2017"
+        }
+      ],
+      "projectsTitle": "Featured projects",
+      "projectsNote": "Below are just a few highlights; I haven't listed all of my projects here.",
+      "projects": [
+        {
+          "name": "Self-hosted DevOps Ecosystem",
+          "description": "A K8s-based high-availability infrastructure and end-to-end CI/CD pipeline I run on my own physical servers.",
+          "stack": "Kubernetes · Rancher · GitLab CI/CD · Harbor · MinIO"
+        },
+        {
+          "name": "Real-time Courier & QR Menu",
+          "description": "An end-to-end real-time system with a cross-platform mobile app, an advanced admin panel and a high-performance backend.",
+          "stack": "Flutter · Next.js · NestJS · WebSocket"
+        },
+        {
+          "name": "Bizeheryer.com (Travel Portal)",
+          "description": "A comprehensive trilingual (TR, EN, NL) portal with real-time panel statistics that I built single-handedly for a travel agency.",
+          "stack": "Next.js · NestJS · GraphQL · PostgreSQL"
+        }
+      ],
+      "projectsCta": "Browse all projects",
+      "techTitle": "Technical skills",
+      "techGroups": [
+        {
+          "label": "Backend",
+          "items": ["NestJS", "Node.js", "Go", ".NET", "Laravel (PHP)", "Java", "Python"]
+        },
+        {
+          "label": "Frontend & Mobile",
+          "items": ["Next.js", "React.js", "Vue.js", "Svelte", "React Native", "Flutter", "Three.js", "TailwindCSS"]
+        },
+        {
+          "label": "DevOps & Infrastructure",
+          "items": ["Kubernetes (K8s)", "Rancher", "Lens", "Docker", "GitLab CI/CD", "GitLab Runner", "Harbor", "MinIO", "Redis", "RabbitMQ"]
+        },
+        {
+          "label": "Database & ORM",
+          "items": ["PostgreSQL", "Prisma", "TypeORM", "Knex.js", "Objection.js", "S3/MinIO"]
+        },
+        {
+          "label": "Systems & Monitoring",
+          "items": ["Uptime Kuma", "Beszel", "Self-hosted GitLab", "Mail Server (Postfix/Dovecot)", "RCON"]
+        },
+        {
+          "label": "Integrations",
+          "items": ["iyzico", "Web3", "GraphQL", "n8n (AI Automation)", "Protobuf", "Netty"]
+        }
+      ],
+      "languagesTitle": "Languages",
+      "languages": [
+        { "name": "Turkish", "level": "Native" },
+        { "name": "English", "level": "Professional Working Proficiency" }
+      ]
     },
     "Profile": {
       "title": "Profile",

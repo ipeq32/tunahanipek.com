@@ -184,11 +184,161 @@
   "Pages": {
     "About": {
       "title": "Hakkımda",
-      "description": "Ben kimim?",
-      "body": "Merhaba, ben Tunahan İPEK. Yazılım geliştirme ve seyahat tutkumla bu blogda deneyimlerimi paylaşıyorum.",
-      "highlight1": "Full-stack geliştirme",
-      "highlight2": "Seyahat",
-      "highlight3": "İçerik üretimi"
+      "description": "Mikroservis, real-time sistemler ve DevOps süreçlerinde uzmanlaşmış Senior Full Stack geliştirici.",
+      "role": "Senior Full Stack Developer & DevOps Architect",
+      "location": "Denizli, Türkiye",
+      "intro": "Merhaba, ben Tunahan İPEK. Karmaşık mikroservis mimarileri, real-time veri akışları ve ileri seviye DevOps süreçlerinde uzmanlaşmış, çözüm odaklı bir Senior Full Stack geliştiriciyim. Modern JavaScript ekosistemi (Next.js, NestJS, Svelte) ve konteyner orkestrasyonu (Kubernetes) konularında derin teknik bilgiye sahibim. Kendi fiziksel sunucularımda kurduğum self-hosted altyapılardan teknik ekiplere liderlik etmeye kadar uçtan uca ürün geliştirme tecrübem var; temiz mimari, ölçeklenebilirlik ve sürdürülebilir kod benim için önceliklidir.",
+      "highlights": [
+        "Senior Full-Stack",
+        "DevOps & Altyapı",
+        "Kubernetes & Self-hosted",
+        "Real-time sistemler",
+        "Mikroservis mimarisi",
+        "Takım liderliği"
+      ],
+      "experienceTitle": "Deneyim",
+      "experience": [
+        {
+          "company": "Bağımsız (Senior Software & DevOps Engineer)",
+          "role": "Senior Software & DevOps Engineer",
+          "period": "Oca 2026 - Günümüz",
+          "summary": "Devam eden freelance çalışmalar",
+          "points": [
+            "Flutter ile cross-platform mobil uygulama, Next.js ile gelişmiş admin panelleri ve NestJS ile yüksek performanslı backend mimarisi içeren real-time kurye & QR menü sistemi geliştirdim.",
+            "Kendi fiziksel sunucularımda Self-hosted GitLab, GitLab Runner, Harbor ve MinIO kurulumlarını gerçekleştirdim; Kubernetes (K8s) konfigürasyonlarını Lens ve Rancher üzerinden yöneterek yüksek erişilebilirlik sağladım.",
+            "Java (Netty/Protobuf) ile oyun içi metrikleri anlık olarak panele aktaran WebSocket tabanlı köprüler ve real-time ihale uygulamaları geliştirdim.",
+            "Go ile özel deployment scriptleri ve n8n ile AI tabanlı iş akışı otomasyonları kurguladım."
+          ]
+        },
+        {
+          "company": "Ayhanlar Holding - İşin Olacak",
+          "role": "Software Team Lead & Technical Leader",
+          "period": "Nis 2025 - Ara 2025",
+          "summary": "",
+          "points": [
+            "Frontend, Backend, Mobil ve AI (Python) takımlarının teknik liderliğini üstlendim; 7 ay boyunca ekip yönetimi ve görev dağılımı süreçlerini yürüttüm.",
+            "Next.js ve GraphQL mimarisiyle ölçeklenebilir web çözümleri, React Native ile performans odaklı mobil uygulamalar geliştirdim.",
+            "Holding bünyesindeki diğer şirketlerin dijital dönüşüm projelerine mimari destek verdim; iş dışı vakitlerde yüksek trafikli bireysel projeleri geliştirmeye devam ettim."
+          ]
+        },
+        {
+          "company": "Freelance / Sözleşmeli",
+          "role": "Full Stack Developer",
+          "period": "Eyl 2024 - Mar 2025",
+          "summary": "",
+          "points": [
+            ".NET Core ve NestJS ile yüksek güvenlikli ve dokümante edilmiş kurumsal API servisleri geliştirdim.",
+            "Next.js ile SEO uyumlu kurumsal blog siteleri ve web uygulamalarını sıfırdan inşa ettim.",
+            "Mevcut projelere iyzico ödeme altyapısını entegre ederek güvenli ödeme akışları sağladım."
+          ]
+        },
+        {
+          "company": "Gezer Grup İnsan Kaynakları",
+          "role": "Frontend Web Developer",
+          "period": "Ağu 2024 - Eyl 2024",
+          "summary": "",
+          "points": [
+            "Next.js tabanlı İK platformunda kullanıcı deneyimini (UX) artıran arayüz iyileştirmeleri yaptım ve karmaşık hataları optimize ederek çözdüm."
+          ]
+        },
+        {
+          "company": "Freelance",
+          "role": "Software Consultant & Developer",
+          "period": "Tem 2024 - Ağu 2024",
+          "summary": "",
+          "points": [
+            "Node.js ve PHP tabanlı legacy projelere ödeme sistemleri ekledim, performans darboğazlarını giderdim.",
+            "Farklı teknoloji yığınlarına sahip projelere teknik hata ayıklama ve mimari iyileştirme desteği verdim."
+          ]
+        },
+        {
+          "company": "Rubiklabs Yazılım Bilişim San. ve Tic. Ltd. Şti.",
+          "role": "Fullstack Software Developer",
+          "period": "Kas 2022 - Tem 2024",
+          "summary": "",
+          "points": [
+            "Bizeheryer.com: Bir turizm acentesi için 3 dilli (TR, EN, NL) kapsamlı bir portalı tek başıma geliştirdim; backend ve frontend mimarisini kurup real-time veri akışıyla panel istatistiklerini bağladım.",
+            "Şirketin ana web sitesini Vue.js'ten Next.js mimarisine taşıyarak performans artışı sağladım.",
+            "Turkcell şubeleri için Svelte ile backoffice ve TV uygulamaları, Three.js ile oyun prototipleri ve Proxmox için NestJS tabanlı özel paketler geliştirdim.",
+            "RabbitMQ, Redis ve GraphQL ile Prisma, TypeORM ve Knex.js ORM'lerini kullanarak karmaşık veritabanı şemalarını yönettim."
+          ]
+        },
+        {
+          "company": "Serbest Çalışan (Freelance)",
+          "role": "Software Developer",
+          "period": "2019 - 2022",
+          "summary": "",
+          "points": [
+            "C# ve Python (PyQt5) ile masaüstü otomasyon yazılımları geliştirdim.",
+            "HTML/CSS ve React/Next.js ile modern, duyarlı (responsive) web siteleri ve e-ticaret platformları inşa ettim."
+          ]
+        }
+      ],
+      "educationTitle": "Eğitim",
+      "education": [
+        {
+          "school": "Isparta Uygulamalı Bilimler Üniversitesi (ISUBU)",
+          "field": "Biyomedikal Cihaz Teknolojisi",
+          "period": "2019 - 2023"
+        },
+        {
+          "school": "Gölhisar Mesleki ve Teknik Anadolu Lisesi",
+          "field": "Tıbbi Sekreterlik",
+          "period": "2013 - 2017"
+        }
+      ],
+      "projectsTitle": "Öne çıkan projeler",
+      "projectsNote": "Aşağıda yalnızca öne çıkan birkaç çalışmaya yer verdim; tüm projelerimi burada listelemedim.",
+      "projects": [
+        {
+          "name": "Self-hosted DevOps Ekosistemi",
+          "description": "Kendi fiziksel sunucularımda kurduğum, K8s tabanlı yüksek erişilebilirlikli altyapı ve uçtan uca CI/CD hattı.",
+          "stack": "Kubernetes · Rancher · GitLab CI/CD · Harbor · MinIO"
+        },
+        {
+          "name": "Real-time Kurye & QR Menü",
+          "description": "Cross-platform mobil uygulama, gelişmiş admin paneli ve yüksek performanslı backend içeren uçtan uca real-time sistem.",
+          "stack": "Flutter · Next.js · NestJS · WebSocket"
+        },
+        {
+          "name": "Bizeheryer.com (Turizm Portalı)",
+          "description": "Bir turizm acentesi için tek başıma geliştirdiğim, 3 dilli (TR, EN, NL) ve real-time panel istatistikli kapsamlı portal.",
+          "stack": "Next.js · NestJS · GraphQL · PostgreSQL"
+        }
+      ],
+      "projectsCta": "Tüm projelere göz at",
+      "techTitle": "Teknik Yetkinlikler",
+      "techGroups": [
+        {
+          "label": "Backend",
+          "items": ["NestJS", "Node.js", "Go", ".NET", "Laravel (PHP)", "Java", "Python"]
+        },
+        {
+          "label": "Frontend & Mobil",
+          "items": ["Next.js", "React.js", "Vue.js", "Svelte", "React Native", "Flutter", "Three.js", "TailwindCSS"]
+        },
+        {
+          "label": "DevOps & Altyapı",
+          "items": ["Kubernetes (K8s)", "Rancher", "Lens", "Docker", "GitLab CI/CD", "GitLab Runner", "Harbor", "MinIO", "Redis", "RabbitMQ"]
+        },
+        {
+          "label": "Veritabanı & ORM",
+          "items": ["PostgreSQL", "Prisma", "TypeORM", "Knex.js", "Objection.js", "S3/MinIO"]
+        },
+        {
+          "label": "Sistem & İzleme",
+          "items": ["Uptime Kuma", "Beszel", "Self-hosted GitLab", "Mail Server (Postfix/Dovecot)", "RCON"]
+        },
+        {
+          "label": "Entegrasyonlar",
+          "items": ["iyzico", "Web3", "GraphQL", "n8n (AI Automation)", "Protobuf", "Netty"]
+        }
+      ],
+      "languagesTitle": "Diller",
+      "languages": [
+        { "name": "Türkçe", "level": "Anadil" },
+        { "name": "İngilizce", "level": "Professional Working Proficiency" }
+      ]
     },
     "Profile": {
       "title": "Profil",
