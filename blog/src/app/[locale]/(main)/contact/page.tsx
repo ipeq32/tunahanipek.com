@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Clock,
   Github,
+  Instagram,
   Linkedin,
   Mail,
   Sparkles,
@@ -36,6 +37,12 @@ export default async function ContactPage() {
       value: 'linkedin.com/in/tunahanipek',
       href: LINKEDIN,
       icon: Linkedin,
+    },
+    {
+      label: t('instagramLabel'),
+      value: 'instagram.com/tnhnipek',
+      href: 'https://www.instagram.com/tnhnipek',
+      icon: Instagram,
     },
   ];
 
