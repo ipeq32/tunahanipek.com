@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
+import { createBlogSchema } from '@/lib/validations/blog';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -21,15 +22,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { content, image, shortImage, summary, title, tags, categories } =
-      await req.json();
+    const parsed = createBlogSchema.safeParse(await req.json());
 
-    if (!title || !content || !summary || !image || !shortImage) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: parsed.error.errors[0]?.message ?? 'Validation failed' },
         { status: 400 }
       );
     }
+
+    const { content, image, shortImage, summary, title, tags, categories } =
+      parsed.data;
 
     const res = await prisma.blog.create({
       data: {

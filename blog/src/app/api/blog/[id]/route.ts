@@ -5,6 +5,7 @@ import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { updateBlogSchema } from '@/lib/validations/blog';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -59,7 +60,16 @@ export async function PATCH(
   }
 
   try {
-    const body = await request.json();
+    const parsed = updateBlogSchema.safeParse(await request.json());
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.errors[0]?.message ?? 'Validation failed' },
+        { status: 400 }
+      );
+    }
+
+    const body = parsed.data;
     const existing = await prisma.blog.findUnique({ where: { id } });
 
     if (!existing || existing.deletedAt) {
@@ -80,16 +90,12 @@ export async function PATCH(
       published?: boolean;
     } = {};
 
-    if (typeof body.title === 'string') data.title = body.title;
-    if (typeof body.image === 'string') data.image = body.image;
-    if (typeof body.shortImage === 'string') data.shortImage = body.shortImage;
-    if (typeof body.summary === 'string') {
-      data.summary = sanitizeHtml(body.summary);
-    }
-    if (typeof body.content === 'string') {
-      data.content = sanitizeHtml(body.content);
-    }
-    if (typeof body.published === 'boolean' && isSuperAdmin(user.role)) {
+    if (body.title !== undefined) data.title = body.title;
+    if (body.image !== undefined) data.image = body.image;
+    if (body.shortImage !== undefined) data.shortImage = body.shortImage;
+    if (body.summary !== undefined) data.summary = sanitizeHtml(body.summary);
+    if (body.content !== undefined) data.content = sanitizeHtml(body.content);
+    if (body.published !== undefined && isSuperAdmin(user.role)) {
       data.published = body.published;
     }
 
@@ -99,12 +105,8 @@ export async function PATCH(
       include: blogListInclude,
     });
 
-    if (typeof body.tags === 'string' || typeof body.categories === 'string') {
-      await syncBlogTaxonomy(
-        id,
-        typeof body.tags === 'string' ? body.tags : undefined,
-        typeof body.categories === 'string' ? body.categories : undefined
-      );
+    if (body.tags !== undefined || body.categories !== undefined) {
+      await syncBlogTaxonomy(id, body.tags, body.categories);
     }
 
     const withTaxonomy = await prisma.blog.findUnique({
