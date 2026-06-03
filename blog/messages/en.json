@@ -166,7 +166,10 @@
     "title": "Settings",
     "description": "Manage your profile and password.",
     "profileTitle": "Profile",
+    "profileDescription": "Update your public profile information.",
     "passwordTitle": "Change password",
+    "passwordDescription": "Use a strong password to keep your account secure.",
+    "saving": "Saving...",
     "name": "Name",
     "phone": "Phone",
     "address": "Address",
@@ -741,7 +744,12 @@
           "manageBlog": "Blog Management",
           "manageProject": "Project Management",
           "moderateComments": "Comment Moderation",
-          "logout": "Logout"
+          "logout": "Logout",
+          "roles": {
+            "USER": "Member",
+            "ADMIN": "Editor",
+            "SUPER_ADMIN": "Admin"
+          }
         },
         "title": "Menu",
         "description": "Blog page for developers and designers. Welcome!"

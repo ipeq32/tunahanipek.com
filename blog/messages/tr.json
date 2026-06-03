@@ -166,7 +166,10 @@
     "title": "Ayarlar",
     "description": "Profil ve şifre ayarlarınızı yönetin.",
     "profileTitle": "Profil bilgileri",
+    "profileDescription": "Herkese açık profil bilgilerinizi güncelleyin.",
     "passwordTitle": "Şifre değiştir",
+    "passwordDescription": "Hesabınızı güvende tutmak için güçlü bir şifre kullanın.",
+    "saving": "Kaydediliyor...",
     "name": "Ad",
     "phone": "Telefon",
     "address": "Adres",
@@ -741,7 +744,12 @@
           "manageBlog": "Blog Yönetimi",
           "manageProject": "Proje Yönetimi",
           "moderateComments": "Yorum Moderasyonu",
-          "logout": "Oturumu kapat"
+          "logout": "Oturumu kapat",
+          "roles": {
+            "USER": "Üye",
+            "ADMIN": "Editör",
+            "SUPER_ADMIN": "Yönetici"
+          }
         },
         "title": "Menü",
         "description": "Geliştiriciler ve tasarımcılar için blog sayfası. \nHoş geldin!"
