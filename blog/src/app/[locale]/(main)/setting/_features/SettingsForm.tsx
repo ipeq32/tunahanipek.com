@@ -1,7 +1,12 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
+import {
+  useForm,
+  type Control,
+  type FieldValues,
+  type Path,
+} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -19,7 +24,16 @@ import {
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { ContentCard } from '@/components/layout/content-card';
-import { KeyRound, type LucideIcon, UserRound } from 'lucide-react';
+import {
+  Globe,
+  KeyRound,
+  Loader2,
+  Lock,
+  MapPin,
+  Phone,
+  type LucideIcon,
+  UserRound,
+} from 'lucide-react';
 import { ReactNode } from 'react';
 
 const profileSchema = z.object({
@@ -81,6 +95,51 @@ function FieldGrid({ children }: { children: ReactNode }) {
   return <div className="grid gap-4 sm:grid-cols-2">{children}</div>;
 }
 
+type IconFieldProps<T extends FieldValues> = {
+  control: Control<T>;
+  name: Path<T>;
+  label: string;
+  icon: LucideIcon;
+  placeholder?: string;
+  type?: string;
+  autoComplete?: string;
+};
+
+function IconField<T extends FieldValues>({
+  control,
+  name,
+  label,
+  icon: Icon,
+  placeholder,
+  type = 'text',
+  autoComplete,
+}: IconFieldProps<T>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <div className="relative">
+            <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <FormControl>
+              <Input
+                type={type}
+                placeholder={placeholder}
+                autoComplete={autoComplete}
+                className="pl-9"
+                {...field}
+              />
+            </FormControl>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 export default function SettingsForm({ initialUser }: SettingsFormProps) {
   const { update } = useSession();
   const t = useTranslations('Settings');
@@ -138,6 +197,9 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
     }
   };
 
+  const profileSubmitting = profileForm.formState.isSubmitting;
+  const passwordSubmitting = passwordForm.formState.isSubmitting;
+
   return (
     <div className="mt-2 space-y-6">
       <ContentCard>
@@ -149,106 +211,79 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
         <Form {...profileForm}>
           <form
             onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-            className="space-y-5"
+            className="space-y-6"
           >
-            <FormField
-              control={profileForm.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('image')}</FormLabel>
-                  <ImageUpload
-                    value={field.value}
-                    onChange={field.onChange}
-                    disabled={profileForm.formState.isSubmitting}
-                    heightClassName="h-44"
-                    className="max-w-[220px]"
+            <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+              <FormField
+                control={profileForm.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('image')}</FormLabel>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={profileSubmitting}
+                      heightClassName="h-48"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-5">
+                <FieldGrid>
+                  <IconField
+                    control={profileForm.control}
+                    name="name"
+                    label={t('name')}
+                    icon={UserRound}
                   />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  <IconField
+                    control={profileForm.control}
+                    name="phone"
+                    label={t('phone')}
+                    icon={Phone}
+                  />
+                </FieldGrid>
 
-            <FieldGrid>
-              <FormField
-                control={profileForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('name')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={profileForm.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('phone')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </FieldGrid>
+                <IconField
+                  control={profileForm.control}
+                  name="website"
+                  label={t('website')}
+                  icon={Globe}
+                  placeholder="https://..."
+                />
 
-            <FormField
-              control={profileForm.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('website')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <IconField
+                  control={profileForm.control}
+                  name="address"
+                  label={t('address')}
+                  icon={MapPin}
+                />
 
-            <FormField
-              control={profileForm.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('address')}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={profileForm.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('bio')}</FormLabel>
-                  <FormControl>
-                    <Textarea rows={4} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={profileForm.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('bio')}</FormLabel>
+                      <FormControl>
+                        <Textarea rows={4} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             <div className="flex justify-end border-t border-border/40 pt-4">
-              <Button
-                type="submit"
-                variant="accent"
-                disabled={profileForm.formState.isSubmitting}
-              >
-                {profileForm.formState.isSubmitting
-                  ? t('saving')
-                  : t('saveProfile')}
+              <Button type="submit" variant="accent" disabled={profileSubmitting}>
+                {profileSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {profileSubmitting ? t('saving') : t('saveProfile')}
               </Button>
             </div>
           </form>
@@ -266,45 +301,30 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
             onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
             className="space-y-5"
           >
-            <FormField
+            <IconField
               control={passwordForm.control}
               name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('currentPassword')}</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="current-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label={t('currentPassword')}
+              icon={Lock}
+              type="password"
+              autoComplete="current-password"
             />
             <FieldGrid>
-              <FormField
+              <IconField
                 control={passwordForm.control}
                 name="newPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('newPassword')}</FormLabel>
-                    <FormControl>
-                      <Input type="password" autoComplete="new-password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label={t('newPassword')}
+                icon={KeyRound}
+                type="password"
+                autoComplete="new-password"
               />
-              <FormField
+              <IconField
                 control={passwordForm.control}
                 name="newPasswordConfirm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('newPasswordConfirm')}</FormLabel>
-                    <FormControl>
-                      <Input type="password" autoComplete="new-password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label={t('newPasswordConfirm')}
+                icon={KeyRound}
+                type="password"
+                autoComplete="new-password"
               />
             </FieldGrid>
 
@@ -312,11 +332,12 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
               <Button
                 type="submit"
                 variant="accent"
-                disabled={passwordForm.formState.isSubmitting}
+                disabled={passwordSubmitting}
               >
-                {passwordForm.formState.isSubmitting
-                  ? t('saving')
-                  : t('savePassword')}
+                {passwordSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {passwordSubmitting ? t('saving') : t('savePassword')}
               </Button>
             </div>
           </form>
