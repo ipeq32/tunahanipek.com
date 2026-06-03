@@ -497,8 +497,10 @@
     "remove": "Remove",
     "uploaded": "Uploaded",
     "uploading": "Uploading",
+    "compressing": "Preparing image…",
     "success": "Image uploaded",
     "error": "Image upload failed",
+    "compressFailed": "Could not process the image. Please try another file.",
     "tooLarge": "File is too large. You can upload up to {size}."
   },
   "Metadata": {

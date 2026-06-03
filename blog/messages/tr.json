@@ -497,8 +497,10 @@
     "remove": "Kaldır",
     "uploaded": "Yüklendi",
     "uploading": "Yükleniyor",
+    "compressing": "Görsel hazırlanıyor…",
     "success": "Görsel yüklendi",
     "error": "Görsel yüklenemedi",
+    "compressFailed": "Görsel işlenemedi. Lütfen başka bir dosya deneyin.",
     "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz."
   },
   "Metadata": {

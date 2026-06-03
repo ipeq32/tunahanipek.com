@@ -36,6 +36,7 @@
     "@tsconfig/recommended": "^1.0.7",
     "@uploadthing/react": "^7.3.3",
     "bcryptjs": "^2.4.3",
+    "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc-8269d55d-20240802",

@@ -12,11 +12,23 @@ export const UPLOAD_CONFIG = {
     maxFileSize: '8MB',
     maxFileSizeBytes: 8 * 1024 * 1024,
     maxFileSizeLabel: '8MB',
+    /**
+     * İstemci tarafı sıkıştırma hedefleri. Sunucu limitinin biraz altında
+     * tutulur ki sıkıştırma sonrası küçük sapmalar limiti aşmasın.
+     */
+    compression: {
+      maxSizeMB: 7,
+      maxWidthOrHeight: 2560,
+    },
   },
   avatarUploader: {
     maxFileSize: '2MB',
     maxFileSizeBytes: 2 * 1024 * 1024,
     maxFileSizeLabel: '2MB',
+    compression: {
+      maxSizeMB: 1.8,
+      maxWidthOrHeight: 512,
+    },
   },
 } as const;
 

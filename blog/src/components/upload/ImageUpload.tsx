@@ -14,6 +14,7 @@ import BlogImage from '@/components/blog/BlogImage';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type UploadEndpoint } from '@/lib/upload-config';
+import { compressImage } from '@/lib/image-compression';
 
 type ImageUploadProps = {
   value?: string;
@@ -37,6 +38,7 @@ export default function ImageUpload({
   const t = useTranslations('Upload');
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState(0);
+  const [isCompressing, setIsCompressing] = useState(false);
 
   const { startUpload, isUploading } = useUploadThing(endpoint, {
     onUploadProgress: setProgress,
@@ -54,22 +56,44 @@ export default function ImageUpload({
     },
   });
 
+  const busy = isUploading || isCompressing;
+
   const openPicker = () => {
-    if (disabled || isUploading) return;
+    if (disabled || busy) return;
     inputRef.current?.click();
   };
 
-  const handleSelect = (files: FileList | null) => {
+  const handleSelect = async (files: FileList | null) => {
     const file = files?.[0];
     if (!file) return;
 
-    const { maxFileSizeBytes, maxFileSizeLabel } = UPLOAD_CONFIG[endpoint];
+    const { maxFileSizeBytes, maxFileSizeLabel, compression } =
+      UPLOAD_CONFIG[endpoint];
+
+    let fileToUpload = file;
+
+    // Büyük görselleri yükleme öncesi tarayıcıda sıkıştırıp boyutlandırarak hem
+    // bant genişliğinden tasarruf ederiz hem de sunucu limitine takılmayı önleriz.
     if (file.size > maxFileSizeBytes) {
+      try {
+        setIsCompressing(true);
+        fileToUpload = await compressImage(file, compression);
+      } catch {
+        toast.error(t('compressFailed'));
+        return;
+      } finally {
+        setIsCompressing(false);
+      }
+    }
+
+    // Sıkıştırma sonrası hâlâ limitin üzerindeyse (ör. zaten yoğun sıkıştırılmış
+    // bir görsel) kullanıcıyı net biçimde bilgilendiririz.
+    if (fileToUpload.size > maxFileSizeBytes) {
       toast.error(t('tooLarge', { size: maxFileSizeLabel }));
       return;
     }
 
-    void startUpload([file]);
+    await startUpload([fileToUpload]);
   };
 
   const fileInput = (
@@ -79,7 +103,7 @@ export default function ImageUpload({
       accept="image/*"
       className="hidden"
       onChange={(event) => {
-        handleSelect(event.target.files);
+        void handleSelect(event.target.files);
         event.target.value = '';
       }}
     />
@@ -99,17 +123,29 @@ export default function ImageUpload({
                 fill
                 className="object-cover"
               />
-              {isUploading && <UploadingOverlay progress={progress} t={t} avatar />}
+              {busy && (
+                <UploadingOverlay
+                  progress={progress}
+                  t={t}
+                  avatar
+                  compressing={isCompressing}
+                />
+              )}
             </div>
           ) : (
             <button
               type="button"
-              disabled={disabled || isUploading}
+              disabled={disabled || busy}
               onClick={openPicker}
               className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-full border border-dashed border-border/70 bg-background/40 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isUploading ? (
-                <UploadingOverlay progress={progress} t={t} avatar />
+              {busy ? (
+                <UploadingOverlay
+                  progress={progress}
+                  t={t}
+                  avatar
+                  compressing={isCompressing}
+                />
               ) : (
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400">
                   <ImagePlus className="h-4 w-4" />
@@ -118,7 +154,7 @@ export default function ImageUpload({
             </button>
           )}
 
-          {value && !isUploading && (
+          {value && !busy && (
             <div className="absolute -bottom-1 -right-1 flex gap-1">
               <button
                 type="button"
@@ -170,7 +206,7 @@ export default function ImageUpload({
           <div className="absolute right-2 top-2 flex gap-1.5">
             <button
               type="button"
-              disabled={disabled || isUploading}
+              disabled={disabled || busy}
               onClick={openPicker}
               aria-label={t('replace')}
               title={t('replace')}
@@ -180,7 +216,7 @@ export default function ImageUpload({
             </button>
             <button
               type="button"
-              disabled={disabled || isUploading}
+              disabled={disabled || busy}
               onClick={() => onChange('')}
               aria-label={t('remove')}
               title={t('remove')}
@@ -197,20 +233,31 @@ export default function ImageUpload({
             </span>
           </div>
 
-          {isUploading && <UploadingOverlay progress={progress} t={t} />}
+          {busy && (
+            <UploadingOverlay
+              progress={progress}
+              t={t}
+              compressing={isCompressing}
+            />
+          )}
         </div>
       ) : (
         <button
           type="button"
-          disabled={disabled || isUploading}
+          disabled={disabled || busy}
           onClick={openPicker}
           className={cn(
             'relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-border/70 bg-background/40 px-4 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.03] disabled:cursor-not-allowed disabled:opacity-60',
             heightClassName
           )}
         >
-          {isUploading ? (
-            <UploadingOverlay progress={progress} t={t} inline />
+          {busy ? (
+            <UploadingOverlay
+              progress={progress}
+              t={t}
+              inline
+              compressing={isCompressing}
+            />
           ) : (
             <>
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400">
@@ -233,9 +280,16 @@ type UploadingOverlayProps = {
   t: (key: string) => string;
   inline?: boolean;
   avatar?: boolean;
+  compressing?: boolean;
 };
 
-function UploadingOverlay({ progress, t, inline, avatar }: UploadingOverlayProps) {
+function UploadingOverlay({
+  progress,
+  t,
+  inline,
+  avatar,
+  compressing,
+}: UploadingOverlayProps) {
   const rounded = Math.round(progress);
 
   if (avatar) {
@@ -243,7 +297,7 @@ function UploadingOverlay({ progress, t, inline, avatar }: UploadingOverlayProps
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-full bg-background/80 backdrop-blur-sm">
         <Loader2 className="h-5 w-5 animate-spin text-teal-500" />
         <span className="text-xs font-medium text-muted-foreground">
-          {rounded}%
+          {compressing ? t('compressing') : `${rounded}%`}
         </span>
       </div>
     );
@@ -258,14 +312,16 @@ function UploadingOverlay({ progress, t, inline, avatar }: UploadingOverlayProps
     >
       <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
       <span className="font-medium">
-        {t('uploading')} {rounded}%
+        {compressing ? t('compressing') : `${t('uploading')} ${rounded}%`}
       </span>
-      <div className="h-1.5 w-40 max-w-full overflow-hidden rounded-full bg-border/60">
-        <div
-          className="h-full rounded-full bg-teal-500 transition-all duration-200"
-          style={{ width: `${rounded}%` }}
-        />
-      </div>
+      {!compressing && (
+        <div className="h-1.5 w-40 max-w-full overflow-hidden rounded-full bg-border/60">
+          <div
+            className="h-full rounded-full bg-teal-500 transition-all duration-200"
+            style={{ width: `${rounded}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
