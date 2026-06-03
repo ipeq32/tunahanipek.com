@@ -2,6 +2,7 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import { ContentCard } from '@/components/layout/content-card';
 import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
+import { DidYouKnow } from '@/components/ui/did-you-know';
 
 export default async function AboutPage() {
   const t = await getTranslations('Pages.About');
@@ -27,6 +28,7 @@ export default async function AboutPage() {
           </div>
         </div>
       </ContentCard>
+      <DidYouKnow className="mt-6" />
     </>
   );
 }

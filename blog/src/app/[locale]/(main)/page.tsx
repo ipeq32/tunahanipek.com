@@ -3,6 +3,7 @@ import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import BlogCard from '@/components/blog/BlogCard';
+import { DidYouKnow } from '@/components/ui/did-you-know';
 import { ArrowRight, PenLine } from 'lucide-react';
 
 export default async function HomePage() {
@@ -42,6 +43,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <DidYouKnow size="lg" />
 
       {recentBlogs.length > 0 && (
         <section className="space-y-6">

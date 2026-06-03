@@ -190,6 +190,23 @@
   }
 }
 
+@layer utilities {
+  @keyframes terminal-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .animate-terminal-blink {
+    animation: terminal-blink 0.8s step-end infinite;
+  }
+}
+
 @layer components {
   .prose-blog {
     @apply prose prose-slate max-w-none dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-teal-400 prose-img:rounded-xl;
