@@ -3,7 +3,6 @@
 import BlogImage from '@/components/blog/BlogImage';
 import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
-import { sanitizeHtml } from '@/lib/sanitize';
 import { useFormatter, useNow } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
@@ -55,7 +54,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
 
         <div
           className="line-clamp-2 text-sm text-muted-foreground [&_p]:inline"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(blog.summary) }}
+          dangerouslySetInnerHTML={{ __html: blog.summary }}
         />
 
         {(blog.tags.length > 0 || blog.categories.length > 0) && (

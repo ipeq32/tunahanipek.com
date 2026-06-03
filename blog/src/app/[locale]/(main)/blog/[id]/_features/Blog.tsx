@@ -1,7 +1,6 @@
 'use client';
 
 import { IGetBlog } from '@/types/blog';
-import { sanitizeHtml } from '@/lib/sanitize';
 import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
 import BlogImage from '@/components/blog/BlogImage';
@@ -102,7 +101,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
       <div
         className="prose-blog"
         dangerouslySetInnerHTML={{
-          __html: sanitizeHtml(data.content),
+          __html: data.content,
         }}
       />
     </article>
