@@ -6,6 +6,17 @@ import { useTranslations } from 'next-intl';
 const ROTATE_INTERVAL_MS = 4500;
 const TRANSITION_MS = 350;
 
+const pickRandomIndex = (length: number, exclude: number): number => {
+  if (length <= 1) return 0;
+
+  let next = exclude;
+  while (next === exclude) {
+    next = Math.floor(Math.random() * length);
+  }
+
+  return next;
+};
+
 export function RotatingMotto() {
   const t = useTranslations('Footer');
   const mottos = t.raw('mottos') as string[];
@@ -20,7 +31,7 @@ export function RotatingMotto() {
     const interval = setInterval(() => {
       setVisible(false);
       transitionTimeout = setTimeout(() => {
-        setIndex((prev) => (prev + 1) % mottos.length);
+        setIndex((prev) => pickRandomIndex(mottos.length, prev));
         setVisible(true);
       }, TRANSITION_MS);
     }, ROTATE_INTERVAL_MS);
