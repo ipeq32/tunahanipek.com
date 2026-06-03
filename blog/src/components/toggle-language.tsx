@@ -104,7 +104,7 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={t('label')}
-        className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-3 text-sm font-medium text-muted-foreground shadow-sm backdrop-blur transition-all hover:border-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-3 text-sm font-medium text-muted-foreground shadow-sm backdrop-blur transition-all hover:border-border hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         <Globe className="h-4 w-4" />
         <span className="uppercase tracking-wide">{locale}</span>
