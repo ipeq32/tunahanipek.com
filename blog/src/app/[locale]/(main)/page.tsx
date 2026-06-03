@@ -50,8 +50,13 @@ export default async function HomePage() {
         <section className="space-y-6">
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-2xl font-semibold tracking-tight">{t('recentPosts')}</h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/blog" className="text-teal-600 dark:text-teal-400">
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="text-teal-600 hover:bg-teal-500/10 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
+            >
+              <Link href="/blog">
                 {t('ctaBlog')}
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
