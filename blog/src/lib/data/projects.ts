@@ -18,3 +18,13 @@ export async function getAdminProjects(): Promise<ProjectDto[]> {
 
   return projects.map(mapProjectToDto);
 }
+
+export async function getAdminProjectById(
+  id: string
+): Promise<ProjectDto | null> {
+  const project = await prisma.project.findFirst({
+    where: { id, deletedAt: null },
+  });
+
+  return project ? mapProjectToDto(project) : null;
+}

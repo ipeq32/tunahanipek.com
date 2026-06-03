@@ -79,6 +79,14 @@ export default {
     en: '/admin/project',
     tr: '/admin/proje',
   },
+  '/admin/project/add': {
+    en: '/admin/project/add',
+    tr: '/admin/proje/ekle',
+  },
+  '/admin/project/[id]/edit': {
+    en: '/admin/project/[id]/edit',
+    tr: '/admin/proje/[id]/duzenle',
+  },
   '/admin/comments': {
     en: '/admin/comments',
     tr: '/admin/yorumlar',

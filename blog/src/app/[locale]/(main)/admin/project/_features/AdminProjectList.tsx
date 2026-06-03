@@ -3,9 +3,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import BlogImage from '@/components/blog/BlogImage';
 import { toast } from 'sonner';
+import { Link } from '@/navigation';
 import { useTranslations } from 'next-intl';
 import type { ProjectDto } from '@/lib/project-mapper';
 import {
@@ -13,27 +13,17 @@ import {
   AdminListSkeleton,
   AdminStatusBadge,
 } from '@/components/admin/admin-ui';
-import { ContentCard } from '@/components/layout/content-card';
 import { cn } from '@/lib/utils';
 import {
   ExternalLink,
   EyeOff,
-  FolderKanban,
   Pencil,
+  Plus,
   RefreshCw,
   Search,
   Send,
   Trash2,
-  X,
 } from 'lucide-react';
-
-const emptyForm = {
-  title: '',
-  description: '',
-  url: '',
-  image: '',
-  published: false,
-};
 
 type AdminProjectListProps = {
   initialProjects: ProjectDto[];
@@ -73,9 +63,6 @@ export default function AdminProjectList({
   const t = useTranslations('Admin.Project');
   const [projects, setProjects] = useState<ProjectDto[]>(initialProjects);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState(emptyForm);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');
 
@@ -94,60 +81,6 @@ export default function AdminProjectList({
       setLoading(false);
     }
   }, [t]);
-
-  const resetForm = () => {
-    setForm(emptyForm);
-    setEditingId(null);
-  };
-
-  const startEdit = (project: ProjectDto) => {
-    setEditingId(project.id);
-    setForm({
-      title: project.title,
-      description: project.description,
-      url: project.url ?? '',
-      image: project.image ?? '',
-      published: project.published,
-    });
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-
-    const payload = {
-      title: form.title.trim(),
-      description: form.description.trim(),
-      url: form.url.trim() || '',
-      image: form.image.trim() || '',
-      published: form.published,
-    };
-
-    try {
-      const url = editingId
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${editingId}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/projects/admin`;
-
-      const res = await fetch(url, {
-        method: editingId ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Failed');
-
-      toast.success(editingId ? t('updated') : t('created'));
-      resetForm();
-      fetchProjects();
-    } catch {
-      toast.error(t('actionError'));
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const togglePublished = async (project: ProjectDto) => {
     try {
@@ -176,7 +109,6 @@ export default function AdminProjectList({
       );
       if (!res.ok) throw new Error('Failed');
       toast.success(t('deleted'));
-      if (editingId === id) resetForm();
       fetchProjects();
     } catch {
       toast.error(t('actionError'));
@@ -213,108 +145,15 @@ export default function AdminProjectList({
   ];
 
   return (
-    <div className="mt-6 space-y-6">
-      <ContentCard>
-        <div className="mb-5 flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-300">
-            {editingId ? (
-              <Pencil className="h-5 w-5" />
-            ) : (
-              <FolderKanban className="h-5 w-5" />
-            )}
-          </span>
-          <h2 className="text-lg font-semibold tracking-tight">
-            {editingId ? t('editTitle') : t('addTitle')}
-          </h2>
-        </div>
-
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="flex items-center gap-4 rounded-xl border border-border/40 bg-background/40 p-4">
-            <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-border/50">
-              <BlogImage
-                key={form.image || 'placeholder'}
-                src={form.image}
-                alt={form.title || 'project'}
-                width={96}
-                height={64}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div className="flex-1 space-y-2">
-              <label className="text-xs font-medium">{t('fieldImage')}</label>
-              <Input
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="https://"
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-xs font-medium">{t('fieldTitle')}</label>
-              <Input
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium">{t('fieldUrl')}</label>
-              <Input
-                value={form.url}
-                onChange={(e) => setForm({ ...form, url: e.target.value })}
-                placeholder="https://"
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <label className="text-xs font-medium">
-                {t('fieldDescription')}
-              </label>
-              <Textarea
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-                rows={3}
-                required
-              />
-            </div>
-            <label className="flex items-center gap-2 self-end rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
-              <input
-                type="checkbox"
-                checked={form.published}
-                onChange={(e) =>
-                  setForm({ ...form, published: e.target.checked })
-                }
-                className="h-4 w-4 rounded border-border accent-teal-600"
-              />
-              {t('fieldPublished')}
-            </label>
-          </div>
-
-          <div className="flex flex-wrap gap-2 border-t border-border/40 pt-4">
-            <Button type="submit" variant="accent" disabled={saving}>
-              {editingId ? t('save') : t('add')}
-            </Button>
-            {editingId && (
-              <Button type="button" variant="outline" onClick={resetForm}>
-                <X className="mr-1.5 h-4 w-4" />
-                {t('cancel')}
-              </Button>
-            )}
-          </div>
-        </form>
-      </ContentCard>
-
+    <div className="mt-6 space-y-5">
       <div className="grid grid-cols-3 gap-3">
         <StatCard label={t('statTotal')} value={stats.total} />
         <StatCard label={t('statPublished')} value={stats.published} accent />
         <StatCard label={t('statDrafts')} value={stats.drafts} />
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 sm:max-w-xs">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="relative flex-1 lg:max-w-xs">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
@@ -323,6 +162,7 @@ export default function AdminProjectList({
             className="pl-9"
           />
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex rounded-lg border border-border/60 bg-card/60 p-0.5">
             {filters.map((filter) => (
@@ -341,6 +181,7 @@ export default function AdminProjectList({
               </button>
             ))}
           </div>
+
           <Button
             variant="outline"
             size="icon"
@@ -350,6 +191,13 @@ export default function AdminProjectList({
             title={t('refresh')}
           >
             <RefreshCw className="h-4 w-4" />
+          </Button>
+
+          <Button variant="accent" size="sm" asChild>
+            <Link href="/admin/project/add" className="gap-1.5">
+              <Plus className="h-4 w-4" />
+              {t('addTitle')}
+            </Link>
           </Button>
         </div>
       </div>
@@ -365,12 +213,7 @@ export default function AdminProjectList({
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className={cn(
-                'group flex flex-col gap-4 rounded-xl border bg-card/80 p-4 shadow-sm backdrop-blur-sm transition sm:flex-row sm:items-center',
-                editingId === project.id
-                  ? 'border-teal-500/50 ring-1 ring-teal-500/20'
-                  : 'border-border/60 hover:border-teal-500/30'
-              )}
+              className="group flex flex-col gap-4 rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm transition hover:border-teal-500/30 sm:flex-row sm:items-center"
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg border border-border/50 sm:h-20 sm:w-32 sm:shrink-0">
                 <BlogImage
@@ -391,9 +234,10 @@ export default function AdminProjectList({
                     draftLabel={t('statusDraft')}
                   />
                 </div>
-                <p className="line-clamp-2 text-sm text-muted-foreground">
-                  {project.description}
-                </p>
+                <div
+                  className="line-clamp-2 text-sm text-muted-foreground [&_p]:inline"
+                  dangerouslySetInnerHTML={{ __html: project.description }}
+                />
                 {project.url && (
                   <a
                     href={project.url}
@@ -412,11 +256,18 @@ export default function AdminProjectList({
                   variant="outline"
                   size="icon"
                   className="h-9 w-9"
-                  onClick={() => startEdit(project)}
+                  asChild
                   aria-label={t('edit')}
                   title={t('edit')}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Link
+                    href={{
+                      pathname: '/admin/project/[id]/edit',
+                      params: { id: project.id },
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button
                   variant={project.published ? 'secondary' : 'accent'}

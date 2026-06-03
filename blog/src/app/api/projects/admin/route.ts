@@ -4,6 +4,7 @@ import { getAdminProjects } from '@/lib/data/projects';
 import { mapProjectToDto } from '@/lib/project-mapper';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
     const project = await prisma.project.create({
       data: {
         title,
-        description,
+        description: sanitizeHtml(description),
         url: url || null,
         image: image || null,
         sortOrder: resolvedSortOrder,

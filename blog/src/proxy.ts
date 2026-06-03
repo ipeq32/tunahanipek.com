@@ -16,6 +16,8 @@ const protectedPages = [
 const adminPages = [
   pathnames['/admin/blog'],
   pathnames['/admin/project'],
+  '/admin/project/*',
+  '/admin/proje/*',
   pathnames['/admin/comments'],
 ];
 

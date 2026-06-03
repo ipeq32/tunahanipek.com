@@ -1,4 +1,5 @@
 import type { Project } from '@prisma/client';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 export type ProjectDto = {
   id: string;
@@ -16,7 +17,7 @@ export function mapProjectToDto(project: Project): ProjectDto {
   return {
     id: project.id,
     title: project.title,
-    description: project.description,
+    description: sanitizeHtml(project.description),
     url: project.url,
     image: project.image,
     sortOrder: project.sortOrder,

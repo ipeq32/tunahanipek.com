@@ -59,9 +59,10 @@ export default async function ProjectPage() {
                     <h3 className="text-lg font-semibold leading-snug tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400">
                       {project.title}
                     </h3>
-                    <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
-                      {project.description}
-                    </p>
+                    <div
+                      className="line-clamp-3 flex-1 text-sm text-muted-foreground [&_p]:inline"
+                      dangerouslySetInnerHTML={{ __html: project.description }}
+                    />
                     {project.url && (
                       <span className="mt-1 inline-flex items-center text-sm font-medium text-teal-600 dark:text-teal-400">
                         {t('visit')}

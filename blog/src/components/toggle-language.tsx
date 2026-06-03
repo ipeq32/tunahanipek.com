@@ -17,7 +17,8 @@ type DynamicPathname =
   | '/blog/[id]'
   | '/blog/[id]/edit'
   | '/blog/tag/[name]'
-  | '/blog/category/[name]';
+  | '/blog/category/[name]'
+  | '/admin/project/[id]/edit';
 
 type StaticPathname = Exclude<AppPathnames, DynamicPathname>;
 
@@ -46,6 +47,17 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
     if (pathname === '/blog/[id]/edit' && typeof params.id === 'string') {
       router.replace(
         { pathname: '/blog/[id]/edit', params: { id: params.id } },
+        { locale: value },
+      );
+      return;
+    }
+
+    if (
+      pathname === '/admin/project/[id]/edit' &&
+      typeof params.id === 'string'
+    ) {
+      router.replace(
+        { pathname: '/admin/project/[id]/edit', params: { id: params.id } },
         { locale: value },
       );
       return;

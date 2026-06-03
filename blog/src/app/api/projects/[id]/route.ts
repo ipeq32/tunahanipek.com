@@ -3,6 +3,7 @@ import { isSuperAdmin } from '@/lib/auth-roles';
 import { mapProjectToDto } from '@/lib/project-mapper';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -48,7 +49,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       where: { id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && { description: data.description }),
+        ...(data.description !== undefined && {
+          description: sanitizeHtml(data.description),
+        }),
         ...(data.url !== undefined && { url: data.url || null }),
         ...(data.image !== undefined && { image: data.image || null }),
         ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
