@@ -394,19 +394,58 @@
     },
     "Faq": {
       "title": "FAQ",
-      "description": "Common questions",
-      "q1": {
-        "question": "How do I add a blog post?",
-        "answer": "After registering, users with moderator or admin roles can create posts from the add blog page."
+      "description": "Quick answers to common questions.",
+      "categories": {
+        "general": "General",
+        "content": "Blog & Content",
+        "account": "Account",
+        "contact": "Contact & Collaboration"
       },
-      "q2": {
-        "question": "When are posts published?",
-        "answer": "Posts appear on the blog list after admin approval."
+      "items": {
+        "what": {
+          "question": "What is this site?",
+          "answer": "It's my blog and portfolio where I share software, projects, and personal experiences."
+        },
+        "tech": {
+          "question": "What is the site built with?",
+          "answer": "It's built with Next.js (App Router), TypeScript, Prisma and PostgreSQL, with Tailwind CSS and Radix UI for the interface."
+        },
+        "addPost": {
+          "question": "How do I add a blog post?",
+          "answer": "After registering, users with moderator or admin roles can create posts using the rich text editor on the add blog page."
+        },
+        "publish": {
+          "question": "When are posts published?",
+          "answer": "Posts are saved as drafts and appear on the blog list after admin approval."
+        },
+        "languages": {
+          "question": "Which languages is the content available in?",
+          "answer": "The interface is available in Turkish and English; switch anytime using the language selector in the top right."
+        },
+        "comments": {
+          "question": "Can I comment on posts?",
+          "answer": "Yes. Once signed in, you can leave comments under posts and join the discussion."
+        },
+        "register": {
+          "question": "How do I register?",
+          "answer": "Use the register link on the login page to create an account with your email and password."
+        },
+        "forgotPassword": {
+          "question": "I forgot my password, what should I do?",
+          "answer": "Use the “Forgot password” link on the login page to receive a reset link at your email address."
+        },
+        "contact": {
+          "question": "How can I contact you?",
+          "answer": "Reach out via the email on the contact page or through my LinkedIn/GitHub accounts."
+        },
+        "collaboration": {
+          "question": "How do I propose a collaboration or project?",
+          "answer": "I'm open to new projects. Send an email from the contact page and share your idea; I usually reply within 24 hours."
+        }
       },
-      "q3": {
-        "question": "How can I contact you?",
-        "answer": "Use the email on the contact page or reach out via GitHub."
-      }
+      "moreTitle": "Still have questions?",
+      "moreDescription": "If you couldn't find what you were looking for, reach out directly.",
+      "moreCta": "Get in touch"
     },
     "Contact": {
       "title": "Contact",

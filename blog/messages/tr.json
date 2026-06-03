@@ -394,19 +394,58 @@
     },
     "Faq": {
       "title": "Sıkça Sorulan Sorular",
-      "description": "Merak edilenler",
-      "q1": {
-        "question": "Blog yazısı nasıl eklenir?",
-        "answer": "Kayıt olduktan sonra moderatör veya yönetici rolüyle blog ekleme sayfasından yazı oluşturabilirsiniz."
+      "description": "Aklınıza takılanlar için hızlı yanıtlar.",
+      "categories": {
+        "general": "Genel",
+        "content": "Blog & İçerik",
+        "account": "Hesap",
+        "contact": "İletişim & İş Birliği"
       },
-      "q2": {
-        "question": "Yazılarım ne zaman yayınlanır?",
-        "answer": "Yönetici onayından sonra yazılar blog listesinde görünür."
+      "items": {
+        "what": {
+          "question": "Bu site nedir?",
+          "answer": "Yazılım, projeler ve kişisel deneyimlerimi paylaştığım blog ve portfolyo sitesidir."
+        },
+        "tech": {
+          "question": "Site hangi teknolojilerle geliştirildi?",
+          "answer": "Next.js (App Router), TypeScript, Prisma ve PostgreSQL ile geliştirildi; arayüzde Tailwind CSS ve Radix UI kullanıldı."
+        },
+        "addPost": {
+          "question": "Blog yazısı nasıl eklenir?",
+          "answer": "Kayıt olduktan sonra moderatör veya yönetici rolüne sahip kullanıcılar, blog ekleme sayfasındaki zengin metin editörüyle yazı oluşturabilir."
+        },
+        "publish": {
+          "question": "Yazılar ne zaman yayınlanır?",
+          "answer": "Yazılar taslak olarak kaydedilir ve yönetici onayı sonrası blog listesinde yayınlanır."
+        },
+        "languages": {
+          "question": "İçerikler hangi dillerde sunuluyor?",
+          "answer": "Arayüz Türkçe ve İngilizce olarak sunulur; sağ üstteki dil değiştiriciden istediğiniz dile geçebilirsiniz."
+        },
+        "comments": {
+          "question": "Yazılara yorum yapabilir miyim?",
+          "answer": "Evet. Giriş yaptıktan sonra yazıların altından yorum bırakabilir ve tartışmalara katılabilirsiniz."
+        },
+        "register": {
+          "question": "Nasıl kayıt olurum?",
+          "answer": "Giriş sayfasındaki kayıt bağlantısını kullanarak e-posta ve şifrenizle hesap oluşturabilirsiniz."
+        },
+        "forgotPassword": {
+          "question": "Şifremi unuttum, ne yapmalıyım?",
+          "answer": "Giriş sayfasındaki “Şifremi unuttum” bağlantısından e-posta adresinizi girerek sıfırlama bağlantısı alabilirsiniz."
+        },
+        "contact": {
+          "question": "İletişime nasıl geçerim?",
+          "answer": "İletişim sayfasındaki e-posta adresinden veya LinkedIn/GitHub hesaplarımdan bana ulaşabilirsiniz."
+        },
+        "collaboration": {
+          "question": "İş birliği veya proje teklifi için ne yapmalıyım?",
+          "answer": "Yeni projelere açığım. İletişim sayfasından e-posta göndererek fikrinizi paylaşabilirsiniz; genellikle 24 saat içinde dönüş yaparım."
+        }
       },
-      "q3": {
-        "question": "İletişime nasıl geçerim?",
-        "answer": "İletişim sayfasındaki e-posta adresinden veya GitHub üzerinden ulaşabilirsiniz."
-      }
+      "moreTitle": "Hâlâ sorunuz mu var?",
+      "moreDescription": "Aradığınız yanıtı bulamadıysanız bana doğrudan ulaşın.",
+      "moreCta": "İletişime geç"
     },
     "Contact": {
       "title": "İletişim",
