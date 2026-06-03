@@ -1,18 +1,12 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import { sendEmail } from '@/lib/email';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { contactSchema } from '@/lib/validations/contact';
 
 export const dynamic = 'force-dynamic';
 
 const CONTACT_INBOX = 'hello@tunahanipek.com';
-
-const schema = z.object({
-  name: z.string().trim().min(2).max(120),
-  email: z.string().email().max(254),
-  message: z.string().trim().min(10).max(5000),
-});
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
@@ -24,7 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const parsed = schema.safeParse(body);
+    const parsed = contactSchema.safeParse(body);
 
     if (!parsed.success) {
       return NextResponse.json({ message: 'Invalid input' }, { status: 400 });

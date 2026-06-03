@@ -1,9 +1,29 @@
+import type { Metadata } from 'next';
 import { Link } from '@/navigation';
 import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getPublishedProjects } from '@/lib/data/projects';
 import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
+import { buildPageMetadata } from '@/lib/page-metadata';
+import { JsonLd } from '@/components/json-ld';
+import { buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/json-ld';
 import { Button } from '@/components/ui/button';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'HomePage' });
+  const base = buildPageMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    route: '/',
+  });
+  return { ...base, title: { absolute: t('title') } };
+}
 import BlogCard from '@/components/blog/BlogCard';
 import ProjectCard from '@/components/project/ProjectCard';
 import { DidYouKnow } from '@/components/ui/did-you-know';
@@ -68,7 +88,12 @@ function SectionHeading({
   );
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations('HomePage');
   const tProject = await getTranslations('Pages.Project');
 
@@ -83,6 +108,8 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-12 py-6 md:py-8">
+      <JsonLd data={buildWebSiteJsonLd(locale)} />
+      <JsonLd data={buildPersonJsonLd()} />
       <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-sm md:p-10">
         <div
           className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl"

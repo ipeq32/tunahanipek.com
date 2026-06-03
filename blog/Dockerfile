@@ -7,8 +7,13 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+# NEXT_PUBLIC_* degerleri build aninda client bundle'a gomulur; prod URL'leri buradan verilmeli.
 ARG NEXT_PUBLIC_API_URL=http://localhost:3000
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ARG NEXT_PUBLIC_ALLOW_PUBLIC_REGISTRATION=true
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_ALLOW_PUBLIC_REGISTRATION=$NEXT_PUBLIC_ALLOW_PUBLIC_REGISTRATION
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npx prisma generate && yarn build

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import type { AppPathnames } from '@/config';
 import { getSiteUrl } from '@/config';
-import { getCanonicalPath } from '@/lib/localized-path';
+import { getCanonicalPath, getLanguageAlternates } from '@/lib/localized-path';
 
 type PageMetadataInput = {
   title: string;
@@ -18,11 +18,12 @@ export function buildPageMetadata({
   route,
 }: PageMetadataInput): Metadata {
   const canonical = getCanonicalPath(route, locale as 'en' | 'tr');
+  const languages = getLanguageAlternates(route);
 
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: { canonical, languages },
     openGraph: {
       title,
       description,

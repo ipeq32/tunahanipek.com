@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'blog/**'
+      - 'docker-compose.yml'
       - '.github/workflows/blog-ci.yml'
   pull_request:
     paths:
       - 'blog/**'
+      - 'docker-compose.yml'
       - '.github/workflows/blog-ci.yml'
 
 defaults:

@@ -18,16 +18,25 @@ import {
 } from '@/components/ui/form';
 import { ContentCard } from '@/components/layout/content-card';
 
-const schema = z.object({
-  name: z.string().trim().min(2).max(120),
-  email: z.string().email().max(254),
-  message: z.string().trim().min(10).max(5000),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = {
+  name: string;
+  email: string;
+  message: string;
+};
 
 export function ContactForm() {
   const t = useTranslations('Pages.Contact.Form');
+
+  const schema = z.object({
+    name: z.string().trim().min(2, t('nameError')).max(120, t('nameError')),
+    email: z.string().email(t('emailError')).max(254, t('emailError')),
+    message: z
+      .string()
+      .trim()
+      .min(10, t('messageError'))
+      .max(5000, t('messageError')),
+  });
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', email: '', message: '' },
@@ -35,14 +44,11 @@ export function ContactForm() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/contact`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
-        },
-      );
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
       const data = (await res.json()) as { message?: string };
 
       if (res.status === 429) {

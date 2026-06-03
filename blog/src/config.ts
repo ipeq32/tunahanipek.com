@@ -28,6 +28,3 @@ export function getSiteUrl(): string {
   }
   return `http://localhost:${port}`;
 }
-
-/** @deprecated Use getSiteUrl() */
-export const host = getSiteUrl();

@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { host } from '@/config';
+import { getSiteUrl } from '@/config';
 
 /**
  * Statik `robots.txt` ortam farkı gözetmediğinden (prod'da da `localhost`
@@ -7,6 +7,7 @@ import { host } from '@/config';
  * çözülür; böylece `Sitemap` her zaman doğru mutlak URL'i işaret eder.
  */
 export default function robots(): MetadataRoute.Robots {
+  const host = getSiteUrl();
   return {
     rules: {
       userAgent: '*',

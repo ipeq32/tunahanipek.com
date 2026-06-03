@@ -9,6 +9,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",

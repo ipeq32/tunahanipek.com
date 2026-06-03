@@ -9,7 +9,11 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/json-ld';
 import { buildArticleJsonLd } from '@/lib/json-ld';
-import { getLocalizedPathname } from '@/lib/localized-path';
+import {
+  getCanonicalPath,
+  getLanguageAlternates,
+  getLocalizedPathname,
+} from '@/lib/localized-path';
 
 export const revalidate = 60;
 
@@ -33,19 +37,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = parseLocale(await getLocale());
   const plainSummary = blog.summary.replace(/<[^>]*>/g, '').slice(0, 160);
   const images = blog.image ? [blog.image] : [];
+  const canonical = getCanonicalPath('/blog/[id]', locale, { '[id]': id });
+  const languages = getLanguageAlternates('/blog/[id]', { '[id]': id });
 
   return {
     title: blog.title,
     description: plainSummary,
     alternates: {
-      canonical: `/${locale}/blog/${id}`,
+      canonical,
+      languages,
     },
     openGraph: {
       title: blog.title,
       description: plainSummary,
       type: 'article',
       locale,
-      url: `/${locale}/blog/${id}`,
+      url: canonical,
       images,
     },
     twitter: {
@@ -71,10 +78,7 @@ async function page({ params }: Props) {
     notFound();
   }
 
-  const blogPath = getLocalizedPathname('/blog/[id]', locale).replace(
-    '[id]',
-    id,
-  );
+  const blogPath = getLocalizedPathname('/blog/[id]', locale, { '[id]': id });
   const plainSummary = blogData.summary.replace(/<[^>]*>/g, '').slice(0, 160);
 
   return (

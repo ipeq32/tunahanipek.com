@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { defaultLocale, host, locales } from '@/config';
+import { defaultLocale, getSiteUrl, locales } from '@/config';
 import { getPathname } from '@/navigation';
 import { Locale } from '@/i18n/request';
 import { prisma } from '@/lib/prisma';
@@ -49,6 +49,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getEntry('/project'),
     getEntry('/faq'),
     getEntry('/contact'),
+    getEntry('/privacy'),
+    getEntry('/terms'),
     ...blogs.map((blog) =>
       getEntry({ pathname: '/blog/[id]', params: { id: blog.id } })
     ),
@@ -82,5 +84,5 @@ function getEntry(href: Href) {
 
 function getUrl(href: Href, locale: Locale) {
   const pathname = getPathname({ locale, href });
-  return `${host}/${locale}${pathname === '/' ? '' : pathname}`;
+  return `${getSiteUrl()}/${locale}${pathname === '/' ? '' : pathname}`;
 }

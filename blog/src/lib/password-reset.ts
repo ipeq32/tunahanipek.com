@@ -1,8 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
-import { host } from '@/config';
-import { defaultLocale, locales } from '@/config';
+import { defaultLocale, getSiteUrl, locales } from '@/config';
 import { sendEmail } from '@/lib/email';
 
 const TOKEN_TTL_MS = 60 * 60 * 1000;
@@ -35,7 +34,7 @@ export async function createPasswordResetToken(email: string, locale?: string) {
   });
 
   const resolvedLocale = resolveLocale(locale);
-  const resetUrl = `${host}/${resolvedLocale}/auth/reset-password?token=${token}`;
+  const resetUrl = `${getSiteUrl()}/${resolvedLocale}/auth/reset-password?token=${token}`;
 
   const subject =
     resolvedLocale === 'tr'

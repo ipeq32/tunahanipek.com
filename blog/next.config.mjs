@@ -4,9 +4,9 @@ import { DeleteSourceMapsPlugin } from 'webpack-delete-sourcemaps-plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /**
- * Report-only ile başlatıyoruz: ihlaller raporlanır ama içerik bloklanmaz.
- * `unsafe-inline`/`unsafe-eval`, Next.js runtime ve zengin metin için gereklidir;
- * tarayıcı testleriyle daraltıldıktan sonra `Content-Security-Policy`'ye geçirilebilir.
+ * Enforce edilen CSP. `unsafe-inline`/`unsafe-eval`, Next.js runtime ve zengin
+ * metin editörü (Quill) için gereklidir. UploadThing yükleme uçları ve Vercel
+ * Analytics alan adları connect/script-src'e dahil edilmiştir.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -17,8 +17,8 @@ const contentSecurityPolicy = [
   "img-src 'self' https: http: data: blob:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io https://va.vercel-scripts.com https://*.vercel-insights.com",
   'upgrade-insecure-requests',
 ].join('; ');
 
@@ -47,7 +47,7 @@ const nextConfig = {
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
-            key: 'Content-Security-Policy-Report-Only',
+            key: 'Content-Security-Policy',
             value: contentSecurityPolicy,
           },
         ],

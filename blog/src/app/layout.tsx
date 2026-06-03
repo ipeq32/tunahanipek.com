@@ -1,6 +1,7 @@
 import './globals.css';
 import 'react-quill-new/dist/quill.snow.css';
 
+import type { Metadata } from 'next';
 import { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
@@ -10,12 +11,17 @@ import { Inter } from 'next/font/google';
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin';
 import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from '@/app/api/uploadthing/core';
+import { getMetadataBase } from '@/lib/page-metadata';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-sans',
   display: 'swap',
 });
+
+export const metadata: Metadata = {
+  metadataBase: getMetadataBase(),
+};
 
 type Props = {
   children: ReactNode;

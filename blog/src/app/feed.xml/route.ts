@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { defaultLocale, host, locales } from '@/config';
+import { defaultLocale, getSiteUrl, locales } from '@/config';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,7 @@ type FeedBlogRow = Prisma.BlogGetPayload<{
 }>;
 
 function blogLink(id: string, locale: string): string {
-  return `${host}/${locale}/blog/${id}`;
+  return `${getSiteUrl()}/${locale}/blog/${id}`;
 }
 
 function buildRssItem(blog: FeedBlogRow): string {
@@ -47,13 +47,14 @@ export async function GET() {
   });
 
   const items = blogs.map(buildRssItem).join('');
-  const feedUrl = `${host}/feed.xml`;
+  const siteUrl = getSiteUrl();
+  const feedUrl = `${siteUrl}/feed.xml`;
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <channel>
     <title>Tunahan İpek Blog</title>
-    <link>${host}/${defaultLocale}</link>
+    <link>${siteUrl}/${defaultLocale}</link>
     <atom:link href="${feedUrl}" rel="self" type="application/rss+xml" />
     <description>Blog yazıları</description>
     <language>${defaultLocale}</language>

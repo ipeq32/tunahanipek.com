@@ -7,7 +7,11 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/json-ld';
 import { buildCreativeWorkJsonLd } from '@/lib/json-ld';
-import { getLocalizedPathname } from '@/lib/localized-path';
+import {
+  getCanonicalPath,
+  getLanguageAlternates,
+  getLocalizedPathname,
+} from '@/lib/localized-path';
 import NextLink from 'next/link';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
@@ -33,19 +37,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .replace(/<[^>]*>/g, '')
     .slice(0, 160);
   const images = project.image ? [project.image] : [];
+  const canonical = getCanonicalPath('/project/[id]', locale, { '[id]': id });
+  const languages = getLanguageAlternates('/project/[id]', { '[id]': id });
 
   return {
     title: project.title,
     description: plainDescription,
     alternates: {
-      canonical: `/${locale}/project/${id}`,
+      canonical,
+      languages,
     },
     openGraph: {
       title: project.title,
       description: plainDescription,
       type: 'article',
       locale,
-      url: `/${locale}/project/${id}`,
+      url: canonical,
       images,
     },
     twitter: {
@@ -69,10 +76,9 @@ export default async function ProjectDetailPage({ params }: Props) {
     notFound();
   }
 
-  const projectPath = getLocalizedPathname('/project/[id]', locale).replace(
-    '[id]',
-    id,
-  );
+  const projectPath = getLocalizedPathname('/project/[id]', locale, {
+    '[id]': id,
+  });
   const plainDescription = project.description
     .replace(/<[^>]*>/g, '')
     .slice(0, 160);

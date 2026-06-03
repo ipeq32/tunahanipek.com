@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'home/**'
+      - 'docker-compose.yml'
       - '.github/workflows/home-ci.yml'
   pull_request:
     paths:
       - 'home/**'
+      - 'docker-compose.yml'
       - '.github/workflows/home-ci.yml'
 
 jobs:
