@@ -56,14 +56,21 @@ export default function ResumeModal({
     return null;
   }
 
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   return createPortal(
     <dialog
       ref={dialogRef}
       onClose={onClose}
+      onClick={handleBackdropClick}
       className="resume-dialog"
       aria-labelledby="resume-modal-title"
     >
-      <div className="relative p-6 sm:p-8">
+      <div className="resume-dialog-panel relative p-6 sm:p-8">
         <button
           type="button"
           onClick={onClose}
