@@ -121,6 +121,8 @@ yarn db:baseline --force
 yarn db:migrate:deploy
 ```
 
+İş bitince oturumdaki geçici URL’leri kaldırın ([Oturum değişkenlerini temizleme](#oturum-değişkenlerini-temizleme)).
+
 Bundan sonra yeni özellikler için `migrate dev` + `migrate deploy` kullanın; üretimde `db push` ile şema güncellemeyin (drift ve P3005 tekrarlar).
 
 ### Acil durum — `migrate deploy` çalışmıyorsa (`db push`)
@@ -134,7 +136,41 @@ $env:POSTGRES_PRISMA_URL = "<neon-pooler-url>"
 npx prisma db push --accept-data-loss
 ```
 
+İş bitince oturumdaki geçici URL’leri kaldırın ([Oturum değişkenlerini temizleme](#oturum-değişkenlerini-temizleme)).
+
 Bu yol şemayı `schema.prisma` ile hizalar ancak migration geçmişini düzeltmez; kalıcı çözüm yine `yarn db:baseline --force` sonrası `migrate deploy` akışıdır.
+
+### Oturum değişkenlerini temizleme
+
+Neon veya prod DB URL’lerini yalnızca geçici olarak shell oturumuna verdiyseniz, komutlar bittikten sonra kaldırın. `blog/.env` içindeki kalıcı değerler değişmez.
+
+**Windows (PowerShell)**
+
+```powershell
+Remove-Item Env:\POSTGRES_PRISMA_URL -ErrorAction SilentlyContinue
+Remove-Item Env:\POSTGRES_URL_NON_POOLING -ErrorAction SilentlyContinue
+```
+
+**Windows (CMD)**
+
+```cmd
+set POSTGRES_PRISMA_URL=
+set POSTGRES_URL_NON_POOLING=
+```
+
+**Linux / macOS (bash, zsh, Git Bash)**
+
+```bash
+unset POSTGRES_PRISMA_URL
+unset POSTGRES_URL_NON_POOLING
+```
+
+**fish**
+
+```fish
+set -e POSTGRES_PRISMA_URL
+set -e POSTGRES_URL_NON_POOLING
+```
 
 ## Seed admin (geliştirme)
 
