@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
 
 export default async function Cta() {
@@ -14,7 +15,7 @@ export default async function Cta() {
 
   return (
     <section id="contact" className="scroll-mt-24 py-12 lg:scroll-mt-28 lg:py-16">
-      <div className="section-container">
+      <SiteContainer>
         <div className="rounded-3xl bg-foreground px-8 py-12 text-background sm:px-12 sm:py-16">
           <h2 className="max-w-2xl text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
             {t("titlePrefix")}{" "}
@@ -55,7 +56,7 @@ export default async function Cta() {
             ))}
           </div>
         </div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }

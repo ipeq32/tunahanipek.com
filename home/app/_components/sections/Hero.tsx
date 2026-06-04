@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import ResumeDownloadButton from "@/app/_components/resume/ResumeDownloadButton";
 import { site } from "@/app/_content/site";
 import type { PublicResume } from "@/app/_lib/resume";
@@ -14,10 +15,8 @@ export default async function Hero({ resume }: HeroProps) {
   const t = await getTranslations("Hero");
 
   return (
-    <section
-      id="home"
-      className="section-container scroll-mt-20 py-16 lg:py-24"
-    >
+    <section id="home" className="scroll-mt-20 py-16 lg:py-24">
+      <SiteContainer>
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div className="animate-fade-in-up order-2 lg:order-1">
           <p className="eyebrow text-accent">{t("eyebrow")}</p>
@@ -64,6 +63,7 @@ export default async function Hero({ resume }: HeroProps) {
           </div>
         </div>
       </div>
+      </SiteContainer>
     </section>
   );
 }

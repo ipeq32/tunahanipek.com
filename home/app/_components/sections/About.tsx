@@ -1,12 +1,14 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
+
 export default async function About() {
   const t = await getTranslations("About");
   const paragraphs = t.raw("paragraphs") as string[];
 
   return (
     <section id="about" className="scroll-mt-20 py-12 lg:py-16">
-      <div className="section-container">
+      <SiteContainer>
         <div className="relative rounded-3xl border border-border bg-card p-8 shadow-lg sm:p-10 lg:p-12">
           <span className="absolute right-6 top-6 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
             {t("badge")}
@@ -25,7 +27,7 @@ export default async function About() {
             </div>
           </div>
         </div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }

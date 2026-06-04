@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { site } from "@/app/_content/site";
 import { ToggleLanguage } from "@/app/_components/controls/ToggleLanguage";
 import { ToggleTheme } from "@/app/_components/controls/ToggleTheme";
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { NavbarLogo } from "./NavbarLogo";
 
 const CONTACT_SECTION = "#contact";
@@ -36,7 +37,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 glass-nav">
-      <div className="section-container flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+      <SiteContainer className="flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
         <NavbarLogo label={t("logoAria")} wordmark={t("wordmark")} />
 
         <nav
@@ -88,12 +89,13 @@ export default function Navbar() {
             )}
           </button>
         </div>
-      </div>
+      </SiteContainer>
 
       {mobileOpen ? (
         <div className="border-t border-border bg-background lg:hidden">
-          <nav
-            className="section-container flex flex-col gap-1 py-4"
+          <SiteContainer
+            as="nav"
+            className="flex flex-col gap-1 py-4"
             aria-label={t("menuAria")}
           >
             {navItems.map((item) =>
@@ -130,7 +132,7 @@ export default function Navbar() {
             >
               {t("hireMe")}
             </a>
-          </nav>
+          </SiteContainer>
         </div>
       ) : null}
     </header>

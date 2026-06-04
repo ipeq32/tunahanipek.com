@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
 
 export default async function Skills() {
@@ -7,7 +8,7 @@ export default async function Skills() {
 
   return (
     <section className="py-12 lg:py-16">
-      <div className="section-container">
+      <SiteContainer>
         <div className="text-center">
           <p className="eyebrow">{t("eyebrow")}</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
@@ -30,7 +31,7 @@ export default async function Skills() {
             </div>
           ))}
         </div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }

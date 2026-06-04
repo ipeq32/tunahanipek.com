@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
+
 type ExperienceItem = {
   company: string;
   role: string;
@@ -13,7 +15,7 @@ export default async function Experience() {
 
   return (
     <section id="experience" className="scroll-mt-20 py-12 lg:py-16">
-      <div className="section-container">
+      <SiteContainer>
         <div className="text-center">
           <p className="eyebrow">{t("eyebrow")}</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground">
@@ -41,7 +43,7 @@ export default async function Experience() {
             </article>
           ))}
         </div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }

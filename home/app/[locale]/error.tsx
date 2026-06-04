@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { Link } from "@/navigation";
 
 export default function Error({
@@ -22,7 +23,10 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="section-container flex min-h-[60vh] flex-col items-center justify-center text-center">
+    <SiteContainer
+      as="main"
+      className="flex min-h-[60vh] flex-col items-center justify-center text-center"
+    >
       <h1 className="text-2xl font-semibold text-foreground">{t("title")}</h1>
       <p className="mt-3 text-muted-foreground">{t("description")}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -33,6 +37,6 @@ export default function Error({
           {t("home")}
         </Link>
       </div>
-    </main>
+    </SiteContainer>
   );
 }

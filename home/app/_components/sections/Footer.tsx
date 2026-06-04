@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
 import type { PublicResume } from "@/app/_lib/resume";
 import { Link } from "@/navigation";
@@ -31,7 +32,7 @@ export default async function Footer({ resume }: FooterProps) {
 
   return (
     <footer className="border-t border-border py-10">
-      <div className="section-container flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <SiteContainer className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
             href="/"
@@ -57,7 +58,7 @@ export default async function Footer({ resume }: FooterProps) {
             </a>
           ))}
         </div>
-      </div>
+      </SiteContainer>
     </footer>
   );
 }

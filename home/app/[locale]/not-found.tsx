@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
 import { Link } from "@/navigation";
 
@@ -7,7 +8,10 @@ export default async function LocaleNotFound() {
   const t = await getTranslations("NotFound");
 
   return (
-    <main className="section-container flex min-h-[60vh] flex-col items-center justify-center text-center">
+    <SiteContainer
+      as="main"
+      className="flex min-h-[60vh] flex-col items-center justify-center text-center"
+    >
       <p className="text-8xl font-bold text-accent/20">404</p>
       <h1 className="mt-2 text-2xl font-semibold text-foreground">
         {t("title")}
@@ -21,6 +25,6 @@ export default async function LocaleNotFound() {
           {t("blog")}
         </a>
       </div>
-    </main>
+    </SiteContainer>
   );
 }
