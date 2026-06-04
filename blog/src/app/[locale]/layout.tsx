@@ -13,6 +13,7 @@ import { AuthSessionProvider } from '@/components/providers/auth-session-provide
 import { Toaster } from '@/components/ui/sonner';
 import { auth } from '@/auth';
 import { CookieConsent } from '@/components/cookie-consent';
+import InitialLoader from '@/components/loading/InitialLoader';
 import { SiteAnalytics } from '@/components/site-analytics';
 import { getMetadataBase } from '@/lib/page-metadata';
 import { getSiteUrl } from '@/config';
@@ -128,11 +129,13 @@ export default async function LocaleLayout({
     >
       <NextIntlClientProvider messages={messages} locale={locale} now={now}>
         <AuthSessionProvider session={session}>
-          {children}
-          {authModal}
-          <Toaster position="bottom-right" />
-          <CookieConsent />
-          <SiteAnalytics />
+          <InitialLoader>
+            {children}
+            {authModal}
+            <Toaster position="bottom-right" />
+            <CookieConsent />
+            <SiteAnalytics />
+          </InitialLoader>
         </AuthSessionProvider>
       </NextIntlClientProvider>
     </ThemeProvider>

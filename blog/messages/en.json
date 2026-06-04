@@ -1019,6 +1019,9 @@
       }
     }
   },
+  "Loader": {
+    "ariaLabel": "Loading page"
+  },
   "A11y": {
     "skipToContent": "Skip to main content",
     "loading": "Loading"

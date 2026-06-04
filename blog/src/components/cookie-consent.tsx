@@ -3,19 +3,25 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { useAppReady } from '@/context/app-ready-context';
 
 export const COOKIE_CONSENT_KEY = 'cookie-consent';
 
 export function CookieConsent() {
   const t = useTranslations('CookieConsent');
+  const appReady = useAppReady();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    if (!appReady) {
+      return;
+    }
+
     const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!stored) {
       setVisible(true);
     }
-  }, []);
+  }, [appReady]);
 
   const setConsent = (value: 'accepted' | 'declined') => {
     localStorage.setItem(COOKIE_CONSENT_KEY, value);
@@ -34,7 +40,7 @@ export function CookieConsent() {
       role="dialog"
       aria-labelledby={titleId}
       aria-live="polite"
-      className="fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/95 p-4 shadow-lg backdrop-blur-xl md:left-auto md:right-6"
+      className="fixed bottom-4 left-4 right-4 z-[90] mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/95 p-4 shadow-lg backdrop-blur-xl md:left-auto md:right-6"
     >
       <p id={titleId} className="text-sm font-semibold text-foreground">
         {t('title')}

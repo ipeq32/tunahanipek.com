@@ -1019,6 +1019,9 @@
       }
     }
   },
+  "Loader": {
+    "ariaLabel": "Sayfa yükleniyor"
+  },
   "A11y": {
     "skipToContent": "Ana içeriğe geç",
     "loading": "Yükleniyor"

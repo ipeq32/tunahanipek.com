@@ -274,40 +274,127 @@
   outline: none;
 }
 
-/* Auth logo animation (legacy) */
+/* Signature logo draw animation (navbar / loader) */
 @layer components {
-  #logo {
-    width: 50%;
-    height: 50%;
-    fill: none;
-    stroke: #fff !important;
+  .loader-logo-emphasis {
+    filter: saturate(1.2) contrast(1.1)
+      drop-shadow(0 2px 10px hsl(var(--accent) / 0.35));
+  }
+
+  .dark .loader-logo-emphasis {
+    filter: saturate(1.35) contrast(1.15)
+      drop-shadow(0 0 14px hsl(199 89% 55% / 0.45))
+      drop-shadow(0 0 6px hsl(160 84% 45% / 0.3));
+  }
+
+  .st0,
+  .st1 {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
   }
 
   .st0 {
-    stroke-dasharray: 4800;
-    animation: logo-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72);
-    width: 100%;
-    z-index: 999;
+    animation: signature-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
   }
 
   .st1 {
-    stroke-dasharray: 4800;
-    animation: logo-draw 4s ease-in both;
-    width: 100%;
-    z-index: 999;
+    animation: signature-draw 4s ease-in forwards;
+    animation-fill-mode: both;
   }
 
-  @keyframes logo-draw {
+  .st0-loop {
+    animation: signature-draw-loop-accent 4s ease-in infinite;
+  }
+
+  .st1-loop {
+    animation: signature-draw-loop-main 5s ease-in infinite;
+  }
+
+  @keyframes signature-draw {
     from {
-      stroke-dashoffset: 4800;
+      stroke-dashoffset: 1;
     }
     to {
       stroke-dashoffset: 0;
     }
   }
 
-  #preloader {
-    @apply flex h-full w-full items-center justify-center bg-transparent;
+  @keyframes signature-draw-loop-main {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 0.45;
+    }
+    60% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    85% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes signature-draw-loop-accent {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 0.35;
+    }
+    55% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    80% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0.35;
+    }
+  }
+
+  .preloader-overlay {
+    @apply fixed inset-0 z-[200] flex items-center justify-center;
+    background: radial-gradient(
+      circle at 50% 35%,
+      hsl(var(--accent) / 0.12),
+      hsl(var(--background) / 0.92) 65%
+    );
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .dark .preloader-overlay {
+    background: radial-gradient(
+      circle at 50% 35%,
+      hsl(199 89% 48% / 0.14),
+      hsl(222 47% 6% / 0.9) 65%
+    );
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .preloader-content {
+    @apply relative z-[101];
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .st0,
+    .st1,
+    .st0-loop,
+    .st1-loop {
+      animation: none;
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+
+    .preloader-overlay {
+      display: none;
+    }
   }
 }
 
