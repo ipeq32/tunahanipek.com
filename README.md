@@ -151,7 +151,7 @@ BLOG_API_URL=http://localhost:3000 yarn build
 BLOG_API_URL=http://localhost:3000 yarn start   # http://localhost:3001
 ```
 
-Neon / uzak DB ile prod şema testi: [`blog/README.md`](blog/README.md) → *Veritabanı ve migration'lar*.
+Neon / uzak DB ile prod şema güncellemesi: aşağıdaki [Blog veritabanı ve migration'lar](#blog-veritabanı-ve-migrationlar).
 
 ---
 
@@ -170,6 +170,69 @@ docker compose ps
 docker compose --profile dev restart blog-dev
 docker compose exec database psql -U postgres -d postgres
 ```
+
+---
+
+## Blog veritabanı ve migration'lar
+
+Blog şeması Prisma ile yönetilir (`blog/prisma/`). **Geliştirme** genelde `db push` kullanır (Docker `dev`, `yarn generate-local`). **Üretim** (Neon, Vercel, Docker `full`) ise `prisma migrate deploy` bekler — container girişinde de bu çalışır (`blog/docker-entrypoint.sh`).
+
+### Neden `migrate deploy` bazen patlar? (P3005)
+
+Neon / eski prod DB ilk kez **`db push`** ile kurulduysa tablolar vardır ama `_prisma_migrations` geçmişi migration dosyalarıyla uyumlu değildir. O zaman:
+
+```text
+Error: P3005
+The database schema is not empty.
+```
+
+`prisma/migrations` altında dosyalar olsa bile Prisma “boş olmayan DB’ye migration history’siz dokunma” der.
+
+### Kalıcı çözüm: baseline (tek seferlik)
+
+Mevcut DB şeması, repodaki tüm migration’larla **zaten uyumluysa** (çoğu zaman `db push` sonrası böyledir), migration’ları “uygulandı” diye işaretle — **baseline**:
+
+```powershell
+cd blog
+$env:POSTGRES_PRISMA_URL = "<neon-pooler-url>"
+# İsteğe bağlı, migrate için doğrudan bağlantı:
+# $env:POSTGRES_URL_NON_POOLING = "<neon-direct-url>"
+
+yarn db:baseline --force
+yarn db:migrate:deploy
+```
+
+`db:baseline` → `blog/prisma/baseline.ts` — `prisma/migrations` içindeki her klasör için `migrate resolve --applied` çalıştırır. Onay: `--force` veya `CONFIRM_DB_BASELINE=true`.
+
+**Bundan sonra** yeni özellikler:
+
+```bash
+cd blog
+npx prisma migrate dev --name aciklayici_isim   # local: migration dosyası üret
+yarn db:migrate:deploy                          # Neon / prod: sadece bekleyenleri uygula
+```
+
+Üretimde tekrar `db push` ile şema güncelleme — drift ve P3005 riski.
+
+### Acil durum: `db push` (baseline yokken)
+
+Migration geçmişi düzeltilmeden şemayı hızlıca `schema.prisma` ile hizalamak için (veri kaybı riski):
+
+```powershell
+cd blog
+$env:POSTGRES_PRISMA_URL = "<neon-url>"
+npx prisma db push --accept-data-loss
+```
+
+Bu geçmişi düzeltmez; kalıcı yol yine baseline + `migrate deploy`. Ayrıntılı notlar: [`blog/README.md`](blog/README.md#veritabanı-ve-migrationlar).
+
+| Ortam | Şema güncelleme |
+|-------|-----------------|
+| Local / Docker `dev` | `db push` (`generate-local`, compose `blog-dev`) |
+| Neon / Docker `full` / Vercel | `migrate deploy` (baseline sonrası) |
+| Geçmiş bozuk + acil | `db push --accept-data-loss` → sonra baseline |
+
+---
 
 ## Ortam değişkenleri
 
@@ -193,5 +256,7 @@ Blog ayrıntıları: [`blog/.env.template`](blog/.env.template) ve [`blog/README
 
 ## Dokümantasyon
 
+- [Blog veritabanı ve migration'lar](#blog-veritabanı-ve-migrationlar) (baseline, P3005, Neon)
+- [Blog README](blog/README.md) — kurulum, Docker, migration ayrıntıları
 - [Blog API](blog/docs/API.md)
 - [Blog TODO](blog/TODO.md) (tamamlandı)

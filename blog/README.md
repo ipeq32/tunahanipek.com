@@ -79,6 +79,8 @@ Docker `full` için `.env`’de `NEXT_PUBLIC_API_URL` ve `NEXTAUTH_URL` mutlaka 
 
 ## Veritabanı ve migration'lar
 
+Özet ve monorepo bağlamı: [kök README — Blog veritabanı ve migration'lar](../README.md#blog-veritabanı-ve-migrationlar).
+
 ### Geliştirme (local)
 
 `yarn generate-local` → `prisma generate` + `db push` + seed. Hızlı iterasyon için uygundur.
