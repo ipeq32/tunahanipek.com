@@ -15,13 +15,12 @@ import {
 import { Button } from '../ui/button';
 import CallMeFeature from './_features/CallMe';
 import GetContactFeature from './_features/GetContact';
-import Link from 'next/link';
 import LogoFeature from './_features/Logo';
 import { Skeleton } from '../ui/skeleton';
 import { useSession } from 'next-auth/react';
 import MenuLinkFeature from './_features/MenuLink';
 import handleSignout from '@/actions/handleSignout';
-import { usePathname } from '@/navigation';
+import { Link, usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -85,7 +84,10 @@ const Navbar = () => {
             <ProfileDropdownMenuFeature user={user} onLogout={handleLogout} />
           ) : (
             <Link
-              href={`/auth/login?callback=${encodeURIComponent(from)}`}
+              href={{
+                pathname: '/auth/login',
+                query: { callback: from },
+              }}
               className="w-max"
             >
               <Button variant="accent" size="sm">
@@ -142,7 +144,10 @@ const Navbar = () => {
                     />
                   ) : (
                     <Link
-                      href={`/auth/login?callback=${encodeURIComponent(from)}`}
+                      href={{
+                        pathname: '/auth/login',
+                        query: { callback: from },
+                      }}
                       className="w-full"
                     >
                       <Button variant="accent" className="w-full">

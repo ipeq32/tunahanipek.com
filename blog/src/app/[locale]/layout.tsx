@@ -131,11 +131,11 @@ export default async function LocaleLayout({
         <AuthSessionProvider session={session}>
           <InitialLoader>
             {children}
-            {authModal}
             <Toaster position="bottom-right" />
             <CookieConsent />
             <SiteAnalytics />
           </InitialLoader>
+          {authModal}
         </AuthSessionProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
