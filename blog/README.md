@@ -35,6 +35,63 @@ yarn dev
 | `VERCEL_URL` | Host fallback (Vercel / Docker) |
 | `ALLOW_PUBLIC_REGISTRATION` | `false` ile kayıt kapatılır |
 
+## Veritabanı ve migration'lar
+
+### Geliştirme (local)
+
+`yarn generate-local` → `prisma generate` + `db push` + seed. Hızlı iterasyon için uygundur.
+
+### Üretim — normal akış (baseline sonrası)
+
+Şema değişikliği eklerken migration dosyası üretin, ardından üretime deploy edin:
+
+```bash
+# Geliştirme: yeni migration oluştur
+npx prisma migrate dev --name aciklayici_isim
+
+# Üretim (Neon): sadece bekleyen migration'ları uygula
+yarn db:migrate:deploy
+# veya: yarn generate-prod   # generate + migrate deploy
+```
+
+Docker üretim girişinde (`docker-entrypoint.sh`) zaten `prisma migrate deploy` çalışır.
+
+### P3005 — neden oluyor?
+
+Üretim veritabanı ilk kurulumda `db push` ile oluşturulduysa `_prisma_migrations` geçmişi yoktur veya migration dosyalarıyla uyumsuzdur. Bu durumda `migrate deploy` şu hatayı verir:
+
+```text
+Error: P3005
+The database schema is not empty.
+```
+
+**Kalıcı çözüm (tek seferlik baseline):** Mevcut şemanın `prisma/migrations` altındaki tüm migration'larla uyumlu olduğundan emin olun, sonra geçmişi işaretleyin:
+
+```powershell
+cd blog
+$env:POSTGRES_PRISMA_URL = "<neon-pooler-url>"
+# Mümkünse migrate için doğrudan bağlantı (pgbouncer olmadan):
+# $env:POSTGRES_URL_NON_POOLING = "<neon-direct-url>"
+
+yarn db:baseline --force
+yarn db:migrate:deploy
+```
+
+Bundan sonra yeni özellikler için `migrate dev` + `migrate deploy` kullanın; üretimde `db push` ile şema güncellemeyin (drift ve P3005 tekrarlar).
+
+### Acil durum — `migrate deploy` çalışmıyorsa (`db push`)
+
+Baseline yapılmadan veya migration geçmişi henüz düzeltilmeden şemayı hızlıca eşitlemek için (veri kaybı riski — dikkatli kullanın):
+
+```powershell
+cd blog
+$env:POSTGRES_PRISMA_URL = "<neon-pooler-url>"
+
+npx prisma db push --accept-data-loss
+```
+
+Bu yol şemayı `schema.prisma` ile hizalar ancak migration geçmişini düzeltmez; kalıcı çözüm yine `yarn db:baseline --force` sonrası `migrate deploy` akışıdır.
+
 ## Seed admin (geliştirme)
 
 `yarn seed` sonrası: `admin@admin.com` / `1234asdf` (sadece dev ortamı).

@@ -16,8 +16,10 @@
     "test:e2e": "playwright test",
     "prepare": "husky",
     "generate-local": "npx prisma generate && npx prisma db push && yarn seed",
-    "generate-prod": "npx prisma generate && npx prisma db push",
+    "generate-prod": "npx prisma generate && npx prisma migrate deploy",
     "seed": "npx prisma db seed",
+    "db:baseline": "ts-node -P prisma/tsconfig.json prisma/baseline.ts",
+    "db:migrate:deploy": "npx prisma migrate deploy",
     "db:reset": "ts-node -P prisma/tsconfig.json prisma/reset.ts",
     "db:reset:seed": "yarn db:reset --force && yarn seed"
   },
