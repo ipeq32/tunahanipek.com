@@ -64,6 +64,21 @@
     @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-accent/50 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
   }
 
+  .resume-dialog {
+    position: fixed;
+    inset: 0;
+    width: min(calc(100% - 2rem), 28rem);
+    height: fit-content;
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  }
+
   .resume-dialog::backdrop {
     @apply bg-black/60 backdrop-blur-sm;
   }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Download, X } from "lucide-react";
 
@@ -21,6 +22,11 @@ export default function ResumeModal({
 }: ResumeModalProps) {
   const t = useTranslations("ResumeModal");
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -46,11 +52,15 @@ export default function ResumeModal({
     return () => dialog.removeEventListener("cancel", handleCancel);
   }, [onClose]);
 
-  return (
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="resume-dialog fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/60 open:animate-in"
+      className="resume-dialog"
       aria-labelledby="resume-modal-title"
     >
       <div className="relative p-6 sm:p-8">
@@ -97,7 +107,11 @@ export default function ResumeModal({
             href={site.social.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className={resume ? "btn-outline w-full justify-center" : "btn-primary w-full justify-center"}
+            className={
+              resume
+                ? "btn-outline w-full justify-center"
+                : "btn-primary w-full justify-center"
+            }
             onClick={onClose}
           >
             <LinkedinIcon className="h-4 w-4" />
@@ -105,10 +119,13 @@ export default function ResumeModal({
           </a>
 
           {!resume && (
-            <p className="text-center text-xs text-muted-foreground">{t("noPdfHint")}</p>
+            <p className="text-center text-xs text-muted-foreground">
+              {t("noPdfHint")}
+            </p>
           )}
         </div>
       </div>
-    </dialog>
+    </dialog>,
+    document.body
   );
 }
