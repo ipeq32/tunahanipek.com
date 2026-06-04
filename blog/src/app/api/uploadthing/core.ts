@@ -10,10 +10,18 @@ const f = createUploadthing();
 const AVATAR_UPLOAD_LIMIT = 10;
 const AVATAR_UPLOAD_WINDOW_MS = 15 * 60 * 1000;
 
-export const ourFileRouter = {
-  imageUploader: f({
+type AuthImageRoute =
+  | 'blogImageUploader'
+  | 'projectImageUploader'
+  | 'profileImageUploader';
+
+/** Blog / proje / profil görselleri — UploadThing panelinde ayrı Route olarak görünür. */
+function authImageRoute(endpoint: AuthImageRoute) {
+  const config = UPLOAD_CONFIG[endpoint];
+
+  return f({
     image: {
-      maxFileSize: UPLOAD_CONFIG.imageUploader.maxFileSize,
+      maxFileSize: config.maxFileSize,
       maxFileCount: 1,
     },
   })
@@ -29,7 +37,13 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => ({
       uploadedBy: metadata.userId,
       url: file.ufsUrl,
-    })),
+    }));
+}
+
+export const ourFileRouter = {
+  blogImageUploader: authImageRoute('blogImageUploader'),
+  projectImageUploader: authImageRoute('projectImageUploader'),
+  profileImageUploader: authImageRoute('profileImageUploader'),
 
   /**
    * Kayıt akışında kullanılan herkese açık avatar yükleyici. Kullanıcı henüz
@@ -58,7 +72,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl })),
 
-  /** Site özgeçmişi (PDF) — yalnızca SUPER_ADMIN; görsel yüklemelerden ayrı endpoint. */
+  /** Site özgeçmişi (PDF) — görsellerden tamamen ayrı route; yalnızca SUPER_ADMIN. */
   cvUploader: f({
     pdf: {
       maxFileSize: UPLOAD_CONFIG.cvUploader.maxFileSize,
@@ -76,7 +90,7 @@ export const ourFileRouter = {
         throw new UploadThingError('Forbidden');
       }
 
-      return { userId: session.user.id, customId: 'resumes' };
+      return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       uploadedBy: metadata.userId,

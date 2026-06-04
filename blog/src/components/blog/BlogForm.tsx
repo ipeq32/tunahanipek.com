@@ -171,6 +171,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       onChange={field.onChange}
                       disabled={form.formState.isSubmitting}
                       heightClassName="h-48"
+                      endpoint="blogImageUploader"
                       cleanup={imageCleanup}
                     />
                     <FormMessage />
@@ -190,6 +191,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       onChange={field.onChange}
                       disabled={form.formState.isSubmitting}
                       heightClassName="h-48"
+                      endpoint="blogImageUploader"
                       cleanup={imageCleanup}
                     />
                     <FormMessage />

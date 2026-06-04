@@ -38,7 +38,7 @@ export default function ImageUpload({
   disabled,
   className,
   heightClassName = 'h-44',
-  endpoint = 'imageUploader',
+  endpoint = 'profileImageUploader',
   variant = 'rect',
   cleanup,
 }: ImageUploadProps) {

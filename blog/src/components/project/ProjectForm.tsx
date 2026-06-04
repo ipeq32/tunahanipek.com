@@ -103,6 +103,7 @@ export default function ProjectForm({
                   value={field.value}
                   onChange={field.onChange}
                   disabled={form.formState.isSubmitting}
+                  endpoint="projectImageUploader"
                   cleanup={imageCleanup}
                 />
                 <FormMessage />

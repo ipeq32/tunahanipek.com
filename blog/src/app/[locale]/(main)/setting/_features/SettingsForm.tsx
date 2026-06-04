@@ -229,6 +229,7 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
                       onChange={field.onChange}
                       disabled={profileSubmitting}
                       heightClassName="h-48"
+                      endpoint="profileImageUploader"
                       cleanup={imageCleanup}
                     />
                     <FormMessage />
