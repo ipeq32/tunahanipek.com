@@ -22,6 +22,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import ImageUpload from '@/components/upload/ImageUpload';
+import AddressFields from '@/components/address/AddressFields';
+import {
+  addressFormValuesSchema,
+  emptyAddressFormValues,
+  formValuesToAddressData,
+} from '@/lib/address/types';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -78,14 +84,7 @@ export default function RegisterForm() {
       .min(10, {
         message: t('Schema.Phone.minMessage'),
       }),
-    address: z
-      .string({
-        required_error: t('Schema.Address.stringRequiredError'),
-        invalid_type_error: t('Schema.Address.stringInvalidTypeError'),
-      })
-      .min(10, {
-        message: t('Schema.Address.minMessage'),
-      }),
+    addressData: addressFormValuesSchema,
     website: z.optional(
       z
         .string({
@@ -127,7 +126,7 @@ export default function RegisterForm() {
       },
       name: '',
       phone: '',
-      address: '',
+      addressData: { ...emptyAddressFormValues },
       website: undefined,
       image: undefined,
       bio: undefined,
@@ -141,11 +140,13 @@ export default function RegisterForm() {
       passwordForm: { password, passwordConfirm },
       name,
       phone,
-      address,
+      addressData: addressFormValues,
       website,
       image,
       bio,
     } = data;
+
+    const addressData = formValuesToAddressData(addressFormValues);
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -159,7 +160,7 @@ export default function RegisterForm() {
           passwordConfirm,
           name,
           phone,
-          address,
+          addressData,
           website,
           image,
           bio,
@@ -350,19 +351,14 @@ export default function RegisterForm() {
         <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
           <FormField
             control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel className="text-xs text-foreground">
-                  {t('Form.Address.label')}{' '}
-                  <span className="text-rose-500">*</span>
-                </FormLabel>
+            name="addressData"
+            render={() => (
+              <FormItem className="w-full sm:col-span-2">
                 <FormControl>
-                  <Textarea
-                    className="w-full resize-none"
-                    placeholder={t('Form.Address.placeholder')}
-                    {...field}
-                    rows={3}
+                  <AddressFields
+                    control={form.control}
+                    name="addressData"
+                    variant="register"
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-rose-400" />

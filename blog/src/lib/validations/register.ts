@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { addressDataSchema } from '@/lib/address/types';
 
 export const registerSchema = z
   .object({
@@ -7,7 +8,7 @@ export const registerSchema = z
     passwordConfirm: z.string().min(6),
     name: z.string().min(3),
     phone: z.string().min(10),
-    address: z.string().min(10),
+    addressData: addressDataSchema,
     website: z.string().url().optional().or(z.literal('')),
     image: z.string().url().optional().or(z.literal('')),
     bio: z.string().min(10).optional().or(z.literal('')),

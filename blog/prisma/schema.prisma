@@ -22,6 +22,7 @@ model User {
   name                String
   phone               String
   address             String
+  addressData         Json?
   website             String?
   image               String?
   bio                 String?

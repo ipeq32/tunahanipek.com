@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { formatAddressLine } from '@/lib/address/format';
 import { registerSchema } from '@/lib/validations/register';
+import type { Prisma } from '@prisma/client';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { isPublicRegistrationEnabled } from '@/lib/public-registration';
 
@@ -50,11 +52,13 @@ export async function POST(request: Request) {
       password,
       name,
       phone,
-      address,
+      addressData,
       website,
       image,
       bio,
     } = parsed.data;
+
+    const address = formatAddressLine(addressData);
 
     const existing = await prisma.user.findUnique({
       where: { email },
@@ -76,6 +80,7 @@ export async function POST(request: Request) {
         name,
         phone,
         address,
+        addressData: addressData as Prisma.InputJsonValue,
         website: website || null,
         image: image || null,
         bio: bio || null,

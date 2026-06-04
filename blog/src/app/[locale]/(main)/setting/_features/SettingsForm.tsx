@@ -31,18 +31,23 @@ import {
   KeyRound,
   Loader2,
   Lock,
-  MapPin,
   Phone,
   type LucideIcon,
   UserRound,
 } from 'lucide-react';
 import { ReactNode } from 'react';
 import ResumeSettingsSection from './ResumeSettingsSection';
+import AddressFields from '@/components/address/AddressFields';
+import {
+  addressFormValuesSchema,
+  formValuesToAddressData,
+  type AddressFormValues,
+} from '@/lib/address/types';
 
 const profileSchema = z.object({
   name: z.string().min(3),
   phone: z.string().min(10),
-  address: z.string().min(10),
+  addressData: addressFormValuesSchema,
   website: z.string().url().optional().or(z.literal('')),
   image: z.string().url().optional().or(z.literal('')),
   bio: z.string().optional().or(z.literal('')),
@@ -62,7 +67,7 @@ const passwordSchema = z
 export type SettingsUserValues = {
   name: string;
   phone: string;
-  address: string;
+  addressData: AddressFormValues;
   website: string;
   image: string;
   bio: string;
@@ -177,12 +182,20 @@ export default function SettingsForm({
 
   const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
+      const addressData = formValuesToAddressData(values.addressData);
       const res = await fetch(
         `/api/user/profile`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(values),
+          body: JSON.stringify({
+            name: values.name,
+            phone: values.phone,
+            addressData,
+            website: values.website,
+            image: values.image,
+            bio: values.bio,
+          }),
         }
       );
       if (!res.ok) throw new Error('Failed');
@@ -276,11 +289,21 @@ export default function SettingsForm({
                   placeholder={t('urlPlaceholder')}
                 />
 
-                <IconField
+                <FormField
                   control={profileForm.control}
-                  name="address"
-                  label={t('address')}
-                  icon={MapPin}
+                  name="addressData"
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <AddressFields
+                          control={profileForm.control}
+                          name="addressData"
+                          variant="settings"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
 
                 <FormField

@@ -3,13 +3,16 @@ import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { formatAddressLine } from '@/lib/address/format';
+import { addressDataSchema } from '@/lib/address/types';
+import type { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
 const profileSchema = z.object({
   name: z.string().min(3),
   phone: z.string().min(10),
-  address: z.string().min(10),
+  addressData: addressDataSchema,
   website: z.string().url().optional().or(z.literal('')),
   image: z.string().url().optional().or(z.literal('')),
   bio: z.string().optional().or(z.literal('')),
@@ -33,7 +36,8 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { name, phone, address, website, image, bio } = parsed.data;
+    const { name, phone, addressData, website, image, bio } = parsed.data;
+    const address = formatAddressLine(addressData);
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
@@ -41,6 +45,7 @@ export async function PATCH(request: Request) {
         name,
         phone,
         address,
+        addressData: addressData as Prisma.InputJsonValue,
         website: website || null,
         image: image || null,
         bio: bio || null,
@@ -51,6 +56,7 @@ export async function PATCH(request: Request) {
         email: true,
         phone: true,
         address: true,
+        addressData: true,
         website: true,
         image: true,
         bio: true,

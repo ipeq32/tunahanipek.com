@@ -15,7 +15,20 @@ async function seedAdminUser() {
       name: 'Admin',
       hashedPassword: password,
       role: 'SUPER_ADMIN',
-      address: 'Admin address',
+      address:
+        'Atatürk Mah., İstiklal Cad. No 1, Kadıköy/İstanbul, Türkiye',
+      addressData: {
+        version: 1,
+        countryCode: 'TR',
+        countryName: 'Türkiye',
+        provinceId: 34,
+        provinceName: 'İstanbul',
+        districtId: 1421,
+        districtName: 'Kadıköy',
+        neighborhoodName: 'Atatürk',
+        street: 'İstiklal Cad.',
+        buildingNo: '1',
+      },
       phone: '1234567890',
     },
   });
