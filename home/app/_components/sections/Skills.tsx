@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
@@ -15,15 +16,17 @@ export default async function Skills() {
             {t("title")}
           </h2>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {site.skills.map((skill) => (
             <div key={skill.name} className="skill-card">
-              <span
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold text-white shadow-sm"
-                style={{ backgroundColor: skill.color }}
-                aria-hidden
-              >
-                {skill.name.charAt(0)}
+              <span className="skill-card-icon" aria-hidden>
+                <Image
+                  src={skill.icon}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="h-9 w-9 object-contain"
+                />
               </span>
               <span className="text-sm font-semibold text-foreground">
                 {skill.name}
