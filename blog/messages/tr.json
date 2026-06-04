@@ -670,7 +670,9 @@
         "Fail": {
           "title": "Giriş başarısız oldu.",
           "description": "Bilinmeyen bir hata oluştu.",
-          "responseError": "Ağ yanıtı iyi değildi."
+          "responseError": "Ağ yanıtı iyi değildi.",
+          "invalidCredentials": "E-posta veya şifre hatalı.",
+          "rateLimited": "Çok fazla deneme. Lütfen daha sonra tekrar deneyin."
         }
       },
       "Schema": {
@@ -742,7 +744,10 @@
           "title": "Kayıt Başarısız.",
           "description": "Bilinmeyen bir hata oluştu.",
           "responseError": "Ağ yanıtı iyi değildi.",
-          "exist": "Bu e-posta zaten bir kullanıcı tarafından kullanılıyor."
+          "exist": "Bu e-posta zaten bir kullanıcı tarafından kullanılıyor.",
+          "rateLimited": "Çok fazla istek. Lütfen daha sonra tekrar deneyin.",
+          "registrationDisabled": "Kayıt şu anda kapalı.",
+          "validationFailed": "Girilen bilgiler geçersiz."
         }
       },
       "Schema": {

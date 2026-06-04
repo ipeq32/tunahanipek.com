@@ -670,7 +670,9 @@
         "Fail": {
           "title": "Login failed.",
           "description": "An unknown error occurred.",
-          "responseError": "Network response was not ok."
+          "responseError": "Network response was not ok.",
+          "invalidCredentials": "Invalid email or password.",
+          "rateLimited": "Too many attempts. Please try again later."
         }
       },
       "Schema": {
@@ -742,7 +744,10 @@
           "title": "Registration Failed.",
           "description": "An unknown error occurred.",
           "responseError": "Network response was not ok.",
-          "exist": "This e-mail is already used by a user."
+          "exist": "This e-mail is already used by a user.",
+          "rateLimited": "Too many requests. Please try again later.",
+          "registrationDisabled": "Registration is currently disabled.",
+          "validationFailed": "The submitted information is invalid."
         }
       },
       "Schema": {

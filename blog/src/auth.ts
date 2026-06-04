@@ -1,5 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import NextAuth from 'next-auth';
+import { logger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
 
@@ -42,7 +43,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!allowed) {
-          throw new Error('Too many login attempts. Please try again later.');
+          logger.warn('Login rate limit exceeded', { emailKey });
+          return null;
         }
 
         const user = await prisma.user.findUnique({
@@ -52,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!user) {
-          throw new Error('No user found');
+          return null;
         }
 
         const passwordCorrect = await compare(
@@ -61,7 +63,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!passwordCorrect) {
-          throw new Error('Password incorrect');
+          return null;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

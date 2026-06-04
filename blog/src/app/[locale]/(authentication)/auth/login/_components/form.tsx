@@ -8,22 +8,27 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  // FormMessage,
+  FormMessage,
 } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { signIn } from 'next-auth/react';
-import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
 import { useRouter } from '@/navigation';
+import {
+  authToastError,
+  authToastSuccess,
+  firstFieldErrorMessage,
+  mapSignInError,
+} from '@/lib/auth-toast';
+import type { FieldErrors } from 'react-hook-form';
 
 type LoginFormProps = {
   setOpenModal?: (value: boolean) => void;
@@ -54,13 +59,11 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
     },
   });
 
-  useEffect(() => {
-    if (form.formState.errors.email)
-      toast(form.formState.errors.email?.message);
-
-    if (form.formState.errors.password)
-      toast(form.formState.errors.password?.message);
-  }, [form.formState.errors]);
+  const onInvalid = (errors: FieldErrors<FormData>) => {
+    const message =
+      firstFieldErrorMessage(errors) ?? t('Error.Fail.description');
+    authToastError(t('Error.Fail.title'), message);
+  };
 
   const onSubmit = async (data: FormData) => {
     const { email, password } = data;
@@ -72,33 +75,34 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         redirect: false,
       });
 
-      if (!response?.error) {
-        if (setOpenModal) {
-          setOpenModal(false);
-        }
-
-        const callbackPath = searchParams.get('callback');
-        if (callbackPath?.startsWith('/')) {
-          window.location.assign(callbackPath);
-          return;
-        }
-
-        router.push('/');
-        router.refresh();
-        toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
+      if (!response) {
+        authToastError(t('Error.Fail.title'), t('Error.Fail.description'));
+        return;
       }
 
-      if (!response?.ok) {
-        throw new Error(t('Error.Fail.responseError'));
+      if (!response.ok || response.error) {
+        authToastError(
+          t('Error.Fail.title'),
+          mapSignInError(response.error, (key) => t(`Error.Fail.${key}`))
+        );
+        return;
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast(t('Error.Fail.title'), { description: error.message });
-      } else {
-        toast(t('Error.Fail.title'), {
-          description: t('Error.Fail.description'),
-        });
+
+      if (setOpenModal) {
+        setOpenModal(false);
       }
+
+      const callbackPath = searchParams.get('callback');
+      if (callbackPath?.startsWith('/')) {
+        window.location.assign(callbackPath);
+        return;
+      }
+
+      router.push('/');
+      router.refresh();
+      authToastSuccess(t('Error.Ok.title'), t('Error.Ok.description'));
+    } catch {
+      authToastError(t('Error.Fail.title'), t('Error.Fail.description'));
     }
   };
 
@@ -114,7 +118,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
         transition={{ duration: 0.3 }}
       >
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit, onInvalid)}
           className="flex flex-col items-start justify-center text-white rounded-lg gap-y-6 mt-5"
         >
         <FormField
@@ -133,7 +137,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                   type="email"
                 />
               </FormControl>
-              {/* <FormMessage {...field} className="text-xs text-rose-300" /> */}
+              <FormMessage className="text-xs text-rose-400" />
             </FormItem>
           )}
         />
@@ -153,7 +157,7 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                   {...field}
                 />
               </FormControl>
-              {/* <FormMessage {...field} className="text-xs text-rose-300" /> */}
+              <FormMessage className="text-xs text-rose-400" />
             </FormItem>
           )}
         />

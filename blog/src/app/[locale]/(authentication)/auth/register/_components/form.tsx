@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { toast } from 'sonner';
+import { authToastError, authToastSuccess } from '@/lib/auth-toast';
 import { useForm } from 'react-hook-form';
 import { usePathname, useRouter } from '@/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -166,12 +166,34 @@ export default function RegisterForm() {
           bio,
         }),
       });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        message?: string;
+      };
+
       if (!response.ok) {
-        if (response.status === 409) {
-          throw new Error(t('Error.Fail.exist'));
+        let description: string;
+
+        switch (response.status) {
+          case 409:
+            description = t('Error.Fail.exist');
+            break;
+          case 429:
+            description = t('Error.Fail.rateLimited');
+            break;
+          case 403:
+            description = t('Error.Fail.registrationDisabled');
+            break;
+          case 400:
+            description =
+              data.message ?? t('Error.Fail.validationFailed');
+            break;
+          default:
+            description = t('Error.Fail.responseError');
         }
 
-        throw new Error(t('Error.Fail.responseError'));
+        authToastError(t('Error.Fail.title'), description);
+        return;
       }
 
       if (pathname === '/auth/register') {
@@ -181,16 +203,9 @@ export default function RegisterForm() {
         router.push('/auth/login');
       }
 
-      // Process response here
-      toast(t('Error.Ok.title'), { description: t('Error.Ok.description') });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast(t('Error.Fail.title'), { description: error.message });
-      } else {
-        toast(t('Error.Fail.title'), {
-          description: t('Error.Fail.description'),
-        });
-      }
+      authToastSuccess(t('Error.Ok.title'), t('Error.Ok.description'));
+    } catch {
+      authToastError(t('Error.Fail.title'), t('Error.Fail.description'));
     }
   };
 
