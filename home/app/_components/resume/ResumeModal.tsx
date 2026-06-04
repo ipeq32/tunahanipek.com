@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Download, X } from "lucide-react";
@@ -21,7 +21,6 @@ export default function ResumeModal({
   resume,
 }: ResumeModalProps) {
   const t = useTranslations("ResumeModal");
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -29,110 +28,111 @@ export default function ResumeModal({
   }, []);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!open) return;
 
-    if (open && !dialog.open) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    const handleCancel = (event: Event) => {
-      event.preventDefault();
-      onClose();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
     };
 
-    dialog.addEventListener("cancel", handleCancel);
-    return () => dialog.removeEventListener("cancel", handleCancel);
-  }, [onClose]);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
 
-  if (!mounted) {
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  if (!mounted || !open) {
     return null;
   }
 
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDialogElement>) => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      onClose={onClose}
-      onClick={handleBackdropClick}
-      className="resume-dialog"
-      aria-labelledby="resume-modal-title"
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      role="presentation"
     >
-      <div className="resume-dialog-panel relative p-6 sm:p-8">
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-          aria-label={t("close")}
-        >
-          <X className="h-5 w-5" />
-        </button>
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+        aria-label={t("close")}
+        tabIndex={-1}
+      />
 
-        <div className="pr-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-            {t("eyebrow")}
-          </p>
-          <h2
-            id="resume-modal-title"
-            className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl"
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="resume-modal-title"
+        className="relative z-10 w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-card text-foreground shadow-2xl"
+      >
+        <div className="relative p-6 sm:p-8">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            aria-label={t("close")}
           >
-            {t("title")}
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {resume ? t("subtitleWithPdf") : t("subtitleNoPdf")}
-          </p>
-        </div>
+            <X className="h-5 w-5" />
+          </button>
 
-        <div className="mt-8 flex flex-col gap-3">
-          {resume && (
+          <div className="pr-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              {t("eyebrow")}
+            </p>
+            <h2
+              id="resume-modal-title"
+              className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl"
+            >
+              {t("title")}
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {resume ? t("subtitleWithPdf") : t("subtitleNoPdf")}
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3">
+            {resume && (
+              <a
+                href={resume.url}
+                download={resume.fileName}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary w-full justify-center"
+                onClick={onClose}
+              >
+                <Download className="h-4 w-4" />
+                {t("downloadPdf")}
+              </a>
+            )}
+
             <a
-              href={resume.url}
-              download={resume.fileName}
+              href={site.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary w-full justify-center"
+              className={
+                resume
+                  ? "btn-outline w-full justify-center"
+                  : "btn-primary w-full justify-center"
+              }
               onClick={onClose}
             >
-              <Download className="h-4 w-4" />
-              {t("downloadPdf")}
+              <LinkedinIcon className="h-4 w-4" />
+              {t("viewLinkedIn")}
             </a>
-          )}
 
-          <a
-            href={site.social.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={
-              resume
-                ? "btn-outline w-full justify-center"
-                : "btn-primary w-full justify-center"
-            }
-            onClick={onClose}
-          >
-            <LinkedinIcon className="h-4 w-4" />
-            {t("viewLinkedIn")}
-          </a>
-
-          {!resume && (
-            <p className="text-center text-xs text-muted-foreground">
-              {t("noPdfHint")}
-            </p>
-          )}
+            {!resume && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("noPdfHint")}
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </dialog>,
+    </div>,
     document.body
   );
 }
