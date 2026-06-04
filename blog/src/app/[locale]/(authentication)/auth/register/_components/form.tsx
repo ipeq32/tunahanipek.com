@@ -13,6 +13,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { usePathname, useRouter } from '@/navigation';
@@ -275,9 +276,8 @@ export default function RegisterForm() {
                   <span className="text-rose-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     className="w-full"
-                    type="password"
                     placeholder={t('Form.Password.placeholder')}
                     {...field}
                   />
@@ -296,9 +296,8 @@ export default function RegisterForm() {
                   <span className="text-rose-500">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     className="w-full"
-                    type="password"
                     placeholder={t('Form.PasswordConfirm.placeholder')}
                     {...field}
                   />

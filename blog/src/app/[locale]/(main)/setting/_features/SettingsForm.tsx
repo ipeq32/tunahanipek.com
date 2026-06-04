@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Textarea } from '@/components/ui/textarea';
 import ImageUpload from '@/components/upload/ImageUpload';
 import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
@@ -127,13 +128,22 @@ function IconField<T extends FieldValues>({
           <div className="relative">
             <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <FormControl>
-              <Input
-                type={type}
-                placeholder={placeholder}
-                autoComplete={autoComplete}
-                className="pl-9"
-                {...field}
-              />
+              {type === 'password' ? (
+                <PasswordInput
+                  placeholder={placeholder}
+                  autoComplete={autoComplete}
+                  className="pl-9"
+                  {...field}
+                />
+              ) : (
+                <Input
+                  type={type}
+                  placeholder={placeholder}
+                  autoComplete={autoComplete}
+                  className="pl-9"
+                  {...field}
+                />
+              )}
             </FormControl>
           </div>
           <FormMessage />

@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -66,13 +66,11 @@ export default function ResetPasswordForm() {
       onSubmit={form.handleSubmit(onSubmit)}
       className="w-[600px] max-md:w-full space-y-4"
     >
-      <Input
-        type="password"
+      <PasswordInput
         placeholder={t('passwordPlaceholder')}
         {...form.register('password')}
       />
-      <Input
-        type="password"
+      <PasswordInput
         placeholder={t('passwordConfirmPlaceholder')}
         {...form.register('passwordConfirm')}
       />

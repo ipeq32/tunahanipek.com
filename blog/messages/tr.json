@@ -1034,6 +1034,12 @@
     "accept": "Kabul et",
     "decline": "Yalnızca gerekli"
   },
+  "Ui": {
+    "Password": {
+      "show": "Şifreyi göster",
+      "hide": "Şifreyi gizle"
+    }
+  },
   "Footer": {
     "mottos": [
       "while (uyku &lt; yeterli) { kahve++; }",

@@ -1034,6 +1034,12 @@
     "accept": "Accept",
     "decline": "Essential only"
   },
+  "Ui": {
+    "Password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    }
+  },
   "Footer": {
     "mottos": [
       "while (sleep &lt; enough) { coffee++; }",

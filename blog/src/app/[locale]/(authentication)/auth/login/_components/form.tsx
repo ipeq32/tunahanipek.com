@@ -13,6 +13,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -146,11 +147,10 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
                 <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl className="w-full">
-                <Input
+                <PasswordInput
                   className="text-black dark:text-white w-full"
                   placeholder={t('Form.Password.placeholder')}
                   {...field}
-                  type="password"
                 />
               </FormControl>
               {/* <FormMessage {...field} className="text-xs text-rose-300" /> */}
