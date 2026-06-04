@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { buildAdminResumePreviewSrc } from '@/lib/resume-preview-url';
 
 type ResumeData = {
   url: string;
@@ -203,7 +204,7 @@ export default function ResumeSettingsSection() {
                 <DialogTitle className="text-base">{saved.fileName}</DialogTitle>
               </DialogHeader>
               <iframe
-                src={draftUrl}
+                src={buildAdminResumePreviewSrc(draftUrl)}
                 title={t('resumePreview')}
                 className="h-[70vh] w-full bg-muted/30"
               />
