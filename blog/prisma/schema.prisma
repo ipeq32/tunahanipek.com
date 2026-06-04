@@ -145,3 +145,11 @@ model Project {
 
   @@index([published, sortOrder])
 }
+
+/// Site geneli tek özgeçmiş (PDF) kaydı.
+model SiteResume {
+  id        String   @id @default("default")
+  url       String
+  fileName  String
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}

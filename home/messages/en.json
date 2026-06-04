@@ -28,6 +28,16 @@
     "hireMe": "Hire Me",
     "menuAria": "Main menu"
   },
+  "ResumeModal": {
+    "eyebrow": "Resume",
+    "title": "Let's connect",
+    "subtitleWithPdf": "Download my latest PDF resume or reach out directly via LinkedIn.",
+    "subtitleNoPdf": "My PDF resume is being updated. In the meantime, LinkedIn has the most current overview.",
+    "downloadPdf": "Download PDF Resume",
+    "viewLinkedIn": "View LinkedIn Profile",
+    "noPdfHint": "PDF coming soon — LinkedIn is the best source for now.",
+    "close": "Close"
+  },
   "Hero": {
     "eyebrow": "Welcome to my digital realm",
     "name": "Tunahan İPEK",

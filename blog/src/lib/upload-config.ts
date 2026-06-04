@@ -30,6 +30,13 @@ export const UPLOAD_CONFIG = {
       maxWidthOrHeight: 512,
     },
   },
+  cvUploader: {
+    maxFileSize: '4MB',
+    maxFileSizeBytes: 4 * 1024 * 1024,
+    maxFileSizeLabel: '4MB',
+  },
 } as const;
 
 export type UploadEndpoint = keyof typeof UPLOAD_CONFIG;
+
+export type ImageUploadEndpoint = 'imageUploader' | 'avatarUploader';

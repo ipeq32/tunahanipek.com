@@ -103,4 +103,8 @@ export default {
     en: '/admin/comments',
     tr: '/admin/yorumlar',
   },
+  '/admin/settings': {
+    en: '/admin/settings',
+    tr: '/admin/ayarlar',
+  },
 } satisfies Pathnames<typeof locales>;

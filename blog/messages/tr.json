@@ -161,6 +161,26 @@
       "empty": "Henüz proje yok",
       "statusPublished": "Yayında",
       "statusDraft": "Taslak"
+    },
+    "Settings": {
+      "title": "Site Ayarları",
+      "description": "Site genelinde kullanılan özgeçmiş ve diğer ayarları yönetin.",
+      "resumeTitle": "Özgeçmiş (PDF)",
+      "resumeDescription": "Hakkımda sayfası ve kişisel web sitesinde görüntülenecek güncel özgeçmişinizi yükleyin.",
+      "loading": "Yükleniyor…",
+      "loadError": "Özgeçmiş bilgisi yüklenemedi",
+      "save": "Kaydet",
+      "saved": "Özgeçmiş kaydedildi",
+      "saveError": "Özgeçmiş kaydedilemedi",
+      "noFile": "Önce bir PDF yükleyin",
+      "delete": "Sil",
+      "deleted": "Özgeçmiş silindi",
+      "deleteError": "Özgeçmiş silinemedi",
+      "deleteConfirm": "Özgeçmişi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      "preview": "Önizle",
+      "downloadCurrent": "Mevcut dosyayı indir",
+      "lastUpdated": "Son güncelleme: {date}",
+      "replaceWarning": "Yeni dosya yüklendi. Yayınlamak için Kaydet'e tıklayın; kayıtlı özgeçmişin üzerine yazılacaktır."
     }
   },
   "Auth": {
@@ -383,6 +403,10 @@
         }
       ],
       "languagesTitle": "Diller",
+      "resumeTitle": "Özgeçmiş",
+      "resumeDescription": "Deneyim, projeler ve teknik yetkinliklerimin özetlendiği güncel PDF özgeçmişimi indirebilirsiniz.",
+      "resumeDownload": "Özgeçmişi İndir",
+      "resumeFormat": "PDF formatında",
       "languages": [
         { "name": "Türkçe", "level": "Anadil" },
         { "name": "İngilizce", "level": "Professional Working Proficiency" }
@@ -544,7 +568,21 @@
     "success": "Görsel yüklendi",
     "error": "Görsel yüklenemedi",
     "compressFailed": "Görsel işlenemedi. Lütfen başka bir dosya deneyin.",
-    "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz."
+    "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz.",
+    "Pdf": {
+      "cta": "PDF yükle",
+      "hint": "Yalnızca PDF · en fazla 4MB",
+      "replace": "Değiştir",
+      "remove": "Kaldır",
+      "uploaded": "PDF yüklendi",
+      "uploading": "Yükleniyor",
+      "ready": "Kaydetmeye hazır",
+      "success": "PDF yüklendi",
+      "error": "PDF yüklenemedi",
+      "invalidType": "Yalnızca PDF dosyası yükleyebilirsiniz.",
+      "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz.",
+      "preview": "Yeni sekmede önizle"
+    }
   },
   "Metadata": {
     "description": "Burası blog sayfasıdır. İster kendi paylaşımlarım ister sizin paylaşmış olduğunuz blogları insanlara açıyorum. Yararlı bilgi her zaman iyidir."
@@ -897,6 +935,7 @@
           "manageProject": "Proje Yönetimi",
           "addProject": "Yeni proje",
           "moderateComments": "Yorum Moderasyonu",
+          "siteSettings": "Site Ayarları",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",

@@ -28,6 +28,16 @@
     "hireMe": "İletişime Geç",
     "menuAria": "Ana menü"
   },
+  "ResumeModal": {
+    "eyebrow": "Özgeçmiş",
+    "title": "Bağlantı kurmak ister misiniz?",
+    "subtitleWithPdf": "Güncel PDF özgeçmişimi indirebilir veya LinkedIn profilim üzerinden doğrudan iletişime geçebilirsiniz.",
+    "subtitleNoPdf": "Şu an PDF özgeçmişim hazırlanıyor. Bu arada LinkedIn profilimden deneyimlerime göz atabilirsiniz.",
+    "downloadPdf": "PDF Özgeçmişi İndir",
+    "viewLinkedIn": "LinkedIn Profilim",
+    "noPdfHint": "PDF yakında burada olacak — şimdilik LinkedIn en güncel kaynak.",
+    "close": "Kapat"
+  },
   "Hero": {
     "eyebrow": "Dijital dünyama hoş geldiniz",
     "name": "Tunahan İPEK",

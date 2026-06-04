@@ -4,16 +4,21 @@ import Experience from "@/app/_components/sections/Experience";
 import Footer from "@/app/_components/sections/Footer";
 import Hero from "@/app/_components/sections/Hero";
 import Skills from "@/app/_components/sections/Skills";
+import type { PublicResume } from "@/app/_lib/resume";
 
-export default function HomePage() {
+type HomePageProps = {
+  resume: PublicResume | null;
+};
+
+export default function HomePage({ resume }: HomePageProps) {
   return (
     <main>
-      <Hero />
+      <Hero resume={resume} />
       <About />
       <Experience />
       <Skills />
       <Cta />
-      <Footer />
+      <Footer resume={resume} />
     </main>
   );
 }

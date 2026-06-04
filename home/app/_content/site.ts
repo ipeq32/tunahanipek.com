@@ -2,7 +2,6 @@ export const site = {
   name: "Tunahan İPEK",
   profileImage: "/tunahanipek.jpg",
   openGraphImage: "/tunahanipek.jpg",
-  resumeUrl: "https://www.linkedin.com/in/tunahanipek",
   projectsUrl: "https://blog.tunahanipek.com/en/project",
   blogUrl: "https://blog.tunahanipek.com",
   emails: [

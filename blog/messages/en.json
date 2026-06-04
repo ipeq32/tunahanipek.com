@@ -161,6 +161,26 @@
       "empty": "No projects yet",
       "statusPublished": "Published",
       "statusDraft": "Draft"
+    },
+    "Settings": {
+      "title": "Site Settings",
+      "description": "Manage site-wide resume and other settings.",
+      "resumeTitle": "Resume (PDF)",
+      "resumeDescription": "Upload the current resume shown on the About page and personal website.",
+      "loading": "Loading…",
+      "loadError": "Could not load resume",
+      "save": "Save",
+      "saved": "Resume saved",
+      "saveError": "Could not save resume",
+      "noFile": "Upload a PDF first",
+      "delete": "Delete",
+      "deleted": "Resume deleted",
+      "deleteError": "Could not delete resume",
+      "deleteConfirm": "Delete the resume? This cannot be undone.",
+      "preview": "Preview",
+      "downloadCurrent": "Download current file",
+      "lastUpdated": "Last updated: {date}",
+      "replaceWarning": "A new file was uploaded. Click Save to publish; it will replace the current resume."
     }
   },
   "Auth": {
@@ -383,6 +403,10 @@
         }
       ],
       "languagesTitle": "Languages",
+      "resumeTitle": "Resume",
+      "resumeDescription": "Download my up-to-date PDF resume summarizing experience, projects, and technical skills.",
+      "resumeDownload": "Download Resume",
+      "resumeFormat": "PDF format",
       "languages": [
         { "name": "Turkish", "level": "Native" },
         { "name": "English", "level": "Professional Working Proficiency" }
@@ -544,7 +568,21 @@
     "success": "Image uploaded",
     "error": "Image upload failed",
     "compressFailed": "Could not process the image. Please try another file.",
-    "tooLarge": "File is too large. You can upload up to {size}."
+    "tooLarge": "File is too large. You can upload up to {size}.",
+    "Pdf": {
+      "cta": "Upload PDF",
+      "hint": "PDF only · max 4MB",
+      "replace": "Replace",
+      "remove": "Remove",
+      "uploaded": "PDF uploaded",
+      "uploading": "Uploading",
+      "ready": "Ready to save",
+      "success": "PDF uploaded",
+      "error": "PDF upload failed",
+      "invalidType": "Only PDF files are allowed.",
+      "tooLarge": "File is too large. You can upload up to {size}.",
+      "preview": "Preview in new tab"
+    }
   },
   "Metadata": {
     "description": "This is a blog page. I open up my own posts or blogs that you have shared to people. Useful information is always good."
@@ -897,6 +935,7 @@
           "manageProject": "Project Management",
           "addProject": "New project",
           "moderateComments": "Comment Moderation",
+          "siteSettings": "Site settings",
           "logout": "Logout",
           "roles": {
             "USER": "Member",

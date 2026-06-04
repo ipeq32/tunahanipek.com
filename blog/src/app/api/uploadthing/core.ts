@@ -1,6 +1,7 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
 import { auth } from '@/auth';
+import { isSuperAdmin } from '@/lib/auth-roles';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UPLOAD_CONFIG } from '@/lib/upload-config';
 
@@ -56,6 +57,32 @@ export const ourFileRouter = {
       return {};
     })
     .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl })),
+
+  /** Site özgeçmişi (PDF) — yalnızca SUPER_ADMIN; görsel yüklemelerden ayrı endpoint. */
+  cvUploader: f({
+    pdf: {
+      maxFileSize: UPLOAD_CONFIG.cvUploader.maxFileSize,
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async () => {
+      const session = await auth();
+
+      if (!session?.user?.id) {
+        throw new UploadThingError('Unauthorized');
+      }
+
+      if (!isSuperAdmin(session.user.role)) {
+        throw new UploadThingError('Forbidden');
+      }
+
+      return { userId: session.user.id, customId: 'resumes' };
+    })
+    .onUploadComplete(async ({ metadata, file }) => ({
+      uploadedBy: metadata.userId,
+      url: file.ufsUrl,
+      name: file.name,
+    })),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

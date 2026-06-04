@@ -13,7 +13,7 @@ import {
 import BlogImage from '@/components/blog/BlogImage';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
-import { UPLOAD_CONFIG, type UploadEndpoint } from '@/lib/upload-config';
+import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
 import { compressImage } from '@/lib/image-compression';
 import type { UploadCleanup } from '@/components/upload/use-upload-cleanup';
 
@@ -23,7 +23,7 @@ type ImageUploadProps = {
   disabled?: boolean;
   className?: string;
   heightClassName?: string;
-  endpoint?: UploadEndpoint;
+  endpoint?: ImageUploadEndpoint;
   variant?: 'rect' | 'avatar';
   /**
    * Verildiğinde, oturumda yüklenen görseller izlenir; form gönderilmeden

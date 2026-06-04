@@ -1,10 +1,16 @@
-import { Download, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
+import ResumeDownloadButton from "@/app/_components/resume/ResumeDownloadButton";
 import { site } from "@/app/_content/site";
+import type { PublicResume } from "@/app/_lib/resume";
 
-export default async function Hero() {
+type HeroProps = {
+  resume: PublicResume | null;
+};
+
+export default async function Hero({ resume }: HeroProps) {
   const t = await getTranslations("Hero");
 
   return (
@@ -26,15 +32,7 @@ export default async function Hero() {
             {t("description")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href={site.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-            >
-              <Download className="h-4 w-4" />
-              {t("downloadResume")}
-            </a>
+            <ResumeDownloadButton resume={resume} />
             <a
               href={site.projectsUrl}
               target="_blank"

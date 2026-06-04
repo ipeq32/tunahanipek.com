@@ -24,12 +24,14 @@ import { Link } from '@/navigation';
 import {
   ArrowRight,
   Briefcase,
+  FileDown,
   GraduationCap,
   Languages,
   MapPin,
   Rocket,
   Wrench,
 } from 'lucide-react';
+import { getSiteResume } from '@/lib/site-resume';
 
 type ExperienceItem = {
   company: string;
@@ -63,6 +65,7 @@ type LanguageItem = {
 
 export default async function AboutPage() {
   const t = await getTranslations('Pages.About');
+  const resume = await getSiteResume();
 
   const highlights = t.raw('highlights') as string[];
   const experience = t.raw('experience') as ExperienceItem[];
@@ -99,6 +102,32 @@ export default async function AboutPage() {
           </div>
         </div>
       </ContentCard>
+
+      {resume && (
+        <ContentCard className="mt-6 flex flex-col gap-4 border-teal-500/20 bg-gradient-to-br from-teal-500/[0.04] to-cyan-500/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              {t('resumeTitle')}
+            </h2>
+            <p className="max-w-xl text-sm text-muted-foreground">
+              {t('resumeDescription')}
+            </p>
+            <p className="text-xs font-medium text-teal-600 dark:text-teal-400">
+              {t('resumeFormat')}
+            </p>
+          </div>
+          <a
+            href={resume.url}
+            download={resume.fileName}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-teal-500/20 transition hover:from-teal-500 hover:to-cyan-500"
+          >
+            <FileDown className="h-4 w-4" aria-hidden />
+            {t('resumeDownload')}
+          </a>
+        </ContentCard>
+      )}
 
       <section className="mt-10 space-y-5">
         <div className="flex items-center gap-2">
