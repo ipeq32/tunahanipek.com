@@ -237,7 +237,24 @@
     "loading": "Yükleniyor...",
     "selectCountryFirst": "Önce ülke seçin",
     "required": "Bu alan zorunludur",
-    "villageTag": "Köy"
+    "villageTag": "Köy",
+    "map": {
+      "title": "Haritadan adres seç",
+      "description": "Arama kutusuna yazın veya haritada konumu işaretleyin.",
+      "openMap": "Haritadan seç",
+      "editMap": "Düzenle",
+      "confirm": "Konumu onayla",
+      "cancel": "İptal",
+      "searchPlaceholder": "Adres ara…",
+      "clear": "Temizle",
+      "previewLabel": "Seçilen konum",
+      "resolving": "Adres forma aktarılıyor…",
+      "resolveError": "Adres çözümlenemedi. Lütfen tekrar deneyin.",
+      "noResults": "Sonuç bulunamadı",
+      "loading": "Yükleniyor…",
+      "dragHint": "Haritaya tıklayın veya pini sürükleyin; adres otomatik güncellenir.",
+      "locationSelected": "Harita konumu"
+    }
   },
   "Settings": {
     "title": "Ayarlar",

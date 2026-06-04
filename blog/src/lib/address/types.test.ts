@@ -58,6 +58,9 @@ describe('formValuesToAddressData', () => {
       apartment: '',
       site: '',
       details: '',
+      latitude: null,
+      longitude: null,
+      formattedMapAddress: '',
     });
     expect(data.provinceId).toBe(6);
     expect(data.stateCode).toBeUndefined();

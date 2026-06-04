@@ -23,6 +23,9 @@ export type AddressData = {
   apartment?: string;
   site?: string;
   details?: string;
+  latitude?: number;
+  longitude?: number;
+  formattedMapAddress?: string;
 };
 
 export type AddressFormValues = {
@@ -43,6 +46,9 @@ export type AddressFormValues = {
   apartment: string;
   site: string;
   details: string;
+  latitude: number | null;
+  longitude: number | null;
+  formattedMapAddress: string;
 };
 
 export const emptyAddressFormValues: AddressFormValues = {
@@ -63,6 +69,9 @@ export const emptyAddressFormValues: AddressFormValues = {
   apartment: '',
   site: '',
   details: '',
+  latitude: null,
+  longitude: null,
+  formattedMapAddress: '',
 };
 
 export type AddressOption = {
@@ -99,6 +108,9 @@ export const addressDataSchema = z
     apartment: optionalTrimmedString,
     site: optionalTrimmedString,
     details: optionalTrimmedString,
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    formattedMapAddress: optionalTrimmedString,
   })
   .superRefine((data, ctx) => {
     const code = data.countryCode.toUpperCase();
@@ -151,6 +163,9 @@ export function formValuesToAddressData(values: AddressFormValues): AddressData 
     apartment: values.apartment.trim() || undefined,
     site: values.site.trim() || undefined,
     details: values.details.trim() || undefined,
+    latitude: values.latitude ?? undefined,
+    longitude: values.longitude ?? undefined,
+    formattedMapAddress: values.formattedMapAddress?.trim() || undefined,
   };
 
   if (isTurkeyCountry(values.countryCode)) {
@@ -199,6 +214,9 @@ export function addressDataToFormValues(
     apartment: data.apartment ?? '',
     site: data.site ?? '',
     details: data.details ?? '',
+    latitude: data.latitude ?? null,
+    longitude: data.longitude ?? null,
+    formattedMapAddress: data.formattedMapAddress ?? '',
   };
 }
 
@@ -226,6 +244,9 @@ export const addressFormValuesSchema = z
     apartment: z.string(),
     site: z.string(),
     details: z.string(),
+    latitude: z.number().nullable(),
+    longitude: z.number().nullable(),
+    formattedMapAddress: z.string(),
   })
   .superRefine((values, ctx) => {
     if (!isTurkeyCountry(values.countryCode)) {

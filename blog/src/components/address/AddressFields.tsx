@@ -9,7 +9,9 @@ import {
 } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { Map, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import AddressMapModal from './AddressMapModal';
 import { Input } from '@/components/ui/input';
 import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
 import AddressSearchSelect from './AddressSearchSelect';
@@ -71,6 +73,7 @@ export default function AddressFields<T extends FieldValues>({
     ? hasCountry && hasProvince && hasDistrict
     : hasCountry && hasState && hasCity;
 
+  const [mapOpen, setMapOpen] = useState(false);
   const [countries, setCountries] = useState<AddressOption[]>([]);
   const [provinces, setProvinces] = useState<AddressOption[]>([]);
   const [districts, setDistricts] = useState<AddressOption[]>([]);
@@ -149,20 +152,89 @@ export default function AddressFields<T extends FieldValues>({
     </FormItem>
   );
 
+  const mapLabelPreview =
+    value.formattedMapAddress.length > 72
+      ? `${value.formattedMapAddress.slice(0, 72)}…`
+      : value.formattedMapAddress;
+
+  const handleMapConfirm = useCallback(
+    (patch: Partial<AddressFormValues>) => {
+      setValue(patch);
+    },
+    [setValue]
+  );
+
   return (
     <div className="space-y-4">
-      {showSectionHeader && (
-        <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-300">
-            <MapPin className="h-5 w-5" />
-          </span>
-          <div>
-            <h3 className="text-sm font-semibold">{t('sectionTitle')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('sectionDescription')}
-            </p>
+      <div
+        className={
+          showSectionHeader
+            ? 'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'
+            : 'flex flex-col gap-2'
+        }
+      >
+        {showSectionHeader ? (
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-300">
+              <MapPin className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="text-sm font-semibold">{t('sectionTitle')}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t('sectionDescription')}
+              </p>
+            </div>
           </div>
+        ) : (
+          <p className="text-xs font-medium text-foreground">
+            {t('sectionTitle')}
+            <span className="ml-0.5 text-rose-500">*</span>
+          </p>
+        )}
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={disabled}
+          onClick={() => setMapOpen(true)}
+          className="shrink-0 gap-2 self-start"
+        >
+          <Map className="h-4 w-4" />
+          {t('map.openMap')}
+        </Button>
+      </div>
+
+      {value.latitude != null && value.longitude != null && value.formattedMapAddress && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-teal-500/25 bg-teal-500/5 px-3 py-2">
+          <MapPin className="h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
+          <span className="min-w-0 flex-1 text-xs text-foreground">
+            {t('map.locationSelected')}: {mapLabelPreview}
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            disabled={disabled}
+            onClick={() => setMapOpen(true)}
+          >
+            {t('map.editMap')}
+          </Button>
         </div>
+      )}
+
+      {mapOpen && (
+        <AddressMapModal
+          open={mapOpen}
+          onOpenChange={setMapOpen}
+          initialValues={{
+            latitude: value.latitude,
+            longitude: value.longitude,
+            formattedMapAddress: value.formattedMapAddress,
+          }}
+          onConfirm={handleMapConfirm}
+        />
       )}
 
       <AddressSearchSelect

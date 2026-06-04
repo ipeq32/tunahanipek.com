@@ -237,7 +237,24 @@
     "loading": "Loading...",
     "selectCountryFirst": "Select a country first",
     "required": "This field is required",
-    "villageTag": "Village"
+    "villageTag": "Village",
+    "map": {
+      "title": "Pick address on map",
+      "description": "Search by address or click on the map to place a pin.",
+      "openMap": "Pick on map",
+      "editMap": "Edit",
+      "confirm": "Confirm location",
+      "cancel": "Cancel",
+      "searchPlaceholder": "Search address…",
+      "clear": "Clear",
+      "previewLabel": "Selected location",
+      "resolving": "Applying address to form…",
+      "resolveError": "Could not resolve address. Please try again.",
+      "noResults": "No results found",
+      "loading": "Loading…",
+      "dragHint": "Click the map or drag the pin; the address updates automatically.",
+      "locationSelected": "Map location"
+    }
   },
   "Settings": {
     "title": "Settings",

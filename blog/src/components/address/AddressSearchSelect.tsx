@@ -1,6 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Loader2, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -24,6 +33,12 @@ type AddressSearchSelectProps = {
   onChange: (option: AddressOption | null) => void;
   error?: string;
   helperText?: string;
+};
+
+type DropdownPosition = {
+  top: number;
+  left: number;
+  width: number;
 };
 
 async function fetchOptions(url: string): Promise<AddressOption[]> {
@@ -55,17 +70,46 @@ export default function AddressSearchSelect({
   const t = useTranslations('Address');
   const listId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState<DropdownPosition | null>(null);
   const [query, setQuery] = useState('');
   const [remoteOptions, setRemoteOptions] = useState<AddressOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const debouncedQuery = useDebounce(query, 300);
   const selectedLabel =
     displayValue ??
     staticOptions?.find((o) => o.id === value)?.label ??
     remoteOptions.find((o) => o.id === value)?.label;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const updateDropdownPosition = useCallback(() => {
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+    const rect = trigger.getBoundingClientRect();
+    setDropdownPos({
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    updateDropdownPosition();
+    window.addEventListener('resize', updateDropdownPosition);
+    window.addEventListener('scroll', updateDropdownPosition, true);
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition);
+      window.removeEventListener('scroll', updateDropdownPosition, true);
+    };
+  }, [open, updateDropdownPosition]);
 
   const loadRemote = useCallback(async () => {
     if (!fetchUrl) return;
@@ -109,13 +153,17 @@ export default function AddressSearchSelect({
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
+      const target = event.target as Node;
+      if (containerRef.current?.contains(target)) return;
+      const portal = document.querySelector(
+        `[data-address-select-portal="${listId}"]`
+      );
+      if (portal?.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener('mousedown', handlePointerDown);
     return () => document.removeEventListener('mousedown', handlePointerDown);
-  }, []);
+  }, [listId]);
 
   const options = staticOptions ?? remoteOptions;
 
@@ -128,6 +176,100 @@ export default function AddressSearchSelect({
     return options.filter((o) => o.label.toLowerCase().includes(q));
   }, [options, query, fetchUrl, minSearchLength]);
 
+  const dropdownPanel =
+    open && dropdownPos && mounted ? (
+      <div
+        id={listId}
+        data-address-select-portal={listId}
+        role="listbox"
+        style={{
+          position: 'fixed',
+          top: dropdownPos.top,
+          left: dropdownPos.left,
+          width: dropdownPos.width,
+          zIndex: 320,
+        }}
+        className="overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-xl"
+      >
+        <div className="border-b border-border/60 p-2">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="h-9 pl-8"
+              autoFocus
+            />
+          </div>
+        </div>
+
+        <ul className="max-h-52 overflow-y-auto p-1">
+          {loading && (
+            <li className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {loadingLabel}
+            </li>
+          )}
+
+          {!loading && loadError && (
+            <li className="px-3 py-2 text-sm text-rose-400">{emptyLabel}</li>
+          )}
+
+          {!loading &&
+            !loadError &&
+            debouncedQuery.trim().length < minSearchLength &&
+            minSearchLength > 0 && (
+              <li className="px-3 py-2 text-sm text-muted-foreground">
+                {searchPlaceholder}
+              </li>
+            )}
+
+          {!loading &&
+            !loadError &&
+            (minSearchLength === 0 ||
+              debouncedQuery.trim().length >= minSearchLength) &&
+            filteredOptions.length === 0 && (
+              <li className="px-3 py-2 text-sm text-muted-foreground">
+                {emptyLabel}
+              </li>
+            )}
+
+          {!loading &&
+            filteredOptions.map((option) => (
+              <li key={option.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={option.id === value}
+                  className={cn(
+                    'flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-accent',
+                    option.id === value && 'bg-accent/60'
+                  )}
+                  onClick={() => {
+                    onChange(option);
+                    setOpen(false);
+                    setQuery('');
+                  }}
+                >
+                  <span className="truncate">
+                    {option.label}
+                    {option.meta === 'village' && (
+                      <span className="ml-1 text-xs text-muted-foreground">
+                        ({t('villageTag')})
+                      </span>
+                    )}
+                  </span>
+                  {option.id === value && (
+                    <Check className="h-4 w-4 shrink-0 text-teal-600" />
+                  )}
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+    ) : null;
+
   return (
     <div ref={containerRef} className="relative w-full space-y-1.5">
       <label className="text-xs font-medium text-foreground">
@@ -136,12 +278,19 @@ export default function AddressSearchSelect({
       </label>
 
       <button
+        ref={triggerRef}
         type="button"
         disabled={disabled}
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-controls={listId}
-        onClick={() => !disabled && setOpen((prev) => !prev)}
+        onClick={() => {
+          if (disabled) return;
+          setOpen((prev) => !prev);
+          if (!open) {
+            requestAnimationFrame(updateDropdownPosition);
+          }
+        }}
         className={cn(
           'flex h-10 w-full items-center justify-between rounded-lg border border-input bg-background px-3 text-sm shadow-sm transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -170,90 +319,9 @@ export default function AddressSearchSelect({
       )}
       {error && <p className="text-xs text-rose-400">{error}</p>}
 
-      {open && (
-        <div
-          id={listId}
-          role="listbox"
-          className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-lg"
-        >
-          <div className="border-b border-border/60 p-2">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={searchPlaceholder}
-                className="h-9 pl-8"
-                autoFocus
-              />
-            </div>
-          </div>
-
-          <ul className="max-h-56 overflow-y-auto p-1">
-            {loading && (
-              <li className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {loadingLabel}
-              </li>
-            )}
-
-            {!loading && loadError && (
-              <li className="px-3 py-2 text-sm text-rose-400">{emptyLabel}</li>
-            )}
-
-            {!loading &&
-              !loadError &&
-              debouncedQuery.trim().length < minSearchLength &&
-              minSearchLength > 0 && (
-                <li className="px-3 py-2 text-sm text-muted-foreground">
-                  {searchPlaceholder}
-                </li>
-              )}
-
-            {!loading &&
-              !loadError &&
-              (minSearchLength === 0 ||
-                debouncedQuery.trim().length >= minSearchLength) &&
-              filteredOptions.length === 0 && (
-                <li className="px-3 py-2 text-sm text-muted-foreground">
-                  {emptyLabel}
-                </li>
-              )}
-
-            {!loading &&
-              filteredOptions.map((option) => (
-                <li key={option.id}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={option.id === value}
-                    className={cn(
-                      'flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-accent',
-                      option.id === value && 'bg-accent/60'
-                    )}
-                    onClick={() => {
-                      onChange(option);
-                      setOpen(false);
-                      setQuery('');
-                    }}
-                  >
-                    <span className="truncate">
-                      {option.label}
-                      {option.meta === 'village' && (
-                        <span className="ml-1 text-xs text-muted-foreground">
-                          ({t('villageTag')})
-                        </span>
-                      )}
-                    </span>
-                    {option.id === value && (
-                      <Check className="h-4 w-4 shrink-0 text-teal-600" />
-                    )}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </div>
-      )}
+      {mounted && dropdownPanel
+        ? createPortal(dropdownPanel, document.body)
+        : null}
     </div>
   );
 }
