@@ -1,6 +1,7 @@
 'use client';
 
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { useEffect, useState } from 'react';
 import { COOKIE_CONSENT_KEY } from '@/components/cookie-consent';
 
@@ -20,5 +21,10 @@ export function SiteAnalytics() {
     return null;
   }
 
-  return <Analytics />;
+  return (
+    <>
+      <Analytics />
+      <SpeedInsights />
+    </>
+  );
 }

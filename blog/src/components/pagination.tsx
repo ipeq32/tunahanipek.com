@@ -9,6 +9,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { useTranslations } from 'next-intl';
 
 type PaginationComponentProps = {
   total: number;
@@ -29,6 +30,7 @@ const PaginationComponent = ({
   activeTag,
   activeCategory,
 }: PaginationComponentProps) => {
+  const t = useTranslations('Pagination');
   const totalPages = Math.ceil(total / limit);
 
   const pageHref = (page: number) => {
@@ -79,7 +81,11 @@ const PaginationComponent = ({
       <PaginationContent>
         {safeCurrentPage > 1 && (
           <PaginationItem>
-            <PaginationPrevious href={pageHref(safeCurrentPage - 1)} />
+            <PaginationPrevious
+              href={pageHref(safeCurrentPage - 1)}
+              label={t('previous')}
+              ariaLabel={t('previousAria')}
+            />
           </PaginationItem>
         )}
 
@@ -87,7 +93,7 @@ const PaginationComponent = ({
           if (page === 'ellipsisStart' || page === 'ellipsisEnd') {
             return (
               <PaginationItem key={`ellipsis-${index}`}>
-                <PaginationEllipsis />
+                <PaginationEllipsis morePagesLabel={t('morePages')} />
               </PaginationItem>
             );
           }
@@ -106,7 +112,11 @@ const PaginationComponent = ({
 
         {safeCurrentPage < safeTotalPages && (
           <PaginationItem>
-            <PaginationNext href={pageHref(safeCurrentPage + 1)} />
+            <PaginationNext
+              href={pageHref(safeCurrentPage + 1)}
+              label={t('next')}
+              ariaLabel={t('nextAria')}
+            />
           </PaginationItem>
         )}
       </PaginationContent>

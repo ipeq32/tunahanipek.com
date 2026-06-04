@@ -35,8 +35,11 @@
       "shortImage": "Thumbnail",
       "shortImagePlaceholder": "List thumbnail URL",
       "content": "Content",
+      "contentPlaceholder": "Write post content…",
       "summary": "Summary",
+      "summaryPlaceholder": "Write a short summary…",
       "submitCreate": "Publish",
+      "cancel": "Cancel",
       "submitUpdate": "Update",
       "createSuccess": "Post created",
       "updateSuccess": "Post updated",
@@ -976,7 +979,19 @@
       }
     }
   },
+  "A11y": {
+    "skipToContent": "Skip to main content",
+    "loading": "Loading"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "previousAria": "Go to previous page",
+    "nextAria": "Go to next page",
+    "morePages": "More pages"
+  },
   "CookieConsent": {
+    "title": "Cookie preferences",
     "message": "We use cookies and analytics to improve your experience.",
     "accept": "Accept",
     "decline": "Essential only"
@@ -990,7 +1005,7 @@
       "When a bug becomes a feature, I call it <code>feature</code>.",
       "Pray before <code>git push</code>. Then push anyway.",
       "Code runs. Why? Unknown. Good enough.",
-      "// TODO: fix tomorrow — copyright 2021, still mine.",
+      "Every commit tells a story; every deployment teaches a lesson.",
       "Spouse: &apos;What did you do today?&apos; Me: &apos;Deleted a comma.&apos; (4 hrs.)",
       "I never commit without Stack Overflow. (Lie. I always do.)",
       "<code>undefined is not a function</code> — you again, JavaScript?",

@@ -35,8 +35,11 @@
       "shortImage": "Küçük görsel",
       "shortImagePlaceholder": "Liste görseli URL",
       "content": "İçerik",
+      "contentPlaceholder": "Yazı içeriğini yazın…",
       "summary": "Özet",
+      "summaryPlaceholder": "Kısa özet yazın…",
       "submitCreate": "Yayınla",
+      "cancel": "İptal",
       "submitUpdate": "Güncelle",
       "createSuccess": "Blog eklendi",
       "updateSuccess": "Blog güncellendi",
@@ -976,7 +979,19 @@
       }
     }
   },
+  "A11y": {
+    "skipToContent": "Ana içeriğe geç",
+    "loading": "Yükleniyor"
+  },
+  "Pagination": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "previousAria": "Önceki sayfaya git",
+    "nextAria": "Sonraki sayfaya git",
+    "morePages": "Daha fazla sayfa"
+  },
   "CookieConsent": {
+    "title": "Çerez tercihleri",
     "message": "Deneyimi iyileştirmek için çerez ve analitik kullanıyoruz.",
     "accept": "Kabul et",
     "decline": "Yalnızca gerekli"
@@ -990,7 +1005,7 @@
       "Bug özelliğe dönüşürse ona <code>feature</code> derim.",
       "<code>git push</code> yapmadan önce dua et. Sonra yine push et.",
       "Kod çalışıyor. Neden? Bilinmiyor. Yeterli.",
-      "// TODO: Yarın düzeltirim — telif 2021&apos;den beri bende.",
+      "Her commit bir hikâye; her deployment bir ders.",
       "Eşim: &apos;Bugün ne yaptın?&apos; Ben: &apos;Bir virgül sildim.&apos; (4 saat.)",
       "Stack Overflow&apos;a sormadan commit atmam. (Yalan. Her zaman atarım.)",
       "<code>undefined is not a function</code> — yine sen mi, JavaScript?",

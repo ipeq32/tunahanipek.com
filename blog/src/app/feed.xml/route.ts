@@ -56,8 +56,8 @@ export async function GET() {
     <title>Tunahan İpek Blog</title>
     <link>${siteUrl}/${defaultLocale}</link>
     <atom:link href="${feedUrl}" rel="self" type="application/rss+xml" />
-    <description>Blog yazıları</description>
-    <language>${defaultLocale}</language>
+    <description>Tunahan İpek — blog yazıları ve teknik notlar</description>
+    <language>tr</language>
     ${items}
   </channel>
 </rss>`;

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
+import { revalidateBlogDetail } from '@/lib/revalidate-public';
 import { createBlogSchema } from '@/lib/validations/blog';
 import { NextResponse } from 'next/server';
 
@@ -49,6 +50,8 @@ export async function POST(req: Request) {
     });
 
     await syncBlogTaxonomy(res.id, tags, categories);
+
+    revalidateBlogDetail(res.id);
 
     return NextResponse.json({ success: true, data: res }, { status: 200 });
   } catch (error) {

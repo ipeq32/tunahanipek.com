@@ -4,6 +4,7 @@ import { getAdminProjects } from '@/lib/data/projects';
 import { mapProjectToDto } from '@/lib/project-mapper';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { revalidateProjectDetail } from '@/lib/revalidate-public';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -79,6 +80,8 @@ export async function POST(request: Request) {
         published: published ?? false,
       },
     });
+
+    revalidateProjectDetail(project.id);
 
     return NextResponse.json({ data: mapProjectToDto(project) }, { status: 201 });
   } catch (error) {

@@ -27,13 +27,19 @@ export function CookieConsent() {
     return null;
   }
 
+  const titleId = 'cookie-consent-title';
+
   return (
     <div
       role="dialog"
+      aria-labelledby={titleId}
       aria-live="polite"
       className="fixed bottom-4 left-4 right-4 z-[100] mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/95 p-4 shadow-lg backdrop-blur-xl md:left-auto md:right-6"
     >
-      <p className="text-sm text-muted-foreground">{t('message')}</p>
+      <p id={titleId} className="text-sm font-semibold text-foreground">
+        {t('title')}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t('message')}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         <Button size="sm" variant="accent" onClick={() => setConsent('accepted')}>
           {t('accept')}

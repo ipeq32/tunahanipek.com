@@ -62,6 +62,10 @@ yarn test:e2e    # Playwright (sunucu çalışırken)
 
 Bkz. [docs/API.md](./docs/API.md)
 
+## Zengin metin ve güvenlik
+
+Blog ve proje formları `react-quill-new` ile HTML içerik üretir. Kayıt öncesi sunucu tarafında [`src/lib/sanitize.ts`](src/lib/sanitize.ts) ile temizlenir: izin verilen etiketler, güvenli linkler (`https://`, dış linklerde `rel="noopener noreferrer"`). Blog/proje oluşturma veya güncelleme sonrası [`src/lib/revalidate-public.ts`](src/lib/revalidate-public.ts) public sayfaları anında yeniler.
+
 ## Yapılacaklar
 
 Bkz. [TODO.md](./TODO.md) — tüm maddeler tamamlandı.

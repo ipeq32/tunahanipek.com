@@ -5,6 +5,7 @@ import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { revalidateBlogDetail, revalidateBlogList } from '@/lib/revalidate-public';
 import { updateBlogSchema } from '@/lib/validations/blog';
 import { NextResponse } from 'next/server';
 
@@ -114,6 +115,8 @@ export async function PATCH(
       include: blogListInclude,
     });
 
+    revalidateBlogDetail(id);
+
     return NextResponse.json({
       data: mapBlogToResponse(withTaxonomy ?? updated),
     });
@@ -157,6 +160,9 @@ export async function DELETE(
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    revalidateBlogList();
+    revalidateBlogDetail(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

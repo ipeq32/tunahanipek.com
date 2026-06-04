@@ -3,6 +3,10 @@ import { isSuperAdmin } from '@/lib/auth-roles';
 import { mapProjectToDto } from '@/lib/project-mapper';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import {
+  revalidateProjectDetail,
+  revalidateProjectList,
+} from '@/lib/revalidate-public';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -59,6 +63,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       },
     });
 
+    revalidateProjectDetail(id);
+
     return NextResponse.json({ data: mapProjectToDto(project) });
   } catch (error) {
     logger.error('Failed to update project', {
@@ -92,6 +98,9 @@ export async function DELETE(_request: Request, context: RouteContext) {
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    revalidateProjectList();
+    revalidateProjectDetail(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

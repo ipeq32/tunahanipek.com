@@ -10,6 +10,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,15 @@ type BlogFormProps = {
   blogId?: string;
   defaultValues: BlogFormValues;
 };
+
+async function parseApiError(res: Response): Promise<string | undefined> {
+  try {
+    const data = (await res.json()) as { error?: string };
+    return typeof data.error === 'string' ? data.error : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps) {
   const router = useRouter();
@@ -72,11 +82,13 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
       });
 
       if (!res.ok) {
-        toast.error(t('error'));
+        const apiError = await parseApiError(res);
+        toast.error(t('error'), {
+          description: apiError,
+        });
         return;
       }
 
-      // Görseller kaydedildi; oturum temizliğinde silinmesini engelle.
       imageCleanup.commit();
       toast.success(mode === 'create' ? t('createSuccess') : t('updateSuccess'), {
         icon: <CardStackPlusIcon />,
@@ -107,6 +119,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                 <FormControl>
                   <Input placeholder={t('titlePlaceholder')} {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -121,6 +134,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   <FormControl>
                     <Input placeholder={t('tagsPlaceholder')} {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -133,6 +147,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   <FormControl>
                     <Input placeholder={t('categoriesPlaceholder')} {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -158,6 +173,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       heightClassName="h-48"
                       cleanup={imageCleanup}
                     />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -176,6 +192,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       heightClassName="h-48"
                       cleanup={imageCleanup}
                     />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -185,7 +202,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
             <Controller
               control={form.control}
               name="content"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem className="w-full">
                   <FormLabel className="text-xs">
                     {t('content')} <span className="text-red-500">*</span>
@@ -194,16 +211,21 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     <RichTextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder={t('titlePlaceholder')}
+                      placeholder={t('contentPlaceholder')}
                     />
                   </FormControl>
+                  {fieldState.error && (
+                    <p className="text-sm font-medium text-destructive">
+                      {fieldState.error.message}
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
             <Controller
               control={form.control}
               name="summary"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem className="w-full">
                   <FormLabel className="text-xs">
                     {t('summary')} <span className="text-red-500">*</span>
@@ -212,15 +234,36 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     <RichTextEditor
                       value={field.value}
                       onChange={field.onChange}
+                      placeholder={t('summaryPlaceholder')}
                     />
                   </FormControl>
+                  {fieldState.error && (
+                    <p className="text-sm font-medium text-destructive">
+                      {fieldState.error.message}
+                    </p>
+                  )}
                 </FormItem>
               )}
             />
           </div>
-          <Button type="submit" variant="accent" className="mx-auto max-w-56">
-            {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
-          </Button>
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button
+              type="submit"
+              variant="accent"
+              className="max-w-56"
+              disabled={form.formState.isSubmitting}
+            >
+              {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={form.formState.isSubmitting}
+              onClick={() => router.push('/blog')}
+            >
+              {t('cancel')}
+            </Button>
+          </div>
         </form>
       </Form>
     </ContentCard>

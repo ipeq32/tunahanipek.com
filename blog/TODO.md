@@ -10,6 +10,8 @@ Tüm maddeler tamamlandı. ✅
 - [x] `IGetBlog` tipi ile API yanıtını hizala
 - [x] Yayın akışı (rol bazlı otomatik yayın)
 - [x] Quill HTML sanitizasyonu
+- [x] Rich text editör (blog + proje formları)
+- [x] Mutation sonrası `revalidatePath` (anında cache invalidation)
 - [x] Ölü menü linkleri giderildi
 
 ---
@@ -26,7 +28,7 @@ Tüm maddeler tamamlandı. ✅
 ### Admin paneli
 
 - [x] `/admin/blog`
-- [x] `/admin/project` (stub)
+- [x] `/admin/project` (CRUD)
 - [x] `/admin/comments` (yorum moderasyonu)
 - [x] Proxy rol kontrolü
 - [x] Blog ekleme API rol kontrolü
@@ -63,6 +65,9 @@ Tüm maddeler tamamlandı. ✅
 - [x] Login/register rate limiting
 - [x] Zod validasyon, güvenlik header'ları, logger
 - [x] i18n (`messages/tr.json`, `en.json`)
+- [x] Skip link, pagination i18n, cookie consent a11y
+- [x] `global-error` terminal teması + structured logging
+- [x] Vercel Speed Insights (çerez onayı ile)
 
 ---
 
