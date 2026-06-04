@@ -108,6 +108,7 @@ services:
     volumes:
       - ./home:/app
       - home_node_modules:/app/node_modules
+      - home_next_cache:/app/.next
     environment:
       NODE_ENV: development
       PORT: 3000
@@ -120,3 +121,4 @@ volumes:
   postgres_data:
   blog_node_modules:
   home_node_modules:
+  home_next_cache:
