@@ -131,11 +131,37 @@
   .brand-wordmark-text1 {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
     @apply text-emerald-600;
+    animation: wordmark-split-1 5s ease-in-out infinite;
   }
 
   .brand-wordmark-text2 {
     clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
     @apply text-slate-700;
+    animation: wordmark-split-2 5s ease-in-out infinite;
+  }
+
+  @keyframes wordmark-split-1 {
+    0%,
+    38%,
+    100% {
+      transform: translate(-50%, -50%);
+    }
+    48%,
+    58% {
+      transform: translate(-50%, calc(-50% - 8px));
+    }
+  }
+
+  @keyframes wordmark-split-2 {
+    0%,
+    38%,
+    100% {
+      transform: translate(-50%, -50%);
+    }
+    48%,
+    58% {
+      transform: translate(-50%, calc(-50% + 8px));
+    }
   }
 
   .dark .brand-wordmark-text1 {
@@ -157,6 +183,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .brand-wordmark-text1,
+    .brand-wordmark-text2 {
+      animation: none;
+    }
+
     .nav-brand-group:hover .brand-wordmark-text1,
     .nav-brand-group:focus-visible .brand-wordmark-text1,
     .nav-brand-group:hover .brand-wordmark-text2,
@@ -165,40 +196,41 @@
     }
   }
 
+  .st0,
+  .st1 {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
   .st0 {
-    stroke-dasharray: 4800;
     animation: signature-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
   }
 
   .st1 {
-    stroke-dasharray: 4800;
     animation: signature-draw 4s ease-in forwards;
     animation-fill-mode: both;
   }
 
   .st0-loop {
-    stroke-dashoffset: 4800;
-    animation: signature-draw-loop-slow 10s cubic-bezier(0.47, 0, 0.75, 0.72)
-      infinite;
+    animation: signature-draw-loop-accent 4s ease-in infinite;
   }
 
   .st1-loop {
-    stroke-dashoffset: 4800;
-    animation: signature-draw-loop-slow 5s ease-in infinite;
+    animation: signature-draw-loop-main 5s ease-in infinite;
   }
 
   @keyframes signature-draw {
     from {
-      stroke-dashoffset: 4800;
+      stroke-dashoffset: 1;
     }
     to {
       stroke-dashoffset: 0;
     }
   }
 
-  @keyframes signature-draw-loop-slow {
+  @keyframes signature-draw-loop-main {
     0% {
-      stroke-dashoffset: 4800;
+      stroke-dashoffset: 1;
       opacity: 0.45;
     }
     60% {
@@ -210,8 +242,27 @@
       opacity: 1;
     }
     100% {
-      stroke-dashoffset: 4800;
+      stroke-dashoffset: 1;
       opacity: 0.45;
+    }
+  }
+
+  @keyframes signature-draw-loop-accent {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 0.35;
+    }
+    55% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    80% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: 1;
+      opacity: 0.35;
     }
   }
 

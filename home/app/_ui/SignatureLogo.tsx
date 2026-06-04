@@ -24,6 +24,7 @@ const SignatureLogo = ({
         </linearGradient>
       </defs>
       <path
+        pathLength={1}
         className={loopDraw ? "st1 st1-loop" : "st1"}
         stroke={`url(#${gradientId})`}
         strokeWidth="2.5"
@@ -32,6 +33,7 @@ const SignatureLogo = ({
         transform="translate(-190.41 -253.13)"
       />
       <path
+        pathLength={1}
         className={loopDraw ? "st0 st0-loop" : "st0"}
         stroke={`url(#${gradientId})`}
         strokeWidth="2.5"
