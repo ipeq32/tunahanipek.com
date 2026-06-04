@@ -1,6 +1,7 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import SettingsForm from './_features/SettingsForm';
 import { auth } from '@/auth';
+import { isSuperAdmin } from '@/lib/auth-roles';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from '@/navigation';
 
@@ -29,6 +30,7 @@ export default async function SettingPage({
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <SettingsForm
+        isSuperAdmin={isSuperAdmin(user.role)}
         initialUser={{
           name: user.name ?? '',
           phone: user.phone ?? '',

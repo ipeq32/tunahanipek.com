@@ -161,26 +161,6 @@
       "empty": "Henüz proje yok",
       "statusPublished": "Yayında",
       "statusDraft": "Taslak"
-    },
-    "Settings": {
-      "title": "Site Ayarları",
-      "description": "Site genelinde kullanılan özgeçmiş ve diğer ayarları yönetin.",
-      "resumeTitle": "Özgeçmiş (PDF)",
-      "resumeDescription": "Hakkımda sayfası ve kişisel web sitesinde görüntülenecek güncel özgeçmişinizi yükleyin.",
-      "loading": "Yükleniyor…",
-      "loadError": "Özgeçmiş bilgisi yüklenemedi",
-      "save": "Kaydet",
-      "saved": "Özgeçmiş kaydedildi",
-      "saveError": "Özgeçmiş kaydedilemedi",
-      "noFile": "Önce bir PDF yükleyin",
-      "delete": "Sil",
-      "deleted": "Özgeçmiş silindi",
-      "deleteError": "Özgeçmiş silinemedi",
-      "deleteConfirm": "Özgeçmişi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
-      "preview": "Önizle",
-      "downloadCurrent": "Mevcut dosyayı indir",
-      "lastUpdated": "Son güncelleme: {date}",
-      "replaceWarning": "Yeni dosya yüklendi. Yayınlamak için Kaydet'e tıklayın; kayıtlı özgeçmişin üzerine yazılacaktır."
     }
   },
   "Auth": {
@@ -247,7 +227,23 @@
     "profileSuccess": "Profil güncellendi",
     "profileError": "Profil güncellenemedi",
     "passwordSuccess": "Şifre güncellendi",
-    "passwordError": "Şifre güncellenemedi"
+    "passwordError": "Şifre güncellenemedi",
+    "resumeTitle": "Site özgeçmişi (PDF)",
+    "resumeDescription": "Hakkımda sayfası ve kişisel web sitesinde görüntülenecek güncel özgeçmişinizi yükleyin.",
+    "resumeLoading": "Özgeçmiş yükleniyor…",
+    "resumeLoadError": "Özgeçmiş bilgisi yüklenemedi",
+    "saveResume": "Özgeçmişi kaydet",
+    "resumeSaved": "Özgeçmiş kaydedildi",
+    "resumeSaveError": "Özgeçmiş kaydedilemedi",
+    "resumeNoFile": "Önce bir PDF yükleyin",
+    "resumeDelete": "Sil",
+    "resumeDeleted": "Özgeçmiş silindi",
+    "resumeDeleteError": "Özgeçmiş silinemedi",
+    "resumeDeleteConfirm": "Özgeçmişi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "resumePreview": "Önizle",
+    "resumeDownloadCurrent": "Mevcut dosyayı indir",
+    "resumeLastUpdated": "Son güncelleme: {date}",
+    "resumeReplaceWarning": "Yeni dosya yüklendi. Yayınlamak için Özgeçmişi kaydet'e tıklayın."
   },
   "Pages": {
     "About": {
@@ -935,7 +931,6 @@
           "manageProject": "Proje Yönetimi",
           "addProject": "Yeni proje",
           "moderateComments": "Yorum Moderasyonu",
-          "siteSettings": "Site Ayarları",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",

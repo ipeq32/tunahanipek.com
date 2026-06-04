@@ -36,6 +36,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { ReactNode } from 'react';
+import ResumeSettingsSection from './ResumeSettingsSection';
 
 const profileSchema = z.object({
   name: z.string().min(3),
@@ -68,6 +69,7 @@ export type SettingsUserValues = {
 
 type SettingsFormProps = {
   initialUser: SettingsUserValues;
+  isSuperAdmin?: boolean;
 };
 
 type SectionHeaderProps = {
@@ -141,7 +143,10 @@ function IconField<T extends FieldValues>({
   );
 }
 
-export default function SettingsForm({ initialUser }: SettingsFormProps) {
+export default function SettingsForm({
+  initialUser,
+  isSuperAdmin = false,
+}: SettingsFormProps) {
   const { update } = useSession();
   const t = useTranslations('Settings');
   const imageCleanup = useUploadCleanup();
@@ -349,6 +354,8 @@ export default function SettingsForm({ initialUser }: SettingsFormProps) {
           </form>
         </Form>
       </ContentCard>
+
+      {isSuperAdmin && <ResumeSettingsSection />}
     </div>
   );
 }

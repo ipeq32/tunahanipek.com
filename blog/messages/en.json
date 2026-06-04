@@ -161,26 +161,6 @@
       "empty": "No projects yet",
       "statusPublished": "Published",
       "statusDraft": "Draft"
-    },
-    "Settings": {
-      "title": "Site Settings",
-      "description": "Manage site-wide resume and other settings.",
-      "resumeTitle": "Resume (PDF)",
-      "resumeDescription": "Upload the current resume shown on the About page and personal website.",
-      "loading": "Loading…",
-      "loadError": "Could not load resume",
-      "save": "Save",
-      "saved": "Resume saved",
-      "saveError": "Could not save resume",
-      "noFile": "Upload a PDF first",
-      "delete": "Delete",
-      "deleted": "Resume deleted",
-      "deleteError": "Could not delete resume",
-      "deleteConfirm": "Delete the resume? This cannot be undone.",
-      "preview": "Preview",
-      "downloadCurrent": "Download current file",
-      "lastUpdated": "Last updated: {date}",
-      "replaceWarning": "A new file was uploaded. Click Save to publish; it will replace the current resume."
     }
   },
   "Auth": {
@@ -247,7 +227,23 @@
     "profileSuccess": "Profile updated",
     "profileError": "Could not update profile",
     "passwordSuccess": "Password updated",
-    "passwordError": "Could not update password"
+    "passwordError": "Could not update password",
+    "resumeTitle": "Site resume (PDF)",
+    "resumeDescription": "Upload the current resume shown on the About page and personal website.",
+    "resumeLoading": "Loading resume…",
+    "resumeLoadError": "Could not load resume",
+    "saveResume": "Save resume",
+    "resumeSaved": "Resume saved",
+    "resumeSaveError": "Could not save resume",
+    "resumeNoFile": "Upload a PDF first",
+    "resumeDelete": "Delete",
+    "resumeDeleted": "Resume deleted",
+    "resumeDeleteError": "Could not delete resume",
+    "resumeDeleteConfirm": "Delete the resume? This cannot be undone.",
+    "resumePreview": "Preview",
+    "resumeDownloadCurrent": "Download current file",
+    "resumeLastUpdated": "Last updated: {date}",
+    "resumeReplaceWarning": "A new file was uploaded. Click Save resume to publish."
   },
   "Pages": {
     "About": {
@@ -935,7 +931,6 @@
           "manageProject": "Project Management",
           "addProject": "New project",
           "moderateComments": "Comment Moderation",
-          "siteSettings": "Site settings",
           "logout": "Logout",
           "roles": {
             "USER": "Member",

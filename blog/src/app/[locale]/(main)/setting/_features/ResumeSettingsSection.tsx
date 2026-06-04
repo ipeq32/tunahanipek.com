@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { FileDown, Loader2, Trash2 } from 'lucide-react';
+import { FileDown, FileText, Loader2, Trash2 } from 'lucide-react';
 import PdfUpload from '@/components/upload/PdfUpload';
 import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
-import { AdminListCard } from '@/components/admin/admin-ui';
+import { ContentCard } from '@/components/layout/content-card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,8 +27,28 @@ function ensurePdfFileName(name: string): string {
   return trimmed.toLowerCase().endsWith('.pdf') ? trimmed : `${trimmed}.pdf`;
 }
 
-export default function ResumeSettingsForm() {
-  const t = useTranslations('Admin.Settings');
+function SectionHeader({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="mb-6 flex items-start gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-300">
+        <FileText className="h-5 w-5" />
+      </span>
+      <div>
+        <h2 className="text-lg font-semibold leading-tight tracking-tight">{title}</h2>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function ResumeSettingsSection() {
+  const t = useTranslations('Settings');
   const cleanup = useUploadCleanup();
 
   const [loading, setLoading] = useState(true);
@@ -53,7 +73,7 @@ export default function ResumeSettingsForm() {
         setDraftFileName('');
       }
     } catch {
-      toast.error(t('loadError'));
+      toast.error(t('resumeLoadError'));
     } finally {
       setLoading(false);
     }
@@ -63,18 +83,13 @@ export default function ResumeSettingsForm() {
     void load();
   }, [load]);
 
-  const handleDraftChange = (url: string, fileName: string) => {
-    setDraftUrl(url);
-    setDraftFileName(fileName);
-  };
-
   const hasUnsavedUpload =
     Boolean(draftUrl) &&
     (!saved || draftUrl !== saved.url || draftFileName !== saved.fileName);
 
   const handleSave = async () => {
     if (!draftUrl) {
-      toast.error(t('noFile'));
+      toast.error(t('resumeNoFile'));
       return;
     }
 
@@ -96,16 +111,16 @@ export default function ResumeSettingsForm() {
       setDraftUrl(json.data.url);
       setDraftFileName(json.data.fileName);
       cleanup.commit();
-      toast.success(t('saved'));
+      toast.success(t('resumeSaved'));
     } catch {
-      toast.error(t('saveError'));
+      toast.error(t('resumeSaveError'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(t('deleteConfirm'))) return;
+    if (!window.confirm(t('resumeDeleteConfirm'))) return;
 
     setDeleting(true);
     try {
@@ -116,9 +131,9 @@ export default function ResumeSettingsForm() {
       setSaved(null);
       setDraftUrl('');
       setDraftFileName('');
-      toast.success(t('deleted'));
+      toast.success(t('resumeDeleted'));
     } catch {
-      toast.error(t('deleteError'));
+      toast.error(t('resumeDeleteError'));
     } finally {
       setDeleting(false);
     }
@@ -126,57 +141,61 @@ export default function ResumeSettingsForm() {
 
   if (loading) {
     return (
-      <AdminListCard className="mt-6 flex items-center justify-center py-16">
+      <ContentCard className="flex items-center justify-center py-16">
         <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
-        <span className="sr-only">{t('loading')}</span>
-      </AdminListCard>
+        <span className="sr-only">{t('resumeLoading')}</span>
+      </ContentCard>
     );
   }
 
   return (
-    <AdminListCard className="mt-6 space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-foreground">{t('resumeTitle')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('resumeDescription')}</p>
-        {saved && (
-          <p className="mt-2 text-xs text-muted-foreground">
-            {t('lastUpdated', {
-              date: new Date(saved.updatedAt).toLocaleString(),
-            })}
-          </p>
-        )}
-      </div>
+    <ContentCard>
+      <SectionHeader
+        title={t('resumeTitle')}
+        description={t('resumeDescription')}
+      />
+
+      {saved && (
+        <p className="-mt-2 mb-4 text-xs text-muted-foreground">
+          {t('resumeLastUpdated', {
+            date: new Date(saved.updatedAt).toLocaleString(),
+          })}
+        </p>
+      )}
 
       {saved && hasUnsavedUpload && (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
-          {t('replaceWarning')}
+        <p className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
+          {t('resumeReplaceWarning')}
         </p>
       )}
 
       <PdfUpload
         value={draftUrl || undefined}
         fileName={draftFileName || undefined}
-        onChange={handleDraftChange}
+        onChange={(url, fileName) => {
+          setDraftUrl(url);
+          setDraftFileName(fileName);
+        }}
         disabled={saving || deleting}
         cleanup={cleanup}
       />
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/40 pt-4">
         <Button
           type="button"
           variant="accent"
           disabled={!hasUnsavedUpload || saving || deleting}
           onClick={() => void handleSave()}
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {t('save')}
+          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+          {saving ? t('saving') : t('saveResume')}
         </Button>
 
         {saved && draftUrl && (
           <Dialog>
             <DialogTrigger asChild>
               <Button type="button" variant="outline">
-                {t('preview')}
+                {t('resumePreview')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] max-w-4xl gap-0 overflow-hidden p-0">
@@ -185,7 +204,7 @@ export default function ResumeSettingsForm() {
               </DialogHeader>
               <iframe
                 src={draftUrl}
-                title={t('preview')}
+                title={t('resumePreview')}
                 className="h-[70vh] w-full bg-muted/30"
               />
             </DialogContent>
@@ -204,7 +223,7 @@ export default function ResumeSettingsForm() {
             ) : (
               <Trash2 className="h-4 w-4" />
             )}
-            {t('delete')}
+            {t('resumeDelete')}
           </Button>
         )}
       </div>
@@ -215,12 +234,12 @@ export default function ResumeSettingsForm() {
           download={saved.fileName}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-medium text-teal-600 hover:underline dark:text-teal-400"
+          className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-teal-600 hover:underline dark:text-teal-400"
         >
           <FileDown className="h-4 w-4" />
-          {t('downloadCurrent')}
+          {t('resumeDownloadCurrent')}
         </a>
       )}
-    </AdminListCard>
+    </ContentCard>
   );
 }

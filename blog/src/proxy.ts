@@ -19,7 +19,6 @@ const adminPages = [
   '/admin/project/*',
   '/admin/proje/*',
   pathnames['/admin/comments'],
-  pathnames['/admin/settings'],
 ];
 
 const authPages = [

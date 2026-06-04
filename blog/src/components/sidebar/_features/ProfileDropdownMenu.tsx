@@ -23,7 +23,6 @@ import {
   MessagesSquare,
   PenSquare,
   Settings,
-  SlidersHorizontal,
   UserRound,
 } from 'lucide-react';
 
@@ -166,12 +165,6 @@ function ProfileDropdownMenuFeature({
               href="/admin/comments"
               icon={MessagesSquare}
               label={t('moderateComments')}
-              onClick={close}
-            />
-            <MenuLink
-              href="/admin/settings"
-              icon={SlidersHorizontal}
-              label={t('siteSettings')}
               onClick={close}
             />
           </>
