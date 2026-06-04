@@ -1,0 +1,112 @@
+{
+  "Loader": {
+    "ariaLabel": "Sayfa yükleniyor"
+  },
+  "Metadata": {
+    "title": "Tunahan İpek",
+    "description": "Tunahan İpek — yazılım geliştirici. Full-stack ve DevOps deneyimi, iletişim bilgileri ve teknik blog."
+  },
+  "LocaleSwitcher": {
+    "label": "Dili değiştir",
+    "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Bilinmiyor}}"
+  },
+  "ThemeSwitcher": {
+    "label": "Tema",
+    "light": "Açık",
+    "dark": "Koyu",
+    "system": "Sistem",
+    "toggleAria": "Temayı değiştir"
+  },
+  "Navbar": {
+    "logoAria": "Tunahan İpek — ana sayfa",
+    "wordmark": "tunahan",
+    "home": "Ana Sayfa",
+    "about": "Hakkımda",
+    "experience": "Deneyim",
+    "blog": "Blog",
+    "contact": "İletişim",
+    "hireMe": "İletişime Geç",
+    "menuAria": "Ana menü"
+  },
+  "Hero": {
+    "eyebrow": "Dijital dünyama hoş geldiniz",
+    "name": "Tunahan İPEK",
+    "rolePrefix": "Full-stack &",
+    "roleHighlight": "DevOps",
+    "description": "Detay odaklı, ölçeklenebilir ve kullanıcı odaklı web/mobil ürünler geliştiriyorum — modern arayüzlerden üretim ortamı backend'lerine ve platform otomasyonuna kadar.",
+    "downloadResume": "Özgeçmişi İndir",
+    "viewProjects": "Projeleri Gör",
+    "badge": "Yeni projeler için müsait"
+  },
+  "About": {
+    "badge": "Hakkımda",
+    "title": "Mimari Geliştirici",
+    "paragraphs": [
+      "Denizli merkezli bir yazılım geliştiriciyim. Detay odaklı, ölçeklenebilir ve kullanıcı odaklı web/mobil ürünler geliştirmeye odaklanıyorum.",
+      "Frontend ve full-stack geliştirme tarafında; React, Next.js, Vue.js ve Svelte gibi modern JavaScript ekosistemiyle çalışıyorum. Backend tarafında Node.js/NestJS; veri katmanında PostgreSQL ve GraphQL ile üretim ortamı ihtiyaçlarına uygun çözümler geliştiriyorum.",
+      "Ayhanlar Holding'de Software Team Lead ve Full-Stack Developer rollerinde; Next.js, React Native, NestJS, TailwindCSS, Redux ve GraphQL kullanarak web ve mobil projelerde ekip liderliği yaptım, teslimat süreçlerini yönettim ve uygulama yaşam döngüsünü iyileştirdim.",
+      "Rubiklabs'ta Full-Stack Software Developer olarak performans ve kullanıcı deneyimi odaklı ürünler geliştirdim; UI/UX ekibiyle yakın çalıştım, Figma tasarımlarını üretim kalitesinde arayüzlere dönüştürdüm ve SEO/erişilebilirlik prensiplerine uygun işler çıkardım.",
+      "Freelance olarak farklı sektörlerden müşteriler için özel web uygulamaları geliştirdim; e-ticaret benzeri uçtan uca çözümler, yönetim panelleri ve kullanıcı dostu arayüzler teslim ettim.",
+      "Teknoloji setim: React/React Native, Next.js, NestJS, Node.js, TailwindCSS, Redux, GraphQL, PostgreSQL; ayrıca Docker ve Git ekosistemiyle teslimat süreçlerini destekliyorum. DevOps tarafında Kubernetes ve self-hosted kurulumlarla ilgileniyorum. Teknik notlarımı blogumda paylaşıyorum."
+    ]
+  },
+  "Experience": {
+    "eyebrow": "Kariyer",
+    "title": "Profesyonel Yolculuk",
+    "items": [
+      {
+        "company": "Ayhanlar Holding",
+        "role": "Software Team Lead · Full-Stack Developer",
+        "period": "Güncel",
+        "description": "Next.js, React Native ve NestJS ile web ve mobil teslimat liderliği."
+      },
+      {
+        "company": "Rubiklabs",
+        "role": "Full-Stack Software Developer",
+        "period": "Önceki",
+        "description": "Performans odaklı ürünler, Figma'dan üretime UI, SEO ve erişilebilirlik."
+      },
+      {
+        "company": "Freelance",
+        "role": "Full-Stack Developer",
+        "period": "Devam ediyor",
+        "description": "Özel web uygulamaları, yönetim panelleri ve e-ticaret çözümleri."
+      }
+    ]
+  },
+  "Skills": {
+    "eyebrow": "Ekosistem",
+    "title": "Teknik Ustalık"
+  },
+  "Cta": {
+    "titlePrefix": "Birlikte",
+    "titleHighlight": "olağanüstü",
+    "titleSuffix": "bir şey inşa edelim.",
+    "corporate": "Kurumsal",
+    "personal": "Kişisel",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "blog": "Blog"
+  },
+  "Footer": {
+    "logo": "TUNAHAN",
+    "copyright": "© {year} Tunahan. Hassasiyet ve mimari zarafetle inşa edildi.",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "resume": "Özgeçmiş"
+  },
+  "Error": {
+    "title": "Bir şeyler ters gitti",
+    "description": "Sayfa yüklenirken beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+    "retry": "Tekrar dene",
+    "home": "Ana sayfa"
+  },
+  "NotFound": {
+    "title": "Sayfa bulunamadı",
+    "description": "Aradığınız sayfa taşınmış veya kaldırılmış olabilir.",
+    "home": "Ana sayfa",
+    "blog": "Blog"
+  }
+}

@@ -1,7 +1,6 @@
-import Body from './_components/Body/Body';
+import { defaultLocale } from "@/config";
+import { redirect } from "@/navigation";
 
-export default async function Home() {
-  return (
-    <Body />
-  )
+export default function RootPage() {
+  redirect({ href: "/", locale: defaultLocale });
 }

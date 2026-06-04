@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { PageReadyProvider } from "@/app/_context/PageReadyContext";
 import Loading from "./Loading";
 
@@ -13,33 +14,35 @@ type InitialLoaderProps = {
 };
 
 const InitialLoader = ({ children }: InitialLoaderProps) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [overlay, setOverlay] = useState<"visible" | "fading" | "hidden">(
+    "visible",
+  );
   const [isPageReady, setIsPageReady] = useState(false);
 
   useEffect(() => {
     let isUnmounted = false;
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const markReady = () => {
+    const finish = () => {
       if (!isUnmounted) {
+        setOverlay("hidden");
         setIsPageReady(true);
       }
     };
 
     if (media.matches) {
-      setIsVisible(false);
-      markReady();
+      finish();
       return;
     }
 
-    const hide = () => {
+    const startFade = () => {
       if (!isUnmounted) {
-        setIsVisible(false);
+        setOverlay("fading");
       }
     };
 
-    const minTimer = window.setTimeout(hide, MIN_VISIBLE_MS);
-    const failSafeTimer = window.setTimeout(hide, FAILSAFE_MS);
+    const minTimer = window.setTimeout(startFade, MIN_VISIBLE_MS);
+    const failSafeTimer = window.setTimeout(startFade, FAILSAFE_MS);
 
     return () => {
       isUnmounted = true;
@@ -49,28 +52,31 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   }, []);
 
   useEffect(() => {
-    if (isVisible || isPageReady) {
+    if (overlay !== "fading" || isPageReady) {
       return;
     }
 
     const readyTimer = window.setTimeout(() => {
+      setOverlay("hidden");
       setIsPageReady(true);
     }, FADE_MS);
 
     return () => window.clearTimeout(readyTimer);
-  }, [isVisible, isPageReady]);
+  }, [overlay, isPageReady]);
 
   return (
     <PageReadyProvider ready={isPageReady}>
-      {isVisible && (
+      {overlay !== "hidden" ? (
         <div
-          className={`fixed inset-0 z-[100] transition-opacity duration-500 ${
-            isVisible ? "opacity-100" : "pointer-events-none opacity-0"
+          className={`preloader-overlay transition-opacity duration-500 ${
+            overlay === "fading"
+              ? "pointer-events-none opacity-0"
+              : "opacity-100"
           }`}
         >
           <Loading />
         </div>
-      )}
+      ) : null}
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
     </PageReadyProvider>
   );

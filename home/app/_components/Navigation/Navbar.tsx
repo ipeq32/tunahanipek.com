@@ -1,73 +1,138 @@
-import Link from "next/link";
+"use client";
+
+import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
+
 import { site } from "@/app/_content/site";
-import SignatureLogo from "@/app/_ui/SignatureLogo";
+import { ToggleLanguage } from "@/app/_components/controls/ToggleLanguage";
+import { ToggleTheme } from "@/app/_components/controls/ToggleTheme";
+import { NavbarLogo } from "./NavbarLogo";
 
-const Navbar = () => {
+const CONTACT_SECTION = "#contact";
+
+type NavItem =
+  | {
+      key: "home" | "about" | "experience" | "contact";
+      href: string;
+      external?: false;
+    }
+  | { key: "blog"; href: string; external: true };
+
+export default function Navbar() {
+  const t = useTranslations("Navbar");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { key: "home", href: "#home" },
+      { key: "about", href: "#about" },
+      { key: "experience", href: "#experience" },
+      { key: "blog", href: site.blogUrl, external: true },
+      { key: "contact", href: CONTACT_SECTION },
+    ],
+    [],
+  );
+
   return (
-    <header className="sticky top-0 z-40 mx-3 mb-0 mt-1 shrink-0 md:mb-0 md:mt-1">
-      <nav
-        className="nav-surface flex h-24 items-center shadow-none max-sm:justify-between max-sm:px-3 md:h-[5.5rem]"
-        aria-label="Ana menü"
-      >
-        <div className="flex w-16 flex-none items-center justify-center self-center sm:w-24 sm:mx-6">
-          <div className="max-sm:hidden animate-fadeInDown space-y-2">
-            <div className="h-4 w-2/4 rounded bg-gradient-to-r from-blue-400" />
-            <div className="h-4 rounded bg-gradient-to-tl from-indigo-400 via-green-300 to-pink-400" />
-            <div className="h-4 w-5/6 rounded bg-gradient-to-tr from-yellow-400" />
-          </div>
-          <div className="hidden max-sm:flex h-12 w-12 items-center justify-center premium-logo-float nav-logo-emphasis">
-            <SignatureLogo
-              gradientId="nav-signature-gradient"
-              className="h-11 w-11 translate-x-[1px] opacity-100"
-              loopDraw
-            />
-          </div>
-        </div>
+    <header className="sticky top-0 z-50 glass-nav">
+      <div className="section-container flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+        <NavbarLogo label={t("logoAria")} wordmark={t("wordmark")} />
 
-        <div className="mr-3 flex flex-auto animate-pulse items-center justify-center space-x-2 max-lg:hidden">
-          <div className="h-8 w-8 rounded-full bg-pink-400" />
-          <div className="h-8 w-8 rounded-md bg-blue-400" />
-          <div className="h-8 w-8 rounded-full bg-red-400" />
-        </div>
+        <nav
+          className="hidden items-center gap-8 lg:flex"
+          aria-label={t("menuAria")}
+        >
+          {navItems.map((item) =>
+            item.external ? (
+              <a
+                key={item.key}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
+              >
+                {t(item.key)}
+              </a>
+            ) : (
+              <a
+                key={item.key}
+                href={item.href}
+                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
+              >
+                {t(item.key)}
+              </a>
+            ),
+          )}
+        </nav>
 
-        <div className="flex flex-grow items-center justify-center self-center max-sm:flex-1">
-          <Link
-            href="/"
-            className="brand-link flex items-center transition duration-500 ease-out hover:-translate-y-0.5 hover:scale-[1.02]"
-            aria-label={site.name}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden sm:flex sm:items-center sm:gap-2">
+            <ToggleLanguage />
+            <ToggleTheme />
+          </div>
+          <a href={CONTACT_SECTION} className="btn-dark hidden sm:inline-flex">
+            {t("hireMe")}
+          </a>
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-foreground lg:hidden"
+            aria-expanded={mobileOpen}
+            aria-label={t("menuAria")}
+            onClick={() => setMobileOpen((prev) => !prev)}
           >
-            <div className="box">
-              <p className="text text1 text-green-500">tunahan</p>
-              <p className="text text2 text-gray-700">tunahan</p>
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {mobileOpen ? (
+        <div className="border-t border-border bg-background lg:hidden">
+          <nav
+            className="section-container flex flex-col gap-1 py-4"
+            aria-label={t("menuAria")}
+          >
+            {navItems.map((item) =>
+              item.external ? (
+                <a
+                  key={item.key}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg px-3 py-2.5 text-sm font-semibold uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {t(item.key)}
+                </a>
+              ) : (
+                <a
+                  key={item.key}
+                  href={item.href}
+                  className="rounded-lg px-3 py-2.5 text-sm font-semibold uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {t(item.key)}
+                </a>
+              ),
+            )}
+            <div className="mt-3 flex items-center gap-2 border-t border-border pt-4">
+              <ToggleLanguage />
+              <ToggleTheme />
             </div>
-          </Link>
+            <a
+              href={CONTACT_SECTION}
+              className="btn-dark mt-3 inline-flex"
+              onClick={() => setMobileOpen(false)}
+            >
+              {t("hireMe")}
+            </a>
+          </nav>
         </div>
-
-        <div className="ml-5 flex flex-auto animate-pulse items-center justify-center space-x-2 max-lg:hidden">
-          <div className="h-8 w-8 rounded-full bg-red-400" />
-          <div className="h-8 w-8 rounded-md bg-blue-400" />
-          <div className="h-8 w-8 rounded-full bg-pink-400" />
-        </div>
-
-        <div className="flex w-16 flex-none items-center justify-center self-center sm:w-24 sm:mx-6">
-          <div className="hidden max-sm:flex h-12 w-12 items-center justify-center premium-logo-float nav-logo-emphasis">
-            <SignatureLogo
-              gradientId="nav-signature-gradient-right"
-              className="h-11 w-11 translate-x-[1px] opacity-100"
-              loopDraw
-            />
-          </div>
-          <div className="flex w-24 flex-none animate-fadeInDown items-center self-center max-sm:hidden">
-          <div className="rotate-180 space-y-2">
-            <div className="h-4 w-2/4 rounded bg-gradient-to-tr from-yellow-400" />
-            <div className="h-4 rounded bg-gradient-to-l from-blue-400 via-red-300 to-green-400" />
-            <div className="h-4 w-5/6 rounded bg-gradient-to-tr from-indigo-400" />
-          </div>
-          </div>
-        </div>
-      </nav>
+      ) : null}
     </header>
   );
-};
-
-export default Navbar;
+}

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,34 +10,48 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          DEFAULT: "#059669",
-          muted: "#d1fae5",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        border: "hsl(var(--border))",
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          muted: "hsl(var(--brand-muted))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-playfair)", "Georgia", "serif"],
       },
       animation: {
         "fade-in": "fade-in 0.5s ease-out forwards",
-        skew: "skew 2s linear infinite",
-        fadeInDown: "fade-in-down 1s ease-out infinite alternate",
+        "fade-in-up": "fade-in-up 0.6s ease-out forwards",
       },
       keyframes: {
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "fade-in-down": {
-          "0%": { opacity: "0", transform: "translateY(-8px)" },
-          "50%": { opacity: "0.5", transform: "translateY(4px)" },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        skew: {
-          "0%, 100%": { transform: "skewX(0deg)" },
-          "50%": { transform: "skewX(6deg)" },
-        },
-      },
-      opacity: {
-        profil: ".98",
-        tema: ".97",
       },
     },
   },

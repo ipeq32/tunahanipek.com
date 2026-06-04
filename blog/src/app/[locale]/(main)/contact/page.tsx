@@ -28,10 +28,12 @@ import {
   Linkedin,
   Mail,
   Sparkles,
+  Twitter,
 } from 'lucide-react';
 
+import { SOCIAL_LINKS } from '@/lib/social';
+
 const EMAIL = 'hello@tunahanipek.com';
-const LINKEDIN = 'https://www.linkedin.com/in/tunahanipek';
 
 export default async function ContactPage() {
   const t = await getTranslations('Pages.Contact');
@@ -47,19 +49,25 @@ export default async function ContactPage() {
     {
       label: t('githubLabel'),
       value: 'github.com/ipeq32',
-      href: 'https://github.com/ipeq32',
+      href: SOCIAL_LINKS.github,
       icon: Github,
     },
     {
       label: t('linkedinLabel'),
       value: 'linkedin.com/in/tunahanipek',
-      href: LINKEDIN,
+      href: SOCIAL_LINKS.linkedin,
       icon: Linkedin,
+    },
+    {
+      label: t('twitterLabel'),
+      value: 'x.com/tnhnipek',
+      href: SOCIAL_LINKS.twitter,
+      icon: Twitter,
     },
     {
       label: t('instagramLabel'),
       value: 'instagram.com/tnhnipek',
-      href: 'https://www.instagram.com/tnhnipek',
+      href: SOCIAL_LINKS.instagram,
       icon: Instagram,
     },
   ];
@@ -88,7 +96,7 @@ export default async function ContactPage() {
                 </a>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href={LINKEDIN} target="_blank" rel="noreferrer">
+                <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noreferrer">
                   <Linkedin className="mr-2 h-4 w-4" />
                   {t('ctaLinkedin')}
                   <ArrowRight className="ml-2 h-4 w-4" />

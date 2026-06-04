@@ -1,6 +1,15 @@
 'use client';
 
-import { Clock3, Github, Instagram, Linkedin, Stethoscope } from 'lucide-react';
+import {
+  Clock3,
+  Github,
+  Instagram,
+  Linkedin,
+  Stethoscope,
+  Twitter,
+} from 'lucide-react';
+
+import { SOCIAL_LINKS } from '@/lib/social';
 
 import Link from 'next/link';
 import { ToggleTheme } from '../toggle-theme';
@@ -62,7 +71,7 @@ const NavContact = ({ officeHours, locale }: NavContactProps) => {
 
           <div className="flex items-center gap-3">
             <Link
-              href="https://github.com/ipeq32"
+              href={SOCIAL_LINKS.github}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition-colors hover:text-foreground"
@@ -71,7 +80,7 @@ const NavContact = ({ officeHours, locale }: NavContactProps) => {
               <Github width={16} height={16} />
             </Link>
             <Link
-              href="https://www.instagram.com/tnhnipek"
+              href={SOCIAL_LINKS.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition-colors hover:text-foreground"
@@ -80,13 +89,22 @@ const NavContact = ({ officeHours, locale }: NavContactProps) => {
               <Instagram width={16} height={16} />
             </Link>
             <Link
-              href="https://www.linkedin.com/in/tunahanipek"
+              href={SOCIAL_LINKS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground transition-colors hover:text-foreground"
               aria-label="LinkedIn"
             >
               <Linkedin width={16} height={16} />
+            </Link>
+            <Link
+              href={SOCIAL_LINKS.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="X (Twitter)"
+            >
+              <Twitter width={16} height={16} />
             </Link>
             <div className="ml-1 flex items-center gap-2 border-l border-border/60 pl-3">
               <ToggleTheme />

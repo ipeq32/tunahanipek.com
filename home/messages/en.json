@@ -1,0 +1,112 @@
+{
+  "Loader": {
+    "ariaLabel": "Loading page"
+  },
+  "Metadata": {
+    "title": "Tunahan İpek",
+    "description": "Tunahan İpek — software developer. Full-stack and DevOps experience, contact details, and technical blog."
+  },
+  "LocaleSwitcher": {
+    "label": "Change language",
+    "locale": "{locale, select, tr {🇹🇷 Türkçe} en {🇺🇸 English} other {Unknown}}"
+  },
+  "ThemeSwitcher": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggleAria": "Toggle theme"
+  },
+  "Navbar": {
+    "logoAria": "Tunahan İpek — home",
+    "wordmark": "tunahan",
+    "home": "Home",
+    "about": "About",
+    "experience": "Experience",
+    "blog": "Blog",
+    "contact": "Contact",
+    "hireMe": "Hire Me",
+    "menuAria": "Main menu"
+  },
+  "Hero": {
+    "eyebrow": "Welcome to my digital realm",
+    "name": "Tunahan İPEK",
+    "rolePrefix": "Full-stack &",
+    "roleHighlight": "DevOps",
+    "description": "I build scalable, user-focused web and mobile products with a detail-oriented mindset — from modern frontends to production-grade backends and platform automation.",
+    "downloadResume": "Download Resume",
+    "viewProjects": "View Projects",
+    "badge": "Open to new collaborations"
+  },
+  "About": {
+    "badge": "About me",
+    "title": "The Architectural Developer",
+    "paragraphs": [
+      "I'm a software developer based in Denizli, Turkey, focused on building scalable, detail-oriented, and user-centric web and mobile products.",
+      "On the frontend and full-stack side, I work with the modern JavaScript ecosystem — React, Next.js, Vue.js, and Svelte. On the backend I use Node.js/NestJS; for data I rely on PostgreSQL and GraphQL to meet production needs.",
+      "At Ayhanlar Holding as Software Team Lead and Full-Stack Developer, I led teams on Next.js, React Native, NestJS, TailwindCSS, Redux, and GraphQL projects — managing delivery and improving the application lifecycle.",
+      "At Rubiklabs as Full-Stack Software Developer, I shipped performance- and UX-focused products, collaborated closely with UI/UX, turned Figma designs into production-quality interfaces, and followed SEO and accessibility principles.",
+      "As a freelancer I've delivered custom web apps for clients across industries — end-to-end e-commerce-style solutions, admin panels, and user-friendly interfaces.",
+      "My stack includes React/React Native, Next.js, NestJS, Node.js, TailwindCSS, Redux, GraphQL, PostgreSQL, plus Docker and Git for delivery workflows. On DevOps I work with Kubernetes and self-hosted setups — GitLab Runner, Rancher, Harbor for CI/CD and registries, and n8n for automation. I share technical notes on my blog."
+    ]
+  },
+  "Experience": {
+    "eyebrow": "Career",
+    "title": "Professional Journey",
+    "items": [
+      {
+        "company": "Ayhanlar Holding",
+        "role": "Software Team Lead · Full-Stack Developer",
+        "period": "Present",
+        "description": "Leading web and mobile delivery with Next.js, React Native, and NestJS."
+      },
+      {
+        "company": "Rubiklabs",
+        "role": "Full-Stack Software Developer",
+        "period": "Previous",
+        "description": "Performance-focused products, Figma-to-production UI, SEO and accessibility."
+      },
+      {
+        "company": "Freelance",
+        "role": "Full-Stack Developer",
+        "period": "Ongoing",
+        "description": "Custom web applications, admin panels, and e-commerce solutions."
+      }
+    ]
+  },
+  "Skills": {
+    "eyebrow": "Ecosystem",
+    "title": "Technical Mastery"
+  },
+  "Cta": {
+    "titlePrefix": "Let's build something",
+    "titleHighlight": "extraordinary",
+    "titleSuffix": "together.",
+    "corporate": "Corporate",
+    "personal": "Personal",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "blog": "Blog"
+  },
+  "Footer": {
+    "logo": "TUNAHAN",
+    "copyright": "© {year} Tunahan. Built with precision and architectural elegance.",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "resume": "Resume"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred while loading the page. Please try again.",
+    "retry": "Try again",
+    "home": "Home"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for may have been moved or removed.",
+    "home": "Home",
+    "blog": "Blog"
+  }
+}

@@ -5,110 +5,173 @@
 @tailwind utilities;
 
 @layer base {
-  .page-canvas {
-    background:
-      radial-gradient(
-        circle at 12% 24%,
-        rgba(167, 243, 208, 0.32),
-        transparent 42%
-      ),
-      radial-gradient(
-        circle at 80% 32%,
-        rgba(186, 230, 253, 0.32),
-        transparent 44%
-      ),
-      linear-gradient(180deg, #f7fdfc 0%, #edf8ff 70%, #e9f7ff 100%);
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --brand: 217 91% 60%;
+    --brand-muted: 214 100% 97%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 91% 65%;
+    --accent-foreground: 222 47% 6%;
+    --border: 217 33% 18%;
+    --brand: 217 91% 65%;
+    --brand-muted: 217 33% 14%;
   }
 
   html {
-    height: 100%;
     scroll-behavior: smooth;
   }
 
-  @media (min-width: 768px) {
-    html {
-      overflow: hidden;
-    }
-  }
-
-  @media (min-width: 768px) and (max-height: 720px) {
-    .home-compact h1 {
-      font-size: 1.25rem;
-      line-height: 1.75rem;
-    }
-
-    .home-compact .home-bio {
-      font-size: 0.8125rem;
-      line-height: 1.25rem;
-    }
+  body {
+    @apply bg-background text-foreground antialiased;
   }
 
   ::selection {
-    @apply bg-emerald-200 text-emerald-950;
+    @apply bg-blue-200 text-blue-950 dark:bg-blue-900 dark:text-blue-50;
   }
 }
 
 @layer components {
-  .nav-surface {
-    background:
-      radial-gradient(
-        circle at 12% 24%,
-        rgba(167, 243, 208, 0.7),
-        transparent 44%
-      ),
-      radial-gradient(
-        circle at 80% 32%,
-        rgba(186, 230, 253, 0.72),
-        transparent 46%
-      ),
-      linear-gradient(180deg, rgba(247, 253, 252, 0.96), rgba(237, 248, 255, 0.96));
-    backdrop-filter: blur(4px);
+  .section-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
 
-  .premium-logo-float {
-    animation: premium-float 2.6s ease-in-out infinite;
+  .glass-nav {
+    @apply border-b border-border/60 bg-background/80 shadow-sm backdrop-blur-xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground shadow-sm transition hover:border-accent/50 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+  }
+
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground;
+  }
+
+  .skill-card {
+    @apply flex flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-muted/50 p-6 transition hover:border-accent/40 hover:shadow-md dark:bg-muted/30;
+  }
+
+  .availability-badge {
+    @apply border border-emerald-200/80 bg-emerald-50 text-emerald-800;
+  }
+
+  .dark .availability-badge {
+    @apply border-emerald-400/50 bg-emerald-500/20 text-emerald-300;
+    box-shadow:
+      0 0 0 1px hsl(160 84% 45% / 0.15),
+      0 4px 24px hsl(160 84% 39% / 0.25);
+  }
+
+  .nav-brand-group {
+    @apply inline-flex shrink-0 items-center gap-2 transition duration-300 ease-out sm:gap-3;
+  }
+
+  .nav-brand-group:hover,
+  .nav-brand-group:focus-visible {
+    @apply -translate-y-0.5;
   }
 
   .nav-logo-emphasis {
-    filter: saturate(1.2) contrast(1.12)
-      drop-shadow(0 0 10px rgba(56, 189, 248, 0.28));
+    filter: saturate(1.2) contrast(1.1)
+      drop-shadow(0 2px 8px hsl(var(--accent) / 0.35));
   }
 
-  @keyframes premium-float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-3px);
-    }
+  .dark .nav-logo-emphasis {
+    filter: saturate(1.35) contrast(1.15)
+      drop-shadow(0 0 14px hsl(199 89% 55% / 0.5))
+      drop-shadow(0 0 6px hsl(160 84% 45% / 0.35));
   }
 
-  #logo {
-    width: 50%;
-    height: 50%;
-    fill: none;
-    stroke: #fff !important;
+  .brand-wordmark-box {
+    @apply relative flex h-10 w-28 items-center justify-center sm:h-12 sm:w-32;
+  }
+
+  .brand-wordmark-text {
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 uppercase;
+    font-family: "Satisfy", cursive;
+    font-size: clamp(1.35rem, 3.5vw, 2rem);
+    line-height: 1;
+    transition: transform 0.2s ease;
+    user-select: none;
+  }
+
+  .brand-wordmark-text1 {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
+    @apply text-emerald-600;
+  }
+
+  .brand-wordmark-text2 {
+    clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
+    @apply text-slate-700;
+  }
+
+  .dark .brand-wordmark-text1 {
+    @apply text-emerald-400;
+  }
+
+  .dark .brand-wordmark-text2 {
+    @apply text-slate-300;
+  }
+
+  .nav-brand-group:hover .brand-wordmark-text1,
+  .nav-brand-group:focus-visible .brand-wordmark-text1 {
+    transform: translate(-50%, calc(-50% - 8px));
+  }
+
+  .nav-brand-group:hover .brand-wordmark-text2,
+  .nav-brand-group:focus-visible .brand-wordmark-text2 {
+    transform: translate(-50%, calc(-50% + 8px));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-brand-group:hover .brand-wordmark-text1,
+    .nav-brand-group:focus-visible .brand-wordmark-text1,
+    .nav-brand-group:hover .brand-wordmark-text2,
+    .nav-brand-group:focus-visible .brand-wordmark-text2 {
+      transform: translate(-50%, -50%);
+    }
   }
 
   .st0 {
     stroke-dasharray: 4800;
     animation: signature-draw 8s cubic-bezier(0.47, 0, 0.75, 0.72) forwards;
-    width: 100%;
-    z-index: 999;
   }
 
   .st1 {
     stroke-dasharray: 4800;
     animation: signature-draw 4s ease-in forwards;
-    width: 100%;
-    z-index: 999;
     animation-fill-mode: both;
   }
 
   .st0-loop {
     stroke-dashoffset: 4800;
-    animation: signature-draw-loop-slow 10s cubic-bezier(0.47, 0, 0.75, 0.72) infinite;
+    animation: signature-draw-loop-slow 10s cubic-bezier(0.47, 0, 0.75, 0.72)
+      infinite;
   }
 
   .st1-loop {
@@ -144,137 +207,45 @@
     }
   }
 
-  #preloader {
-    @apply fixed inset-0 z-[100] flex items-center justify-center;
-    background:
-      radial-gradient(
-        circle at 50% 35%,
-        rgba(244, 114, 182, 0.18),
-        rgba(15, 23, 42, 0.72) 65%
-      );
-    backdrop-filter: blur(6px);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    #preloader {
-      display: none;
-    }
-  }
-
-  .brand-link {
-    @apply inline-block;
-  }
-
-  .box {
-    @apply relative flex h-12 w-36 items-center justify-center sm:h-14 sm:w-44;
-  }
-
-  .text {
-    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 uppercase;
-    font-family: "Satisfy", cursive;
-    font-size: clamp(1.75rem, 5vw, 3rem);
-    line-height: 1;
-    transition: 0.2s ease;
-    user-select: none;
-  }
-
-  .text1 {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
-    color: #22c55e;
-  }
-
-  .text2 {
-    clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
-    color: #334155;
-  }
-
-  .box:hover .text1,
-  .brand-link:focus-visible .text1 {
-    transform: translate(-50%, calc(-50% - 10px));
-  }
-
-  .box:hover .text2,
-  .brand-link:focus-visible .text2 {
-    transform: translate(-50%, calc(-50% + 10px));
-  }
-
-  .bio-pending .bio-panel,
-  .bio-pending .bio-line {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .bio-animate .bio-panel {
-    visibility: visible;
-    animation: bio-panel-reveal 700ms ease-out both;
-  }
-
-  .bio-animate .bio-line {
-    visibility: visible;
-    opacity: 0;
-    transform: translateY(14px);
-    animation: bio-line-reveal 700ms ease-out forwards;
-  }
-
-  .bio-animate .bio-line:nth-child(1) {
-    animation-delay: 180ms;
-  }
-
-  .bio-animate .bio-line:nth-child(2) {
-    animation-delay: 320ms;
-  }
-
-  .bio-animate .bio-line:nth-child(3) {
-    animation-delay: 460ms;
-  }
-
-  .bio-animate .bio-line:nth-child(4) {
-    animation-delay: 600ms;
-  }
-
-  .bio-animate .bio-line:nth-child(5) {
-    animation-delay: 740ms;
-  }
-
-  .bio-animate .bio-line:nth-child(6) {
-    animation-delay: 880ms;
-  }
-
-  .bio-animate .bio-line:nth-child(7) {
-    animation-delay: 1020ms;
-  }
-
-  @keyframes bio-panel-reveal {
-    from {
-      opacity: 0;
-      transform: translateY(8px) scale(0.985);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes bio-line-reveal {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .bio-pending .bio-panel,
-    .bio-pending .bio-line {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .bio-animate .bio-panel,
-    .bio-animate .bio-line {
+    .st0,
+    .st1,
+    .st0-loop,
+    .st1-loop {
       animation: none;
+      stroke-dashoffset: 0;
       opacity: 1;
-      transform: none;
-      visibility: visible;
+    }
+  }
+
+  .preloader-overlay {
+    @apply fixed inset-0 z-[100] flex items-center justify-center;
+    background: radial-gradient(
+      circle at 50% 35%,
+      rgba(244, 114, 182, 0.18),
+      rgba(15, 23, 42, 0.72) 65%
+    );
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .dark .preloader-overlay {
+    background: radial-gradient(
+      circle at 50% 35%,
+      rgba(56, 189, 248, 0.16),
+      rgba(2, 6, 23, 0.82) 65%
+    );
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .preloader-content {
+    @apply relative z-[101];
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preloader-overlay {
+      display: none;
     }
   }
 }

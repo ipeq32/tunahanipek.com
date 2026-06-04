@@ -9,12 +9,14 @@ import {
   Instagram,
   Linkedin,
   Mail,
+  Twitter,
   MapPin,
   Phone,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
 import { SiteContainer } from '@/components/layout/site-container';
+import { SOCIAL_LINKS } from '@/lib/social';
 
 type FooterProps = {
   isAuthenticated: boolean;
@@ -66,17 +68,10 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
   ];
 
   const socials = [
-    { href: 'https://github.com/ipeq32', label: 'GitHub', icon: Github },
-    {
-      href: 'https://www.instagram.com/tnhnipek',
-      label: 'Instagram',
-      icon: Instagram,
-    },
-    {
-      href: 'https://www.linkedin.com/in/tunahanipek',
-      label: 'LinkedIn',
-      icon: Linkedin,
-    },
+    { href: SOCIAL_LINKS.github, label: 'GitHub', icon: Github },
+    { href: SOCIAL_LINKS.instagram, label: 'Instagram', icon: Instagram },
+    { href: SOCIAL_LINKS.linkedin, label: 'LinkedIn', icon: Linkedin },
+    { href: SOCIAL_LINKS.twitter, label: 'X (Twitter)', icon: Twitter },
   ];
 
   return (

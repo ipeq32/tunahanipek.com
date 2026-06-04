@@ -1,4 +1,5 @@
 import { getSiteUrl } from '@/config';
+import { SOCIAL_LINKS } from '@/lib/social';
 
 export function serializeJsonLd(data: Record<string, unknown>): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
@@ -23,9 +24,10 @@ export function buildPersonJsonLd() {
     name: 'Tunahan İPEK',
     url: siteUrl,
     sameAs: [
-      'https://www.linkedin.com/in/tunahanipek',
-      'https://github.com/ipeq32',
-      'https://www.instagram.com/tnhnipek',
+      SOCIAL_LINKS.linkedin,
+      SOCIAL_LINKS.github,
+      SOCIAL_LINKS.instagram,
+      SOCIAL_LINKS.twitter,
     ],
   };
 }
