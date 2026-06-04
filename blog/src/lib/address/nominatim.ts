@@ -47,7 +47,7 @@ async function nominatimFetch<T>(path: string, params: Record<string, string>): 
       Accept: 'application/json',
       'User-Agent': USER_AGENT,
     },
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {

@@ -35,8 +35,12 @@ export default function AddressMapModal({
 }: AddressMapModalProps) {
   const t = useTranslations('Address.map');
 
+  if (!open) {
+    return null;
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogPrimitive.Overlay
           className={cn(
@@ -74,18 +78,16 @@ export default function AddressMapModal({
             </DialogPrimitive.Close>
           </div>
 
-          {open && (
-            <AddressMapPicker
-              initialLat={initialValues.latitude}
-              initialLon={initialValues.longitude}
-              initialLabel={initialValues.formattedMapAddress}
-              onCancel={() => onOpenChange(false)}
-              onConfirm={(patch) => {
-                onConfirm(patch);
-                onOpenChange(false);
-              }}
-            />
-          )}
+          <AddressMapPicker
+            initialLat={initialValues.latitude}
+            initialLon={initialValues.longitude}
+            initialLabel={initialValues.formattedMapAddress}
+            onCancel={() => onOpenChange(false)}
+            onConfirm={(patch) => {
+              onConfirm(patch);
+              onOpenChange(false);
+            }}
+          />
         </DialogPrimitive.Content>
       </DialogPortal>
     </Dialog>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { checkAddressGeoRateLimit } from '@/lib/address/address-api-rate-limit';
 import { resolveMapLocation } from '@/lib/address/map-resolve';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,10 @@ export async function POST(request: Request) {
     const { lat, lon } = parsed.data;
     const data = await resolveMapLocation(lat, lon);
     return NextResponse.json({ data });
-  } catch {
+  } catch (error) {
+    logger.error('map-resolve failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       { error: 'Failed to resolve map location' },
       { status: 502 }

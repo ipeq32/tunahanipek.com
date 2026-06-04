@@ -30,10 +30,19 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+const ADDRESS_SELECT_PORTAL_SELECTOR = '[data-address-select-portal]';
+
+function isAddressSelectPortalTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element &&
+    target.closest(ADDRESS_SELECT_PORTAL_SELECTOR) !== null
+  );
+}
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => {
+>(({ className, children, onFocusOutside, onPointerDownOutside, ...props }, ref) => {
   const pathname = usePathname();
 
   return (
@@ -41,6 +50,18 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
+        onFocusOutside={(event) => {
+          onFocusOutside?.(event);
+          if (isAddressSelectPortalTarget(event.target)) {
+            event.preventDefault();
+          }
+        }}
+        onPointerDownOutside={(event) => {
+          onPointerDownOutside?.(event);
+          if (isAddressSelectPortalTarget(event.target)) {
+            event.preventDefault();
+          }
+        }}
         className={cn(
           'fixed left-[50%] top-[50%] z-[210] grid w-full md:max-h-[calc(100vh-300px)] overflow-auto max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg dark:border-slate-800 dark:bg-slate-950',
           className

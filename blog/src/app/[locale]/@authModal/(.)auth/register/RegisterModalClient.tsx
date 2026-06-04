@@ -33,8 +33,8 @@ export default function RegisterModalClient() {
       defaultOpen
       onOpenChange={(isOpen) => isOpen === false && router.back()}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto border-border/60 bg-card/95 p-0 backdrop-blur-xl sm:max-w-xl">
-        <div className="sticky top-0 z-10 border-b border-border/50 bg-card/80 px-6 pb-4 pt-6 backdrop-blur-xl">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-border/60 bg-card/95 p-0 backdrop-blur-xl sm:max-w-xl">
+        <div className="sticky top-0 z-10 shrink-0 border-b border-border/50 bg-card/80 px-6 pb-4 pt-6 backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold tracking-tight">
               {t('title')}
@@ -42,7 +42,10 @@ export default function RegisterModalClient() {
             <DialogDescription>{t('description')}</DialogDescription>
           </DialogHeader>
         </div>
-        <div className="px-6 pb-6 pt-5">
+        <div
+          data-dialog-scroll
+          className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-6 pb-6 pt-5"
+        >
           <RegisterForm />
           <Button variant="ghost" onClick={handleClick} className="mt-4 w-full">
             {t('button')}

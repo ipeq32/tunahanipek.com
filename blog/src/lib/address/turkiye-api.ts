@@ -31,9 +31,22 @@ async function fetchTurkiyeList<T extends TurkiyeNamedEntity>(
   path: string,
   params?: Record<string, string | number>
 ): Promise<T[]> {
-  const payload = await fetchJson<TurkiyeApiResponse<T> | T[]>(
-    buildUrl(path, params)
-  );
+  const url = buildUrl(path, params);
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    next: { revalidate: 86400 },
+  });
+
+  // Filtered list endpoints return 404 when nothing matches — treat as empty.
+  if (response.status === 404) {
+    return [];
+  }
+
+  if (!response.ok) {
+    throw new Error(`Upstream request failed: ${response.status} ${url}`);
+  }
+
+  const payload = (await response.json()) as TurkiyeApiResponse<T> | T[];
   return extractArray<T>(payload);
 }
 

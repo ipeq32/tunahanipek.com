@@ -16,6 +16,11 @@ import { Input } from '@/components/ui/input';
 import type { AddressOption } from '@/lib/address/types';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from './use-debounce';
+import {
+  measureAddressSelectDropdown,
+  resolveAddressSelectPortal,
+  type AddressSelectDropdownPosition,
+} from './address-select-portal';
 
 type AddressSearchSelectProps = {
   label: string;
@@ -33,12 +38,6 @@ type AddressSearchSelectProps = {
   onChange: (option: AddressOption | null) => void;
   error?: string;
   helperText?: string;
-};
-
-type DropdownPosition = {
-  top: number;
-  left: number;
-  width: number;
 };
 
 async function fetchOptions(url: string): Promise<AddressOption[]> {
@@ -71,8 +70,13 @@ export default function AddressSearchSelect({
   const listId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const [dropdownPos, setDropdownPos] = useState<DropdownPosition | null>(null);
+  const [dropdownPos, setDropdownPos] =
+    useState<AddressSelectDropdownPosition | null>(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+    null
+  );
   const [query, setQuery] = useState('');
   const [remoteOptions, setRemoteOptions] = useState<AddressOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -91,14 +95,20 @@ export default function AddressSearchSelect({
 
   const updateDropdownPosition = useCallback(() => {
     const trigger = triggerRef.current;
-    if (!trigger) return;
-    const rect = trigger.getBoundingClientRect();
-    setDropdownPos({
-      top: rect.bottom + 4,
-      left: rect.left,
-      width: rect.width,
+    const portal = portalContainer ?? resolveAddressSelectPortal(trigger);
+    if (!trigger || !portal) return;
+    setDropdownPos(measureAddressSelectDropdown(trigger, portal));
+  }, [portalContainer]);
+
+  useLayoutEffect(() => {
+    if (!open || !dropdownPos) return;
+
+    const frame = requestAnimationFrame(() => {
+      searchInputRef.current?.focus({ preventScroll: true });
     });
-  }, []);
+
+    return () => cancelAnimationFrame(frame);
+  }, [open, dropdownPos]);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -152,6 +162,8 @@ export default function AddressSearchSelect({
   }, [fetchUrl, open, debouncedQuery, minSearchLength, loadRemote]);
 
   useEffect(() => {
+    if (!open) return;
+
     const handlePointerDown = (event: MouseEvent) => {
       const target = event.target as Node;
       if (containerRef.current?.contains(target)) return;
@@ -161,9 +173,10 @@ export default function AddressSearchSelect({
       if (portal?.contains(target)) return;
       setOpen(false);
     };
+
     document.addEventListener('mousedown', handlePointerDown);
     return () => document.removeEventListener('mousedown', handlePointerDown);
-  }, [listId]);
+  }, [listId, open]);
 
   const options = staticOptions ?? remoteOptions;
 
@@ -183,11 +196,11 @@ export default function AddressSearchSelect({
         data-address-select-portal={listId}
         role="listbox"
         style={{
-          position: 'fixed',
+          position: dropdownPos.strategy,
           top: dropdownPos.top,
           left: dropdownPos.left,
           width: dropdownPos.width,
-          zIndex: 320,
+          zIndex: dropdownPos.strategy === 'fixed' ? 250 : 30,
         }}
         className="overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-xl"
       >
@@ -195,16 +208,16 @@ export default function AddressSearchSelect({
           <div className="relative">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              ref={searchInputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={searchPlaceholder}
               className="h-9 pl-8"
-              autoFocus
             />
           </div>
         </div>
 
-        <ul className="max-h-52 overflow-y-auto p-1">
+        <ul className="max-h-52 touch-pan-y overflow-y-auto overscroll-contain p-1">
           {loading && (
             <li className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -286,10 +299,14 @@ export default function AddressSearchSelect({
         aria-controls={listId}
         onClick={() => {
           if (disabled) return;
-          setOpen((prev) => !prev);
-          if (!open) {
+          const nextOpen = !open;
+          if (nextOpen) {
+            setPortalContainer(resolveAddressSelectPortal(triggerRef.current));
             requestAnimationFrame(updateDropdownPosition);
+          } else {
+            setPortalContainer(null);
           }
+          setOpen(nextOpen);
         }}
         className={cn(
           'flex h-10 w-full items-center justify-between rounded-lg border border-input bg-background px-3 text-sm shadow-sm transition-colors',
@@ -319,9 +336,10 @@ export default function AddressSearchSelect({
       )}
       {error && <p className="text-xs text-rose-400">{error}</p>}
 
-      {mounted && dropdownPanel
-        ? createPortal(dropdownPanel, document.body)
-        : null}
+      {mounted &&
+        dropdownPanel &&
+        portalContainer &&
+        createPortal(dropdownPanel, portalContainer)}
     </div>
   );
 }
