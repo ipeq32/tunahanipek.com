@@ -119,37 +119,11 @@
   .brand-wordmark-text1 {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 0%, 0 100%);
     @apply text-emerald-600;
-    animation: wordmark-split-1 5s ease-in-out infinite;
   }
 
   .brand-wordmark-text2 {
     clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
     @apply text-slate-700;
-    animation: wordmark-split-2 5s ease-in-out infinite;
-  }
-
-  @keyframes wordmark-split-1 {
-    0%,
-    38%,
-    100% {
-      transform: translate(-50%, -50%);
-    }
-    48%,
-    58% {
-      transform: translate(-50%, calc(-50% - 8px));
-    }
-  }
-
-  @keyframes wordmark-split-2 {
-    0%,
-    38%,
-    100% {
-      transform: translate(-50%, -50%);
-    }
-    48%,
-    58% {
-      transform: translate(-50%, calc(-50% + 8px));
-    }
   }
 
   .dark .brand-wordmark-text1 {
@@ -171,11 +145,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .brand-wordmark-text1,
-    .brand-wordmark-text2 {
-      animation: none;
-    }
-
     .nav-brand-group:hover .brand-wordmark-text1,
     .nav-brand-group:focus-visible .brand-wordmark-text1,
     .nav-brand-group:hover .brand-wordmark-text2,
