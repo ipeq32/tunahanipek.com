@@ -15,7 +15,14 @@ yarn dev
 ```
 
 - Yerel: `yarn dev` → http://localhost:3001
-- Docker (`home-dev`): host **3001** → container içi **3000** (`docker compose --profile dev up`)
+- Docker (`home-dev`): host **3001** → container içi **3000**
+
+```bash
+# Repo kökünden — blog + home + DB
+docker compose --profile dev up -d
+```
+
+Tüm modlar (dev / prod test / portlar): [kök README](../README.md).
 
 ## Scriptler
 
@@ -31,11 +38,13 @@ yarn dev
 - Üretim URL: `https://tunahanipek.com`
 - Blog: `https://blog.tunahanipek.com` ([`blog/`](../blog/) uygulaması)
 
-Docker (repo kökü):
+Prod imajı (repo kökü):
 
 ```bash
-docker compose --profile full up home
+docker compose --profile full up --build -d
 ```
+
+Yerel prod build: `BLOG_API_URL=http://localhost:3000 yarn build && yarn start`
 
 ## SEO
 

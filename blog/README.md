@@ -10,14 +10,56 @@ Next.js 16 blog uygulaması (Prisma, NextAuth, next-intl).
 
 ## Kurulum
 
+### Yerel (Node + isteğe bağlı DB container)
+
+Repo kökünde yalnızca Postgres:
+
+```bash
+docker compose up -d database
+```
+
+Blog dizininde:
+
 ```bash
 cp .env.template .env
-# .env dosyasını düzenleyin
+# POSTGRES_PRISMA_URL örnek:
+# postgresql://postgres:tuna213@localhost:5432/postgres?schema=public
 
 yarn install
 yarn generate-local   # prisma generate + db push + seed
-yarn dev
+yarn dev              # http://localhost:3000
 ```
+
+Tam monorepo akışı (Docker dev, prod test, portlar): [kök README](../README.md).
+
+### Docker ile geliştirme (`dev` profili)
+
+Repo **kökünden** (blog klasöründen değil):
+
+```bash
+cp ../.env.example ../.env   # veya kökte zaten .env varsa düzenle
+docker compose --profile dev up -d
+docker compose --profile dev logs -f blog-dev
+```
+
+İlk açılışta container içinde `db push` + `seed` çalışır; hazır olunca http://localhost:3000.
+
+Durdurma:
+
+```bash
+docker compose --profile dev down
+```
+
+DB + `node_modules` volume sıfırlama: `docker compose --profile dev down -v`.
+
+### Prod’a yakın local test
+
+| Yöntem | Komut | Not |
+|--------|-------|-----|
+| Docker prod imajı | Kökten: `docker compose --profile full up --build -d` | Entrypoint `migrate deploy` + `yarn start` |
+| Host prod sunucusu | `yarn build && yarn start` | `.env` içinde `NODE_ENV=production` gerekmez; `next start` yeterli |
+
+Docker `full` için `.env`’de `NEXT_PUBLIC_API_URL` ve `NEXTAUTH_URL` mutlaka `http://localhost:3000` olmalı (aksi halde build prod URL’leri gömer). Ayrıntı: [kök README](../README.md#prod-testi-local).
 
 ## Ortam değişkenleri
 
@@ -95,18 +137,6 @@ Bu yol şemayı `schema.prisma` ile hizalar ancak migration geçmişini düzeltm
 ## Seed admin (geliştirme)
 
 `yarn seed` sonrası: `admin@admin.com` / `1234asdf` (sadece dev ortamı).
-
-## Docker
-
-Repo kökünden:
-
-```bash
-# Geliştirme (blog + DB)
-docker compose --profile dev up
-
-# Üretim (blog + home + DB)
-docker compose --profile full up
-```
 
 ## Test
 
