@@ -15,6 +15,11 @@ import { updateProjectSchema } from '@/lib/validations/project';
 import { apiError, apiMessage } from '@/lib/api-i18n';
 import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
+import {
+  collectProjectMediaUrls,
+  deleteUploadedMedia,
+  findRemovedMediaUrls,
+} from '@/lib/uploaded-media';
 import { after, NextResponse } from 'next/server';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -69,11 +74,29 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
     if (data.sortOrder !== undefined) projectData.sortOrder = data.sortOrder;
 
+    const nextMedia = collectProjectMediaUrls({
+      image:
+        data.image !== undefined
+          ? data.image === '' || data.image === null
+            ? null
+            : data.image
+          : existing.image,
+      gallery: data.gallery !== undefined ? data.gallery : existing.gallery,
+    });
+    const removedMedia = findRemovedMediaUrls(
+      collectProjectMediaUrls(existing),
+      nextMedia,
+    );
+
     if (Object.keys(projectData).length > 0) {
       await prisma.project.update({
         where: { id },
         data: projectData,
       });
+    }
+
+    if (removedMedia.length > 0) {
+      await deleteUploadedMedia(removedMedia);
     }
 
     if (data.translations?.length) {
@@ -137,6 +160,8 @@ export async function DELETE(request: Request, context: RouteContext) {
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    await deleteUploadedMedia(collectProjectMediaUrls(existing));
 
     revalidateProjectList();
     revalidateProjectDetail(id);

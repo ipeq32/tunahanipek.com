@@ -14,6 +14,11 @@ import { updateBlogSchema } from '@/lib/validations/blog';
 import { apiError, apiMessage } from '@/lib/api-i18n';
 import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
+import {
+  collectBlogMediaUrls,
+  deleteUploadedMedia,
+  findRemovedMediaUrls,
+} from '@/lib/uploaded-media';
 import { after, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -99,11 +104,25 @@ export async function PATCH(
     if (body.image !== undefined) blogData.image = body.image;
     if (body.shortImage !== undefined) blogData.shortImage = body.shortImage;
 
+    const nextMedia = collectBlogMediaUrls({
+      image: body.image !== undefined ? body.image : existing.image,
+      shortImage:
+        body.shortImage !== undefined ? body.shortImage : existing.shortImage,
+    });
+    const removedMedia = findRemovedMediaUrls(
+      collectBlogMediaUrls(existing),
+      nextMedia,
+    );
+
     if (Object.keys(blogData).length > 0) {
       await prisma.blog.update({
         where: { id },
         data: blogData,
       });
+    }
+
+    if (removedMedia.length > 0) {
+      await deleteUploadedMedia(removedMedia);
     }
 
     if (body.translations?.length) {
@@ -186,6 +205,8 @@ export async function DELETE(
       where: { id },
       data: { deletedAt: new Date() },
     });
+
+    await deleteUploadedMedia(collectBlogMediaUrls(existing));
 
     revalidateBlogList();
     revalidateBlogDetail(id);

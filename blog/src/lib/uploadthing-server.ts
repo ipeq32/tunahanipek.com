@@ -2,6 +2,7 @@ import 'server-only';
 
 import { UTApi } from 'uploadthing/server';
 import { logger } from '@/lib/logger';
+import { filterUploadThingUrls } from '@/lib/uploaded-media-urls';
 
 /**
  * Sunucu tarafı UploadThing istemcisi. Token, `UPLOADTHING_TOKEN` ortam
@@ -28,7 +29,7 @@ function extractFileKey(url: string): string | null {
  * fırlatılmaz; loglanır ve sessizce geçilir (kullanıcı akışını bozmamak için).
  */
 export async function deleteUploadedFiles(urls: string[]): Promise<void> {
-  const keys = urls
+  const keys = filterUploadThingUrls(urls)
     .map(extractFileKey)
     .filter((key): key is string => Boolean(key));
 
