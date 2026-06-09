@@ -41,11 +41,12 @@ function FeaturedProject({
       className="block h-full"
     >
       <article className="group relative grid h-full overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10 lg:grid-cols-2">
-        <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[340px]">
+        <div className="relative aspect-[2/1] overflow-hidden sm:aspect-[16/10] lg:aspect-auto lg:min-h-[340px]">
           <BlogImage
             src={project.image}
             alt={project.title}
             fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

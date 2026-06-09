@@ -16,13 +16,13 @@ export default function ProjectCard({ project, visitLabel }: ProjectCardProps) {
       className="block h-full"
     >
       <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10">
-        <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="relative aspect-[2/1] overflow-hidden sm:aspect-[16/10]">
           <BlogImage
             src={project.image}
             alt={project.title}
-            width={640}
-            height={400}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           {project.url && (
