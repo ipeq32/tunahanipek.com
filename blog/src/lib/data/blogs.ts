@@ -3,6 +3,7 @@ import {
   blogListInclude,
   mapBlogToResponse,
 } from '@/lib/blog-mapper';
+import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { resolveLanguageCode } from '@/lib/languages';
 import { IGetBlog } from '@/types/blog';
 
@@ -27,21 +28,7 @@ async function buildWhere(filters: BlogFilters, locale: string) {
 
   return {
     deletedAt: null,
-    translations: {
-      some: {
-        published: true,
-        language: { code: locale, isActive: true },
-        ...(search
-          ? {
-              OR: [
-                { title: { contains: search, mode: 'insensitive' as const } },
-                { summary: { contains: search, mode: 'insensitive' as const } },
-                { content: { contains: search, mode: 'insensitive' as const } },
-              ],
-            }
-          : {}),
-      },
-    },
+    translations: publishedTranslationFilter(locale, search),
     ...(tag
       ? { tags: { some: { name: tag, deletedAt: null } } }
       : {}),
@@ -89,12 +76,7 @@ export async function getPublishedBlogById(
     where: {
       id,
       deletedAt: null,
-      translations: {
-        some: {
-          published: true,
-          language: { code: locale, isActive: true },
-        },
-      },
+      translations: publishedTranslationFilter(locale),
     },
     include: blogListInclude,
   });

@@ -23,6 +23,7 @@ export interface IGetBlog {
   shortImage: string;
   published: boolean;
   locale: string;
+  isLocaleFallback: boolean;
   availableLocales: string[];
   translations?: BlogTranslationDto[];
   createdAt: Date;

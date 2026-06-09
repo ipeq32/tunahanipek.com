@@ -1,4 +1,5 @@
 import BlogImage from '@/components/blog/BlogImage';
+import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import { Link } from '@/navigation';
 import { getPublishedProjectById } from '@/lib/data/projects';
 import { parseLocale } from '@/i18n/request';
@@ -106,6 +107,14 @@ export default async function ProjectDetailPage({ params }: Props) {
         <ArrowLeft className="h-4 w-4" aria-hidden />
         {t('back')}
       </Link>
+
+      {project.isLocaleFallback && (
+        <LocaleFallbackBanner
+          contentLocale={project.locale}
+          namespace="Pages.Project.LocaleFallback"
+          className="mb-6"
+        />
+      )}
 
       {project.image && (
         <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-2xl border border-border/60 bg-muted/30">

@@ -78,6 +78,9 @@
       "title": "Blog bulunamadı",
       "description": "Aradığınız yazı yayında değil veya kaldırılmış olabilir.",
       "button": "Bloglara dön"
+    },
+    "LocaleFallback": {
+      "message": "Bu içerik {requestedLanguage} dilinde henüz yayınlanmadı. {contentLanguage} sürümü gösteriliyor."
     }
   },
   "Admin": {
@@ -592,7 +595,10 @@
       "back": "Projelere dön",
       "visitSite": "Siteyi ziyaret et",
       "aboutTitle": "Bu proje hakkında",
-      "notFoundTitle": "Proje bulunamadı"
+      "notFoundTitle": "Proje bulunamadı",
+      "LocaleFallback": {
+        "message": "Bu içerik {requestedLanguage} dilinde henüz yayınlanmadı. {contentLanguage} sürümü gösteriliyor."
+      }
     }
   },
   "LocaleSwitcher": {

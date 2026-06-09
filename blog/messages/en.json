@@ -78,6 +78,9 @@
       "title": "Blog not found",
       "description": "This post may be unpublished or has been removed.",
       "button": "Back to blog"
+    },
+    "LocaleFallback": {
+      "message": "This content is not yet available in {requestedLanguage}. Showing the {contentLanguage} version."
     }
   },
   "Admin": {
@@ -592,7 +595,10 @@
       "back": "Back to projects",
       "visitSite": "Visit site",
       "aboutTitle": "About this project",
-      "notFoundTitle": "Project not found"
+      "notFoundTitle": "Project not found",
+      "LocaleFallback": {
+        "message": "This content is not yet available in {requestedLanguage}. Showing the {contentLanguage} version."
+      }
     }
   },
   "LocaleSwitcher": {

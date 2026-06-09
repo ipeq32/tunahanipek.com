@@ -58,12 +58,52 @@ function pickTranslation(
   return translations[0] ?? null;
 }
 
+type PickedTranslation = {
+  translation: TranslationRow | null;
+  isLocaleFallback: boolean;
+};
+
+function pickPublishedTranslation(
+  translations: TranslationRow[],
+  locale: string,
+): PickedTranslation {
+  const published = translations.filter((translation) => translation.published);
+
+  const exact = published.find((translation) => translation.language.code === locale);
+  if (exact) {
+    return { translation: exact, isLocaleFallback: false };
+  }
+
+  const defaultTranslation = published.find(
+    (translation) => translation.language.code === defaultLocale,
+  );
+  if (defaultTranslation) {
+    return {
+      translation: defaultTranslation,
+      isLocaleFallback: locale !== defaultLocale,
+    };
+  }
+
+  const fallback = published[0] ?? null;
+  return {
+    translation: fallback,
+    isLocaleFallback: fallback ? fallback.language.code !== locale : false,
+  };
+}
+
 export function mapBlogToResponse(
   blog: BlogWithRelations,
   locale: string,
   options?: { includeAllTranslations?: boolean },
 ): IGetBlog {
-  const translation = pickTranslation(blog.translations, locale);
+  const forPublic = !options?.includeAllTranslations;
+  const picked = forPublic
+    ? pickPublishedTranslation(blog.translations, locale)
+    : {
+        translation: pickTranslation(blog.translations, locale),
+        isLocaleFallback: false,
+      };
+  const translation = picked.translation;
   const availableLocales = blog.translations
     .filter((t) => t.published || options?.includeAllTranslations)
     .map((t) => t.language.code);
@@ -77,6 +117,7 @@ export function mapBlogToResponse(
     shortImage: blog.shortImage,
     published: translation?.published ?? false,
     locale: translation?.language.code ?? locale,
+    isLocaleFallback: picked.isLocaleFallback,
     availableLocales: [...new Set(availableLocales)],
     translations: options?.includeAllTranslations
       ? blog.translations.map(mapTranslationRow)

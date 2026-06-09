@@ -3,6 +3,7 @@
 import { IGetBlog } from '@/types/blog';
 import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
+import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import BlogImage from '@/components/blog/BlogImage';
 import Image from 'next/image';
 import { Link } from '@/navigation';
@@ -25,6 +26,12 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
 
   return (
     <article className="pb-16 pt-4">
+      {data.isLocaleFallback && (
+        <LocaleFallbackBanner
+          contentLocale={data.locale}
+          namespace="Blog.LocaleFallback"
+        />
+      )}
       <header className="mb-8 space-y-6">
         {(data.tags.length > 0 || data.categories.length > 0) && (
           <div className="flex flex-wrap justify-center gap-2">

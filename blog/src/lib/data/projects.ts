@@ -4,6 +4,7 @@ import {
   projectListInclude,
   type ProjectDto,
 } from '@/lib/project-mapper';
+import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { resolveLanguageCode } from '@/lib/languages';
 
 export async function getPublishedProjects(
@@ -14,12 +15,7 @@ export async function getPublishedProjects(
   const projects = await prisma.project.findMany({
     where: {
       deletedAt: null,
-      translations: {
-        some: {
-          published: true,
-          language: { code: locale, isActive: true },
-        },
-      },
+      translations: publishedTranslationFilter(locale),
     },
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
     include: projectListInclude,
@@ -38,12 +34,7 @@ export async function getPublishedProjectById(
     where: {
       id,
       deletedAt: null,
-      translations: {
-        some: {
-          published: true,
-          language: { code: locale, isActive: true },
-        },
-      },
+      translations: publishedTranslationFilter(locale),
     },
     include: projectListInclude,
   });

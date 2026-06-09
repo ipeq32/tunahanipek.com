@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { logger } from '@/lib/logger';
 import { apiError } from '@/lib/api-i18n';
 import { resolveRequestLocale } from '@/lib/languages';
@@ -19,36 +20,7 @@ export async function GET(request: Request) {
 
   const where = {
     deletedAt: null,
-    translations: {
-      some: {
-        published: true,
-        language: { code: locale, isActive: true },
-        ...(search?.trim()
-          ? {
-              OR: [
-                {
-                  title: {
-                    contains: search.trim(),
-                    mode: 'insensitive' as const,
-                  },
-                },
-                {
-                  summary: {
-                    contains: search.trim(),
-                    mode: 'insensitive' as const,
-                  },
-                },
-                {
-                  content: {
-                    contains: search.trim(),
-                    mode: 'insensitive' as const,
-                  },
-                },
-              ],
-            }
-          : {}),
-      },
-    },
+    translations: publishedTranslationFilter(locale, search ?? undefined),
     ...(tag?.trim()
       ? { tags: { some: { name: tag.trim().toLowerCase(), deletedAt: null } } }
       : {}),

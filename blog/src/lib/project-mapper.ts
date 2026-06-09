@@ -34,6 +34,7 @@ export type ProjectDto = {
   sortOrder: number;
   published: boolean;
   locale: string;
+  isLocaleFallback: boolean;
   availableLocales: string[];
   translations?: ProjectTranslationDto[];
   createdAt: Date;
@@ -68,12 +69,52 @@ function pickTranslation(
   return translations[0] ?? null;
 }
 
+type PickedTranslation = {
+  translation: ProjectTranslationRow | null;
+  isLocaleFallback: boolean;
+};
+
+function pickPublishedTranslation(
+  translations: ProjectTranslationRow[],
+  locale: string,
+): PickedTranslation {
+  const published = translations.filter((translation) => translation.published);
+
+  const exact = published.find((translation) => translation.language.code === locale);
+  if (exact) {
+    return { translation: exact, isLocaleFallback: false };
+  }
+
+  const defaultTranslation = published.find(
+    (translation) => translation.language.code === defaultLocale,
+  );
+  if (defaultTranslation) {
+    return {
+      translation: defaultTranslation,
+      isLocaleFallback: locale !== defaultLocale,
+    };
+  }
+
+  const fallback = published[0] ?? null;
+  return {
+    translation: fallback,
+    isLocaleFallback: fallback ? fallback.language.code !== locale : false,
+  };
+}
+
 export function mapProjectToDto(
   project: ProjectWithTranslations,
   locale: string,
   options?: { includeAllTranslations?: boolean },
 ): ProjectDto {
-  const translation = pickTranslation(project.translations, locale);
+  const forPublic = !options?.includeAllTranslations;
+  const picked = forPublic
+    ? pickPublishedTranslation(project.translations, locale)
+    : {
+        translation: pickTranslation(project.translations, locale),
+        isLocaleFallback: false,
+      };
+  const translation = picked.translation;
   const availableLocales = project.translations
     .filter((t) => t.published || options?.includeAllTranslations)
     .map((t) => t.language.code);
@@ -87,6 +128,7 @@ export function mapProjectToDto(
     sortOrder: project.sortOrder,
     published: translation?.published ?? false,
     locale: translation?.language.code ?? locale,
+    isLocaleFallback: picked.isLocaleFallback,
     availableLocales: [...new Set(availableLocales)],
     translations: options?.includeAllTranslations
       ? project.translations.map(mapTranslationRow)

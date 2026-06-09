@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import {
   updateBlogTranslationPublished,
@@ -32,12 +33,7 @@ export async function GET(
       where: {
         id,
         deletedAt: null,
-        translations: {
-          some: {
-            published: true,
-            language: { code: locale, isActive: true },
-          },
-        },
+        translations: publishedTranslationFilter(locale),
       },
       include: blogListInclude,
     });
