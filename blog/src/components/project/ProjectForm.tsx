@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
+import GalleryUpload from '@/components/upload/GalleryUpload';
 import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -47,6 +48,7 @@ const formSchema = z
   .object({
     url: optionalUrlField,
     image: optionalUrlField,
+    gallery: z.array(z.string().url()).max(12),
     translations: z.record(z.string(), translationSchema),
   })
   .superRefine((data, ctx) => {
@@ -70,6 +72,7 @@ type ProjectFormProps = {
   defaultValues: {
     url: string;
     image: string;
+    gallery?: string[];
     translations?: Array<{
       languageCode: string;
       title: string;
@@ -104,6 +107,7 @@ export default function ProjectForm({
     defaultValues: {
       url: defaultValues.url,
       image: defaultValues.image,
+      gallery: defaultValues.gallery ?? [],
       translations: initialTranslations,
     },
   });
@@ -113,6 +117,7 @@ export default function ProjectForm({
       form.reset({
         url: defaultValues.url,
         image: defaultValues.image,
+        gallery: defaultValues.gallery ?? [],
         translations: defaultValues.translations
           ? projectTranslationsFromDto(languages, defaultValues.translations)
           : buildEmptyProjectTranslations(languages),
@@ -147,6 +152,9 @@ export default function ProjectForm({
     const payload = {
       url: normalizeExternalUrl(values.url),
       image: normalizeExternalUrl(values.image),
+      gallery: values.gallery
+        .map((item) => normalizeExternalUrl(item))
+        .filter((item): item is string => Boolean(item)),
       translations,
     };
 
@@ -284,8 +292,26 @@ export default function ProjectForm({
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs">{t('fieldImage')}</FormLabel>
+                <FormLabel className="text-xs">{t('fieldCoverImage')}</FormLabel>
                 <ImageUpload
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={form.formState.isSubmitting}
+                  endpoint="projectImageUploader"
+                  cleanup={imageCleanup}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="gallery"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs">{t('fieldGallery')}</FormLabel>
+                <GalleryUpload
                   value={field.value}
                   onChange={field.onChange}
                   disabled={form.formState.isSubmitting}

@@ -12,6 +12,7 @@ type ProjectWithTranslations = {
   id: string;
   url: string | null;
   image: string | null;
+  gallery: string[];
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +32,7 @@ export type ProjectDto = {
   description: string;
   url: string | null;
   image: string | null;
+  gallery: string[];
   sortOrder: number;
   published: boolean;
   locale: string;
@@ -133,6 +135,7 @@ export function mapProjectToDto(
       : '',
     url: project.url,
     image: project.image,
+    gallery: project.gallery ?? [],
     sortOrder: project.sortOrder,
     published: translation?.published ?? false,
     locale: translation?.language.code ?? locale,

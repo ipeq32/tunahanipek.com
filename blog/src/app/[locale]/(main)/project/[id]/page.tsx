@@ -1,5 +1,6 @@
 import BlogImage from '@/components/blog/BlogImage';
 import RichContentView from '@/components/content/RichContentView';
+import ProjectGallery from '@/components/project/ProjectGallery';
 import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import { Link } from '@/navigation';
 import { getPublishedProjectById } from '@/lib/data/projects';
@@ -38,7 +39,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const plainDescription = project.description
     .replace(/<[^>]*>/g, '')
     .slice(0, 160);
-  const images = project.image ? [project.image] : [];
+  const images = [
+    ...(project.image ? [project.image] : []),
+    ...project.gallery.filter((item) => item !== project.image),
+  ];
   const canonical = getCanonicalPath('/project/[id]', locale, { '[id]': id });
   const languages = getLanguageAlternates(
     '/project/[id]',
@@ -90,7 +94,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     .slice(0, 160);
 
   return (
-    <article className="mx-auto min-w-0 w-full max-w-4xl">
+    <article className="min-w-0 w-full max-w-full">
       <JsonLd
         data={buildCreativeWorkJsonLd({
           locale,
@@ -126,7 +130,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               alt={project.title}
               fill
               priority
-              sizes="(max-width: 768px) 100vw, 896px"
+              sizes="(max-width: 768px) 100vw, 1280px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -178,6 +182,8 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
         <RichContentView html={project.description} />
       </section>
+
+      <ProjectGallery images={project.gallery} title={project.title} />
     </article>
   );
 }

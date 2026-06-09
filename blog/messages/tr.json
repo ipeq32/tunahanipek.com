@@ -146,6 +146,8 @@
       "fieldUrl": "Proje URL",
       "urlPlaceholder": "https://",
       "fieldImage": "Görsel",
+      "fieldCoverImage": "Kapak görseli",
+      "fieldGallery": "Proje galerisi",
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
       "languagesSection": "Çeviriler",
@@ -757,6 +759,14 @@
       "back": "Projelere dön",
       "visitSite": "Siteyi ziyaret et",
       "aboutTitle": "Bu proje hakkında",
+      "galleryTitle": "Proje görselleri",
+      "gallerySubtitle": "Ekran görüntüleri ve proje detayları",
+      "galleryExpand": "Büyüt",
+      "galleryClose": "Kapat",
+      "galleryPrev": "Önceki görsel",
+      "galleryNext": "Sonraki görsel",
+      "galleryLightboxLabel": "{title} galerisi",
+      "galleryImageAlt": "{title} — görsel {index}",
       "notFoundTitle": "Proje bulunamadı",
       "LocaleFallback": {
         "message": "Bu içerik {requestedLanguage} dilinde henüz yayınlanmadı. {contentLanguage} sürümü gösteriliyor."
@@ -787,6 +797,18 @@
     "error": "Görsel yüklenemedi",
     "compressFailed": "Görsel işlenemedi. Lütfen başka bir dosya deneyin.",
     "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz.",
+    "Gallery": {
+      "cta": "Galeri görseli ekle",
+      "hint": "PNG, JPG veya WEBP · en fazla {remaining}/{max} görsel",
+      "previewAlt": "Galeri önizlemesi {index}",
+      "remove": "Kaldır",
+      "success": "{count, plural, one {# görsel yüklendi} other {# görsel yüklendi}}",
+      "error": "Görseller yüklenemedi",
+      "compressFailed": "Görsel işlenemedi. Lütfen başka bir dosya deneyin.",
+      "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz.",
+      "uploading": "Yükleniyor",
+      "compressing": "Görseller hazırlanıyor…"
+    },
     "Pdf": {
       "cta": "PDF yükle",
       "hint": "Yalnızca PDF · en fazla 4MB",

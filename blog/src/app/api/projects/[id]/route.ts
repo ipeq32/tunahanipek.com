@@ -52,6 +52,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const projectData: {
       url?: string | null;
       image?: string | null;
+      gallery?: string[];
       sortOrder?: number;
     } = {};
 
@@ -62,6 +63,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     if (data.image !== undefined) {
       projectData.image =
         data.image === '' || data.image === null ? null : data.image;
+    }
+    if (data.gallery !== undefined) {
+      projectData.gallery = data.gallery;
     }
     if (data.sortOrder !== undefined) projectData.sortOrder = data.sortOrder;
 

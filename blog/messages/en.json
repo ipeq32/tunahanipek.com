@@ -146,6 +146,8 @@
       "fieldUrl": "Project URL",
       "urlPlaceholder": "https://",
       "fieldImage": "Image",
+      "fieldCoverImage": "Cover image",
+      "fieldGallery": "Project gallery",
       "fieldSort": "Sort order",
       "fieldPublished": "Published",
       "languagesSection": "Translations",
@@ -757,6 +759,14 @@
       "back": "Back to projects",
       "visitSite": "Visit site",
       "aboutTitle": "About this project",
+      "galleryTitle": "Project gallery",
+      "gallerySubtitle": "Screenshots and project visuals",
+      "galleryExpand": "Expand",
+      "galleryClose": "Close",
+      "galleryPrev": "Previous image",
+      "galleryNext": "Next image",
+      "galleryLightboxLabel": "{title} gallery",
+      "galleryImageAlt": "{title} — image {index}",
       "notFoundTitle": "Project not found",
       "LocaleFallback": {
         "message": "This content is not yet available in {requestedLanguage}. Showing the {contentLanguage} version."
@@ -787,6 +797,18 @@
     "error": "Image upload failed",
     "compressFailed": "Could not process the image. Please try another file.",
     "tooLarge": "File is too large. You can upload up to {size}.",
+    "Gallery": {
+      "cta": "Add gallery images",
+      "hint": "PNG, JPG or WEBP · up to {remaining}/{max} images",
+      "previewAlt": "Gallery preview {index}",
+      "remove": "Remove",
+      "success": "{count, plural, one {# image uploaded} other {# images uploaded}}",
+      "error": "Could not upload images",
+      "compressFailed": "Could not process the image. Please try another file.",
+      "tooLarge": "File is too large. You can upload up to {size}.",
+      "uploading": "Uploading",
+      "compressing": "Preparing images…"
+    },
     "Pdf": {
       "cta": "Upload PDF",
       "hint": "PDF only · max 4MB",

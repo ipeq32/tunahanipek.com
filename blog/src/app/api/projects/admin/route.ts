@@ -61,13 +61,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    const { url, image, sortOrder, translations } = parsed.data;
+    const { url, image, gallery, sortOrder, translations } = parsed.data;
     const resolvedSortOrder = sortOrder ?? (await getNextSortOrder());
 
     const project = await prisma.project.create({
       data: {
         url: url || null,
         image: image || null,
+        gallery: gallery ?? [],
         sortOrder: resolvedSortOrder,
       },
     });

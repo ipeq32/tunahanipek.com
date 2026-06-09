@@ -26,6 +26,7 @@ export default async function AddProjectPage({ params }: Props) {
         defaultValues={{
           url: '',
           image: '',
+          gallery: [],
         }}
       />
     </>

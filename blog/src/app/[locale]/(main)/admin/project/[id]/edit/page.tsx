@@ -35,6 +35,7 @@ export default async function EditProjectPage({ params }: Props) {
         defaultValues={{
           url: project.url ?? '',
           image: project.image ?? '',
+          gallery: project.gallery ?? [],
           translations: project.translations,
         }}
       />
