@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
-import { mapProjectToDto, projectListInclude } from '@/lib/project-mapper';
+import { getAdminProjectById } from '@/lib/data/projects';
 import {
   updateProjectTranslationPublished,
   upsertProjectTranslations,
@@ -55,8 +55,14 @@ export async function PATCH(request: Request, context: RouteContext) {
       sortOrder?: number;
     } = {};
 
-    if (data.url !== undefined) projectData.url = data.url || null;
-    if (data.image !== undefined) projectData.image = data.image || null;
+    if (data.url !== undefined) {
+      projectData.url =
+        data.url === '' || data.url === null ? null : data.url;
+    }
+    if (data.image !== undefined) {
+      projectData.image =
+        data.image === '' || data.image === null ? null : data.image;
+    }
     if (data.sortOrder !== undefined) projectData.sortOrder = data.sortOrder;
 
     if (Object.keys(projectData).length > 0) {
@@ -83,11 +89,6 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
     }
 
-    const project = await prisma.project.findUnique({
-      where: { id },
-      include: projectListInclude,
-    });
-
     revalidateProjectDetail(id);
 
     if (data.translations?.length) {
@@ -100,11 +101,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       });
     }
 
-    return NextResponse.json({
-      data: project
-        ? mapProjectToDto(project, locale, { includeAllTranslations: true })
-        : null,
-    });
+    const project = await getAdminProjectById(id, locale);
+
+    return NextResponse.json({ data: project });
   } catch (error) {
     logger.error('Failed to update project', {
       error: error instanceof Error ? error.message : 'Unknown error',

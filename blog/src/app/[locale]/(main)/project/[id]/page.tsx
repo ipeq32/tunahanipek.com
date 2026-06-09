@@ -1,4 +1,5 @@
 import BlogImage from '@/components/blog/BlogImage';
+import RichContentView from '@/components/content/RichContentView';
 import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import { Link } from '@/navigation';
 import { getPublishedProjectById } from '@/lib/data/projects';
@@ -89,7 +90,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     .slice(0, 160);
 
   return (
-    <article className="mx-auto w-full">
+    <article className="mx-auto min-w-0 w-full max-w-full">
       <JsonLd
         data={buildCreativeWorkJsonLd({
           locale,
@@ -146,10 +147,7 @@ export default async function ProjectDetailPage({ params }: Props) {
       <h2 className="mt-8 text-lg font-semibold tracking-tight">
         {t('aboutTitle')}
       </h2>
-      <div
-        className="prose prose-neutral mt-3 max-w-none dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: project.description }}
-      />
+      <RichContentView html={project.description} className="mt-3" />
     </article>
   );
 }

@@ -1,3 +1,29 @@
+import { jsonrepair } from 'jsonrepair';
+
+function assertRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('AI response JSON must be an object');
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function parseJsonObjectLiteral(json: string): Record<string, unknown> {
+  try {
+    return assertRecord(JSON.parse(json));
+  } catch (primaryError) {
+    try {
+      return assertRecord(JSON.parse(jsonrepair(json)));
+    } catch {
+      const message =
+        primaryError instanceof Error
+          ? primaryError.message
+          : 'Invalid AI response JSON';
+      throw new Error(message);
+    }
+  }
+}
+
 export function extractJsonObject(text: string): Record<string, unknown> {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -10,13 +36,7 @@ export function extractJsonObject(text: string): Record<string, unknown> {
   }
 
   const json = candidate.slice(start, end + 1);
-  const parsed = JSON.parse(json) as unknown;
-
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new Error('AI response JSON must be an object');
-  }
-
-  return parsed as Record<string, unknown>;
+  return parseJsonObjectLiteral(json);
 }
 
 export function pickString(

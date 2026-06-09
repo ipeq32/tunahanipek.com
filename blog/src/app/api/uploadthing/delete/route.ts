@@ -18,7 +18,14 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const parsed = schema.safeParse(body);
+    const urls = Array.isArray(body?.urls)
+      ? body.urls.filter(
+          (url: unknown): url is string =>
+            typeof url === 'string' && url.trim().length > 0,
+        )
+      : [];
+
+    const parsed = schema.safeParse({ urls });
 
     if (!parsed.success) {
       return NextResponse.json(

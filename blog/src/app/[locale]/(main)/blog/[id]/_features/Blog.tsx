@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import NotfoundComponent from '../../_components/notfound';
 import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import BlogImage from '@/components/blog/BlogImage';
+import RichContentView from '@/components/content/RichContentView';
 import Image from 'next/image';
 import { Link } from '@/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +26,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
   }
 
   return (
-    <article className="pb-16 pt-4">
+    <article className="min-w-0 max-w-full pb-16 pt-4">
       {data.isLocaleFallback && (
         <LocaleFallbackBanner
           contentLocale={data.locale}
@@ -105,12 +106,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
         />
       </figure>
 
-      <div
-        className="prose-blog"
-        dangerouslySetInnerHTML={{
-          __html: data.content,
-        }}
-      />
+      <RichContentView html={data.content} />
     </article>
   );
 };

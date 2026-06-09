@@ -1,4 +1,4 @@
-import { sanitizeHtml } from '@/lib/sanitize';
+import { normalizeStoredRichField } from '@/lib/rich-content';
 import { defaultLocale } from '@/config';
 
 type ProjectTranslationRow = {
@@ -45,7 +45,10 @@ function mapTranslationRow(row: ProjectTranslationRow): ProjectTranslationDto {
   return {
     languageCode: row.language.code,
     title: row.title,
-    description: sanitizeHtml(row.description),
+    description: normalizeStoredRichField(row.description, {
+      contentType: 'project',
+      field: 'description',
+    }),
     published: row.published,
   };
 }
@@ -122,7 +125,12 @@ export function mapProjectToDto(
   return {
     id: project.id,
     title: translation?.title ?? '',
-    description: translation ? sanitizeHtml(translation.description) : '',
+    description: translation
+      ? normalizeStoredRichField(translation.description, {
+          contentType: 'project',
+          field: 'description',
+        })
+      : '',
     url: project.url,
     image: project.image,
     sortOrder: project.sortOrder,
@@ -145,3 +153,4 @@ export const projectListInclude = {
     },
   },
 } as const;
+

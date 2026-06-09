@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 import { IGetBlog, BlogTranslationDto } from '@/types/blog';
-import { sanitizeHtml } from '@/lib/sanitize';
+import { normalizeStoredRichField } from '@/lib/rich-content';
 import { defaultLocale } from '@/config';
 
 type TranslationRow = {
@@ -33,8 +33,14 @@ function mapTranslationRow(row: TranslationRow): BlogTranslationDto {
   return {
     languageCode: row.language.code,
     title: row.title,
-    content: sanitizeHtml(row.content),
-    summary: sanitizeHtml(row.summary),
+    content: normalizeStoredRichField(row.content, {
+      contentType: 'blog',
+      field: 'content',
+    }),
+    summary: normalizeStoredRichField(row.summary, {
+      contentType: 'blog',
+      field: 'summary',
+    }),
     published: row.published,
   };
 }
@@ -111,8 +117,18 @@ export function mapBlogToResponse(
   return {
     id: blog.id,
     title: translation?.title ?? '',
-    content: translation ? sanitizeHtml(translation.content) : '',
-    summary: translation ? sanitizeHtml(translation.summary) : '',
+    content: translation
+      ? normalizeStoredRichField(translation.content, {
+          contentType: 'blog',
+          field: 'content',
+        })
+      : '',
+    summary: translation
+      ? normalizeStoredRichField(translation.summary, {
+          contentType: 'blog',
+          field: 'summary',
+        })
+      : '',
     image: blog.image,
     shortImage: blog.shortImage,
     published: translation?.published ?? false,

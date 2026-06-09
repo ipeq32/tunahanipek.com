@@ -11,6 +11,19 @@ describe('extractJsonObject', () => {
     const result = extractJsonObject('```json\n{"title":"Hi"}\n```');
     expect(result.title).toBe('Hi');
   });
+
+  it('repairs markdown JSON with raw newlines in strings', () => {
+    const broken = `{
+  "title": "NestJS ile Restoran API",
+  "description": "### Giriş
+Kısa tanım."
+}`;
+
+    const result = extractJsonObject(broken);
+    expect(result.title).toBe('NestJS ile Restoran API');
+    expect(String(result.description)).toContain('### Giriş');
+    expect(String(result.description)).toContain('Kısa tanım.');
+  });
 });
 
 describe('pickString', () => {

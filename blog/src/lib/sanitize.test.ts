@@ -8,6 +8,10 @@ describe('sanitizeHtml', () => {
     expect(sanitizeHtml(dirty)).toContain('Hello');
   });
 
+  it('normalizes non-breaking spaces', () => {
+    expect(sanitizeHtml('<p>a\u00a0b</p>')).toBe('<p>a b</p>');
+  });
+
   it('preserves safe formatting', () => {
     const dirty = '<p><strong>Bold</strong></p>';
     expect(sanitizeHtml(dirty)).toContain('<strong>');

@@ -5,6 +5,7 @@ import ProjectCard from '@/components/project/ProjectCard';
 import { Link } from '@/navigation';
 import { getPublishedProjects } from '@/lib/data/projects';
 import type { ProjectDto } from '@/lib/project-mapper';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
@@ -57,10 +58,9 @@ function FeaturedProject({
           <h3 className="text-2xl font-bold leading-tight tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400">
             {project.title}
           </h3>
-          <div
-            className="line-clamp-4 text-sm leading-relaxed text-muted-foreground [&_p]:inline"
-            dangerouslySetInnerHTML={{ __html: project.description }}
-          />
+          <p className="line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+            {stripHtmlText(project.description)}
+          </p>
           {project.url && (
             <span className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-2 text-sm font-medium text-teal-600 transition-colors group-hover:bg-teal-500/20 dark:text-teal-400">
               {visitLabel}

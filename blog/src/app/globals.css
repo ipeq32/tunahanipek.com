@@ -446,7 +446,8 @@
 
 @layer components {
   .prose-blog {
-    @apply prose prose-slate max-w-none dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-teal-400 prose-img:rounded-xl;
+    @apply prose prose-slate max-w-full min-w-0 break-words dark:prose-invert prose-headings:font-semibold prose-headings:tracking-tight prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-lg prose-p:leading-relaxed prose-ul:my-3 prose-li:my-0.5 prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-teal-400 prose-img:rounded-xl;
+    overflow-wrap: anywhere;
   }
 
   .address-map-container .leaflet-container {

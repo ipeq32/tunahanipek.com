@@ -1,4 +1,5 @@
 import sanitizeHtmlLib, { type IOptions } from 'sanitize-html';
+import { normalizeRichTextWhitespace } from './rich-text-whitespace';
 
 /**
  * Zengin metin (blog içeriği, özet, yorumlar) için izin verilen güvenli HTML.
@@ -78,5 +79,5 @@ const SANITIZE_OPTIONS: IOptions = {
 };
 
 export function sanitizeHtml(dirty: string): string {
-  return sanitizeHtmlLib(dirty, SANITIZE_OPTIONS);
+  return sanitizeHtmlLib(normalizeRichTextWhitespace(dirty), SANITIZE_OPTIONS);
 }

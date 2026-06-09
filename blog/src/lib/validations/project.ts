@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { optionalNullableUrlField, optionalUrlField } from './url-field';
 
 const translationSchema = z.object({
   languageCode: z.string().trim().min(2).max(10),
@@ -13,8 +14,8 @@ const translationUpdateSchema = translationSchema.partial({
 });
 
 export const createProjectSchema = z.object({
-  url: z.string().url().optional().or(z.literal('')),
-  image: z.string().url().optional().or(z.literal('')),
+  url: optionalNullableUrlField.optional(),
+  image: optionalNullableUrlField.optional(),
   sortOrder: z.number().int().optional(),
   translations: z
     .array(translationSchema)
@@ -23,8 +24,8 @@ export const createProjectSchema = z.object({
 
 export const updateProjectSchema = z
   .object({
-    url: z.string().url().optional().nullable(),
-    image: z.string().url().optional().nullable(),
+    url: optionalNullableUrlField.optional(),
+    image: optionalNullableUrlField.optional(),
     sortOrder: z.number().int().optional(),
     published: z.boolean(),
     languageCode: z.string().trim().min(2).max(10),

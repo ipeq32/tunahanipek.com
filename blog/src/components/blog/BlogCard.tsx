@@ -3,6 +3,7 @@
 import BlogImage from '@/components/blog/BlogImage';
 import { Link } from '@/navigation';
 import { IGetBlog } from '@/types/blog';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import { useFormatter, useNow } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { ArrowUpRight } from 'lucide-react';
@@ -53,10 +54,9 @@ export default function BlogCard({ blog }: BlogCardProps) {
           </Link>
         </h2>
 
-        <div
-          className="line-clamp-2 text-sm text-muted-foreground [&_p]:inline"
-          dangerouslySetInnerHTML={{ __html: blog.summary }}
-        />
+        <p className="line-clamp-2 text-sm text-muted-foreground">
+          {stripHtmlText(blog.summary)}
+        </p>
 
         {(blog.tags.length > 0 || blog.categories.length > 0) && (
           <div className="mt-auto flex flex-wrap gap-1.5 pt-1">

@@ -49,6 +49,28 @@ type AiContentActionsProps =
       onApply: (fields: ProjectFields) => void;
     };
 
+function toAiRequestFields(
+  contentType: 'blog' | 'project',
+  fields: BlogFields | ProjectFields,
+): BlogFields | ProjectFields {
+  if (contentType === 'blog') {
+    const blogFields = fields as BlogFields;
+    return {
+      ...(blogFields.title?.trim() && { title: blogFields.title }),
+      ...(blogFields.content?.trim() && { content: blogFields.content }),
+      ...(blogFields.summary?.trim() && { summary: blogFields.summary }),
+    };
+  }
+
+  const projectFields = fields as ProjectFields;
+  return {
+    ...(projectFields.title?.trim() && { title: projectFields.title }),
+    ...(projectFields.description?.trim() && {
+      description: projectFields.description,
+    }),
+  };
+}
+
 function findSourceLanguage(
   languages: LanguageDto[],
   activeLanguage: string,
@@ -125,10 +147,10 @@ export default function AiContentActions(props: AiContentActionsProps) {
         action,
         contentType: props.contentType,
         sourceLanguage:
-          action === 'translate' ? sourceLanguage : props.activeLanguage,
+          action === 'translate' ? sourceLanguage! : props.activeLanguage,
         targetLanguage:
           action === 'translate' ? props.activeLanguage : undefined,
-        fields: sourceFields,
+        fields: toAiRequestFields(props.contentType, sourceFields),
       };
 
       const res = await fetch('/api/ai/content', {

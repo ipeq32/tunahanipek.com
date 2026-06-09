@@ -4,7 +4,7 @@ import { extractJsonObject, pickString } from '@/lib/ai/parse-response';
 import { buildTranslatePrompt } from '@/lib/ai/prompts';
 import { generateWithAi } from '@/lib/ai/provider';
 import type { ContentFields, DecryptedAiConfig } from '@/lib/ai/types';
-import { sanitizeHtml } from '@/lib/sanitize';
+import { prepareAiRichField } from '@/lib/rich-content';
 
 type TranslateParams = {
   contentType: 'blog' | 'project';
@@ -25,15 +25,30 @@ function sanitizeFields(
     const summary = pickString(data, 'summary');
     return {
       ...(title && { title }),
-      ...(content && { content: sanitizeHtml(content) }),
-      ...(summary && { summary: sanitizeHtml(summary) }),
+      ...(content && {
+        content: prepareAiRichField(content, {
+          contentType: 'blog',
+          field: 'content',
+        }),
+      }),
+      ...(summary && {
+        summary: prepareAiRichField(summary, {
+          contentType: 'blog',
+          field: 'summary',
+        }),
+      }),
     };
   }
 
   const description = pickString(data, 'description');
   return {
     ...(title && { title }),
-    ...(description && { description: sanitizeHtml(description) }),
+    ...(description && {
+      description: prepareAiRichField(description, {
+        contentType: 'project',
+        field: 'description',
+      }),
+    }),
   };
 }
 

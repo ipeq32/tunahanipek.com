@@ -32,6 +32,10 @@ import {
   isProjectTranslationFilled,
 } from '@/lib/translation-form-utils';
 import AiContentActions from '@/components/content/AiContentActions';
+import {
+  normalizeExternalUrl,
+  optionalUrlField,
+} from '@/lib/validations/url-field';
 
 const translationSchema = z.object({
   title: z.string().default(''),
@@ -41,8 +45,8 @@ const translationSchema = z.object({
 
 const formSchema = z
   .object({
-    url: z.string().url().optional().or(z.literal('')),
-    image: z.string().url().optional().or(z.literal('')),
+    url: optionalUrlField,
+    image: optionalUrlField,
     translations: z.record(z.string(), translationSchema),
   })
   .superRefine((data, ctx) => {
@@ -141,8 +145,8 @@ export default function ProjectForm({
     }
 
     const payload = {
-      url: values.url?.trim() || '',
-      image: values.image?.trim() || '',
+      url: normalizeExternalUrl(values.url),
+      image: normalizeExternalUrl(values.image),
       translations,
     };
 

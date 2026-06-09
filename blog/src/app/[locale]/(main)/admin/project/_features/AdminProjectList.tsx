@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Link } from '@/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { ProjectDto } from '@/lib/project-mapper';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import {
   AdminEmptyState,
   AdminListSkeleton,
@@ -241,10 +242,9 @@ export default function AdminProjectList({
                     draftLabel={t('statusDraft')}
                   />
                 </div>
-                <div
-                  className="line-clamp-2 text-sm text-muted-foreground [&_p]:inline"
-                  dangerouslySetInnerHTML={{ __html: project.description }}
-                />
+                <p className="line-clamp-2 text-sm text-muted-foreground">
+                  {stripHtmlText(project.description)}
+                </p>
                 {project.url && (
                   <a
                     href={project.url}

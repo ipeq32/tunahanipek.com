@@ -1,6 +1,7 @@
 import BlogImage from '@/components/blog/BlogImage';
 import { Link } from '@/navigation';
 import type { ProjectDto } from '@/lib/project-mapper';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import { ArrowUpRight } from 'lucide-react';
 
 type ProjectCardProps = {
@@ -34,10 +35,9 @@ export default function ProjectCard({ project, visitLabel }: ProjectCardProps) {
           <h3 className="text-lg font-semibold leading-snug tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400">
             {project.title}
           </h3>
-          <div
-            className="line-clamp-3 flex-1 text-sm text-muted-foreground [&_p]:inline"
-            dangerouslySetInnerHTML={{ __html: project.description }}
-          />
+          <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
+            {stripHtmlText(project.description)}
+          </p>
           {project.url && (
             <span className="mt-1 inline-flex items-center text-sm font-medium text-teal-600 dark:text-teal-400">
               {visitLabel}

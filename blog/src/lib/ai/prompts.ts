@@ -35,12 +35,16 @@ export function buildTranslatePrompt(params: {
   return `You are a professional translator for a modern technical blog and portfolio website.
 
 Translate the following ${contentType} content from ${labels.source} to ${labels.target}.
-Preserve meaning, tone, and HTML structure. Do not add fabricated facts.
+Preserve meaning, tone, and Markdown structure. Do not add fabricated facts.
 
 Input JSON:
 ${JSON.stringify(payload, null, 2)}
 
-Respond with ONLY valid JSON matching the same keys. HTML fields must remain valid HTML using simple tags (p, h2, h3, ul, ol, li, strong, em, a, code, pre, blockquote).`;
+Respond with ONLY strictly valid JSON matching the same keys.
+Rich text fields must use Markdown (not HTML): headings with ### or ##, bullet lists with -, emphasis with **bold** or *italic*, inline code with backticks.
+Escape line breaks inside JSON strings as \\n (never raw newlines inside JSON string values).
+Use regular ASCII spaces between words (never &nbsp; or Unicode non-breaking spaces).
+Do not use HTML tags, div/span wrappers, inline styles, or h1.`;
 }
 
 export function buildExpandPrompt(params: {
@@ -66,11 +70,21 @@ Input JSON:
 ${JSON.stringify(fields, null, 2)}
 
 Requirements:
-- "content" / "description": well-structured HTML (p, h2, h3, ul, ol, li, strong, em, code)
-- For blog: "content" should be a full article (multiple sections); "summary" a concise HTML excerpt
-- For project: "description" should explain purpose, stack, and highlights based on the title/hints only
+- Rich text fields must use Markdown only (never HTML)
+- For blog:
+  - "content" = full article with ## section headings (never # / h1). Use clear sections such as Giriş/Introduction, main topic sections, and Sonuç/Conclusion when appropriate
+  - "summary" = 1-2 short paragraphs, no headings, suitable for list cards
+- For project: "description" must use exactly these ### sections in order:
+  1) Giriş (or Introduction in English)
+  2) Amaç (or Purpose)
+  3) Teknoloji yığını (or Tech stack) as a bullet list
+  4) Öne çıkan özellikler (or Key features) as a bullet list
+- Use ### headings only in project descriptions (never ## or #)
+- Keep lists flat (single level), no tables, images, or code blocks unless essential
 
-Respond with ONLY valid JSON: ${outputKeys}`;
+Respond with ONLY strictly valid JSON: ${outputKeys}
+Escape line breaks inside JSON strings as \\n (never raw newlines inside JSON string values).
+Use regular ASCII spaces between words (never &nbsp; or Unicode non-breaking spaces).`;
 }
 
 export function buildTestPrompt(): string {
