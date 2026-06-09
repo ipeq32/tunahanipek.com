@@ -1,15 +1,23 @@
 'use client';
 
+import { useTapLogoAnimation } from '@/hooks/useTapLogoAnimation';
 import { useRouter } from '@/navigation';
 
 const LogoFeature = () => {
   const router = useRouter();
+  const { elementRef, playAnimation } = useTapLogoAnimation();
+
+  const handleClick = () => {
+    playAnimation();
+    router.push('/');
+  };
 
   return (
     <button
+      ref={elementRef}
       type="button"
-      onClick={() => router.push('/')}
-      className="group/logo shrink-0 transition-transform duration-300 ease-out hover:-translate-x-0.5 hover:-translate-y-0.5"
+      onClick={handleClick}
+      className="group/logo logo-brand-trigger shrink-0 transition-transform duration-300 ease-out"
       aria-label="Ana sayfa"
     >
       <div className="logo-brand-box relative h-9 w-[7.5rem] cursor-pointer select-none">

@@ -91,8 +91,14 @@
     @apply inline-flex shrink-0 items-center gap-2 transition duration-300 ease-out sm:gap-3;
   }
 
-  .nav-brand-group:hover,
-  .nav-brand-group:focus-visible {
+  @media (hover: hover) and (pointer: fine) {
+    .nav-brand-group:hover,
+    .nav-brand-group:focus-visible {
+      @apply -translate-y-0.5;
+    }
+  }
+
+  .nav-brand-group.brand-wordmark-animated {
     @apply -translate-y-0.5;
   }
 
@@ -138,13 +144,23 @@
     @apply text-slate-300;
   }
 
-  .nav-brand-group:hover .brand-wordmark-text1,
-  .nav-brand-group:focus-visible .brand-wordmark-text1 {
+  @media (hover: hover) and (pointer: fine) {
+    .nav-brand-group:hover .brand-wordmark-text1,
+    .nav-brand-group:focus-visible .brand-wordmark-text1 {
+      transform: translate(-50%, calc(-50% - 8px));
+    }
+
+    .nav-brand-group:hover .brand-wordmark-text2,
+    .nav-brand-group:focus-visible .brand-wordmark-text2 {
+      transform: translate(-50%, calc(-50% + 8px));
+    }
+  }
+
+  .nav-brand-group.brand-wordmark-animated .brand-wordmark-text1 {
     transform: translate(-50%, calc(-50% - 8px));
   }
 
-  .nav-brand-group:hover .brand-wordmark-text2,
-  .nav-brand-group:focus-visible .brand-wordmark-text2 {
+  .nav-brand-group.brand-wordmark-animated .brand-wordmark-text2 {
     transform: translate(-50%, calc(-50% + 8px));
   }
 
@@ -152,8 +168,14 @@
     .nav-brand-group:hover .brand-wordmark-text1,
     .nav-brand-group:focus-visible .brand-wordmark-text1,
     .nav-brand-group:hover .brand-wordmark-text2,
-    .nav-brand-group:focus-visible .brand-wordmark-text2 {
+    .nav-brand-group:focus-visible .brand-wordmark-text2,
+    .nav-brand-group.brand-wordmark-animated .brand-wordmark-text1,
+    .nav-brand-group.brand-wordmark-animated .brand-wordmark-text2 {
       transform: translate(-50%, -50%);
+    }
+
+    .nav-brand-group.brand-wordmark-animated {
+      transform: none;
     }
   }
 

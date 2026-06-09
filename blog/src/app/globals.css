@@ -132,14 +132,43 @@
     clip-path: polygon(0 100%, 50% 0%, 100% 100%, 100% 100%, 0 100%);
   }
 
-  .group\/logo:hover .logo-brand-text1,
-  .logo-brand-box:hover .logo-brand-text1 {
+  @media (hover: hover) and (pointer: fine) {
+    .logo-brand-trigger:hover {
+      transform: translate(-0.125rem, -0.125rem);
+    }
+
+    .group\/logo:hover .logo-brand-text1,
+    .logo-brand-box:hover .logo-brand-text1 {
+      transform: translateY(calc(-50% - 5px));
+    }
+
+    .group\/logo:hover .logo-brand-text2,
+    .logo-brand-box:hover .logo-brand-text2 {
+      transform: translateY(calc(-50% + 5px));
+    }
+  }
+
+  .logo-brand-trigger.logo-brand-animated {
+    transform: translate(-0.125rem, -0.125rem);
+  }
+
+  .group\/logo.logo-brand-animated .logo-brand-text1 {
     transform: translateY(calc(-50% - 5px));
   }
 
-  .group\/logo:hover .logo-brand-text2,
-  .logo-brand-box:hover .logo-brand-text2 {
+  .group\/logo.logo-brand-animated .logo-brand-text2 {
     transform: translateY(calc(-50% + 5px));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .group\/logo.logo-brand-animated .logo-brand-text1,
+    .group\/logo.logo-brand-animated .logo-brand-text2 {
+      transform: translateY(-50%);
+    }
+
+    .logo-brand-trigger.logo-brand-animated {
+      transform: none;
+    }
   }
 }
 

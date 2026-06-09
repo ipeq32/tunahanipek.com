@@ -1,6 +1,7 @@
 "use client";
 
 import SignatureLogo from "@/app/_ui/SignatureLogo";
+import { useTapLogoAnimation } from "@/app/_hooks/useTapLogoAnimation";
 import { Link } from "@/navigation";
 
 import { BrandWordmark } from "./BrandWordmark";
@@ -11,11 +12,15 @@ type NavbarLogoProps = {
 };
 
 export function NavbarLogo({ label, wordmark }: NavbarLogoProps) {
+  const { elementRef, playAnimation } = useTapLogoAnimation();
+
   return (
     <Link
+      ref={elementRef}
       href="/"
       className="nav-brand-group group"
       aria-label={label}
+      onClick={playAnimation}
     >
       <span className="nav-logo-emphasis shrink-0">
         <SignatureLogo
