@@ -75,12 +75,12 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
   ];
 
   return (
-    <footer className="relative border-t border-border/60 bg-card/30 backdrop-blur-sm">
+    <footer className="relative mt-auto w-full border-t border-border/60 bg-card/30 backdrop-blur-sm">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-500/40 to-transparent"
         aria-hidden
       />
-      <SiteContainer className="grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
+      <SiteContainer className="grid w-full gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
           <RotatingMotto />
@@ -160,7 +160,7 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Instagram
           </h3>
-          <div className="grid max-w-[180px] grid-cols-2 gap-2.5">
+          <div className="grid w-full max-w-none grid-cols-2 gap-2.5 sm:max-w-[180px]">
             {instagramLinks.map((link, index) => (
               <Link
                 key={index}

@@ -12,7 +12,7 @@ type HomePageProps = {
 
 export default function HomePage({ resume }: HomePageProps) {
   return (
-    <main>
+    <main className="flex flex-1 flex-col">
       <Hero resume={resume} />
       <About />
       <Experience />

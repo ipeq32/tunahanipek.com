@@ -31,8 +31,8 @@ export default async function Footer({ resume }: FooterProps) {
   ];
 
   return (
-    <footer className="border-t border-border py-10">
-      <SiteContainer className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-auto w-full border-t border-border py-10">
+      <SiteContainer className="flex w-full flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
             href="/"
@@ -44,7 +44,7 @@ export default async function Footer({ resume }: FooterProps) {
             {t("copyright", { year })}
           </p>
         </div>
-        <div className="flex flex-wrap gap-6">
+        <div className="grid w-full grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:w-auto sm:flex-wrap sm:gap-6">
           {links.map((link) => (
             <a
               key={link.key}

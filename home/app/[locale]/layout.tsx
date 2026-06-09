@@ -112,7 +112,7 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${playfair.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className={`${inter.className} min-h-full antialiased`}>
+      <body className={`${inter.className} flex min-h-dvh flex-col antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -114,9 +114,11 @@ const Navbar = () => {
               </SheetHeader>
               <div className="mt-6 flex flex-col gap-1">
                 {menuLinks.map((link) => (
-                  <MenuLinkFeature key={link.title} link={link.href}>
-                    {link.title}
-                  </MenuLinkFeature>
+                  <SheetClose asChild key={link.title}>
+                    <MenuLinkFeature link={link.href}>
+                      {link.title}
+                    </MenuLinkFeature>
+                  </SheetClose>
                 ))}
               </div>
               <div className="mt-6 flex items-center justify-center gap-3 border-t border-border/60 pt-6">

@@ -35,7 +35,7 @@ export default async function RootLayout({ children }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.variable} min-h-dvh font-sans`}>
+      <body className={`${inter.variable} flex min-h-dvh flex-col font-sans`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <NextIntlClientProvider
           locale={locale}
