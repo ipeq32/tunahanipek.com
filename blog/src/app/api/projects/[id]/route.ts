@@ -13,8 +13,9 @@ import {
 } from '@/lib/revalidate-public';
 import { updateProjectSchema } from '@/lib/validations/project';
 import { apiError, apiMessage } from '@/lib/api-i18n';
+import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -88,6 +89,16 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
 
     revalidateProjectDetail(id);
+
+    if (data.translations?.length) {
+      after(async () => {
+        await autoFillMissingTranslations({
+          entityType: 'project',
+          entityId: id,
+          providedTranslations: data.translations ?? [],
+        });
+      });
+    }
 
     return NextResponse.json({
       data: project

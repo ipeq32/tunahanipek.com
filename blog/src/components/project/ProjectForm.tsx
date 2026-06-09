@@ -27,18 +27,36 @@ import {
   buildEmptyProjectTranslations,
   projectTranslationsFromDto,
 } from '@/lib/translation-form';
+import {
+  filterProjectTranslationsForSubmit,
+  isProjectTranslationFilled,
+} from '@/lib/translation-form-utils';
+import AiContentActions from '@/components/content/AiContentActions';
 
 const translationSchema = z.object({
-  title: z.string().trim().min(2).max(200),
-  description: z.string().min(2),
-  published: z.boolean(),
+  title: z.string().default(''),
+  description: z.string().default(''),
+  published: z.boolean().default(false),
 });
 
-const formSchema = z.object({
-  url: z.string().url().optional().or(z.literal('')),
-  image: z.string().url().optional().or(z.literal('')),
-  translations: z.record(z.string(), translationSchema),
-});
+const formSchema = z
+  .object({
+    url: z.string().url().optional().or(z.literal('')),
+    image: z.string().url().optional().or(z.literal('')),
+    translations: z.record(z.string(), translationSchema),
+  })
+  .superRefine((data, ctx) => {
+    const hasFilled = Object.values(data.translations).some((item) =>
+      isProjectTranslationFilled(item),
+    );
+    if (!hasFilled) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'At least one language must be complete',
+        path: ['translations'],
+      });
+    }
+  });
 
 export type ProjectFormValues = z.infer<typeof formSchema>;
 
@@ -108,14 +126,19 @@ export default function ProjectForm({
     const url =
       mode === 'create' ? `/api/projects/admin` : `/api/projects/${projectId}`;
 
-    const translations = Object.entries(values.translations).map(
-      ([languageCode, fields]) => ({
+    const translations = filterProjectTranslationsForSubmit(
+      Object.entries(values.translations).map(([languageCode, fields]) => ({
         languageCode,
         title: fields.title.trim(),
         description: fields.description,
         published: fields.published,
-      }),
+      })),
     );
+
+    if (translations.length === 0) {
+      toast.error(t('actionError'), { description: t('atLeastOneLanguage') });
+      return;
+    }
 
     const payload = {
       url: values.url?.trim() || '',
@@ -173,6 +196,29 @@ export default function ProjectForm({
                 className={hidden ? 'hidden' : 'space-y-5'}
                 aria-hidden={hidden}
               >
+                <AiContentActions
+                  contentType="project"
+                  activeLanguage={language.code}
+                  languages={languages}
+                  activeFields={form.watch(`translations.${language.code}`)}
+                  allTranslations={form.watch('translations')}
+                  disabled={form.formState.isSubmitting}
+                  onApply={(fields) => {
+                    if (fields.title) {
+                      form.setValue(
+                        `translations.${language.code}.title`,
+                        fields.title,
+                      );
+                    }
+                    if (fields.description) {
+                      form.setValue(
+                        `translations.${language.code}.description`,
+                        fields.description,
+                      );
+                    }
+                  }}
+                />
+
                 <FormField
                   control={form.control}
                   name={`translations.${language.code}.title`}

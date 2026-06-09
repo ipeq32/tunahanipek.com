@@ -48,7 +48,8 @@
       "tagsPlaceholder": "javascript, nextjs (virgülle)",
       "categories": "Kategoriler",
       "categoriesPlaceholder": "Teknoloji, Seyahat (virgülle)",
-      "languagesSection": "Çeviriler"
+      "languagesSection": "Çeviriler",
+      "atLeastOneLanguage": "En az bir dilde başlık, içerik ve özet doldurulmalıdır."
     },
     "Taxonomy": {
       "tags": "Etiketler",
@@ -148,6 +149,7 @@
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
       "languagesSection": "Çeviriler",
+      "atLeastOneLanguage": "En az bir dilde başlık ve açıklama doldurulmalıdır.",
       "add": "Ekle",
       "save": "Kaydet",
       "cancel": "İptal",
@@ -300,7 +302,98 @@
     "resumePreview": "Önizle",
     "resumeDownloadCurrent": "Mevcut dosyayı indir",
     "resumeLastUpdated": "Son güncelleme: {date}",
-    "resumeReplaceWarning": "Yeni dosya yüklendi. Yayınlamak için Özgeçmişi kaydet'e tıklayın."
+    "resumeReplaceWarning": "Yeni dosya yüklendi. Yayınlamak için Özgeçmişi kaydet'e tıklayın.",
+    "Ai": {
+      "title": "AI içerik ve çeviri",
+      "description": "Blog ve proje formlarında otomatik çeviri ile profesyonel içerik üretimini yapılandırın.",
+      "enabled": "AI özelliklerini etkinleştir",
+      "provider": "Sağlayıcı",
+      "providers": {
+        "gemini": "Google Gemini",
+        "groq": "Groq",
+        "ollama": "Ollama (yerel)"
+      },
+      "autoTranslateOnSave": "Otomatik çeviri",
+      "autoTranslateOnSaveHint": "Kayıt sonrası eksik dilleri arka planda çevir",
+      "geminiApiKey": "Gemini API anahtarı",
+      "groqApiKey": "Groq API anahtarı",
+      "geminiModel": "Gemini model",
+      "groqModel": "Groq model",
+      "ollamaBaseUrl": "Ollama URL",
+      "ollamaModel": "Ollama model",
+      "keyPlaceholder": "API anahtarınızı yapıştırın",
+      "keyPlaceholderSaved": "Değiştirmek için yeni anahtar girin",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "saved": "AI ayarları kaydedildi",
+      "saveError": "AI ayarları kaydedilemedi",
+      "loadError": "AI ayarları yüklenemedi",
+      "testConnection": "Bağlantıyı test et",
+      "testing": "Test ediliyor…",
+      "testSuccess": "Bağlantı başarılı",
+      "testError": "Bağlantı testi başarısız",
+      "lastUpdated": "Son güncelleme: {date}",
+      "Guide": {
+        "openButton": "Nasıl kurulur?",
+        "title": "AI kurulum rehberi",
+        "linksTitle": "Faydalı bağlantılar",
+        "ollamaCommandsTitle": "Terminal komutları",
+        "providers": {
+          "gemini": "Gemini",
+          "groq": "Groq",
+          "ollama": "Ollama"
+        },
+        "links": {
+          "geminiApiKey": "Google AI Studio — API anahtarı al",
+          "geminiPricing": "Gemini fiyatlandırma ve ücretsiz kota",
+          "groqApiKey": "Groq Console — API anahtarı al",
+          "groqDocs": "Groq hızlı başlangıç",
+          "ollamaDownload": "Ollama indir",
+          "ollamaModels": "Ollama model kütüphanesi"
+        },
+        "steps": {
+          "gemini": {
+            "step1": "Google hesabınızla Google AI Studio'ya gidin.",
+            "step2": "Ücretsiz API anahtarı oluşturun.",
+            "step3": "Anahtarı yukarıdaki Gemini API alanına yapıştırın.",
+            "step4": "Model olarak gemini-2.0-flash önerilir (ücretsiz kota).",
+            "step5": "Bağlantıyı test edin ve kaydedin."
+          },
+          "groq": {
+            "step1": "Groq Console'da hesap oluşturun.",
+            "step2": "API Keys bölümünden yeni anahtar oluşturun.",
+            "step3": "Anahtarı Groq API alanına yapıştırın.",
+            "step4": "Varsayılan model llama-3.3-70b-versatile yeterlidir.",
+            "step5": "Bağlantıyı test edin ve kaydedin."
+          },
+          "ollama": {
+            "step1": "Ollama'yı bilgisayarınıza veya sunucunuza kurun.",
+            "step2": "Terminalde modeli indirin: ollama pull llama3.2",
+            "step3": "Ollama servisinin çalıştığından emin olun.",
+            "step4": "Base URL ve model adını forma girin (varsayılan localhost:11434).",
+            "step5": "Bağlantıyı test edin ve kaydedin."
+          }
+        },
+        "tips": {
+          "gemini": "Gemini Flash günlük yüksek ücretsiz kota sunar; çeviri ve içerik üretimi için idealdir.",
+          "groq": "Groq çok hızlı yanıt verir; ücretsiz tier limitlerini Groq Console'dan takip edin.",
+          "ollama": "Ollama tamamen ücretsizdir; API anahtarı gerekmez. Üretim için yeterli RAM (8GB+) önerilir."
+        }
+      }
+    }
+  },
+  "Content": {
+    "Ai": {
+      "cardTitle": "Yapay zeka ile oluştur",
+      "translateButton": "{language} çevirisini oluştur",
+      "expandButton": "Profesyonel içerik oluştur",
+      "translateSuccess": "Çeviri oluşturuldu",
+      "expandSuccess": "İçerik oluşturuldu",
+      "translateError": "Çeviri oluşturulamadı",
+      "expandError": "İçerik oluşturulamadı",
+      "notConfigured": "AI yapılandırılmamış.",
+      "openSettings": "Ayarlara git"
+    }
   },
   "Pages": {
     "About": {

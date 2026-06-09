@@ -195,3 +195,24 @@ model SiteResume {
   fileName  String
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
+
+enum AiProvider {
+  gemini
+  groq
+  ollama
+}
+
+/// Site geneli AI içerik/çeviri ayarları (süper admin).
+model SiteAiSettings {
+  id                  String     @id @default("default")
+  enabled             Boolean    @default(false)
+  provider            AiProvider @default(gemini)
+  geminiApiKey        String?
+  groqApiKey          String?
+  geminiModel         String     @default("gemini-2.0-flash")
+  groqModel           String     @default("llama-3.3-70b-versatile")
+  ollamaBaseUrl       String     @default("http://localhost:11434")
+  ollamaModel         String     @default("llama3.2")
+  autoTranslateOnSave Boolean    @default(true)
+  updatedAt           DateTime   @updatedAt @db.Timestamptz(3)
+}

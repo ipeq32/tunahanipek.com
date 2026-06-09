@@ -8,8 +8,9 @@ import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { revalidateBlogDetail } from '@/lib/revalidate-public';
 import { createBlogSchema } from '@/lib/validations/blog';
 import { apiError, apiMessage } from '@/lib/api-i18n';
+import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +61,14 @@ export async function POST(req: Request) {
     });
 
     revalidateBlogDetail(res.id);
+
+    after(async () => {
+      await autoFillMissingTranslations({
+        entityType: 'blog',
+        entityId: res.id,
+        providedTranslations: translations,
+      });
+    });
 
     return NextResponse.json(
       {

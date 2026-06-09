@@ -36,6 +36,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { ReactNode } from 'react';
+import AiSettingsSection from './AiSettingsSection';
 import ResumeSettingsSection from './ResumeSettingsSection';
 import AddressFields from '@/components/address/AddressFields';
 import {
@@ -389,6 +390,7 @@ export default function SettingsForm({
       </ContentCard>
 
       {isSuperAdmin && <ResumeSettingsSection />}
+      {isSuperAdmin && <AiSettingsSection />}
     </div>
   );
 }

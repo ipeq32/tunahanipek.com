@@ -8,8 +8,9 @@ import { logger } from '@/lib/logger';
 import { revalidateProjectDetail } from '@/lib/revalidate-public';
 import { createProjectSchema } from '@/lib/validations/project';
 import { apiError, apiMessage } from '@/lib/api-i18n';
+import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +80,14 @@ export async function POST(request: Request) {
     });
 
     revalidateProjectDetail(project.id);
+
+    after(async () => {
+      await autoFillMissingTranslations({
+        entityType: 'project',
+        entityId: project.id,
+        providedTranslations: translations,
+      });
+    });
 
     return NextResponse.json(
       {

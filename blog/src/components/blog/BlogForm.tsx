@@ -28,20 +28,38 @@ import {
   blogTranslationsFromDto,
   buildEmptyBlogTranslations,
 } from '@/lib/translation-form';
+import {
+  filterBlogTranslationsForSubmit,
+  isBlogTranslationFilled,
+} from '@/lib/translation-form-utils';
+import AiContentActions from '@/components/content/AiContentActions';
 
 const translationSchema = z.object({
-  title: z.string().min(2),
-  content: z.string().min(17),
-  summary: z.string().min(17),
+  title: z.string().default(''),
+  content: z.string().default(''),
+  summary: z.string().default(''),
 });
 
-const formSchema = z.object({
-  image: z.string().min(2),
-  shortImage: z.string().min(2),
-  tags: z.string().optional(),
-  categories: z.string().optional(),
-  translations: z.record(z.string(), translationSchema),
-});
+const formSchema = z
+  .object({
+    image: z.string().min(2),
+    shortImage: z.string().min(2),
+    tags: z.string().optional(),
+    categories: z.string().optional(),
+    translations: z.record(z.string(), translationSchema),
+  })
+  .superRefine((data, ctx) => {
+    const hasFilled = Object.values(data.translations).some((item) =>
+      isBlogTranslationFilled(item),
+    );
+    if (!hasFilled) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'At least one language must be complete',
+        path: ['translations'],
+      });
+    }
+  });
 
 export type BlogFormValues = z.infer<typeof formSchema>;
 
@@ -133,12 +151,17 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
     const url = mode === 'create' ? `/api/blog/add` : `/api/blog/${blogId}`;
     const method = mode === 'create' ? 'POST' : 'PATCH';
 
-    const translations = Object.entries(values.translations).map(
-      ([languageCode, fields]) => ({
+    const translations = filterBlogTranslationsForSubmit(
+      Object.entries(values.translations).map(([languageCode, fields]) => ({
         languageCode,
         ...fields,
-      }),
+      })),
     );
+
+    if (translations.length === 0) {
+      toast.error(t('error'), { description: t('atLeastOneLanguage') });
+      return;
+    }
 
     const payload =
       mode === 'create'
@@ -219,6 +242,35 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                 className={hidden ? 'hidden' : 'space-y-5'}
                 aria-hidden={hidden}
               >
+                <AiContentActions
+                  contentType="blog"
+                  activeLanguage={language.code}
+                  languages={languages}
+                  activeFields={form.watch(`translations.${language.code}`)}
+                  allTranslations={form.watch('translations')}
+                  disabled={form.formState.isSubmitting}
+                  onApply={(fields) => {
+                    if (fields.title) {
+                      form.setValue(
+                        `translations.${language.code}.title`,
+                        fields.title,
+                      );
+                    }
+                    if (fields.content) {
+                      form.setValue(
+                        `translations.${language.code}.content`,
+                        fields.content,
+                      );
+                    }
+                    if (fields.summary) {
+                      form.setValue(
+                        `translations.${language.code}.summary`,
+                        fields.summary,
+                      );
+                    }
+                  }}
+                />
+
                 <FormField
                   control={form.control}
                   name={`translations.${language.code}.title`}
