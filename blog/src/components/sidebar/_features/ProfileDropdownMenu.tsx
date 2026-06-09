@@ -31,6 +31,7 @@ const FALLBACK_AVATAR =
 
 type ProfileDropdownMenuProps = {
   onLogout: () => void;
+  onNavigate?: () => void;
   user: User | undefined;
 };
 
@@ -65,6 +66,7 @@ function SectionLabel({ children }: { children: string }) {
 
 function ProfileDropdownMenuFeature({
   onLogout,
+  onNavigate,
   user,
 }: ProfileDropdownMenuProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -75,7 +77,10 @@ function ProfileDropdownMenuFeature({
   const roleKey = user?.role ?? 'USER';
   const initials = user?.name?.charAt(0).toUpperCase() ?? '?';
 
-  const close = () => setIsOpen(false);
+  const close = () => {
+    setIsOpen(false);
+    onNavigate?.();
+  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

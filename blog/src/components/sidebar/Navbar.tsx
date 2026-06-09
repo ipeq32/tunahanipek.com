@@ -1,9 +1,9 @@
 'use client';
 
 import { Menu } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -51,6 +51,13 @@ const Navbar = () => {
 
   const { data, status } = useSession({ required: false });
   const user = data?.user;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   const handleLogout = () => {
     handleSignout().then(() => {
@@ -97,7 +104,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <Sheet>
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="xl:hidden">
             <Button variant="ghost" size="icon" className="rounded-full">
               <Menu className="h-6 w-6" />
@@ -114,11 +121,14 @@ const Navbar = () => {
               </SheetHeader>
               <div className="mt-6 flex flex-col gap-1">
                 {menuLinks.map((link) => (
-                  <SheetClose asChild key={link.title}>
-                    <MenuLinkFeature link={link.href}>
-                      {link.title}
-                    </MenuLinkFeature>
-                  </SheetClose>
+                  <MenuLinkFeature
+                    key={link.title}
+                    link={link.href}
+                    onClick={closeMobileMenu}
+                    className="w-full justify-start rounded-lg"
+                  >
+                    {link.title}
+                  </MenuLinkFeature>
                 ))}
               </div>
               <div className="mt-6 flex items-center justify-center gap-3 border-t border-border/60 pt-6">
@@ -127,39 +137,39 @@ const Navbar = () => {
               </div>
             </div>
             <SheetFooter>
-              <SheetClose asChild>
-                <div
-                  className={`w-full gap-3 ${status === 'unauthenticated' ? 'flex flex-col-reverse' : 'flex flex-row-reverse'}`}
-                >
-                  {status === 'loading' ? (
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-[200px]" />
-                        <Skeleton className="h-4 w-[160px]" />
-                      </div>
+              <div
+                className={`w-full gap-3 ${status === 'unauthenticated' ? 'flex flex-col-reverse' : 'flex flex-row-reverse'}`}
+              >
+                {status === 'loading' ? (
+                  <div className="flex items-center space-x-4">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-[200px]" />
+                      <Skeleton className="h-4 w-[160px]" />
                     </div>
-                  ) : status === 'authenticated' ? (
-                    <ProfileDropdownMenuFeature
-                      user={user}
-                      onLogout={handleLogout}
-                    />
-                  ) : (
-                    <Link
-                      href={{
-                        pathname: '/auth/login',
-                        query: { callback: from },
-                      }}
-                      className="w-full"
-                    >
-                      <Button variant="accent" className="w-full">
-                        {t('Sidebar.login')}
-                      </Button>
-                    </Link>
-                  )}
-                  <GetContactFeature />
-                </div>
-              </SheetClose>
+                  </div>
+                ) : status === 'authenticated' ? (
+                  <ProfileDropdownMenuFeature
+                    user={user}
+                    onLogout={handleLogout}
+                    onNavigate={closeMobileMenu}
+                  />
+                ) : (
+                  <Link
+                    href={{
+                      pathname: '/auth/login',
+                      query: { callback: from },
+                    }}
+                    className="w-full"
+                    onClick={closeMobileMenu}
+                  >
+                    <Button variant="accent" className="w-full">
+                      {t('Sidebar.login')}
+                    </Button>
+                  </Link>
+                )}
+                <GetContactFeature onNavigate={closeMobileMenu} />
+              </div>
             </SheetFooter>
           </SheetContent>
         </Sheet>
