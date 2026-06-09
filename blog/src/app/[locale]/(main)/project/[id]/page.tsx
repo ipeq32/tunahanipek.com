@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .slice(0, 160);
   const images = [
     ...(project.image ? [project.image] : []),
-    ...project.gallery.filter((item) => item !== project.image),
+    ...(project.gallery ?? []).filter((item) => item !== project.image),
   ];
   const canonical = getCanonicalPath('/project/[id]', locale, { '[id]': id });
   const languages = getLanguageAlternates(
@@ -183,7 +183,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <RichContentView html={project.description} />
       </section>
 
-      <ProjectGallery images={project.gallery} title={project.title} />
+      <ProjectGallery images={project.gallery ?? []} title={project.title} />
     </article>
   );
 }
