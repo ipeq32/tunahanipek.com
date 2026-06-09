@@ -1,6 +1,7 @@
 'use client';
 
 import type { LanguageDto } from '@/lib/languages';
+import { getLanguageTabLabel } from '@/lib/language-tab-label';
 import { cn } from '@/lib/utils';
 
 type TranslationTabsProps = {
@@ -40,13 +41,13 @@ export default function TranslationTabs({
             aria-selected={isActive}
             onClick={() => onChange(language.code)}
             className={cn(
-              'rounded-md px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition-colors',
+              'rounded-md px-3 py-1.5 text-xs font-semibold tracking-wide transition-colors',
               isActive
                 ? 'bg-teal-500/15 text-teal-700 dark:text-teal-300'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >
-            {language.name}
+            {getLanguageTabLabel(language.code, language.name)}
           </button>
         );
       })}

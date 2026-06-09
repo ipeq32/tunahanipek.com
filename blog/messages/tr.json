@@ -334,50 +334,118 @@
       "testError": "Bağlantı testi başarısız",
       "lastUpdated": "Son güncelleme: {date}",
       "Guide": {
-        "openButton": "Nasıl kurulur?",
+        "openButton": "Kurulum rehberi",
         "title": "AI kurulum rehberi",
-        "linksTitle": "Faydalı bağlantılar",
+        "subtitle": "Sağlayıcıyı seçin, adımları tamamlayın ve bağlantıyı test ederek kaydedin. Anahtarlar yalnızca sunucu tarafında şifreli saklanır.",
+        "providerTabsLabel": "AI sağlayıcıları",
+        "overviewTitle": "Genel bakış",
+        "stepsTitle": "Kurulum adımları",
+        "recommendedTitle": "Önerilen yapılandırma",
+        "linksTitle": "Resmi dokümantasyon",
         "ollamaCommandsTitle": "Terminal komutları",
+        "securityTitle": "Güvenlik",
+        "securityNote": "API anahtarlarını yalnızca Ayarlar sayfasına girin. Anahtarları repoya, sohbetlere veya istemci tarafı koduna eklemeyin. Üretimde anahtarları düzenli olarak yenileyin.",
         "providers": {
-          "gemini": "Gemini",
+          "gemini": "Google Gemini",
           "groq": "Groq",
           "ollama": "Ollama"
         },
+        "overviews": {
+          "gemini": "Google'ın yönetilen API'si. Ücretsiz kota ile çeviri ve içerik üretimi için en dengeli seçenek; ek altyapı gerektirmez.",
+          "groq": "Düşük gecikmeli LLM çıkarımı sunan bulut sağlayıcı. Hızlı taslak üretimi ve çeviri için uygundur; kota limitlerini konsoldan izleyin.",
+          "ollama": "Yerel veya self-hosted çalışan açık kaynak çözüm. API anahtarı gerekmez; veri gizliliği ve offline kullanım için tercih edilir."
+        },
+        "recommended": {
+          "gemini": "Model: gemini-2.0-flash",
+          "groq": "Model: llama-3.3-70b-versatile",
+          "ollama": "URL: http://localhost:11434 · Model: llama3.2"
+        },
         "links": {
-          "geminiApiKey": "Google AI Studio — API anahtarı al",
+          "geminiApiKey": "Google AI Studio — API anahtarı",
           "geminiPricing": "Gemini fiyatlandırma ve ücretsiz kota",
-          "groqApiKey": "Groq Console — API anahtarı al",
+          "groqApiKey": "Groq Console — API anahtarları",
           "groqDocs": "Groq hızlı başlangıç",
-          "ollamaDownload": "Ollama indir",
+          "ollamaDownload": "Ollama indirme sayfası",
           "ollamaModels": "Ollama model kütüphanesi"
         },
         "steps": {
           "gemini": {
-            "step1": "Google hesabınızla Google AI Studio'ya gidin.",
-            "step2": "Ücretsiz API anahtarı oluşturun.",
-            "step3": "Anahtarı yukarıdaki Gemini API alanına yapıştırın.",
-            "step4": "Model olarak gemini-2.0-flash önerilir (ücretsiz kota).",
-            "step5": "Bağlantıyı test edin ve kaydedin."
+            "items": [
+              {
+                "title": "Google AI Studio erişimi",
+                "body": "Google hesabınızla Google AI Studio'ya giriş yapın ve API Keys bölümünü açın."
+              },
+              {
+                "title": "API anahtarı oluşturma",
+                "body": "Yeni bir anahtar oluşturun. Üretim ve geliştirme için ayrı anahtar kullanmanız önerilir."
+              },
+              {
+                "title": "Anahtarı kaydetme",
+                "body": "Oluşturulan anahtarı Ayarlar > AI bölümündeki Gemini API alanına yapıştırın."
+              },
+              {
+                "title": "Model seçimi",
+                "body": "Model alanında gemini-2.0-flash kullanın. Dengeli hız, maliyet ve kalite sunar."
+              },
+              {
+                "title": "Doğrulama",
+                "body": "Bağlantıyı test edin, AI özelliklerini etkinleştirin ve ayarları kaydedin."
+              }
+            ]
           },
           "groq": {
-            "step1": "Groq Console'da hesap oluşturun.",
-            "step2": "API Keys bölümünden yeni anahtar oluşturun.",
-            "step3": "Anahtarı Groq API alanına yapıştırın.",
-            "step4": "Varsayılan model llama-3.3-70b-versatile yeterlidir.",
-            "step5": "Bağlantıyı test edin ve kaydedin."
+            "items": [
+              {
+                "title": "Groq hesabı",
+                "body": "Groq Console üzerinden hesap oluşturun veya mevcut hesabınızla giriş yapın."
+              },
+              {
+                "title": "API anahtarı",
+                "body": "API Keys ekranından yeni bir anahtar üretin ve güvenli bir yerde saklayın."
+              },
+              {
+                "title": "Form yapılandırması",
+                "body": "Anahtarı Ayarlar > AI bölümündeki Groq API alanına yapıştırın."
+              },
+              {
+                "title": "Model seçimi",
+                "body": "Varsayılan olarak llama-3.3-70b-versatile modelini kullanın."
+              },
+              {
+                "title": "Doğrulama",
+                "body": "Bağlantı testini çalıştırın; başarılı yanıt aldıktan sonra kaydedin."
+              }
+            ]
           },
           "ollama": {
-            "step1": "Ollama'yı bilgisayarınıza veya sunucunuza kurun.",
-            "step2": "Terminalde modeli indirin: ollama pull llama3.2",
-            "step3": "Ollama servisinin çalıştığından emin olun.",
-            "step4": "Base URL ve model adını forma girin (varsayılan localhost:11434).",
-            "step5": "Bağlantıyı test edin ve kaydedin."
+            "items": [
+              {
+                "title": "Kurulum",
+                "body": "Ollama'yı geliştirme makinenize veya erişebildiğiniz bir sunucuya kurun."
+              },
+              {
+                "title": "Model indirme",
+                "body": "Terminalde llama3.2 modelini indirin. İhtiyaca göre farklı modeller seçebilirsiniz."
+              },
+              {
+                "title": "Servis kontrolü",
+                "body": "Ollama servisinin çalıştığını doğrulayın. Yerel kurulumda varsayılan adres 11434 portudur."
+              },
+              {
+                "title": "Bağlantı bilgileri",
+                "body": "Base URL ve model adını Ayarlar > AI formuna girin. Uzak sunucu kullanıyorsanız güvenli ağ erişimi sağlayın."
+              },
+              {
+                "title": "Doğrulama",
+                "body": "Bağlantı testini çalıştırın; model listesi döndüğünde ayarları kaydedin."
+              }
+            ]
           }
         },
         "tips": {
-          "gemini": "Gemini Flash günlük yüksek ücretsiz kota sunar; çeviri ve içerik üretimi için idealdir.",
-          "groq": "Groq çok hızlı yanıt verir; ücretsiz tier limitlerini Groq Console'dan takip edin.",
-          "ollama": "Ollama tamamen ücretsizdir; API anahtarı gerekmez. Üretim için yeterli RAM (8GB+) önerilir."
+          "gemini": "Çeviri ve içerik üretimi için günlük ücretsiz kota genellikle yeterlidir. Yoğun kullanımda kota tüketimini Google AI Studio'dan izleyin.",
+          "groq": "Groq yanıt süreleri çok düşüktür; kısa metinlerde belirgin hız avantajı sağlar. Ücretsiz tier limitlerini düzenli kontrol edin.",
+          "ollama": "Ollama tamamen ücretsizdir ve API anahtarı gerektirmez. Üretim kullanımında en az 8 GB RAM ve SSD depolama önerilir."
         }
       }
     }
@@ -392,7 +460,8 @@
       "translateError": "Çeviri oluşturulamadı",
       "expandError": "İçerik oluşturulamadı",
       "notConfigured": "AI yapılandırılmamış.",
-      "openSettings": "Ayarlara git"
+      "openSettings": "Ayarlara git",
+      "notConfiguredContactAdmin": "Yapılandırma yalnızca süper yönetici tarafından Ayarlar sayfasından yapılabilir."
     }
   },
   "Pages": {

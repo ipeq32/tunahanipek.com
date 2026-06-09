@@ -2,11 +2,13 @@
 
 import { Loader2, Sparkles } from 'lucide-react';
 import { Link } from '@/navigation';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useAiStatus } from '@/hooks/use-ai-status';
+import { isSuperAdmin } from '@/lib/auth-roles';
 import type { LanguageDto } from '@/lib/languages';
 import {
   isBlogTranslationFilled,
@@ -73,7 +75,9 @@ function findSourceLanguage(
 
 export default function AiContentActions(props: AiContentActionsProps) {
   const t = useTranslations('Content.Ai');
+  const { data: session } = useSession();
   const { available, loading: statusLoading } = useAiStatus();
+  const canManageAiSettings = isSuperAdmin(session?.user?.role);
   const [busyAction, setBusyAction] = useState<'translate' | 'expand' | null>(
     null,
   );
@@ -168,10 +172,17 @@ export default function AiContentActions(props: AiContentActionsProps) {
   if (!available) {
     return (
       <div className="rounded-xl border border-border/50 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-        {t('notConfigured')}{' '}
-        <Link href="/setting" className="font-medium text-teal-600 underline">
-          {t('openSettings')}
-        </Link>
+        <p>
+          {t('notConfigured')}{' '}
+          {canManageAiSettings && (
+            <Link href="/setting" className="font-medium text-teal-600 underline">
+              {t('openSettings')}
+            </Link>
+          )}
+        </p>
+        {!canManageAiSettings && (
+          <p className="mt-1 text-xs">{t('notConfiguredContactAdmin')}</p>
+        )}
       </div>
     );
   }

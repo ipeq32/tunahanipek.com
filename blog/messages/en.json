@@ -336,48 +336,116 @@
       "Guide": {
         "openButton": "Setup guide",
         "title": "AI setup guide",
-        "linksTitle": "Helpful links",
+        "subtitle": "Choose a provider, complete the steps, then test the connection before saving. Keys are stored encrypted on the server only.",
+        "providerTabsLabel": "AI providers",
+        "overviewTitle": "Overview",
+        "stepsTitle": "Setup steps",
+        "recommendedTitle": "Recommended configuration",
+        "linksTitle": "Official documentation",
         "ollamaCommandsTitle": "Terminal commands",
+        "securityTitle": "Security",
+        "securityNote": "Enter API keys only on the Settings page. Never commit keys to the repository, share them in chat, or expose them in client-side code. Rotate production keys regularly.",
         "providers": {
-          "gemini": "Gemini",
+          "gemini": "Google Gemini",
           "groq": "Groq",
           "ollama": "Ollama"
         },
+        "overviews": {
+          "gemini": "Google's managed API. The most balanced option for translation and content generation with a free tier and no extra infrastructure.",
+          "groq": "A low-latency cloud inference provider. Great for fast drafts and translation; monitor quota limits in the console.",
+          "ollama": "An open-source local or self-hosted runtime. No API key required; preferred for privacy and offline use."
+        },
+        "recommended": {
+          "gemini": "Model: gemini-2.0-flash",
+          "groq": "Model: llama-3.3-70b-versatile",
+          "ollama": "URL: http://localhost:11434 · Model: llama3.2"
+        },
         "links": {
-          "geminiApiKey": "Google AI Studio — Get API key",
+          "geminiApiKey": "Google AI Studio — API keys",
           "geminiPricing": "Gemini pricing & free tier",
-          "groqApiKey": "Groq Console — Get API key",
+          "groqApiKey": "Groq Console — API keys",
           "groqDocs": "Groq quickstart",
           "ollamaDownload": "Download Ollama",
           "ollamaModels": "Ollama model library"
         },
         "steps": {
           "gemini": {
-            "step1": "Go to Google AI Studio with your Google account.",
-            "step2": "Create a free API key.",
-            "step3": "Paste the key into the Gemini API field above.",
-            "step4": "gemini-2.0-flash is recommended (generous free tier).",
-            "step5": "Test the connection and save."
+            "items": [
+              {
+                "title": "Open Google AI Studio",
+                "body": "Sign in with your Google account and open the API Keys section."
+              },
+              {
+                "title": "Create an API key",
+                "body": "Generate a new key. Use separate keys for development and production when possible."
+              },
+              {
+                "title": "Save the key",
+                "body": "Paste the key into the Gemini API field under Settings > AI."
+              },
+              {
+                "title": "Choose a model",
+                "body": "Use gemini-2.0-flash for a balanced mix of speed, cost, and quality."
+              },
+              {
+                "title": "Verify",
+                "body": "Run the connection test, enable AI features, and save your settings."
+              }
+            ]
           },
           "groq": {
-            "step1": "Create an account on Groq Console.",
-            "step2": "Create a new key under API Keys.",
-            "step3": "Paste the key into the Groq API field.",
-            "step4": "Default model llama-3.3-70b-versatile works well.",
-            "step5": "Test the connection and save."
+            "items": [
+              {
+                "title": "Create a Groq account",
+                "body": "Sign up or sign in through Groq Console."
+              },
+              {
+                "title": "Generate an API key",
+                "body": "Create a new key on the API Keys page and store it securely."
+              },
+              {
+                "title": "Configure the form",
+                "body": "Paste the key into the Groq API field under Settings > AI."
+              },
+              {
+                "title": "Choose a model",
+                "body": "Keep the default llama-3.3-70b-versatile model."
+              },
+              {
+                "title": "Verify",
+                "body": "Run the connection test and save once it succeeds."
+              }
+            ]
           },
           "ollama": {
-            "step1": "Install Ollama on your machine or server.",
-            "step2": "Pull a model in terminal: ollama pull llama3.2",
-            "step3": "Make sure the Ollama service is running.",
-            "step4": "Enter base URL and model name (default localhost:11434).",
-            "step5": "Test the connection and save."
+            "items": [
+              {
+                "title": "Install Ollama",
+                "body": "Install Ollama on your development machine or on a server you can reach."
+              },
+              {
+                "title": "Pull a model",
+                "body": "Download the llama3.2 model in the terminal. You can choose other models if needed."
+              },
+              {
+                "title": "Check the service",
+                "body": "Make sure the Ollama service is running. Local installs use port 11434 by default."
+              },
+              {
+                "title": "Enter connection details",
+                "body": "Fill in the base URL and model name under Settings > AI. Use secure network access for remote hosts."
+              },
+              {
+                "title": "Verify",
+                "body": "Run the connection test and save when the model list is returned."
+              }
+            ]
           }
         },
         "tips": {
-          "gemini": "Gemini Flash offers a high daily free quota — ideal for translation and content.",
-          "groq": "Groq is very fast; monitor free tier limits in Groq Console.",
-          "ollama": "Ollama is fully free and needs no API key. 8GB+ RAM recommended for production."
+          "gemini": "The daily free quota is usually enough for translation and content workflows. Monitor usage in Google AI Studio during heavy use.",
+          "groq": "Groq response times are very low, especially for short text. Check free-tier limits regularly.",
+          "ollama": "Ollama is fully free and requires no API key. For production, plan for at least 8 GB RAM and SSD storage."
         }
       }
     }
@@ -392,7 +460,8 @@
       "translateError": "Could not generate translation",
       "expandError": "Could not generate content",
       "notConfigured": "AI is not configured.",
-      "openSettings": "Open settings"
+      "openSettings": "Open settings",
+      "notConfiguredContactAdmin": "Only a super admin can configure AI from the Settings page."
     }
   },
   "Pages": {
