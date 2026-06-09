@@ -15,6 +15,20 @@ enum Role {
   USER
 }
 
+model Language {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  code      String   @unique
+  name      String
+  isDefault Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  blogTranslations    BlogTranslation[]
+  projectTranslations ProjectTranslation[]
+}
+
 model User {
   id                  String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   email               String               @unique
@@ -51,23 +65,37 @@ model PasswordResetToken {
 }
 
 model Blog {
-  id         String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id           String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  image        String
+  shortImage   String
+  createdAt    DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime           @updatedAt @db.Timestamptz(3)
+  deletedAt    DateTime?          @db.Timestamptz(3)
+  comments     Comment[]
+  tags         Tag[]
+  categories   Category[]
+  translations BlogTranslation[]
+  author       User?              @relation(fields: [authorId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+  authorId     String?            @db.Uuid
+
+  @@index([authorId], name: "authorId")
+}
+
+model BlogTranslation {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  blogId     String   @db.Uuid
+  blog       Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  languageId String   @db.Uuid
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Restrict)
   title      String
   content    String
   summary    String
-  image      String
-  shortImage String
-  published  Boolean    @default(false)
-  createdAt  DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime   @updatedAt @db.Timestamptz(3)
-  deletedAt  DateTime?  @db.Timestamptz(3)
-  comments   Comment[]
-  tags       Tag[]
-  categories Category[]
-  author     User?      @relation(fields: [authorId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
-  authorId   String?    @db.Uuid
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
 
-  @@index([authorId], name: "authorId")
+  @@unique([blogId, languageId])
+  @@index([languageId, published])
 }
 
 model Category {
@@ -118,7 +146,6 @@ model CommentReaction {
   createdAt DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt DateTime     @updatedAt @db.Timestamptz(3)
 
-  // Bir kullanıcı bir yoruma en fazla tek tepki bırakabilir.
   @@unique([commentId, userId])
   @@index([commentId])
 }
@@ -133,18 +160,32 @@ model Tag {
 }
 
 model Project {
-  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id           String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  url          String?
+  image        String?
+  sortOrder    Int                  @default(0)
+  createdAt    DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime             @updatedAt @db.Timestamptz(3)
+  deletedAt    DateTime?            @db.Timestamptz(3)
+  translations ProjectTranslation[]
+
+  @@index([sortOrder])
+}
+
+model ProjectTranslation {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  projectId   String   @db.Uuid
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  languageId  String   @db.Uuid
+  language    Language @relation(fields: [languageId], references: [id], onDelete: Restrict)
   title       String
   description String
-  url         String?
-  image       String?
-  sortOrder   Int       @default(0)
-  published   Boolean   @default(false)
-  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
-  deletedAt   DateTime? @db.Timestamptz(3)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
 
-  @@index([published, sortOrder])
+  @@unique([projectId, languageId])
+  @@index([languageId, published])
 }
 
 /// Site geneli tek özgeçmiş (PDF) kaydı.

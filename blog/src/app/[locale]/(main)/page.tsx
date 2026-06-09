@@ -99,8 +99,8 @@ export default async function HomePage({
 
   const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount] =
     await Promise.all([
-      getPublishedBlogs(1, 3),
-      getPublishedProjects(),
+      getPublishedBlogs(1, 3, { locale }),
+      getPublishedProjects(locale),
       prisma.category.count({ where: { deletedAt: null } }),
     ]);
 

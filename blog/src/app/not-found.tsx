@@ -3,8 +3,11 @@ import { defaultLocale } from '@/config';
 
 export default function NotFound() {
   return (
-    <html lang={defaultLocale}>
-      <body className="flex min-h-dvh flex-col items-center justify-center bg-zinc-950 px-6 text-center text-zinc-100">
+    <html lang={defaultLocale} suppressHydrationWarning>
+      <body
+        className="flex min-h-dvh flex-col items-center justify-center bg-zinc-950 px-6 text-center text-zinc-100"
+        suppressHydrationWarning
+      >
         <p className="text-6xl font-bold text-teal-400">404</p>
         <h1 className="mt-4 text-2xl font-semibold">Sayfa bulunamadı</h1>
         <p className="mt-2 max-w-md text-sm text-zinc-400">

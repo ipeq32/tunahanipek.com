@@ -1,0 +1,19 @@
+{
+  "unauthorized": "Yetkisiz erişim",
+  "forbidden": "Erişim engellendi",
+  "notFound": "Bulunamadı",
+  "validationFailed": "Doğrulama başarısız",
+  "invalidPayload": "Geçersiz istek",
+  "internalError": "Sunucu hatası",
+  "blog": {
+    "notFound": "Blog bulunamadı",
+    "created": "Blog başarıyla oluşturuldu"
+  },
+  "project": {
+    "notFound": "Proje bulunamadı"
+  },
+  "language": {
+    "notFound": "Dil bulunamadı",
+    "invalidCode": "Geçersiz dil kodu"
+  }
+}

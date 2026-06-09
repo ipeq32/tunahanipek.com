@@ -73,9 +73,14 @@ function FeaturedProject({
   );
 }
 
-export default async function ProjectPage() {
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations('Pages.Project');
-  const projects = await getPublishedProjects();
+  const projects = await getPublishedProjects(locale);
 
   const [featured, ...rest] = projects;
   const hasProjects = projects.length > 0;

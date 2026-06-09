@@ -23,8 +23,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const locale = parseLocale(await getLocale());
   const [project, t] = await Promise.all([
-    getPublishedProjectById(id),
+    getPublishedProjectById(id, locale),
     getTranslations('Pages.Project'),
   ]);
 
@@ -32,13 +33,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: t('notFoundTitle') };
   }
 
-  const locale = parseLocale(await getLocale());
   const plainDescription = project.description
     .replace(/<[^>]*>/g, '')
     .slice(0, 160);
   const images = project.image ? [project.image] : [];
   const canonical = getCanonicalPath('/project/[id]', locale, { '[id]': id });
-  const languages = getLanguageAlternates('/project/[id]', { '[id]': id });
+  const languages = getLanguageAlternates(
+    '/project/[id]',
+    { '[id]': id },
+    project.availableLocales,
+  );
 
   return {
     title: project.title,
@@ -68,7 +72,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { id } = await params;
   const locale = parseLocale(await getLocale());
   const [project, t] = await Promise.all([
-    getPublishedProjectById(id),
+    getPublishedProjectById(id, locale),
     getTranslations('Pages.Project'),
   ]);
 

@@ -9,9 +9,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '@/components/theme-provider';
-import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { auth } from '@/auth';
 import { CookieConsent } from '@/components/cookie-consent';
 import InitialLoader from '@/components/loading/InitialLoader';
 import { SiteAnalytics } from '@/components/site-analytics';
@@ -114,11 +112,7 @@ export default async function LocaleLayout({
 }: LocaleLayoutProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [messages, session, now] = await Promise.all([
-    getMessages(),
-    auth(),
-    getNow(),
-  ]);
+  const [messages, now] = await Promise.all([getMessages(), getNow()]);
 
   return (
     <ThemeProvider
@@ -128,15 +122,13 @@ export default async function LocaleLayout({
       disableTransitionOnChange
     >
       <NextIntlClientProvider messages={messages} locale={locale} now={now}>
-        <AuthSessionProvider session={session}>
-          <InitialLoader>
-            {children}
-            <Toaster position="bottom-right" />
-            <CookieConsent />
-            <SiteAnalytics />
-          </InitialLoader>
-          {authModal}
-        </AuthSessionProvider>
+        <InitialLoader>
+          {children}
+          <Toaster position="bottom-right" />
+          <CookieConsent />
+          <SiteAnalytics />
+        </InitialLoader>
+        {authModal}
       </NextIntlClientProvider>
     </ThemeProvider>
   );

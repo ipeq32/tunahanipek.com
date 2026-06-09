@@ -27,6 +27,7 @@ export async function generateMetadata({
 }
 
 type Props = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{
     page?: string;
     limit?: string;
@@ -36,7 +37,8 @@ type Props = {
   }>;
 };
 
-async function page({ searchParams }: Props) {
+async function page({ params, searchParams }: Props) {
+  const { locale } = await params;
   const resolvedSearchParams = await searchParams;
   const currentPage = parseInt(resolvedSearchParams.page || '1');
   const limit = parseInt(resolvedSearchParams.limit || '9');
@@ -52,6 +54,7 @@ async function page({ searchParams }: Props) {
       search: query || undefined,
       tag,
       category,
+      locale,
     }),
   ]);
 

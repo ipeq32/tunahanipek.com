@@ -1,6 +1,15 @@
 import { Role } from '@prisma/client';
-import { IGetBlog } from '@/types/blog';
+import { IGetBlog, BlogTranslationDto } from '@/types/blog';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { defaultLocale } from '@/config';
+
+type TranslationRow = {
+  title: string;
+  content: string;
+  summary: string;
+  published: boolean;
+  language: { code: string };
+};
 
 type AuthorSelect = {
   name: string;
@@ -10,28 +19,68 @@ type AuthorSelect = {
 
 type BlogWithRelations = {
   id: string;
-  title: string;
-  content: string;
-  summary: string;
   image: string;
   shortImage: string;
-  published: boolean;
   createdAt: Date;
   updatedAt: Date;
   author: AuthorSelect;
   tags?: { name: string }[];
   categories?: { name: string }[];
+  translations: TranslationRow[];
 };
 
-export function mapBlogToResponse(blog: BlogWithRelations): IGetBlog {
+function mapTranslationRow(row: TranslationRow): BlogTranslationDto {
+  return {
+    languageCode: row.language.code,
+    title: row.title,
+    content: sanitizeHtml(row.content),
+    summary: sanitizeHtml(row.summary),
+    published: row.published,
+  };
+}
+
+function pickTranslation(
+  translations: TranslationRow[],
+  locale: string,
+): TranslationRow | null {
+  const exact = translations.find((t) => t.language.code === locale);
+  if (exact) {
+    return exact;
+  }
+
+  const defaultTranslation = translations.find(
+    (t) => t.language.code === defaultLocale,
+  );
+  if (defaultTranslation) {
+    return defaultTranslation;
+  }
+
+  return translations[0] ?? null;
+}
+
+export function mapBlogToResponse(
+  blog: BlogWithRelations,
+  locale: string,
+  options?: { includeAllTranslations?: boolean },
+): IGetBlog {
+  const translation = pickTranslation(blog.translations, locale);
+  const availableLocales = blog.translations
+    .filter((t) => t.published || options?.includeAllTranslations)
+    .map((t) => t.language.code);
+
   return {
     id: blog.id,
-    title: blog.title,
-    content: sanitizeHtml(blog.content),
-    summary: sanitizeHtml(blog.summary),
+    title: translation?.title ?? '',
+    content: translation ? sanitizeHtml(translation.content) : '',
+    summary: translation ? sanitizeHtml(translation.summary) : '',
     image: blog.image,
     shortImage: blog.shortImage,
-    published: blog.published,
+    published: translation?.published ?? false,
+    locale: translation?.language.code ?? locale,
+    availableLocales: [...new Set(availableLocales)],
+    translations: options?.includeAllTranslations
+      ? blog.translations.map(mapTranslationRow)
+      : undefined,
     createdAt: blog.createdAt,
     updatedAt: blog.updatedAt,
     tags: blog.tags?.map((t) => t.name) ?? [],
@@ -62,4 +111,9 @@ export const blogListInclude = {
   author: blogAuthorSelect,
   tags: { select: { name: true } },
   categories: { select: { name: true } },
+  translations: {
+    include: {
+      language: { select: { code: true } },
+    },
+  },
 } as const;

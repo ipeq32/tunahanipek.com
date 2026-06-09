@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import BlogImage from '@/components/blog/BlogImage';
 import { toast } from 'sonner';
 import { Link } from '@/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import type { ProjectDto } from '@/lib/project-mapper';
 import {
   AdminEmptyState,
@@ -61,6 +61,7 @@ export default function AdminProjectList({
   initialProjects,
 }: AdminProjectListProps) {
   const t = useTranslations('Admin.Project');
+  const locale = useLocale();
   const [projects, setProjects] = useState<ProjectDto[]>(initialProjects);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -69,9 +70,9 @@ export default function AdminProjectList({
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/projects/admin`
-      );
+      const res = await fetch(`/api/projects/admin?locale=${locale}`, {
+        headers: { 'x-locale': locale },
+      });
       if (!res.ok) throw new Error('Failed');
       const { data } = await res.json();
       setProjects(data);
@@ -80,7 +81,7 @@ export default function AdminProjectList({
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [locale, t]);
 
   const togglePublished = async (project: ProjectDto) => {
     try {
@@ -88,8 +89,14 @@ export default function AdminProjectList({
         `/api/projects/${project.id}`,
         {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ published: !project.published }),
+          headers: {
+            'Content-Type': 'application/json',
+            'x-locale': locale,
+          },
+          body: JSON.stringify({
+            published: !project.published,
+            languageCode: locale,
+          }),
         }
       );
       if (!res.ok) throw new Error('Failed');

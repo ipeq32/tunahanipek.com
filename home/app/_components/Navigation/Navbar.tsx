@@ -1,13 +1,15 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { site } from "@/app/_content/site";
 import { ToggleLanguage } from "@/app/_components/controls/ToggleLanguage";
 import { ToggleTheme } from "@/app/_components/controls/ToggleTheme";
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
+import { getBlogContactUrl } from "@/app/_lib/blog-urls";
+import type { Locale } from "@/config";
 import { NavbarLogo } from "./NavbarLogo";
 
 const CONTACT_SECTION = "#contact";
@@ -22,7 +24,9 @@ type NavItem =
 
 export default function Navbar() {
   const t = useTranslations("Navbar");
+  const locale = useLocale() as Locale;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const contactUrl = getBlogContactUrl(locale);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -72,7 +76,10 @@ export default function Navbar() {
             <ToggleLanguage />
             <ToggleTheme />
           </div>
-          <a href={CONTACT_SECTION} className="btn-dark hidden sm:inline-flex">
+          <a
+            href={contactUrl}
+            className="btn-dark hidden sm:inline-flex"
+          >
             {t("hireMe")}
           </a>
           <button
@@ -126,7 +133,7 @@ export default function Navbar() {
               <ToggleTheme />
             </div>
             <a
-              href={CONTACT_SECTION}
+              href={contactUrl}
               className="btn-dark mt-3 inline-flex"
               onClick={() => setMobileOpen(false)}
             >

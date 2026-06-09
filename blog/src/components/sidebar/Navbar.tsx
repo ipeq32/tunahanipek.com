@@ -16,8 +16,7 @@ import { Button } from '../ui/button';
 import CallMeFeature from './_features/CallMe';
 import GetContactFeature from './_features/GetContact';
 import LogoFeature from './_features/Logo';
-import { Skeleton } from '../ui/skeleton';
-import { useSession } from 'next-auth/react';
+import { useAuthUser } from '@/components/providers/auth-user-provider';
 import MenuLinkFeature from './_features/MenuLink';
 import handleSignout from '@/actions/handleSignout';
 import { Link, usePathname } from '@/navigation';
@@ -49,8 +48,7 @@ const Navbar = () => {
     { title: t('Link.project'), href: '/project' },
   ];
 
-  const { data, status } = useSession({ required: false });
-  const user = data?.user;
+  const { user, status } = useAuthUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -85,9 +83,7 @@ const Navbar = () => {
         <div className="hidden items-center gap-3 xl:flex">
           <CallMeFeature />
           <GetContactFeature />
-          {status === 'loading' ? (
-            <Skeleton className="h-10 w-10 rounded-full" />
-          ) : status === 'authenticated' ? (
+          {status === 'authenticated' ? (
             <ProfileDropdownMenuFeature user={user} onLogout={handleLogout} />
           ) : (
             <Link
@@ -140,15 +136,7 @@ const Navbar = () => {
               <div
                 className={`w-full gap-3 ${status === 'unauthenticated' ? 'flex flex-col-reverse' : 'flex flex-row-reverse'}`}
               >
-                {status === 'loading' ? (
-                  <div className="flex items-center space-x-4">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-[200px]" />
-                      <Skeleton className="h-4 w-[160px]" />
-                    </div>
-                  </div>
-                ) : status === 'authenticated' ? (
+                {status === 'authenticated' ? (
                   <ProfileDropdownMenuFeature
                     user={user}
                     onLogout={handleLogout}

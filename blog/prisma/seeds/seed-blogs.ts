@@ -1,5 +1,6 @@
 import { prisma } from '../../src/lib/prisma';
 import { sanitizeHtml } from '../../src/lib/sanitize';
+import { seedLanguagesIfEmpty } from './seed-languages';
 import { blogSeeds } from './blog-data';
 import type { BlogSeedEntry } from './blog-types';
 
@@ -26,31 +27,83 @@ async function connectTaxonomy(blogId: string, entry: BlogSeedEntry) {
 }
 
 export async function seedBlogs(authorId: string) {
+  await seedLanguagesIfEmpty();
+
+  const turkish = await prisma.language.findUnique({ where: { code: 'tr' } });
+  const english = await prisma.language.findUnique({ where: { code: 'en' } });
+
+  if (!turkish) {
+    throw new Error('Turkish language seed is missing');
+  }
+
   for (const entry of blogSeeds) {
-    const existing = await prisma.blog.findFirst({
-      where: { title: entry.title, deletedAt: null },
+    const existingTranslation = await prisma.blogTranslation.findFirst({
+      where: {
+        title: entry.title,
+        languageId: turkish.id,
+        blog: { deletedAt: null },
+      },
+      include: { blog: true },
     });
 
-    const payload = {
-      title: entry.title,
-      image: entry.image,
-      shortImage: entry.shortImage,
-      content: sanitizeHtml(entry.content),
-      summary: sanitizeHtml(entry.summary),
-      published: entry.published,
-    };
-
-    const blog = existing
+    const blog = existingTranslation
       ? await prisma.blog.update({
-          where: { id: existing.id },
-          data: payload,
+          where: { id: existingTranslation.blogId },
+          data: {
+            image: entry.image,
+            shortImage: entry.shortImage,
+          },
         })
       : await prisma.blog.create({
           data: {
-            ...payload,
+            image: entry.image,
+            shortImage: entry.shortImage,
             author: { connect: { id: authorId } },
           },
         });
+
+    await prisma.blogTranslation.upsert({
+      where: {
+        blogId_languageId: {
+          blogId: blog.id,
+          languageId: turkish.id,
+        },
+      },
+      create: {
+        blogId: blog.id,
+        languageId: turkish.id,
+        title: entry.title,
+        content: sanitizeHtml(entry.content),
+        summary: sanitizeHtml(entry.summary),
+        published: entry.published,
+      },
+      update: {
+        title: entry.title,
+        content: sanitizeHtml(entry.content),
+        summary: sanitizeHtml(entry.summary),
+        published: entry.published,
+      },
+    });
+
+    if (english) {
+      await prisma.blogTranslation.upsert({
+        where: {
+          blogId_languageId: {
+            blogId: blog.id,
+            languageId: english.id,
+          },
+        },
+        create: {
+          blogId: blog.id,
+          languageId: english.id,
+          title: `[EN] ${entry.title}`,
+          content: sanitizeHtml(entry.content),
+          summary: sanitizeHtml(entry.summary),
+          published: false,
+        },
+        update: {},
+      });
+    }
 
     await connectTaxonomy(blog.id, entry);
   }

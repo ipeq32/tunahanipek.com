@@ -20,7 +20,7 @@ export default async function EditProjectPage({ params }: Props) {
     redirect({ href: '/auth/login', locale });
   }
 
-  const project = await getAdminProjectById(id);
+  const project = await getAdminProjectById(id, locale);
 
   if (!project) {
     notFound();
@@ -33,11 +33,9 @@ export default async function EditProjectPage({ params }: Props) {
         mode="edit"
         projectId={id}
         defaultValues={{
-          title: project.title,
           url: project.url ?? '',
           image: project.image ?? '',
-          description: project.description,
-          published: project.published,
+          translations: project.translations,
         }}
       />
     </>

@@ -47,7 +47,8 @@
       "tags": "Etiketler",
       "tagsPlaceholder": "javascript, nextjs (virgülle)",
       "categories": "Kategoriler",
-      "categoriesPlaceholder": "Teknoloji, Seyahat (virgülle)"
+      "categoriesPlaceholder": "Teknoloji, Seyahat (virgülle)",
+      "languagesSection": "Çeviriler"
     },
     "Taxonomy": {
       "tags": "Etiketler",
@@ -143,6 +144,7 @@
       "fieldImage": "Görsel",
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
+      "languagesSection": "Çeviriler",
       "add": "Ekle",
       "save": "Kaydet",
       "cancel": "İptal",

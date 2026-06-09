@@ -23,7 +23,7 @@ export default async function EditBlogPage({ params }: Props) {
 
   const user = session!.user!;
 
-  const blog = await getBlogById(id);
+  const blog = await getBlogById(id, locale, { includeAllTranslations: true });
 
   if (!blog) {
     notFound();
@@ -48,13 +48,11 @@ export default async function EditBlogPage({ params }: Props) {
         mode="edit"
         blogId={id}
         defaultValues={{
-          title: blog.title,
           image: blog.image,
           shortImage: blog.shortImage,
-          content: blog.content,
-          summary: blog.summary,
           tags: blog.tags.join(', '),
           categories: blog.categories.join(', '),
+          translations: blog.translations,
         }}
       />
     </>

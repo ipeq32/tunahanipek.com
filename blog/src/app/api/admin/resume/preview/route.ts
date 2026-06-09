@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   const urlParam = new URL(request.url).searchParams.get('url');
-  let targetUrl: string | null = null;
+  let targetUrl: string;
 
   if (urlParam) {
     if (!isAllowedResumePdfUrl(urlParam)) {

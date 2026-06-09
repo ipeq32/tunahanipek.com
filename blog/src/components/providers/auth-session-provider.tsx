@@ -12,5 +12,14 @@ export function AuthSessionProvider({
   children,
   session,
 }: AuthSessionProviderProps) {
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  return (
+    <SessionProvider
+      session={session}
+      refetchInterval={0}
+      refetchOnWindowFocus={false}
+      refetchWhenOffline={false}
+    >
+      {children}
+    </SessionProvider>
+  );
 }

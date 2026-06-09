@@ -53,8 +53,8 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang={locale}>
-      <body className="mesh-background font-sans">
+    <html lang={locale} suppressHydrationWarning>
+      <body className="mesh-background font-sans" suppressHydrationWarning>
         <main className="grid min-h-screen place-content-center px-4">
           <div className="w-full max-w-md space-y-6 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>

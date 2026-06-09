@@ -1,11 +1,14 @@
 import { prisma } from '@/lib/prisma';
 import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { logger } from '@/lib/logger';
+import { apiError } from '@/lib/api-i18n';
+import { resolveRequestLocale } from '@/lib/languages';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  const locale = await resolveRequestLocale(request);
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '9');
@@ -16,7 +19,36 @@ export async function GET(request: Request) {
 
   const where = {
     deletedAt: null,
-    published: true,
+    translations: {
+      some: {
+        published: true,
+        language: { code: locale, isActive: true },
+        ...(search?.trim()
+          ? {
+              OR: [
+                {
+                  title: {
+                    contains: search.trim(),
+                    mode: 'insensitive' as const,
+                  },
+                },
+                {
+                  summary: {
+                    contains: search.trim(),
+                    mode: 'insensitive' as const,
+                  },
+                },
+                {
+                  content: {
+                    contains: search.trim(),
+                    mode: 'insensitive' as const,
+                  },
+                },
+              ],
+            }
+          : {}),
+      },
+    },
     ...(tag?.trim()
       ? { tags: { some: { name: tag.trim().toLowerCase(), deletedAt: null } } }
       : {}),
@@ -25,19 +57,6 @@ export async function GET(request: Request) {
           categories: {
             some: { name: category.trim(), deletedAt: null },
           },
-        }
-      : {}),
-    ...(search?.trim()
-      ? {
-          OR: [
-            { title: { contains: search.trim(), mode: 'insensitive' as const } },
-            {
-              summary: { contains: search.trim(), mode: 'insensitive' as const },
-            },
-            {
-              content: { contains: search.trim(), mode: 'insensitive' as const },
-            },
-          ],
         }
       : {}),
   };
@@ -54,19 +73,16 @@ export async function GET(request: Request) {
       }),
     ]);
 
-    const data = blogs.map(mapBlogToResponse);
+    const data = blogs.map((blog) => mapBlogToResponse(blog, locale));
 
     return NextResponse.json(
-      { data, total: totalBlogs, page, limit },
-      { status: 200 }
+      { data, total: totalBlogs, page, limit, locale },
+      { status: 200 },
     );
   } catch (error) {
     logger.error('Failed to fetch blogs', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError(request, 'internalError', 500);
   }
 }

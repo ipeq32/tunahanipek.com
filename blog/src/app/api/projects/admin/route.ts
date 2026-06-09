@@ -1,26 +1,18 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
 import { getAdminProjects } from '@/lib/data/projects';
-import { mapProjectToDto } from '@/lib/project-mapper';
+import { mapProjectToDto, projectListInclude } from '@/lib/project-mapper';
+import { upsertProjectTranslations } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { revalidateProjectDetail } from '@/lib/revalidate-public';
-import { sanitizeHtml } from '@/lib/sanitize';
+import { createProjectSchema } from '@/lib/validations/project';
+import { apiError, apiMessage } from '@/lib/api-i18n';
+import { resolveRequestLocale } from '@/lib/languages';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
 
-const createSchema = z.object({
-  title: z.string().min(2).max(200),
-  description: z.string().min(2).max(2000),
-  url: z.string().url().optional().or(z.literal('')),
-  image: z.string().url().optional().or(z.literal('')),
-  sortOrder: z.number().int().optional(),
-  published: z.boolean().optional(),
-});
-
-/** Sıra belirtilmezse listenin sonuna ekle (mevcut en yüksek sıra + 1). */
 async function getNextSortOrder(): Promise<number> {
   const last = await prisma.project.findFirst({
     where: { deletedAt: null },
@@ -31,66 +23,75 @@ async function getNextSortOrder(): Promise<number> {
   return (last?.sortOrder ?? 0) + 1;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return apiError(request, 'forbidden', 403);
   }
 
   try {
-    const projects = await getAdminProjects();
+    const locale = await resolveRequestLocale(request);
+    const projects = await getAdminProjects(locale);
 
-    return NextResponse.json({ data: projects });
+    return NextResponse.json({ data: projects, locale });
   } catch (error) {
     logger.error('Failed to fetch admin projects', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError(request, 'internalError', 500);
   }
 }
 
 export async function POST(request: Request) {
+  const locale = await resolveRequestLocale(request);
   const session = await auth();
   if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return apiError(request, 'forbidden', 403);
   }
 
   try {
     const body = await request.json();
-    const parsed = createSchema.safeParse(body);
+    const parsed = createProjectSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+      const message =
+        parsed.error.errors[0]?.message ??
+        (await apiMessage(locale, 'invalidPayload'));
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    const { title, description, url, image, sortOrder, published } = parsed.data;
-
+    const { url, image, sortOrder, translations } = parsed.data;
     const resolvedSortOrder = sortOrder ?? (await getNextSortOrder());
 
     const project = await prisma.project.create({
       data: {
-        title,
-        description: sanitizeHtml(description),
         url: url || null,
         image: image || null,
         sortOrder: resolvedSortOrder,
-        published: published ?? false,
       },
+    });
+
+    await upsertProjectTranslations(project.id, translations);
+
+    const created = await prisma.project.findUnique({
+      where: { id: project.id },
+      include: projectListInclude,
     });
 
     revalidateProjectDetail(project.id);
 
-    return NextResponse.json({ data: mapProjectToDto(project) }, { status: 201 });
+    return NextResponse.json(
+      {
+        data: created
+          ? mapProjectToDto(created, locale, { includeAllTranslations: true })
+          : null,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     logger.error('Failed to create project', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError(request, 'internalError', 500);
   }
 }

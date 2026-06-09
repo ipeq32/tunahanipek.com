@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { AppPathnames } from '@/config';
 import { locales } from '@/config';
+import { useActiveLanguages } from '@/hooks/use-active-languages';
 import { usePathname, useRouter } from '@/navigation';
 import { cn } from '@/lib/utils';
 
@@ -40,6 +41,12 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
   const params = useParams();
 
   const t = useTranslations('LocaleSwitcher');
+  const { languages } = useActiveLanguages();
+  const switchableLocales = languages
+    .map((language) => language.code)
+    .filter((code): code is LocaleType =>
+      (locales as readonly string[]).includes(code),
+    );
 
   function onSelectChange(value: LocaleType) {
     if (value === locale) {
@@ -118,27 +125,33 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
           {t('label')}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-border/60" />
-        {locales.map((cur) => {
-          const isActive = cur === locale;
+        {(switchableLocales.length ? switchableLocales : [...locales]).map(
+          (cur) => {
+            const isActive = cur === locale;
+            const languageName =
+              languages.find((language) => language.code === cur)?.name ?? cur;
 
-          return (
-            <DropdownMenuItem
-              key={cur}
-              onClick={() => onSelectChange(cur)}
-              className={cn(
-                'flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors',
-                isActive
-                  ? 'bg-teal-500/10 font-medium text-foreground'
-                  : 'text-muted-foreground',
-              )}
-            >
-              <span className="flex-1">{t('locale', { locale: cur })}</span>
-              {isActive && (
-                <Check className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-              )}
-            </DropdownMenuItem>
-          );
-        })}
+            return (
+              <DropdownMenuItem
+                key={cur}
+                onClick={() => onSelectChange(cur)}
+                className={cn(
+                  'flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-teal-500/10 font-medium text-foreground'
+                    : 'text-muted-foreground',
+                )}
+              >
+                <span className="flex-1">
+                  {t('locale', { locale: cur })} · {languageName}
+                </span>
+                {isActive && (
+                  <Check className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                )}
+              </DropdownMenuItem>
+            );
+          },
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

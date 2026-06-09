@@ -25,8 +25,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const locale = parseLocale(await getLocale());
   const [blog, t] = await Promise.all([
-    getPublishedBlogById(id),
+    getPublishedBlogById(id, locale),
     getTranslations('Blog'),
   ]);
 
@@ -34,11 +35,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: t('notFoundTitle') };
   }
 
-  const locale = parseLocale(await getLocale());
   const plainSummary = blog.summary.replace(/<[^>]*>/g, '').slice(0, 160);
   const images = blog.image ? [blog.image] : [];
   const canonical = getCanonicalPath('/blog/[id]', locale, { '[id]': id });
-  const languages = getLanguageAlternates('/blog/[id]', { '[id]': id });
+  const languages = getLanguageAlternates(
+    '/blog/[id]',
+    { '[id]': id },
+    blog.availableLocales,
+  );
 
   return {
     title: blog.title,
@@ -70,7 +74,7 @@ async function page({ params }: Props) {
 
   const session = await auth();
   const [blogData, comments] = await Promise.all([
-    getPublishedBlogById(id),
+    getPublishedBlogById(id, locale),
     getApprovedCommentViews(id, locale, session?.user?.id),
   ]);
 

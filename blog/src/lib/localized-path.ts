@@ -36,11 +36,16 @@ export function getCanonicalPath(
 export function getLanguageAlternates(
   route: AppPathnames,
   replacements?: Record<string, string>,
-): Record<Locale, string> {
+  availableLocales?: string[],
+): Record<string, string> {
+  const targetLocales = availableLocales?.length
+    ? locales.filter((locale) => availableLocales.includes(locale))
+    : [...locales];
+
   return Object.fromEntries(
-    locales.map((locale) => [
+    targetLocales.map((locale) => [
       locale,
       getCanonicalPath(route, locale, replacements),
     ]),
-  ) as Record<Locale, string>;
+  );
 }

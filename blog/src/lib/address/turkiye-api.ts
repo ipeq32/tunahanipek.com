@@ -1,8 +1,4 @@
-import {
-  extractArray,
-  fetchJson,
-  logAddressUpstreamError,
-} from './fetch-utils';
+import { extractArray, logAddressUpstreamError } from './fetch-utils';
 import type { AddressOption, SettlementType } from './types';
 
 const TURKIYE_API_BASE = 'https://turkiyeapi.dev/api/v1';

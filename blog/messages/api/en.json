@@ -1,0 +1,19 @@
+{
+  "unauthorized": "Unauthorized",
+  "forbidden": "Forbidden",
+  "notFound": "Not found",
+  "validationFailed": "Validation failed",
+  "invalidPayload": "Invalid payload",
+  "internalError": "Internal Server Error",
+  "blog": {
+    "notFound": "Blog not found",
+    "created": "Blog created successfully"
+  },
+  "project": {
+    "notFound": "Project not found"
+  },
+  "language": {
+    "notFound": "Language not found",
+    "invalidCode": "Invalid language code"
+  }
+}

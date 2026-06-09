@@ -14,7 +14,7 @@ import {
 export const revalidate = 60;
 
 type Props = {
-  params: Promise<{ name: string }>;
+  params: Promise<{ locale: string; name: string }>;
   searchParams: Promise<{ page?: string; q?: string }>;
 };
 
@@ -49,7 +49,7 @@ export async function generateMetadata({
 }
 
 export default async function BlogTagPage({ params, searchParams }: Props) {
-  const { name: encoded } = await params;
+  const { name: encoded, locale } = await params;
   const name = decodeURIComponent(encoded);
   const { page, q } = await searchParams;
   const search = q?.trim();
@@ -60,6 +60,7 @@ export default async function BlogTagPage({ params, searchParams }: Props) {
   const { data, total } = await getPublishedBlogs(currentPage, limit, {
     tag: name,
     search,
+    locale,
   });
 
   return (

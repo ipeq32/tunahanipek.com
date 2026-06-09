@@ -24,11 +24,8 @@ export default async function AddProjectPage({ params }: Props) {
       <ProjectForm
         mode="create"
         defaultValues={{
-          title: '',
           url: '',
           image: '',
-          description: '',
-          published: false,
         }}
       />
     </>

@@ -1,8 +1,8 @@
 import { defineRouting, Pathnames } from 'next-intl/routing';
 import routes from './routes';
 
-export const defaultLocale = 'en' as const;
-export const locales = ['en', 'tr'] as const;
+export const defaultLocale = 'tr' as const;
+export const locales = ['tr', 'en'] as const;
 
 export const pathnames = routes satisfies Pathnames<typeof locales>;
 

@@ -117,7 +117,12 @@ export async function getPendingCommentsDto(): Promise<PendingCommentDto[]> {
     content: comment.content,
     createdAt: comment.createdAt.toISOString(),
     user: comment.user,
-    blog: comment.blog,
+    blog: comment.blog
+      ? {
+          id: comment.blog.id,
+          title: comment.blog.translations[0]?.title ?? comment.blog.id,
+        }
+      : null,
   }));
 }
 
@@ -127,7 +132,15 @@ export async function getPendingComments() {
     orderBy: { createdAt: 'desc' },
     include: {
       user: { select: { name: true, email: true } },
-      blog: { select: { id: true, title: true } },
+      blog: {
+        select: {
+          id: true,
+          translations: {
+            select: { title: true, language: { select: { code: true } } },
+            orderBy: { updatedAt: 'desc' },
+          },
+        },
+      },
     },
   });
 }

@@ -1,15 +1,17 @@
-export interface IBlog {
-  id: string;
+export interface BlogTranslationInput {
+  languageCode: string;
   title: string;
   content: string;
   summary: string;
-  image: string;
-  shortImage: string;
+  published?: boolean;
+}
+
+export interface BlogTranslationDto {
+  languageCode: string;
+  title: string;
+  content: string;
+  summary: string;
   published: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-  authorId: string | null;
 }
 
 export interface IGetBlog {
@@ -20,6 +22,9 @@ export interface IGetBlog {
   image: string;
   shortImage: string;
   published: boolean;
+  locale: string;
+  availableLocales: string[];
+  translations?: BlogTranslationDto[];
   createdAt: Date;
   updatedAt: Date;
   author: {

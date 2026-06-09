@@ -47,7 +47,8 @@
       "tags": "Tags",
       "tagsPlaceholder": "javascript, nextjs (comma-separated)",
       "categories": "Categories",
-      "categoriesPlaceholder": "Technology, Travel (comma-separated)"
+      "categoriesPlaceholder": "Technology, Travel (comma-separated)",
+      "languagesSection": "Translations"
     },
     "Taxonomy": {
       "tags": "Tags",
@@ -143,6 +144,7 @@
       "fieldImage": "Image",
       "fieldSort": "Sort order",
       "fieldPublished": "Published",
+      "languagesSection": "Translations",
       "add": "Add",
       "save": "Save",
       "cancel": "Cancel",

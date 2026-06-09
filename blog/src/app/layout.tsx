@@ -10,7 +10,12 @@ import { Inter } from 'next/font/google';
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin';
 import { extractRouterConfig } from 'uploadthing/server';
 import { ourFileRouter } from '@/app/api/uploadthing/core';
+import { ActiveLanguagesProvider } from '@/components/providers/active-languages-provider';
+import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
+import { AuthUserProvider } from '@/components/providers/auth-user-provider';
+import { auth } from '@/auth';
 import { getMetadataBase } from '@/lib/page-metadata';
+import { getActiveLanguages } from '@/lib/languages';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -31,17 +36,31 @@ export function generateStaticParams() {
 }
 
 export default async function RootLayout({ children }: Props) {
-  const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
+  const [locale, messages, session, languages] = await Promise.all([
+    getLocale(),
+    getMessages(),
+    auth(),
+    getActiveLanguages(),
+  ]);
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.variable} flex min-h-dvh flex-col font-sans`}>
+      <body
+        className={`${inter.variable} flex min-h-dvh flex-col font-sans`}
+        suppressHydrationWarning
+      >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <NextIntlClientProvider
           locale={locale}
           messages={pick(messages, 'Error')}
         >
-          {children}
+          <AuthSessionProvider session={session}>
+            <AuthUserProvider session={session}>
+              <ActiveLanguagesProvider languages={languages}>
+                {children}
+              </ActiveLanguagesProvider>
+            </AuthUserProvider>
+          </AuthSessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

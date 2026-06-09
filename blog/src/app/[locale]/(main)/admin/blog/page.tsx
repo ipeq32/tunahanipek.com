@@ -3,9 +3,14 @@ import AdminBlogList from './_features/AdminBlogList';
 import { getAdminBlogs } from '@/lib/data/blogs';
 import { getTranslations } from 'next-intl/server';
 
-export default async function AdminBlogPage() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function AdminBlogPage({ params }: Props) {
+  const { locale } = await params;
   const t = await getTranslations('Admin.Blog');
-  const initialBlogs = await getAdminBlogs();
+  const initialBlogs = await getAdminBlogs(locale);
 
   return (
     <>

@@ -14,7 +14,7 @@ import {
 export const revalidate = 60;
 
 type Props = {
-  params: Promise<{ name: string }>;
+  params: Promise<{ locale: string; name: string }>;
   searchParams: Promise<{ page?: string; q?: string }>;
 };
 
@@ -54,7 +54,7 @@ export default async function BlogCategoryPage({
   params,
   searchParams,
 }: Props) {
-  const { name: encoded } = await params;
+  const { name: encoded, locale } = await params;
   const name = decodeURIComponent(encoded);
   const { page, q } = await searchParams;
   const search = q?.trim();
@@ -65,6 +65,7 @@ export default async function BlogCategoryPage({
   const { data, total } = await getPublishedBlogs(currentPage, limit, {
     category: name,
     search,
+    locale,
   });
 
   return (

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import BlogImage from '@/components/blog/BlogImage';
 import { toast } from 'sonner';
 import { Link } from '@/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import {
   AdminEmptyState,
@@ -60,6 +60,7 @@ function StatCard({
 
 export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
   const t = useTranslations('Admin.Blog');
+  const locale = useLocale();
   const format = useFormatter();
   const [blogs, setBlogs] = useState<IGetBlog[]>(initialBlogs);
   const [loading, setLoading] = useState(false);
@@ -69,9 +70,9 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/blog/admin`
-      );
+      const res = await fetch(`/api/blog/admin?locale=${locale}`, {
+        headers: { 'x-locale': locale },
+      });
       if (!res.ok) throw new Error('Failed to load');
       const { data } = await res.json();
       setBlogs(data);
@@ -80,7 +81,7 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [locale, t]);
 
   const togglePublished = async (id: string, published: boolean) => {
     try {
@@ -88,8 +89,14 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
         `/api/blog/${id}`,
         {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ published: !published }),
+          headers: {
+            'Content-Type': 'application/json',
+            'x-locale': locale,
+          },
+          body: JSON.stringify({
+            published: !published,
+            languageCode: locale,
+          }),
         }
       );
       if (!res.ok) throw new Error('Update failed');

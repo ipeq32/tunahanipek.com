@@ -1,43 +1,41 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
-import { mapProjectToDto } from '@/lib/project-mapper';
+import { mapProjectToDto, projectListInclude } from '@/lib/project-mapper';
+import {
+  updateProjectTranslationPublished,
+  upsertProjectTranslations,
+} from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import {
   revalidateProjectDetail,
   revalidateProjectList,
 } from '@/lib/revalidate-public';
-import { sanitizeHtml } from '@/lib/sanitize';
+import { updateProjectSchema } from '@/lib/validations/project';
+import { apiError, apiMessage } from '@/lib/api-i18n';
+import { resolveRequestLocale } from '@/lib/languages';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
-
-export const dynamic = 'force-dynamic';
-
-const updateSchema = z.object({
-  title: z.string().min(2).max(200).optional(),
-  description: z.string().min(2).max(2000).optional(),
-  url: z.string().url().optional().nullable(),
-  image: z.string().url().optional().nullable(),
-  sortOrder: z.number().int().optional(),
-  published: z.boolean().optional(),
-});
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
+  const locale = await resolveRequestLocale(request);
   const session = await auth();
   if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return apiError(request, 'forbidden', 403);
   }
 
   const { id } = await context.params;
 
   try {
     const body = await request.json();
-    const parsed = updateSchema.safeParse(body);
+    const parsed = updateProjectSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+      const message =
+        parsed.error.errors[0]?.message ??
+        (await apiMessage(locale, 'invalidPayload'));
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
     const existing = await prisma.project.findFirst({
@@ -45,42 +43,69 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
 
     if (!existing) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return apiError(request, 'project.notFound', 404);
     }
 
     const data = parsed.data;
-    const project = await prisma.project.update({
+
+    const projectData: {
+      url?: string | null;
+      image?: string | null;
+      sortOrder?: number;
+    } = {};
+
+    if (data.url !== undefined) projectData.url = data.url || null;
+    if (data.image !== undefined) projectData.image = data.image || null;
+    if (data.sortOrder !== undefined) projectData.sortOrder = data.sortOrder;
+
+    if (Object.keys(projectData).length > 0) {
+      await prisma.project.update({
+        where: { id },
+        data: projectData,
+      });
+    }
+
+    if (data.translations?.length) {
+      await upsertProjectTranslations(id, data.translations);
+    }
+
+    if (data.published !== undefined) {
+      const languageCode = data.languageCode ?? locale;
+      const updated = await updateProjectTranslationPublished(
+        id,
+        languageCode,
+        data.published,
+      );
+
+      if (!updated) {
+        return apiError(request, 'language.notFound', 400);
+      }
+    }
+
+    const project = await prisma.project.findUnique({
       where: { id },
-      data: {
-        ...(data.title !== undefined && { title: data.title }),
-        ...(data.description !== undefined && {
-          description: sanitizeHtml(data.description),
-        }),
-        ...(data.url !== undefined && { url: data.url || null }),
-        ...(data.image !== undefined && { image: data.image || null }),
-        ...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
-        ...(data.published !== undefined && { published: data.published }),
-      },
+      include: projectListInclude,
     });
 
     revalidateProjectDetail(id);
 
-    return NextResponse.json({ data: mapProjectToDto(project) });
+    return NextResponse.json({
+      data: project
+        ? mapProjectToDto(project, locale, { includeAllTranslations: true })
+        : null,
+    });
   } catch (error) {
     logger.error('Failed to update project', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError(request, 'internalError', 500);
   }
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
+export async function DELETE(request: Request, context: RouteContext) {
   const session = await auth();
   if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    return apiError(request, 'forbidden', 403);
   }
 
   const { id } = await context.params;
@@ -91,7 +116,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
     });
 
     if (!existing) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return apiError(request, 'project.notFound', 404);
     }
 
     await prisma.project.update({
@@ -107,9 +132,6 @@ export async function DELETE(_request: Request, context: RouteContext) {
     logger.error('Failed to delete project', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError(request, 'internalError', 500);
   }
 }

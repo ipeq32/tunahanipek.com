@@ -12,6 +12,16 @@ export function parseLocale(value: string): Locale {
   return value as Locale;
 }
 
+async function loadMessages(locale: Locale) {
+  switch (locale) {
+    case 'tr':
+      return (await import('../../messages/tr.json')).default;
+    case 'en':
+    default:
+      return (await import('../../messages/en.json')).default;
+  }
+}
+
 export default getRequestConfig(async ({ requestLocale }) => {
   const locale = await requestLocale;
 
@@ -23,9 +33,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale,
     /** SSR ve hydration için aynı referans zamanı (relativeTime uyumsuzluğunu önler) */
     now: new Date(),
-    messages:
-      locale === 'en'
-        ? (await import('../../messages/en.json')).default
-        : (await import('../../messages/tr.json')).default,
+    messages: await loadMessages(locale as Locale),
   };
 });
