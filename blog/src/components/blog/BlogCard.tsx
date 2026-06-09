@@ -24,6 +24,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
       >
         <BlogImage
           src={blog.shortImage}
+          fallbackSrc={blog.image}
           alt={blog.title}
           width={640}
           height={400}

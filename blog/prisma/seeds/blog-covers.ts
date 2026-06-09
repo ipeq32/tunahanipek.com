@@ -1,7 +1,7 @@
 /**
  * Her blog kapağı: benzersiz + konuyla uyumlu.
  * Unsplash photoId'ler HTTP 200 ile doğrulanmıştır.
- * Eksik konularda picsum seed (görsel olarak da benzersiz ve kalıcı).
+ * Tüm kapaklar doğrulanmış Unsplash photo-id kullanır.
  */
 export const BLOG_COVER_KEYS = {
   typescript: 'typescript',
@@ -35,7 +35,7 @@ export const BLOG_COVER_KEYS = {
 
 export type BlogCoverKey = keyof typeof BLOG_COVER_KEYS;
 
-/** Unsplash photo-{id} veya picsum:{seed} */
+/** Unsplash photo-{id} */
 const COVER_SOURCES: Record<BlogCoverKey, string> = {
   /** Kod editörü / TypeScript */
   typescript: '1516116216624-53e697fedbea',
@@ -44,11 +44,11 @@ const COVER_SOURCES: Record<BlogCoverKey, string> = {
   /** Laptop üzerinde geliştirme */
   nextjs: '1555066931-4365d14bab8c',
   /** Güvenlik / oturum */
-  nextauth: 'picsum:blog-cover-nextauth-security',
+  nextauth: '1563013544-824ae1b704d3',
   /** API / kod ekranı */
   restApi: '1558494949-ef010cbdcc31',
   /** Konteyner / DevOps */
-  docker: 'picsum:blog-cover-docker-containers',
+  docker: '1531403009284-440f080d1e12',
   /** İş akışı / pipeline */
   cicd: '1552664730-d307ca884978',
   /** Test / analitik ekran */
@@ -56,7 +56,7 @@ const COVER_SOURCES: Record<BlogCoverKey, string> = {
   /** Veri görselleştirme / cache metrikleri */
   redis: '1551288049-bebda4e38f71',
   /** İlişkisel veritabanı */
-  postgresql: 'picsum:blog-cover-postgresql-data',
+  postgresql: '1587620962725-abab7fe55159',
   /** Dağıtık sistem / ağ */
   microservices: '1451187580459-43490279c0fa',
   /** Yapay zeka / olay akışı */
@@ -77,13 +77,13 @@ const COVER_SOURCES: Record<BlogCoverKey, string> = {
   ai: '1677442136019-21780ecad995',
   /** Güvenlik / siber savunma */
   webSecurity: '1571171637578-41bc2dd41cd2',
-  serverActions: '1517181768285-0903291409d7',
-  i18n: '1526628953301-3e589a16b82b',
-  graphql: '1555066931-4365d14bab8c',
-  dbMigrations: '1544383835-a02deb0d5a87',
-  apiSecurity: '1563986768605-322da13575f3',
-  contractTesting: '1504639727938-c6b9e0a9a1b3',
-  ddd: '1454165804606-c3d57bc86b40',
+  serverActions: '1460925895917-afdab827c52f',
+  i18n: '1529156069898-49953e39b3ac',
+  graphql: '1633265486064-086b219458ec',
+  dbMigrations: '1677442136019-21780ecad995',
+  apiSecurity: '1550751827-4bd374c3f58b',
+  contractTesting: '1504868584819-f8e8b4b6d7e3',
+  ddd: '1551650975-87deedd944c3',
 };
 
 export function resolveCoverSource(key: BlogCoverKey): string {

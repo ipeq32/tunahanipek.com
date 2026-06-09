@@ -1,15 +1,37 @@
 'use client';
 
-import { BLOG_IMAGE_FALLBACK, resolveBlogImageUrl } from '@/lib/blog-image';
+import {
+  BLOG_IMAGE_FALLBACK,
+  resolveBlogImageCandidates,
+} from '@/lib/blog-image';
 import Image, { type ImageProps } from 'next/image';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type BlogImageProps = Omit<ImageProps, 'src' | 'onError'> & {
   src?: string | null;
+  /** Liste küçük görseli yüklenemezse denenecek tam kapak URL'si */
+  fallbackSrc?: string | null;
 };
 
-export default function BlogImage({ src, alt, ...props }: BlogImageProps) {
-  const [currentSrc, setCurrentSrc] = useState(() => resolveBlogImageUrl(src));
+export default function BlogImage({
+  src,
+  fallbackSrc,
+  alt,
+  ...props
+}: BlogImageProps) {
+  const candidates = useMemo(
+    () => resolveBlogImageCandidates(src, fallbackSrc),
+    [src, fallbackSrc],
+  );
+  const [candidateIndex, setCandidateIndex] = useState(0);
+
+  useEffect(() => {
+    setCandidateIndex(0);
+  }, [candidates]);
+
+  const currentSrc =
+    candidates[Math.min(candidateIndex, candidates.length - 1)] ??
+    BLOG_IMAGE_FALLBACK;
 
   return (
     <Image
@@ -18,9 +40,9 @@ export default function BlogImage({ src, alt, ...props }: BlogImageProps) {
       alt={alt}
       unoptimized
       onError={() => {
-        if (currentSrc !== BLOG_IMAGE_FALLBACK) {
-          setCurrentSrc(BLOG_IMAGE_FALLBACK);
-        }
+        setCandidateIndex((index) =>
+          index < candidates.length - 1 ? index + 1 : index,
+        );
       }}
     />
   );

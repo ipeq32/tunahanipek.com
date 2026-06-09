@@ -228,6 +228,7 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
               >
                 <BlogImage
                   src={blog.shortImage}
+                  fallbackSrc={blog.image}
                   alt={blog.title}
                   width={160}
                   height={100}
