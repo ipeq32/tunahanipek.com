@@ -32,10 +32,16 @@ export function buildTranslatePrompt(params: {
       .map((key) => [key, fields[key]]),
   );
 
-  return `You are a professional translator for a modern technical blog and portfolio website.
+  return `You are a senior technical translator for a modern developer blog and portfolio.
 
 Translate the following ${contentType} content from ${labels.source} to ${labels.target}.
-Preserve meaning, tone, and Markdown structure. Do not add fabricated facts.
+
+Translation standards:
+- Preserve the full depth, nuance, and professional tone of the source — never shorten, summarize, or flatten the text
+- Adapt idioms and section headings naturally for ${labels.target} readers (e.g. Giriş ↔ Introduction, Teknoloji yığını ↔ Tech stack)
+- Keep the same Markdown structure: same number of sections, headings, lists, and paragraphs
+- Use fluent, publication-ready ${labels.target} suitable for senior engineers and technical decision-makers
+- Do not add, remove, or invent facts, metrics, features, or claims
 
 Input JSON:
 ${JSON.stringify(payload, null, 2)}
@@ -45,6 +51,80 @@ Rich text fields must use Markdown (not HTML): headings with ### or ##, bullet l
 Escape line breaks inside JSON strings as \\n (never raw newlines inside JSON string values).
 Use regular ASCII spaces between words (never &nbsp; or Unicode non-breaking spaces).
 Do not use HTML tags, div/span wrappers, inline styles, or h1.`;
+}
+
+function buildBlogExpandRequirements(lang: string): string {
+  const isTurkish = lang === 'Turkish';
+
+  const sectionLabels = isTurkish
+    ? {
+        intro: 'Giriş',
+        conclusion: 'Sonuç',
+      }
+    : {
+        intro: 'Introduction',
+        conclusion: 'Conclusion',
+      };
+
+  return `For blog:
+- "title": refine into a precise, professional headline — specific, credible, and compelling (not clickbait)
+- "summary": exactly 2 substantive paragraphs (roughly 120–180 words total), no headings
+  - Paragraph 1: hook the reader — context, problem, or motivation
+  - Paragraph 2: what they will learn or gain; suitable for list cards and social previews
+- "content": a complete, in-depth article (aim for 900–1,400 words unless the topic is genuinely narrow)
+  - Use ## section headings only (never # / h1)
+  - Required structure:
+    1) ## ${sectionLabels.intro} — 2–3 paragraphs setting context, audience, and why the topic matters
+    2) 3–5 ## main sections — each with 2–4 rich paragraphs exploring one angle in depth; use - bullet lists where they improve clarity
+    3) ## ${sectionLabels.conclusion} — 1–2 paragraphs with concrete takeaways and a forward-looking closing thought
+  - Writing quality:
+    - Senior engineer voice: confident, precise, modern; explain the "why" behind decisions, not just the "what"
+    - Each paragraph must carry real information — no filler, no generic AI phrasing (avoid "In today's world", "Let's dive in", "game-changer", "leverage" as empty buzzwords)
+    - Use **bold** for key terms, *italic* for subtle emphasis, and \`inline code\` for technologies, APIs, or commands
+    - Optional > blockquote for one memorable insight per article
+    - Smooth transitions between sections; vary sentence rhythm
+  - Stay faithful to the input — expand reasoning and structure, but do not invent version numbers, benchmarks, company names, or results not implied by the input`;
+}
+
+function buildProjectExpandRequirements(lang: string): string {
+  const isTurkish = lang === 'Turkish';
+
+  const sections = isTurkish
+    ? [
+        'Giriş',
+        'Amaç ve kapsam',
+        'Mimari ve yaklaşım',
+        'Teknoloji yığını',
+        'Öne çıkan özellikler',
+        'Sonuç',
+      ]
+    : [
+        'Introduction',
+        'Purpose and scope',
+        'Architecture and approach',
+        'Tech stack',
+        'Key features',
+        'Conclusion',
+      ];
+
+  const sectionList = sections
+    .map((name, index) => `${index + 1}) ### ${name}`)
+    .join('\n  ');
+
+  return `For project:
+- "title": polish into a clear, professional project name
+- "description": a detailed portfolio case study (aim for 500–800 words total) using exactly these ### sections in order:
+  ${sectionList}
+- Section guidelines:
+  - ### ${sections[0]}: 2–3 paragraphs — project context, problem space, and high-level overview; make the reader understand what was built and for whom
+  - ### ${sections[1]}: 2 paragraphs — goals, constraints, target users, and measurable intent (without inventing metrics)
+  - ### ${sections[2]}: 2–3 paragraphs — design decisions, architectural patterns, trade-offs, and how components fit together
+  - ### ${sections[3]}: flat bullet list (-) with 5–10 items; each item names a technology and briefly explains its role in the project
+  - ### ${sections[4]}: flat bullet list (-) with 4–8 items; each item describes a capability with enough detail to show engineering depth (not one-word labels)
+  - ### ${sections[5]}: 1–2 paragraphs — outcomes, lessons learned, and possible next steps grounded in the input
+- Use ### headings only in project descriptions (never ## or #)
+- Keep lists flat (single level); no tables, images, or fenced code blocks unless essential
+- Write like a portfolio piece for senior engineers — polished, specific, and modern; avoid vague marketing copy`;
 }
 
 export function buildExpandPrompt(params: {
@@ -60,27 +140,27 @@ export function buildExpandPrompt(params: {
       ? '{ "title": string, "content": string, "summary": string }'
       : '{ "title": string, "description": string }';
 
-  return `You are a senior technical writer for a modern professional blog and portfolio.
+  const typeRequirements =
+    contentType === 'blog'
+      ? buildBlogExpandRequirements(lang)
+      : buildProjectExpandRequirements(lang);
 
-Write in ${lang}. Use a clear, professional, engaging tone suitable for a developer portfolio.
-Expand the short input into polished content. Do not invent specific facts, metrics, or claims not implied by the input.
+  return `You are a senior technical writer and software architect crafting content for a modern developer blog and portfolio.
+
+Write entirely in ${lang}. Your output must read like carefully edited, publication-ready prose — not a rough draft or generic AI summary.
+
+Task: expand the short input below into rich, professional content. Infer reasonable technical context from the topic, but never fabricate specific facts, metrics, company names, dates, or results not implied by the input.
 
 Content type: ${contentType}
 Input JSON:
 ${JSON.stringify(fields, null, 2)}
 
-Requirements:
+Global rules:
 - Rich text fields must use Markdown only (never HTML)
-- For blog:
-  - "content" = full article with ## section headings (never # / h1). Use clear sections such as Giriş/Introduction, main topic sections, and Sonuç/Conclusion when appropriate
-  - "summary" = 1-2 short paragraphs, no headings, suitable for list cards
-- For project: "description" must use exactly these ### sections in order:
-  1) Giriş (or Introduction in English)
-  2) Amaç (or Purpose)
-  3) Teknoloji yığını (or Tech stack) as a bullet list
-  4) Öne çıkan özellikler (or Key features) as a bullet list
-- Use ### headings only in project descriptions (never ## or #)
-- Keep lists flat (single level), no tables, images, or code blocks unless essential
+- Prioritize depth and clarity over brevity — every section should feel intentionally written
+- Do not use HTML tags, tables, images, or h1 headings
+
+${typeRequirements}
 
 Respond with ONLY strictly valid JSON: ${outputKeys}
 Escape line breaks inside JSON strings as \\n (never raw newlines inside JSON string values).
