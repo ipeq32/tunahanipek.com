@@ -1,5 +1,8 @@
+import { cache } from 'react';
+
 import { prisma } from '@/lib/prisma';
 import {
+  blogDetailInclude,
   blogListInclude,
   mapBlogToResponse,
 } from '@/lib/blog-mapper';
@@ -66,7 +69,7 @@ export async function getPublishedBlogs(
   };
 }
 
-export async function getPublishedBlogById(
+async function fetchPublishedBlogById(
   id: string,
   localeInput?: string,
 ): Promise<IGetBlog | null> {
@@ -78,11 +81,14 @@ export async function getPublishedBlogById(
       deletedAt: null,
       translations: publishedTranslationFilter(locale),
     },
-    include: blogListInclude,
+    include: blogDetailInclude,
   });
 
   return blog ? mapBlogToResponse(blog, locale) : null;
 }
+
+/** Metadata + sayfa dedupe için request-scoped cache. */
+export const getPublishedBlogById = cache(fetchPublishedBlogById);
 
 export async function getBlogById(
   id: string,
@@ -93,7 +99,7 @@ export async function getBlogById(
 
   const blog = await prisma.blog.findUnique({
     where: { id, deletedAt: null },
-    include: blogListInclude,
+    include: blogDetailInclude,
   });
 
   return blog
@@ -109,7 +115,7 @@ export async function getAdminBlogs(localeInput?: string): Promise<IGetBlog[]> {
   const blogs = await prisma.blog.findMany({
     where: { deletedAt: null },
     orderBy: { updatedAt: 'desc' },
-    include: blogListInclude,
+    include: blogDetailInclude,
   });
 
   return blogs.map((blog) =>

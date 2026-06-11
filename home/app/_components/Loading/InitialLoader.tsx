@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { PageReadyProvider } from "@/app/_context/PageReadyContext";
 import Loading from "./Loading";
 
-const MIN_VISIBLE_MS = 1400;
+const MIN_VISIBLE_MS = 400;
 const FAILSAFE_MS = 6000;
 const FADE_MS = 500;
+const SESSION_KEY = "home-initial-loader-done";
 
 type InitialLoaderProps = {
   children: React.ReactNode;
@@ -20,6 +21,23 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const [isPageReady, setIsPageReady] = useState(false);
 
   useEffect(() => {
+    if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      setOverlay("hidden");
+      setIsPageReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (overlay === "hidden") {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    }
+  }, [overlay]);
+
+  useEffect(() => {
+    if (overlay === "hidden" || isPageReady) {
+      return;
+    }
+
     let isUnmounted = false;
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -49,7 +67,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
       window.clearTimeout(minTimer);
       window.clearTimeout(failSafeTimer);
     };
-  }, []);
+  }, [overlay, isPageReady]);
 
   useEffect(() => {
     if (overlay !== "fading" || isPageReady) {

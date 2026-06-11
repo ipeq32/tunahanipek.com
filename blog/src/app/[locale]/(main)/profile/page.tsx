@@ -109,7 +109,6 @@ export default async function ProfilePage({
                   alt={user.name ?? ''}
                   width={104}
                   height={104}
-                  unoptimized
                   className="h-24 w-24 rounded-full border-4 border-card bg-card object-cover shadow-md ring-1 ring-border/60"
                 />
                 <div className="pb-1">

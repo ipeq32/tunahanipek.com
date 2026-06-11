@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogDetailInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import {
@@ -19,6 +19,7 @@ import {
   deleteUploadedMedia,
   findRemovedMediaUrls,
 } from '@/lib/uploaded-media';
+import { PUBLIC_READ_CACHE_HEADERS } from '@/lib/api-cache';
 import { after, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -41,7 +42,7 @@ export async function GET(
         deletedAt: null,
         translations: publishedTranslationFilter(locale),
       },
-      include: blogListInclude,
+      include: blogDetailInclude,
     });
 
     if (!blog) {
@@ -50,7 +51,7 @@ export async function GET(
 
     return NextResponse.json(
       { data: mapBlogToResponse(blog, locale) },
-      { status: 200 },
+      { status: 200, headers: PUBLIC_READ_CACHE_HEADERS },
     );
   } catch (error) {
     logger.error('Failed to fetch blog', {
@@ -148,7 +149,7 @@ export async function PATCH(
 
     const withTaxonomy = await prisma.blog.findUnique({
       where: { id },
-      include: blogListInclude,
+      include: blogDetailInclude,
     });
 
     revalidateBlogDetail(id);

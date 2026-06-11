@@ -1,3 +1,5 @@
+import { unstable_cache, revalidateTag } from 'next/cache';
+
 import { prisma } from '@/lib/prisma';
 
 function parseNames(input?: string): string[] {
@@ -40,9 +42,12 @@ export async function syncBlogTaxonomy(
       },
     },
   });
+
+  revalidateTag('blog-tags', { expire: 0 });
+  revalidateTag('blog-categories', { expire: 0 });
 }
 
-export async function getAllTags() {
+async function queryAllTags() {
   return prisma.tag.findMany({
     where: { deletedAt: null },
     orderBy: { name: 'asc' },
@@ -50,10 +55,21 @@ export async function getAllTags() {
   });
 }
 
-export async function getAllCategories() {
+async function queryAllCategories() {
   return prisma.category.findMany({
     where: { deletedAt: null },
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
 }
+
+export const getAllTags = unstable_cache(queryAllTags, ['blog-tags'], {
+  revalidate: 300,
+  tags: ['blog-tags'],
+});
+
+export const getAllCategories = unstable_cache(
+  queryAllCategories,
+  ['blog-categories'],
+  { revalidate: 300, tags: ['blog-categories'] },
+);

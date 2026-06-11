@@ -1,9 +1,9 @@
-import { auth } from '@/auth';
+import { getSession } from '@/lib/cached-session';
 
 import Footer from './Footer';
 
 const FooterShell = async () => {
-  const session = await auth();
+  const session = await getSession();
 
   return (
     <Footer

@@ -1,6 +1,6 @@
 import BlogFeature from './_features/Blog';
 import BlogComments from '@/components/blog/BlogComments';
-import { auth } from '@/auth';
+import { getSession } from '@/lib/cached-session';
 import { getPublishedBlogById } from '@/lib/data/blogs';
 import { getApprovedCommentViews } from '@/lib/data/comments';
 import { parseLocale } from '@/i18n/request';
@@ -72,7 +72,7 @@ async function page({ params }: Props) {
   const { id } = await params;
   const locale = parseLocale(await getLocale());
 
-  const session = await auth();
+  const session = await getSession();
   const [blogData, comments] = await Promise.all([
     getPublishedBlogById(id, locale),
     getApprovedCommentViews(id, locale, session?.user?.id),

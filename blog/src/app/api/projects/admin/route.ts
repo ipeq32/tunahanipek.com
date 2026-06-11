@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
 import { getAdminProjects } from '@/lib/data/projects';
-import { mapProjectToDto, projectListInclude } from '@/lib/project-mapper';
+import { mapProjectToDto, projectDetailInclude } from '@/lib/project-mapper';
 import { upsertProjectTranslations } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
     const created = await prisma.project.findUnique({
       where: { id: project.id },
-      include: projectListInclude,
+      include: projectDetailInclude,
     });
 
     revalidateProjectDetail(project.id);

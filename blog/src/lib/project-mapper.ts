@@ -149,11 +149,26 @@ export function mapProjectToDto(
   };
 }
 
+const projectTranslationLanguageSelect = {
+  language: { select: { code: true } },
+} as const;
+
+/** Liste/kart görünümleri. */
 export const projectListInclude = {
   translations: {
-    include: {
+    select: {
+      title: true,
+      description: true,
+      published: true,
       language: { select: { code: true } },
     },
+  },
+} as const;
+
+/** Detay ve düzenleme. */
+export const projectDetailInclude = {
+  translations: {
+    include: projectTranslationLanguageSelect,
   },
 } as const;
 

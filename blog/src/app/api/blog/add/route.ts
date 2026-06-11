@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
 import { upsertBlogTranslations } from '@/lib/blog-translations';
-import { blogListInclude, mapBlogToResponse } from '@/lib/blog-mapper';
+import { blogDetailInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { revalidateBlogDetail } from '@/lib/revalidate-public';
 import { createBlogSchema } from '@/lib/validations/blog';
 import { apiError, apiMessage } from '@/lib/api-i18n';
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
     const blog = await prisma.blog.findUnique({
       where: { id: res.id },
-      include: blogListInclude,
+      include: blogDetailInclude,
     });
 
     revalidateBlogDetail(res.id);

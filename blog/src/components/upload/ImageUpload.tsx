@@ -136,6 +136,7 @@ export default function ImageUpload({
                 src={value}
                 alt="avatar preview"
                 fill
+                sizes="112px"
                 className="object-cover"
               />
               {busy && (

@@ -13,7 +13,7 @@ import { ourFileRouter } from '@/app/api/uploadthing/core';
 import { ActiveLanguagesProvider } from '@/components/providers/active-languages-provider';
 import { AuthSessionProvider } from '@/components/providers/auth-session-provider';
 import { AuthUserProvider } from '@/components/providers/auth-user-provider';
-import { auth } from '@/auth';
+import { getSession } from '@/lib/cached-session';
 import { getMetadataBase } from '@/lib/page-metadata';
 import { getActiveLanguages } from '@/lib/languages';
 
@@ -25,6 +25,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
+  icons: {
+    icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
+    shortcut: [{ url: '/icon', type: 'image/png' }],
+    apple: [{ url: '/apple-icon', type: 'image/png' }],
+  },
 };
 
 type Props = {
@@ -39,7 +44,7 @@ export default async function RootLayout({ children }: Props) {
   const [locale, messages, session, languages] = await Promise.all([
     getLocale(),
     getMessages(),
-    auth(),
+    getSession(),
     getActiveLanguages(),
   ]);
 

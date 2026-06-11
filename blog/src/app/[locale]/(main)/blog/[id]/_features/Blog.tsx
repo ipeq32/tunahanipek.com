@@ -69,7 +69,6 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
               alt={data.author.name}
               width={28}
               height={28}
-              unoptimized
               className="h-7 w-7 rounded-full ring-2 ring-border"
             />
             <User className="h-4 w-4 md:hidden" />
@@ -101,6 +100,7 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
           alt={data.title}
           width={1200}
           height={560}
+          sizes="(max-width: 768px) 100vw, 1280px"
           className="aspect-[21/9] w-full object-cover"
           priority
         />

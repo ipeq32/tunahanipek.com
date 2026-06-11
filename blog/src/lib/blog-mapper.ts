@@ -5,7 +5,7 @@ import { defaultLocale } from '@/config';
 
 type TranslationRow = {
   title: string;
-  content: string;
+  content?: string;
   summary: string;
   published: boolean;
   language: { code: string };
@@ -33,7 +33,7 @@ function mapTranslationRow(row: TranslationRow): BlogTranslationDto {
   return {
     languageCode: row.language.code,
     title: row.title,
-    content: normalizeStoredRichField(row.content, {
+    content: normalizeStoredRichField(row.content ?? '', {
       contentType: 'blog',
       field: 'content',
     }),
@@ -117,7 +117,7 @@ export function mapBlogToResponse(
   return {
     id: blog.id,
     title: translation?.title ?? '',
-    content: translation
+    content: translation?.content
       ? normalizeStoredRichField(translation.content, {
           contentType: 'blog',
           field: 'content',
@@ -164,13 +164,31 @@ export const blogAuthorSelect = {
   },
 } as const;
 
+const blogTranslationLanguageSelect = {
+  language: { select: { code: true } },
+} as const;
+
+/** Liste/kart görünümleri — tam içerik çekilmez. */
 export const blogListInclude = {
   author: blogAuthorSelect,
   tags: { select: { name: true } },
   categories: { select: { name: true } },
   translations: {
-    include: {
+    select: {
+      title: true,
+      summary: true,
+      published: true,
       language: { select: { code: true } },
     },
+  },
+} as const;
+
+/** Detay ve düzenleme — tüm çeviri alanları. */
+export const blogDetailInclude = {
+  author: blogAuthorSelect,
+  tags: { select: { name: true } },
+  categories: { select: { name: true } },
+  translations: {
+    include: blogTranslationLanguageSelect,
   },
 } as const;

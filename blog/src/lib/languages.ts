@@ -1,6 +1,7 @@
+import { unstable_cache } from 'next/cache';
+
 import { prisma } from '@/lib/prisma';
 import { defaultLocale, locales } from '@/config';
-import { ensureDefaultLanguages } from '@/lib/ensure-languages';
 import {
   getStaticLanguageFallback,
   type LanguageDto,
@@ -23,14 +24,21 @@ export async function queryActiveLanguages(): Promise<LanguageDto[]> {
   });
 }
 
+const getCachedActiveLanguages = unstable_cache(
+  async (): Promise<LanguageDto[]> => {
+    try {
+      const languages = await queryActiveLanguages();
+      return languages.length > 0 ? languages : getStaticLanguageFallback();
+    } catch {
+      return getStaticLanguageFallback();
+    }
+  },
+  ['active-languages'],
+  { revalidate: 300, tags: ['active-languages'] },
+);
+
 export async function getActiveLanguages(): Promise<LanguageDto[]> {
-  try {
-    await ensureDefaultLanguages();
-    const languages = await queryActiveLanguages();
-    return languages.length > 0 ? languages : getStaticLanguageFallback();
-  } catch {
-    return getStaticLanguageFallback();
-  }
+  return getCachedActiveLanguages();
 }
 
 export async function getDefaultLanguageCode(): Promise<string> {

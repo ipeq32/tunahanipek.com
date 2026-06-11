@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSiteResume } from '@/lib/site-resume';
 import { logger } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export async function GET() {
   try {

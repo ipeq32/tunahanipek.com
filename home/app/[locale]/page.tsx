@@ -11,6 +11,8 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+export const revalidate = 300;
+
 export default async function Page({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);

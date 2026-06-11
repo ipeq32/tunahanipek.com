@@ -1,5 +1,8 @@
 import 'server-only';
 
+import { unstable_cache } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+
 import { prisma } from '@/lib/prisma';
 import { deleteUploadedFiles } from '@/lib/uploadthing-server';
 
@@ -11,7 +14,7 @@ export type SiteResumeRecord = {
   updatedAt: Date;
 };
 
-export async function getSiteResume(): Promise<SiteResumeRecord | null> {
+async function querySiteResume(): Promise<SiteResumeRecord | null> {
   const row = await prisma.siteResume.findUnique({
     where: { id: SITE_RESUME_ID },
   });
@@ -25,6 +28,16 @@ export async function getSiteResume(): Promise<SiteResumeRecord | null> {
     fileName: row.fileName,
     updatedAt: row.updatedAt,
   };
+}
+
+const getCachedSiteResume = unstable_cache(
+  querySiteResume,
+  ['site-resume'],
+  { revalidate: 300, tags: ['site-resume'] },
+);
+
+export async function getSiteResume(): Promise<SiteResumeRecord | null> {
+  return getCachedSiteResume();
 }
 
 export async function upsertSiteResume(data: {
@@ -52,6 +65,8 @@ export async function upsertSiteResume(data: {
     },
   });
 
+  revalidateTag('site-resume', { expire: 0 });
+
   return {
     url: row.url,
     fileName: row.fileName,
@@ -70,4 +85,5 @@ export async function clearSiteResume(): Promise<void> {
 
   await deleteUploadedFiles([existing.url]);
   await prisma.siteResume.delete({ where: { id: SITE_RESUME_ID } });
+  revalidateTag('site-resume', { expire: 0 });
 }

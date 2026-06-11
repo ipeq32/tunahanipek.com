@@ -1,6 +1,9 @@
+import { cache } from 'react';
+
 import { prisma } from '@/lib/prisma';
 import {
   mapProjectToDto,
+  projectDetailInclude,
   projectListInclude,
   type ProjectDto,
 } from '@/lib/project-mapper';
@@ -24,7 +27,7 @@ export async function getPublishedProjects(
   return projects.map((project) => mapProjectToDto(project, locale));
 }
 
-export async function getPublishedProjectById(
+async function fetchPublishedProjectById(
   id: string,
   localeInput?: string,
 ): Promise<ProjectDto | null> {
@@ -36,11 +39,14 @@ export async function getPublishedProjectById(
       deletedAt: null,
       translations: publishedTranslationFilter(locale),
     },
-    include: projectListInclude,
+    include: projectDetailInclude,
   });
 
   return project ? mapProjectToDto(project, locale) : null;
 }
+
+/** Metadata + sayfa dedupe için request-scoped cache. */
+export const getPublishedProjectById = cache(fetchPublishedProjectById);
 
 export async function getAdminProjects(
   localeInput?: string,
@@ -50,7 +56,7 @@ export async function getAdminProjects(
   const projects = await prisma.project.findMany({
     where: { deletedAt: null },
     orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
-    include: projectListInclude,
+    include: projectDetailInclude,
   });
 
   return projects.map((project) =>
@@ -66,7 +72,7 @@ export async function getAdminProjectById(
 
   const project = await prisma.project.findFirst({
     where: { id, deletedAt: null },
-    include: projectListInclude,
+    include: projectDetailInclude,
   });
 
   return project

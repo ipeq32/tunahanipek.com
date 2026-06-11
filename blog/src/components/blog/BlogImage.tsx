@@ -7,6 +7,9 @@ import {
 import Image, { type ImageProps } from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 
+const DEFAULT_FILL_SIZES =
+  '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
+
 type BlogImageProps = Omit<ImageProps, 'src' | 'onError'> & {
   src?: string | null;
   /** Liste küçük görseli yüklenemezse denenecek tam kapak URL'si */
@@ -17,6 +20,8 @@ export default function BlogImage({
   src,
   fallbackSrc,
   alt,
+  sizes,
+  fill,
   ...props
 }: BlogImageProps) {
   const candidates = useMemo(
@@ -33,12 +38,15 @@ export default function BlogImage({
     candidates[Math.min(candidateIndex, candidates.length - 1)] ??
     BLOG_IMAGE_FALLBACK;
 
+  const resolvedSizes = sizes ?? (fill ? DEFAULT_FILL_SIZES : undefined);
+
   return (
     <Image
       {...props}
+      fill={fill}
+      sizes={resolvedSizes}
       src={currentSrc}
       alt={alt}
-      unoptimized
       onError={() => {
         setCandidateIndex((index) =>
           index < candidates.length - 1 ? index + 1 : index,

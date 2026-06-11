@@ -5,7 +5,7 @@ import Loading from '@/components/loading/Loading';
 import { AppReadyProvider } from '@/context/app-ready-context';
 import { usePathname } from '@/navigation';
 
-const MIN_VISIBLE_MS = 1400;
+const MIN_VISIBLE_MS = 400;
 const FAILSAFE_MS = 6000;
 const FADE_MS = 500;
 const SESSION_KEY = 'blog-initial-loader-done';

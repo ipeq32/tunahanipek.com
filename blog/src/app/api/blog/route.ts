@@ -4,9 +4,10 @@ import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { logger } from '@/lib/logger';
 import { apiError } from '@/lib/api-i18n';
 import { resolveRequestLocale } from '@/lib/languages';
+import { PUBLIC_READ_CACHE_HEADERS } from '@/lib/api-cache';
 import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export async function GET(request: Request) {
   const locale = await resolveRequestLocale(request);
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       { data, total: totalBlogs, page, limit, locale },
-      { status: 200 },
+      { status: 200, headers: PUBLIC_READ_CACHE_HEADERS },
     );
   } catch (error) {
     logger.error('Failed to fetch blogs', {

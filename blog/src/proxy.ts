@@ -97,7 +97,9 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|sitemap|.*\\..*).*)'],
+  matcher: [
+    '/((?!api|_next|_vercel|sitemap|icon|apple-icon|opengraph-image|feed\\.xml|.*\\..*).*)',
+  ],
 };
 
 function setLocaleCookie(req: NextRequest, response: NextResponse) {
