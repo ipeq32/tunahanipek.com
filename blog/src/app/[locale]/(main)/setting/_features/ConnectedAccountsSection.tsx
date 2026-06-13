@@ -6,7 +6,7 @@ import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config'
 import { cn } from '@/lib/utils';
 import { Github, Link2, Linkedin, Loader2, Unlink } from 'lucide-react';
 import { signIn } from 'next-auth/react';
-import { requestGoogleCredential } from '@/lib/google/google-gsi-client';
+import { GoogleFedCmButton } from '@/components/auth/google-fedcm-button';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/navigation';
 import { useCallback, useState, type ComponentType } from 'react';
@@ -89,38 +89,44 @@ export default function ConnectedAccountsSection({
     (provider) => enabledProviders[provider]
   );
 
+  const linkGoogleAccount = useCallback(
+    async (credential: string) => {
+      setLoadingProvider('google');
+
+      try {
+        const response = await fetch('/api/user/accounts/link/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential }),
+        });
+
+        if (!response.ok) {
+          throw new Error('google-link-failed');
+        }
+
+        setLinked((current) =>
+          current.includes('google') ? current : [...current, 'google']
+        );
+        toast.success(t('linkSuccess'));
+        router.refresh();
+      } catch {
+        toast.error(t('linkError'));
+      } finally {
+        setLoadingProvider(null);
+      }
+    },
+    [router, t]
+  );
+
   const handleLink = useCallback(
     async (provider: OAuthProviderId) => {
+      if (provider === 'google') {
+        return;
+      }
+
       setLoadingProvider(provider);
 
       try {
-        if (provider === 'google') {
-          const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-          if (!clientId) {
-            throw new Error('google-not-configured');
-          }
-
-          await requestGoogleCredential(clientId, async (credential) => {
-            const response = await fetch('/api/user/accounts/link/google', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ credential }),
-            });
-
-            if (!response.ok) {
-              throw new Error('google-link-failed');
-            }
-
-            setLinked((current) =>
-              current.includes('google') ? current : [...current, 'google']
-            );
-            toast.success(t('linkSuccess'));
-            router.refresh();
-          });
-
-          return;
-        }
-
         const intentResponse = await fetch('/api/user/accounts/link-intent', {
           method: 'POST',
         });
@@ -136,7 +142,7 @@ export default function ConnectedAccountsSection({
         setLoadingProvider(null);
       }
     },
-    [pathname, router, t]
+    [pathname, t]
   );
 
   const handleUnlink = useCallback(
@@ -168,6 +174,8 @@ export default function ConnectedAccountsSection({
     },
     [router, t]
   );
+
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   if (availableProviders.length === 0) {
     return null;
@@ -218,6 +226,22 @@ export default function ConnectedAccountsSection({
                   )}
                   {t('disconnect')}
                 </Button>
+              ) : provider === 'google' && googleClientId ? (
+                <GoogleFedCmButton
+                  clientId={googleClientId}
+                  disabled={isLoading || loadingProvider !== null}
+                  loading={loadingProvider === 'google'}
+                  loadingLabel={t('connecting')}
+                  onCredential={linkGoogleAccount}
+                  className="w-auto min-w-[120px]"
+                  icon={
+                    loadingProvider === 'google' ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : undefined
+                  }
+                >
+                  {t('connect')}
+                </GoogleFedCmButton>
               ) : (
                 <Button
                   type="button"

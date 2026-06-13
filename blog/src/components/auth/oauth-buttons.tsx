@@ -11,6 +11,7 @@ import {
   authToastError,
   mapSignInError,
 } from '@/lib/auth-toast';
+import { GoogleFedCmButton } from '@/components/auth/google-fedcm-button';
 import { signInWithGoogleCredential } from '@/lib/google/sign-in-with-google-credential';
 
 import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
@@ -62,12 +63,8 @@ export function OAuthButtons({
     return null;
   }
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleCredential = async (credential: string) => {
     if (!googleClientId) {
-      authToastError(
-        t('errorTitle'),
-        mapSignInError('Configuration', (key) => t(`errors.${key}`))
-      );
       return;
     }
 
@@ -76,6 +73,7 @@ export function OAuthButtons({
     try {
       await signInWithGoogleCredential({
         clientId: googleClientId,
+        credential,
         callbackPath: callbackUrl,
         onSuccess: () => setOpenModal?.(false),
         onError: () => {
@@ -110,12 +108,7 @@ export function OAuthButtons({
     }
   };
 
-  const handleOAuthSignIn = (provider: OAuthProviderId) => {
-    if (provider === 'google') {
-      void handleGoogleSignIn();
-      return;
-    }
-
+  const handleOAuthSignIn = (provider: Exclude<OAuthProviderId, 'google'>) => {
     void handleOAuthRedirect(provider);
   };
 
@@ -157,19 +150,33 @@ export function OAuthButtons({
         </div>
       </div>
 
-      {providers.map(({ id, label, icon: Icon }) => (
-        <Button
-          key={id}
-          type="button"
-          variant="outline"
-          className="w-full justify-center gap-2"
-          disabled={loadingProvider !== null}
-          onClick={() => handleOAuthSignIn(id)}
-        >
-          <Icon className="h-4 w-4" />
-          {loadingProvider === id ? t('loading') : label}
-        </Button>
-      ))}
+      {providers.map(({ id, label, icon: Icon }) =>
+        id === 'google' && googleClientId ? (
+          <GoogleFedCmButton
+            key={id}
+            clientId={googleClientId}
+            disabled={loadingProvider !== null}
+            loading={loadingProvider === 'google'}
+            loadingLabel={t('loading')}
+            onCredential={handleGoogleCredential}
+            icon={<Icon className="h-4 w-4" />}
+          >
+            {label}
+          </GoogleFedCmButton>
+        ) : id !== 'google' ? (
+          <Button
+            key={id}
+            type="button"
+            variant="outline"
+            className="w-full justify-center gap-2"
+            disabled={loadingProvider !== null}
+            onClick={() => handleOAuthSignIn(id)}
+          >
+            <Icon className="h-4 w-4" />
+            {loadingProvider === id ? t('loading') : label}
+          </Button>
+        ) : null
+      )}
     </div>
   );
 }

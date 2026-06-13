@@ -6,6 +6,20 @@ const MANUAL_PROMPT_COOLDOWN_MS = 1200;
 
 type CredentialCallback = (credential: string) => void | Promise<void>;
 
+type PromptMomentNotification = {
+  isDisplayMoment: () => boolean;
+  isDisplayed: () => boolean;
+  isNotDisplayed: () => boolean;
+  getNotDisplayedReason: () => string;
+  isSkippedMoment: () => boolean;
+  getSkippedReason: () => string;
+  isDismissedMoment: () => boolean;
+  getDismissedReason: () => string;
+  getMomentType: () => string;
+};
+
+export type GoogleCredentialRequestResult = 'credential' | 'dismissed' | 'cooldown';
+
 const gsiRuntime = {
   scriptPromise: null as Promise<void> | null,
   initializedClientId: null as string | null,
@@ -13,6 +27,7 @@ const gsiRuntime = {
   autoPromptAttempted: false,
   manualPromptCooldownUntil: 0,
   promptTimerId: null as number | null,
+  renderButtonContainers: new WeakSet<HTMLElement>(),
 };
 
 declare global {
@@ -29,7 +44,20 @@ declare global {
             itp_support?: boolean;
             use_fedcm_for_prompt?: boolean;
           }) => void;
-          prompt: () => void;
+          prompt: (momentListener?: (notification: PromptMomentNotification) => void) => void;
+          cancel: () => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: {
+              type?: 'standard' | 'icon';
+              theme?: 'outline' | 'filled_blue' | 'filled_black';
+              size?: 'large' | 'medium' | 'small';
+              text?: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
+              shape?: 'rectangular' | 'pill' | 'circle' | 'square';
+              width?: number | string;
+              logo_alignment?: 'left' | 'center';
+            }
+          ) => void;
         };
       };
     };
@@ -103,7 +131,7 @@ function ensureGoogleIdentityInitialized(clientId: string) {
     cancel_on_tap_outside: true,
     context: 'signin',
     itp_support: true,
-    use_fedcm_for_prompt: false,
+    use_fedcm_for_prompt: true,
   });
 
   gsiRuntime.initializedClientId = clientId;
@@ -115,13 +143,42 @@ function defer(ms: number): Promise<void> {
   });
 }
 
+function restoreCredentialCallback(previous: CredentialCallback | null) {
+  gsiRuntime.credentialCallback = previous;
+}
+
+export async function mountGoogleRenderButton(
+  container: HTMLElement,
+  clientId: string
+): Promise<void> {
+  await loadGoogleGsiScript();
+  ensureGoogleIdentityInitialized(clientId);
+
+  if (gsiRuntime.renderButtonContainers.has(container)) {
+    return;
+  }
+
+  const width =
+    container.offsetWidth || container.parentElement?.offsetWidth || 320;
+
+  window.google!.accounts.id.renderButton(container, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'continue_with',
+    width: Math.max(Math.floor(width), 200),
+  });
+
+  gsiRuntime.renderButtonContainers.add(container);
+}
+
 export async function requestGoogleCredential(
   clientId: string,
   onCredential: CredentialCallback
-): Promise<void> {
+): Promise<GoogleCredentialRequestResult> {
   const now = Date.now();
   if (now < gsiRuntime.manualPromptCooldownUntil) {
-    return;
+    return 'cooldown';
   }
 
   gsiRuntime.manualPromptCooldownUntil = now + MANUAL_PROMPT_COOLDOWN_MS;
@@ -130,16 +187,51 @@ export async function requestGoogleCredential(
   ensureGoogleIdentityInitialized(clientId);
 
   const previousCallback = gsiRuntime.credentialCallback;
-  gsiRuntime.credentialCallback = async (credential) => {
-    try {
-      await onCredential(credential);
-    } finally {
-      gsiRuntime.credentialCallback = previousCallback;
+  let settled = false;
+
+  const settle = (result: GoogleCredentialRequestResult) => {
+    if (settled) {
+      return result;
     }
+    settled = true;
+    restoreCredentialCallback(previousCallback);
+    return result;
   };
 
-  await defer(0);
-  window.google!.accounts.id.prompt();
+  return new Promise((resolve) => {
+    gsiRuntime.credentialCallback = async (credential) => {
+      try {
+        await onCredential(credential);
+        resolve(settle('credential'));
+      } catch {
+        resolve(settle('dismissed'));
+      }
+    };
+
+    void defer(0).then(() => {
+      window.google!.accounts.id.cancel();
+      return defer(16);
+    }).then(() => {
+      window.google!.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          resolve(settle('dismissed'));
+          return;
+        }
+
+        if (notification.isSkippedMoment()) {
+          resolve(settle('dismissed'));
+          return;
+        }
+
+        if (notification.isDismissedMoment()) {
+          const reason = notification.getDismissedReason();
+          if (reason !== 'credential_returned') {
+            resolve(settle('dismissed'));
+          }
+        }
+      });
+    });
+  });
 }
 
 export async function showGoogleOneTap(clientId: string): Promise<void> {
@@ -170,6 +262,17 @@ export async function showGoogleOneTap(clientId: string): Promise<void> {
 
 export function setGoogleCredentialHandler(onCredential: CredentialCallback | null) {
   gsiRuntime.credentialCallback = onCredential;
+}
+
+export function pushGoogleCredentialHandler(onCredential: CredentialCallback): () => void {
+  const previous = gsiRuntime.credentialCallback;
+  gsiRuntime.credentialCallback = onCredential;
+
+  return () => {
+    if (gsiRuntime.credentialCallback === onCredential) {
+      gsiRuntime.credentialCallback = previous;
+    }
+  };
 }
 
 export function resetGoogleOneTapSession() {

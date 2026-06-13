@@ -301,6 +301,7 @@
       "connected": "Bağlı",
       "notConnected": "Bağlı değil",
       "connect": "Bağla",
+      "connecting": "Bağlanıyor…",
       "disconnect": "Bağlantıyı kaldır",
       "linkError": "Hesap bağlama başlatılamadı.",
       "linkSuccess": "Hesap başarıyla bağlandı.",
