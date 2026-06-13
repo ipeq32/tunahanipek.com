@@ -78,11 +78,13 @@ export default async function ProfilePage({
   }
 
   const { user } = session;
-  const joined = new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(user.createdAt));
+  const joined = user.createdAt
+    ? new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }).format(new Date(user.createdAt))
+    : null;
 
   return (
     <>
@@ -153,7 +155,7 @@ export default async function ProfilePage({
           <InfoItem
             icon={CalendarDays}
             label={t('joined')}
-            value={joined}
+            value={joined ?? '—'}
           />
           <InfoItem
             icon={MapPin}
