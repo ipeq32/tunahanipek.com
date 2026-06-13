@@ -1,7 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
-import LinkedIn from 'next-auth/providers/linkedin';
+import { createLinkedInProvider } from '@/lib/oauth/linkedin-provider';
 import NextAuth from 'next-auth';
 import type { Account, Profile } from 'next-auth';
 import { logger } from '@/lib/logger';
@@ -41,27 +41,7 @@ function buildOAuthProviders() {
   }
 
   if (enabledOAuthProviders.linkedin) {
-    providers.push(
-      LinkedIn({
-        clientId: process.env.AUTH_LINKEDIN_ID,
-        clientSecret: process.env.AUTH_LINKEDIN_SECRET,
-        client: { token_endpoint_auth_method: 'client_secret_post' },
-        issuer: 'https://www.linkedin.com',
-        authorization: {
-          params: { scope: 'openid profile email' },
-        },
-        wellKnown:
-          'https://www.linkedin.com/oauth/.well-known/openid-configuration',
-        profile(profile) {
-          return {
-            id: profile.sub,
-            name: profile.name,
-            email: profile.email,
-            image: profile.picture,
-          } as const;
-        },
-      })
-    );
+    providers.push(createLinkedInProvider());
   }
 
   return providers;

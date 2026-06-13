@@ -19,7 +19,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline' https://accounts.google.com",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://accounts.google.com",
   "frame-src 'self' https://accounts.google.com",
-  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io https://va.vercel-scripts.com https://*.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com https://github.com https://www.linkedin.com",
+  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io https://va.vercel-scripts.com https://*.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com https://github.com https://www.linkedin.com https://api.linkedin.com",
   'upgrade-insecure-requests',
 ].join('; ');
 
