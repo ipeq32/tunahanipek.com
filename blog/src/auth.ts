@@ -16,9 +16,8 @@ import { verifyGoogleIdToken } from '@/lib/google/verify-id-token';
 
 export const runtime = 'nodejs';
 
-const enabledOAuthProviders = getEnabledOAuthProviders();
-
 function buildOAuthProviders() {
+  const enabledOAuthProviders = getEnabledOAuthProviders();
   const providers = [];
 
   if (enabledOAuthProviders.google) {
@@ -66,6 +65,10 @@ function buildOAuthProviders() {
   }
 
   return providers;
+}
+
+function isGoogleOneTapEnabledAtRuntime() {
+  return getEnabledOAuthProviders().google;
 }
 
 function isOAuthProvider(provider?: string) {
@@ -142,7 +145,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   providers: [
     ...buildOAuthProviders(),
-    ...(enabledOAuthProviders.google
+    ...(isGoogleOneTapEnabledAtRuntime()
       ? [
           CredentialsProvider({
             id: 'google-one-tap',

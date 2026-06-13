@@ -5,11 +5,12 @@ import { ContentCard } from '@/components/layout/content-card';
 import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
 import { cn } from '@/lib/utils';
 import { Github, Link2, Linkedin, Loader2, Unlink } from 'lucide-react';
-import { signIn } from 'next-auth/react';
+import { startOAuthSignIn } from '@/lib/oauth/start-oauth-sign-in';
 import { GoogleFedCmButton } from '@/components/auth/google-fedcm-button';
 import { useTranslations } from 'next-intl';
+import { useSearchParams, useRouter as useNextRouter } from 'next/navigation';
 import { usePathname, useRouter } from '@/navigation';
-import { useCallback, useState, type ComponentType } from 'react';
+import { useCallback, useEffect, useState, type ComponentType } from 'react';
 import { toast } from 'sonner';
 
 type ProviderIcon = ComponentType<{ className?: string }>;
@@ -78,7 +79,9 @@ export default function ConnectedAccountsSection({
 }: ConnectedAccountsSectionProps) {
   const t = useTranslations('Settings.ConnectedAccounts');
   const router = useRouter();
+  const nextRouter = useNextRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [unlinkingProvider, setUnlinkingProvider] = useState<string | null>(
     null
@@ -88,6 +91,22 @@ export default function ConnectedAccountsSection({
   const availableProviders = (Object.keys(providerMeta) as OAuthProviderId[]).filter(
     (provider) => enabledProviders[provider]
   );
+
+  useEffect(() => {
+    const oauthError = searchParams.get('oauthError');
+    if (!oauthError) {
+      return;
+    }
+
+    toast.error(
+      oauthError === 'Configuration' ? t('configurationError') : t('linkError')
+    );
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete('oauthError');
+    const query = nextParams.toString();
+    nextRouter.replace(query ? `${pathname}?${query}` : pathname);
+  }, [pathname, router, searchParams, t]);
 
   const linkGoogleAccount = useCallback(
     async (credential: string) => {
@@ -135,7 +154,18 @@ export default function ConnectedAccountsSection({
           throw new Error('link-intent-failed');
         }
 
-        await signIn(provider, { callbackUrl: pathname || '/setting' });
+        const result = await startOAuthSignIn(provider, pathname || '/setting');
+
+        if (result.status === 'error') {
+          toast.error(
+            result.code === 'Configuration'
+              ? t('configurationError')
+              : t('linkError')
+          );
+          return;
+        }
+
+        window.location.assign(result.url);
       } catch {
         toast.error(t('linkError'));
       } finally {

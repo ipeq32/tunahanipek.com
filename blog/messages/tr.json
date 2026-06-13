@@ -304,6 +304,7 @@
       "connecting": "Bağlanıyor…",
       "disconnect": "Bağlantıyı kaldır",
       "linkError": "Hesap bağlama başlatılamadı.",
+      "configurationError": "LinkedIn/GitHub OAuth yapılandırması eksik. Vercel ortam değişkenlerini ve OAuth uygulama callback URL'lerini kontrol edin.",
       "linkSuccess": "Hesap başarıyla bağlandı.",
       "unlinkSuccess": "Hesap bağlantısı kaldırıldı.",
       "unlinkError": "Hesap bağlantısı kaldırılamadı.",

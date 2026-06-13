@@ -73,6 +73,17 @@ const handleAuth = async (
   }
 
   if (isAuth && isAuthPage) {
+    const oauthError = req.nextUrl.searchParams.get('error');
+    if (oauthError) {
+      const callback = req.nextUrl.searchParams.get('callbackUrl');
+      const target = callback?.startsWith('/')
+        ? callback
+        : '/setting';
+      const redirectUrl = new URL(target, req.nextUrl);
+      redirectUrl.searchParams.set('oauthError', oauthError);
+      return NextResponse.redirect(redirectUrl);
+    }
+
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 

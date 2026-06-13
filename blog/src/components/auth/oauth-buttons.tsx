@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Github, Linkedin } from 'lucide-react';
-import { signIn } from 'next-auth/react';
+import { startOAuthSignIn } from '@/lib/oauth/start-oauth-sign-in';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -97,8 +97,18 @@ export function OAuthButtons({
     setLoadingProvider(provider);
 
     try {
-      await signIn(provider, { callbackUrl });
-      setOpenModal?.(false);
+      const result = await startOAuthSignIn(provider, callbackUrl);
+
+      if (result.status === 'error') {
+        authToastError(
+          t('errorTitle'),
+          mapSignInError(result.code, (key) => t(`errors.${key}`))
+        );
+        setLoadingProvider(null);
+        return;
+      }
+
+      window.location.assign(result.url);
     } catch {
       authToastError(
         t('errorTitle'),

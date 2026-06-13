@@ -304,6 +304,8 @@
       "connecting": "Connecting…",
       "disconnect": "Disconnect",
       "linkError": "Could not start account linking.",
+      "configurationError": "LinkedIn/GitHub OAuth is misconfigured. Check Vercel environment variables and OAuth callback URLs.",
+      "configurationError": "LinkedIn/GitHub OAuth is misconfigured. Check Vercel environment variables and OAuth callback URLs.",
       "linkSuccess": "Account linked successfully.",
       "unlinkSuccess": "Account disconnected.",
       "unlinkError": "Could not disconnect account.",
