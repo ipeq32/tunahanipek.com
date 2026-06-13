@@ -15,46 +15,53 @@ import {
   Phone,
   Settings,
   ShieldCheck,
-  UserRound,
   type LucideIcon,
 } from 'lucide-react';
 
 const FALLBACK_AVATAR =
   'https://img.icons8.com/?size=100&id=21441&format=png&color=000000';
 
-type DetailRowProps = {
+type InfoTileProps = {
   icon: LucideIcon;
   label: string;
   value: string;
   href?: string;
 };
 
-function DetailRow({ icon: Icon, label, value, href }: DetailRowProps) {
+function InfoTile({ icon: Icon, label, value, href }: InfoTileProps) {
   const displayValue = value || '—';
 
   return (
-    <div className="flex items-center gap-3 border-b border-border/40 py-3.5 last:border-b-0 last:pb-0 first:pt-0">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground">
-        <Icon className="h-4 w-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        {href && value ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-0.5 block truncate text-sm font-medium text-teal-600 transition-colors hover:text-teal-500 dark:text-teal-400"
-          >
-            {displayValue}
-          </a>
-        ) : (
-          <p className="mt-0.5 truncate text-sm font-medium text-foreground">
-            {displayValue}
-          </p>
-        )}
+    <div className="group rounded-xl border border-border/50 bg-muted/15 p-4 transition-colors hover:border-teal-500/25 hover:bg-teal-500/[0.03]">
+      <div className="mb-3 flex items-center gap-2 text-muted-foreground">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-background/80 ring-1 ring-border/50">
+          <Icon className="h-4 w-4" />
+        </span>
+        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
       </div>
+      {href && value ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="block break-all text-base font-medium text-teal-600 transition-colors hover:text-teal-500 dark:text-teal-400"
+        >
+          {displayValue}
+        </a>
+      ) : (
+        <p className="break-words text-base font-medium leading-snug text-foreground">
+          {displayValue}
+        </p>
+      )}
     </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-base font-semibold tracking-tight text-foreground">
+      {children}
+    </h2>
   );
 }
 
@@ -89,6 +96,7 @@ export default async function ProfilePage({
   }
 
   const { user } = session;
+  const role = user.role ?? 'USER';
   const joined = user.createdAt
     ? new Intl.DateTimeFormat(locale, {
         year: 'numeric',
@@ -98,140 +106,141 @@ export default async function ProfilePage({
     : null;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-4 pt-2">
-      <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/90 shadow-sm backdrop-blur-sm">
+    <div className="w-full space-y-8 pb-2">
+      <section className="relative w-full overflow-hidden rounded-2xl border border-border/50 bg-card/90 shadow-sm backdrop-blur-sm">
+        <div className="h-1.5 w-full bg-gradient-to-r from-teal-600 via-cyan-500 to-teal-400" />
+
         <div
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-teal-500/10 blur-3xl"
+          className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-teal-500/10 blur-3xl"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -bottom-16 left-8 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl"
+          className="pointer-events-none absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-cyan-500/10 blur-3xl"
           aria-hidden
         />
 
-        <div className="relative p-6 md:p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-              <div className="relative shrink-0">
-                <Image
-                  src={user.image || FALLBACK_AVATAR}
-                  alt={user.name ?? ''}
-                  width={112}
-                  height={112}
-                  className="h-28 w-28 rounded-2xl border border-border/60 bg-muted object-cover shadow-sm"
-                />
-                <span
-                  className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-teal-500 text-white shadow-sm"
-                  aria-hidden
-                >
-                  <UserRound className="h-3.5 w-3.5" />
-                </span>
-              </div>
+        <div className="relative grid gap-8 p-6 md:p-8 lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-10 lg:p-10">
+          <div className="flex justify-center lg:justify-start">
+            <Image
+              src={user.image || FALLBACK_AVATAR}
+              alt={user.name ?? ''}
+              width={144}
+              height={144}
+              className="h-32 w-32 rounded-2xl border border-border/60 bg-muted object-cover shadow-md ring-2 ring-teal-500/20 lg:h-36 lg:w-36"
+            />
+          </div>
 
-              <div className="space-y-3 text-center sm:text-left">
-                <div className="space-y-1">
-                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                    {t('description')}
-                  </p>
-                  <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                    {user.name}
-                  </h1>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                  <Badge
-                    className={cn('gap-1 border', roleBadgeClass(user.role ?? 'USER'))}
-                  >
-                    <ShieldCheck className="h-3 w-3" />
-                    {t(`roles.${user.role}`)}
-                  </Badge>
-                  {joined && (
-                    <Badge variant="outline" className="gap-1 font-normal">
-                      <CalendarDays className="h-3 w-3" />
-                      {joined}
-                    </Badge>
-                  )}
-                </div>
-
-                <p className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground sm:justify-start">
-                  <Mail className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{user.email}</span>
-                </p>
-              </div>
+          <div className="space-y-4 text-center lg:text-left">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
+                {t('title')}
+              </p>
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                {user.name}
+              </h1>
+              <p className="text-sm text-muted-foreground md:text-base">
+                {t('description')}
+              </p>
             </div>
 
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row md:flex-col lg:flex-row">
-              {user.website && (
-                <Button variant="outline" size="sm" className="w-full sm:w-auto" asChild>
-                  <a href={user.website} target="_blank" rel="noreferrer">
-                    <Globe className="mr-1.5 h-4 w-4" />
-                    {t('website')}
-                  </a>
-                </Button>
+            <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+              <Badge className={cn('gap-1.5 border px-3 py-1', roleBadgeClass(role))}>
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {t(`roles.${role}`)}
+              </Badge>
+              {joined && (
+                <Badge variant="outline" className="gap-1.5 px-3 py-1 font-normal">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  {joined}
+                </Badge>
               )}
-              <Button variant="accent" size="sm" className="w-full sm:w-auto" asChild>
-                <Link href="/setting">
-                  <Settings className="mr-1.5 h-4 w-4" />
-                  {t('editProfile')}
-                </Link>
-              </Button>
             </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground lg:justify-start">
+              {user.email && (
+                <span className="inline-flex max-w-full items-center gap-2">
+                  <Mail className="h-4 w-4 shrink-0 text-teal-500" />
+                  <span className="truncate">{user.email}</span>
+                </span>
+              )}
+              {user.phone && (
+                <span className="inline-flex items-center gap-2">
+                  <Phone className="h-4 w-4 shrink-0 text-teal-500" />
+                  {user.phone}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-row justify-center gap-3 lg:flex-col lg:justify-center">
+            {user.website && (
+              <Button variant="outline" className="min-w-[10rem]" asChild>
+                <a href={user.website} target="_blank" rel="noreferrer">
+                  <Globe className="mr-2 h-4 w-4" />
+                  {t('website')}
+                </a>
+              </Button>
+            )}
+            <Button variant="accent" className="min-w-[10rem]" asChild>
+              <Link href="/setting">
+                <Settings className="mr-2 h-4 w-4" />
+                {t('editProfile')}
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <ContentCard className="p-5 md:p-6">
-          <h2 className="mb-1 text-sm font-semibold tracking-tight">
-            {t('contactInfo')}
-          </h2>
-          <dl>
-            <DetailRow icon={Mail} label={t('email')} value={user.email ?? ''} />
-            <DetailRow icon={Phone} label={t('phone')} value={user.phone ?? ''} />
-            <DetailRow
+      <div className="grid w-full gap-6 xl:grid-cols-12">
+        <ContentCard className="xl:col-span-8">
+          <SectionTitle>{t('contactInfo')}</SectionTitle>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <InfoTile icon={Mail} label={t('email')} value={user.email ?? ''} />
+            <InfoTile icon={Phone} label={t('phone')} value={user.phone ?? ''} />
+            <InfoTile
               icon={MapPin}
               label={t('address')}
               value={user.address ?? ''}
             />
-            {user.website && (
-              <DetailRow
+            {user.website ? (
+              <InfoTile
                 icon={Globe}
                 label={t('website')}
                 value={user.website}
                 href={user.website}
               />
+            ) : (
+              <InfoTile icon={Globe} label={t('website')} value="" />
             )}
-          </dl>
+          </div>
         </ContentCard>
 
-        <ContentCard className="p-5 md:p-6">
-          <h2 className="mb-1 text-sm font-semibold tracking-tight">
-            {t('accountDetails')}
-          </h2>
-          <dl>
-            <DetailRow icon={ShieldCheck} label={t('role')} value={t(`roles.${user.role}`)} />
-            <DetailRow icon={CalendarDays} label={t('joined')} value={joined ?? ''} />
-            <DetailRow
+        <ContentCard className="xl:col-span-4">
+          <SectionTitle>{t('accountDetails')}</SectionTitle>
+          <div className="mt-5 space-y-4">
+            <InfoTile icon={ShieldCheck} label={t('role')} value={t(`roles.${role}`)} />
+            <InfoTile icon={CalendarDays} label={t('joined')} value={joined ?? ''} />
+            <InfoTile
               icon={KeyRound}
               label={t('password')}
               value={user.hasPassword ? t('passwordSet') : t('passwordNotSet')}
             />
-          </dl>
+          </div>
         </ContentCard>
       </div>
 
       {user.bio && (
-        <ContentCard className="relative overflow-hidden p-5 md:p-6">
+        <ContentCard className="relative w-full overflow-hidden">
           <div
-            className="pointer-events-none absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-teal-500/10 to-transparent"
+            className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-teal-500 to-cyan-500"
             aria-hidden
           />
-          <h2 className="text-sm font-semibold tracking-tight">{t('bio')}</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <SectionTitle>{t('bio')}</SectionTitle>
+          <p className="mt-4 max-w-none text-base leading-relaxed text-muted-foreground md:text-[15px]">
             {user.bio}
           </p>
         </ContentCard>
