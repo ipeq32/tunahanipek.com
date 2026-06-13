@@ -25,11 +25,6 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
-  icons: {
-    icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
-    shortcut: [{ url: '/icon', type: 'image/png' }],
-    apple: [{ url: '/apple-icon', type: 'image/png' }],
-  },
 };
 
 type Props = {

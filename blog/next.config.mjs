@@ -37,20 +37,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'media.licdn.com', pathname: '/**' },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/favicon.ico',
-        destination: '/icon',
-      },
-    ];
-  },
   async headers() {
     return [
-      {
-        source: '/favicon.ico',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400' }],
-      },
       {
         source: '/(.*)',
         headers: [
