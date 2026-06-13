@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { requireSuperAdminSession } from '@/lib/admin/require-super-admin';
 import {
   clearSiteResume,
-  getSiteResume,
+  getSiteResumeDirect,
   upsertSiteResume,
 } from '@/lib/site-resume';
 import { logger } from '@/lib/logger';
@@ -21,11 +20,7 @@ const upsertSchema = z.object({
 });
 
 async function requireSuperAdmin() {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return null;
-  }
-  return session;
+  return requireSuperAdminSession();
 }
 
 export async function GET() {
@@ -35,7 +30,7 @@ export async function GET() {
   }
 
   try {
-    const resume = await getSiteResume();
+    const resume = await getSiteResumeDirect();
 
     if (!resume) {
       return NextResponse.json({ data: null });

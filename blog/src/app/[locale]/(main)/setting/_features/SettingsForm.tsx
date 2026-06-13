@@ -79,9 +79,16 @@ export type SettingsUserValues = {
   bio: string;
 };
 
+type SiteResumeInitial = {
+  url: string;
+  fileName: string;
+  updatedAt: string;
+} | null;
+
 type SettingsFormProps = {
   initialUser: SettingsUserValues;
   isSuperAdmin?: boolean;
+  initialSiteResume?: SiteResumeInitial;
   linkedProviders?: OAuthProviderId[];
   enabledProviders?: EnabledOAuthProviders;
   showConnectedAccounts?: boolean;
@@ -170,6 +177,7 @@ function IconField<T extends FieldValues>({
 export default function SettingsForm({
   initialUser,
   isSuperAdmin = false,
+  initialSiteResume = null,
   linkedProviders = [],
   enabledProviders,
   showConnectedAccounts = false,
@@ -415,7 +423,9 @@ export default function SettingsForm({
         </Form>
       </ContentCard>
 
-      {isSuperAdmin && <ResumeSettingsSection />}
+      {isSuperAdmin && (
+        <ResumeSettingsSection initialResume={initialSiteResume} />
+      )}
       {isSuperAdmin && <AiSettingsSection />}
     </div>
   );

@@ -40,6 +40,10 @@ export async function getSiteResume(): Promise<SiteResumeRecord | null> {
   return getCachedSiteResume();
 }
 
+export async function getSiteResumeDirect(): Promise<SiteResumeRecord | null> {
+  return querySiteResume();
+}
+
 export async function upsertSiteResume(data: {
   url: string;
   fileName: string;

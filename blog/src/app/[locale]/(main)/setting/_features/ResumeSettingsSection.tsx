@@ -23,9 +23,21 @@ type ResumeData = {
   updatedAt: string;
 };
 
+type ResumeSettingsSectionProps = {
+  initialResume: ResumeData | null;
+};
+
 function ensurePdfFileName(name: string): string {
   const trimmed = name.trim() || 'resume.pdf';
   return trimmed.toLowerCase().endsWith('.pdf') ? trimmed : `${trimmed}.pdf`;
+}
+
+function mapResumeData(data: ResumeData | null) {
+  return {
+    saved: data,
+    draftUrl: data?.url ?? '',
+    draftFileName: data?.fileName ?? '',
+  };
 }
 
 function SectionHeader({
@@ -48,40 +60,53 @@ function SectionHeader({
   );
 }
 
-export default function ResumeSettingsSection() {
+export default function ResumeSettingsSection({
+  initialResume,
+}: ResumeSettingsSectionProps) {
   const t = useTranslations('Settings');
   const cleanup = useUploadCleanup();
 
-  const [loading, setLoading] = useState(true);
+  const initial = mapResumeData(initialResume);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [saved, setSaved] = useState<ResumeData | null>(null);
-  const [draftUrl, setDraftUrl] = useState('');
-  const [draftFileName, setDraftFileName] = useState('');
+  const [saved, setSaved] = useState<ResumeData | null>(initial.saved);
+  const [draftUrl, setDraftUrl] = useState(initial.draftUrl);
+  const [draftFileName, setDraftFileName] = useState(initial.draftFileName);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/admin/resume');
-      if (!res.ok) throw new Error('load failed');
-      const json = (await res.json()) as { data: ResumeData | null };
-      setSaved(json.data);
-      if (json.data) {
-        setDraftUrl(json.data.url);
-        setDraftFileName(json.data.fileName);
-      } else {
-        setDraftUrl('');
-        setDraftFileName('');
+  const load = useCallback(
+    async (options?: { silent?: boolean }) => {
+      setRefreshing(true);
+      try {
+        const res = await fetch('/api/admin/resume');
+        if (!res.ok) {
+          if (res.status === 403) {
+            if (!options?.silent) {
+              toast.error(t('resumeForbiddenError'));
+            }
+            return;
+          }
+          throw new Error('load failed');
+        }
+
+        const json = (await res.json()) as { data: ResumeData | null };
+        const next = mapResumeData(json.data);
+        setSaved(next.saved);
+        setDraftUrl(next.draftUrl);
+        setDraftFileName(next.draftFileName);
+      } catch {
+        if (!options?.silent) {
+          toast.error(t('resumeLoadError'));
+        }
+      } finally {
+        setRefreshing(false);
       }
-    } catch {
-      toast.error(t('resumeLoadError'));
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
+    },
+    [t]
+  );
 
   useEffect(() => {
-    void load();
+    void load({ silent: true });
   }, [load]);
 
   const hasUnsavedUpload =
@@ -140,21 +165,19 @@ export default function ResumeSettingsSection() {
     }
   };
 
-  if (loading) {
-    return (
-      <ContentCard className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
-        <span className="sr-only">{t('resumeLoading')}</span>
-      </ContentCard>
-    );
-  }
-
   return (
     <ContentCard>
       <SectionHeader
         title={t('resumeTitle')}
         description={t('resumeDescription')}
       />
+
+      {refreshing && (
+        <p className="-mt-2 mb-4 inline-flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          {t('resumeLoading')}
+        </p>
+      )}
 
       {saved && (
         <p className="-mt-2 mb-4 text-xs text-muted-foreground">

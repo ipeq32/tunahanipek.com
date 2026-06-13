@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { requireSuperAdminSession } from '@/lib/admin/require-super-admin';
 import { logger } from '@/lib/logger';
 import {
   getSiteAiSettings,
@@ -11,11 +10,7 @@ import { upsertAiSettingsSchema } from '@/lib/validations/ai-settings';
 export const dynamic = 'force-dynamic';
 
 async function requireSuperAdmin() {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
-    return null;
-  }
-  return session;
+  return requireSuperAdminSession();
 }
 
 export async function GET() {

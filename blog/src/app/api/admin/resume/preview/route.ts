@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { requireSuperAdminSession } from '@/lib/admin/require-super-admin';
 import { getSiteResume } from '@/lib/site-resume';
 import { isAllowedResumePdfUrl } from '@/lib/resume-preview-url';
 import { logger } from '@/lib/logger';
@@ -8,8 +7,8 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const session = await requireSuperAdminSession();
+  if (!session) {
     return new NextResponse(null, { status: 403 });
   }
 

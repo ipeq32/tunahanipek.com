@@ -2,6 +2,7 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import SettingsForm from './_features/SettingsForm';
 import { auth } from '@/auth';
 import { isSuperAdmin } from '@/lib/auth-roles';
+import { getSiteResumeDirect } from '@/lib/site-resume';
 import {
   addressDataToFormValues,
   parseAddressDataJson,
@@ -58,11 +59,24 @@ export default async function SettingPage({
     return redirect({ href: '/auth/login', locale });
   }
 
+  const userIsSuperAdmin = isSuperAdmin(dbUser.role);
+
+  const initialSiteResume = userIsSuperAdmin ? await getSiteResumeDirect() : null;
+
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <SettingsForm
-        isSuperAdmin={isSuperAdmin(dbUser.role)}
+        isSuperAdmin={userIsSuperAdmin}
+        initialSiteResume={
+          initialSiteResume
+            ? {
+                url: initialSiteResume.url,
+                fileName: initialSiteResume.fileName,
+                updatedAt: initialSiteResume.updatedAt.toISOString(),
+              }
+            : null
+        }
         linkedProviders={dbUser.accounts
           .map((account) => account.provider)
           .filter((provider): provider is OAuthProviderId =>
