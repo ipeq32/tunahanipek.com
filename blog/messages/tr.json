@@ -272,6 +272,8 @@
     "profileDescription": "Herkese açık profil bilgilerinizi güncelleyin.",
     "passwordTitle": "Şifre değiştir",
     "passwordDescription": "Hesabınızı güvende tutmak için güçlü bir şifre kullanın.",
+    "setPasswordTitle": "Şifre belirle",
+    "setPasswordDescription": "Sosyal giriş kullanıyorsunuz. İsterseniz e-posta ve şifre ile de giriş yapabilmeniz için bir şifre belirleyebilirsiniz.",
     "saving": "Kaydediliyor...",
     "name": "Ad",
     "phone": "Telefon",
@@ -285,10 +287,27 @@
     "newPasswordConfirm": "Yeni şifre (tekrar)",
     "saveProfile": "Profili kaydet",
     "savePassword": "Şifreyi güncelle",
+    "setPassword": "Şifre belirle",
     "profileSuccess": "Profil güncellendi",
     "profileError": "Profil güncellenemedi",
     "passwordSuccess": "Şifre güncellendi",
     "passwordError": "Şifre güncellenemedi",
+    "ConnectedAccounts": {
+      "title": "Bağlı hesaplar",
+      "description": "Google, GitHub veya LinkedIn hesabınızı bağlayarak alternatif giriş yöntemleri ekleyin.",
+      "google": "Google",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "connected": "Bağlı",
+      "notConnected": "Bağlı değil",
+      "connect": "Bağla",
+      "disconnect": "Bağlantıyı kaldır",
+      "linkError": "Hesap bağlama başlatılamadı.",
+      "linkSuccess": "Hesap başarıyla bağlandı.",
+      "unlinkSuccess": "Hesap bağlantısı kaldırıldı.",
+      "unlinkError": "Hesap bağlantısı kaldırılamadı.",
+      "unlinkLastMethodError": "Son giriş yönteminizi kaldıramazsınız. Önce bir şifre belirleyin veya başka bir hesap bağlayın."
+    },
     "resumeTitle": "Site özgeçmişi (PDF)",
     "resumeDescription": "Hakkımda sayfası ve kişisel web sitesinde görüntülenecek güncel özgeçmişinizi yükleyin.",
     "resumeLoading": "Özgeçmiş yükleniyor…",
@@ -864,7 +883,10 @@
           "description": "Bilinmeyen bir hata oluştu.",
           "responseError": "Ağ yanıtı iyi değildi.",
           "invalidCredentials": "E-posta veya şifre hatalı.",
-          "rateLimited": "Çok fazla deneme. Lütfen daha sonra tekrar deneyin."
+          "rateLimited": "Çok fazla deneme. Lütfen daha sonra tekrar deneyin.",
+          "oauthSignin": "Sosyal giriş sırasında bir hata oluştu.",
+          "configuration": "OAuth yapılandırması hatalı. Sağlayıcı callback URL ve client secret ayarlarını kontrol edin.",
+          "accessDenied": "Giriş reddedildi veya iptal edildi."
         }
       },
       "Schema": {
@@ -873,6 +895,19 @@
         },
         "Password": {
           "minMessage": "Şifre en az 6 karakter olmalıdır."
+        }
+      },
+      "OAuth": {
+        "divider": "veya",
+        "google": "Google ile devam et",
+        "github": "GitHub ile devam et",
+        "linkedin": "LinkedIn ile devam et",
+        "loading": "Yönlendiriliyor...",
+        "errorTitle": "Giriş başarısız oldu.",
+        "errors": {
+          "OAuthSignin": "Sosyal giriş sırasında bir hata oluştu.",
+          "Configuration": "OAuth yapılandırması hatalı.",
+          "description": "Bilinmeyen bir hata oluştu."
         }
       }
     },

@@ -7,6 +7,11 @@ import {
   parseAddressDataJson,
 } from '@/lib/address/types';
 import { prisma } from '@/lib/prisma';
+import {
+  getEnabledOAuthProviders,
+  hasAnyOAuthProvider,
+  type OAuthProviderId,
+} from '@/lib/oauth/config';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from '@/navigation';
 
@@ -29,18 +34,25 @@ export default async function SettingPage({
     });
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      name: true,
-      phone: true,
-      addressData: true,
-      website: true,
-      image: true,
-      bio: true,
-      role: true,
-    },
-  });
+  const [dbUser, enabledProviders] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        phone: true,
+        addressData: true,
+        website: true,
+        image: true,
+        bio: true,
+        role: true,
+        accounts: {
+          select: { provider: true },
+          orderBy: { provider: 'asc' },
+        },
+      },
+    }),
+    Promise.resolve(getEnabledOAuthProviders()),
+  ]);
 
   if (!dbUser) {
     return redirect({ href: '/auth/login', locale });
@@ -51,6 +63,13 @@ export default async function SettingPage({
       <HeaderTemplate title={t('title')} description={t('description')} />
       <SettingsForm
         isSuperAdmin={isSuperAdmin(dbUser.role)}
+        linkedProviders={dbUser.accounts
+          .map((account) => account.provider)
+          .filter((provider): provider is OAuthProviderId =>
+            ['google', 'github', 'linkedin'].includes(provider)
+          )}
+        enabledProviders={enabledProviders}
+        showConnectedAccounts={hasAnyOAuthProvider(enabledProviders)}
         initialUser={{
           name: dbUser.name ?? '',
           phone: dbUser.phone ?? '',

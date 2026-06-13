@@ -272,6 +272,8 @@
     "profileDescription": "Update your public profile information.",
     "passwordTitle": "Change password",
     "passwordDescription": "Use a strong password to keep your account secure.",
+    "setPasswordTitle": "Set password",
+    "setPasswordDescription": "You signed in with a social account. You can set a password if you also want to sign in with email and password.",
     "saving": "Saving...",
     "name": "Name",
     "phone": "Phone",
@@ -285,10 +287,27 @@
     "newPasswordConfirm": "Confirm new password",
     "saveProfile": "Save profile",
     "savePassword": "Update password",
+    "setPassword": "Set password",
     "profileSuccess": "Profile updated",
     "profileError": "Could not update profile",
     "passwordSuccess": "Password updated",
     "passwordError": "Could not update password",
+    "ConnectedAccounts": {
+      "title": "Connected accounts",
+      "description": "Link your Google, GitHub, or LinkedIn account to add alternative sign-in methods.",
+      "google": "Google",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "linkError": "Could not start account linking.",
+      "linkSuccess": "Account linked successfully.",
+      "unlinkSuccess": "Account disconnected.",
+      "unlinkError": "Could not disconnect account.",
+      "unlinkLastMethodError": "You cannot remove your only sign-in method. Set a password or link another account first."
+    },
     "resumeTitle": "Site resume (PDF)",
     "resumeDescription": "Upload the current resume shown on the About page and personal website.",
     "resumeLoading": "Loading resume…",
@@ -864,7 +883,10 @@
           "description": "An unknown error occurred.",
           "responseError": "Network response was not ok.",
           "invalidCredentials": "Invalid email or password.",
-          "rateLimited": "Too many attempts. Please try again later."
+          "rateLimited": "Too many attempts. Please try again later.",
+          "oauthSignin": "An error occurred during social sign-in.",
+          "configuration": "OAuth configuration is invalid. Check provider callback URL and client secret settings.",
+          "accessDenied": "Sign-in was denied or cancelled."
         }
       },
       "Schema": {
@@ -873,6 +895,19 @@
         },
         "Password": {
           "minMessage": "Password must be at least 6 characters."
+        }
+      },
+      "OAuth": {
+        "divider": "or",
+        "google": "Continue with Google",
+        "github": "Continue with GitHub",
+        "linkedin": "Continue with LinkedIn",
+        "loading": "Redirecting...",
+        "errorTitle": "Login failed.",
+        "errors": {
+          "OAuthSignin": "An error occurred during social sign-in.",
+          "Configuration": "OAuth configuration is invalid.",
+          "description": "An unknown error occurred."
         }
       }
     },

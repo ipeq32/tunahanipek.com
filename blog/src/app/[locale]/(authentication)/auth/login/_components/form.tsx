@@ -11,10 +11,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
+import { OAuthButtons } from '@/components/auth/oauth-buttons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { signIn } from 'next-auth/react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,15 +32,35 @@ import {
 } from '@/lib/auth-toast';
 import type { FieldErrors } from 'react-hook-form';
 
+import type { EnabledOAuthProviders } from '@/lib/oauth/config';
+
 type LoginFormProps = {
   setOpenModal?: (value: boolean) => void;
+  enabledProviders?: EnabledOAuthProviders;
+  showOAuth?: boolean;
 };
 
-export default function LoginForm({ setOpenModal }: LoginFormProps) {
+export default function LoginForm({
+  setOpenModal,
+  enabledProviders,
+  showOAuth = false,
+}: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const t = useTranslations('Authentication.Login');
+
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (!error) {
+      return;
+    }
+
+    authToastError(
+      t('Error.Fail.title'),
+      mapSignInError(error, (key) => t(`Error.Fail.${key}`))
+    );
+  }, [searchParams, t]);
 
   const FormSchema = z.object({
     email: z.string().email({
@@ -171,6 +193,11 @@ export default function LoginForm({ setOpenModal }: LoginFormProps) {
             ? t('Form.Submit.loading')
             : t('Form.Submit.label')}
         </Button>
+        <OAuthButtons
+          setOpenModal={setOpenModal}
+          enabledProviders={enabledProviders}
+          showOAuth={showOAuth}
+        />
         </form>
       </motion.div>
     </Form>

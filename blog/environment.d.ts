@@ -12,6 +12,7 @@ declare global {
       DATABASE_URL?: string;
       VERCEL?: string;
       NEXTAUTH_URL: string;
+      AUTH_URL?: string;
       NEXT_PUBLIC_API_URL: string;
       NEXT_PUBLIC_SITE_URL?: string;
       NEXTAUTH_SECRET: string;
@@ -23,6 +24,14 @@ declare global {
       EMAIL_FROM?: string;
       ALLOW_PUBLIC_REGISTRATION?: string;
       NEXT_PUBLIC_ALLOW_PUBLIC_REGISTRATION?: string;
+      AUTH_GOOGLE_ID?: string;
+      AUTH_GOOGLE_SECRET?: string;
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID?: string;
+      NEXT_PUBLIC_GOOGLE_ONE_TAP_ENABLED?: string;
+      AUTH_GITHUB_ID?: string;
+      AUTH_GITHUB_SECRET?: string;
+      AUTH_LINKEDIN_ID?: string;
+      AUTH_LINKEDIN_SECRET?: string;
     }
   }
 }

@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { ReactNode } from 'react';
 import AiSettingsSection from './AiSettingsSection';
+import ConnectedAccountsSection from './ConnectedAccountsSection';
 import ResumeSettingsSection from './ResumeSettingsSection';
 import AddressFields from '@/components/address/AddressFields';
 import {
@@ -44,6 +45,7 @@ import {
   formValuesToAddressData,
   type AddressFormValues,
 } from '@/lib/address/types';
+import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
 
 const profileSchema = z.object({
   name: z.string().min(3),
@@ -54,16 +56,19 @@ const profileSchema = z.object({
   bio: z.string().optional().or(z.literal('')),
 });
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(6),
-    newPassword: z.string().min(6),
-    newPasswordConfirm: z.string().min(6),
-  })
-  .refine((data) => data.newPassword === data.newPasswordConfirm, {
-    message: 'Passwords do not match',
-    path: ['newPasswordConfirm'],
-  });
+const passwordSchema = (requireCurrentPassword: boolean) =>
+  z
+    .object({
+      currentPassword: requireCurrentPassword
+        ? z.string().min(6)
+        : z.string().optional(),
+      newPassword: z.string().min(6),
+      newPasswordConfirm: z.string().min(6),
+    })
+    .refine((data) => data.newPassword === data.newPasswordConfirm, {
+      message: 'Passwords do not match',
+      path: ['newPasswordConfirm'],
+    });
 
 export type SettingsUserValues = {
   name: string;
@@ -77,6 +82,9 @@ export type SettingsUserValues = {
 type SettingsFormProps = {
   initialUser: SettingsUserValues;
   isSuperAdmin?: boolean;
+  linkedProviders?: OAuthProviderId[];
+  enabledProviders?: EnabledOAuthProviders;
+  showConnectedAccounts?: boolean;
 };
 
 type SectionHeaderProps = {
@@ -162,18 +170,24 @@ function IconField<T extends FieldValues>({
 export default function SettingsForm({
   initialUser,
   isSuperAdmin = false,
+  linkedProviders = [],
+  enabledProviders,
+  showConnectedAccounts = false,
 }: SettingsFormProps) {
-  const { update } = useSession();
+  const { data: session, update } = useSession();
   const t = useTranslations('Settings');
   const imageCleanup = useUploadCleanup();
+  const hasPassword = session?.user?.hasPassword ?? true;
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: initialUser,
   });
 
-  const passwordForm = useForm<z.infer<typeof passwordSchema>>({
-    resolver: zodResolver(passwordSchema),
+  type PasswordFormValues = z.infer<ReturnType<typeof passwordSchema>>;
+
+  const passwordForm = useForm<PasswordFormValues>({
+    resolver: zodResolver(passwordSchema(hasPassword)),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
@@ -209,7 +223,7 @@ export default function SettingsForm({
     }
   };
 
-  const onPasswordSubmit = async (values: z.infer<typeof passwordSchema>) => {
+  const onPasswordSubmit = async (values: PasswordFormValues) => {
     try {
       const res = await fetch(
         `/api/user/password`,
@@ -224,6 +238,7 @@ export default function SettingsForm({
         throw new Error(data.error);
       }
       passwordForm.reset();
+      await update();
       toast.success(t('passwordSuccess'));
     } catch {
       toast.error(t('passwordError'));
@@ -335,25 +350,36 @@ export default function SettingsForm({
         </Form>
       </ContentCard>
 
+      {showConnectedAccounts && enabledProviders && (
+        <ConnectedAccountsSection
+          linkedProviders={linkedProviders}
+          enabledProviders={enabledProviders}
+        />
+      )}
+
       <ContentCard>
         <SectionHeader
           icon={KeyRound}
-          title={t('passwordTitle')}
-          description={t('passwordDescription')}
+          title={hasPassword ? t('passwordTitle') : t('setPasswordTitle')}
+          description={
+            hasPassword ? t('passwordDescription') : t('setPasswordDescription')
+          }
         />
         <Form {...passwordForm}>
           <form
             onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
             className="space-y-5"
           >
-            <IconField
-              control={passwordForm.control}
-              name="currentPassword"
-              label={t('currentPassword')}
-              icon={Lock}
-              type="password"
-              autoComplete="current-password"
-            />
+            {hasPassword && (
+              <IconField
+                control={passwordForm.control}
+                name="currentPassword"
+                label={t('currentPassword')}
+                icon={Lock}
+                type="password"
+                autoComplete="current-password"
+              />
+            )}
             <FieldGrid>
               <IconField
                 control={passwordForm.control}
@@ -382,7 +408,7 @@ export default function SettingsForm({
                 {passwordSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {passwordSubmitting ? t('saving') : t('savePassword')}
+                {passwordSubmitting ? t('saving') : hasPassword ? t('savePassword') : t('setPassword')}
               </Button>
             </div>
           </form>

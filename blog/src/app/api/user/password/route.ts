@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 const passwordSchema = z
   .object({
-    currentPassword: z.string().min(6),
+    currentPassword: z.string().min(6).optional(),
     newPassword: z.string().min(6),
     newPasswordConfirm: z.string().min(6),
   })
@@ -46,12 +46,21 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const valid = await compare(currentPassword, user.hashedPassword);
-    if (!valid) {
-      return NextResponse.json(
-        { error: 'Current password is incorrect' },
-        { status: 400 }
-      );
+    if (user.hashedPassword) {
+      if (!currentPassword) {
+        return NextResponse.json(
+          { error: 'Current password is required' },
+          { status: 400 }
+        );
+      }
+
+      const valid = await compare(currentPassword, user.hashedPassword);
+      if (!valid) {
+        return NextResponse.json(
+          { error: 'Current password is incorrect' },
+          { status: 400 }
+        );
+      }
     }
 
     const hashedPassword = await hash(newPassword, 10);

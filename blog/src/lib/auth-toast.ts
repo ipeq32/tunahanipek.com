@@ -18,6 +18,14 @@ export function mapSignInError(
   switch (error) {
     case 'CredentialsSignin':
       return t('invalidCredentials');
+    case 'OAuthSignin':
+    case 'OAuthCallback':
+    case 'OAuthAccountNotLinked':
+      return t('oauthSignin');
+    case 'Configuration':
+      return t('configuration');
+    case 'AccessDenied':
+      return t('accessDenied');
     default:
       return t('description');
   }

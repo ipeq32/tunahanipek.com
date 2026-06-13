@@ -32,10 +32,11 @@ model Language {
 model User {
   id                  String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   email               String               @unique
-  hashedPassword      String
+  emailVerified       DateTime?            @db.Timestamptz(3)
+  hashedPassword      String?
   name                String
-  phone               String
-  address             String
+  phone               String?
+  address             String?
   addressData         Json?
   website             String?
   image               String?
@@ -44,12 +45,32 @@ model User {
   createdAt           DateTime             @default(now()) @db.Timestamptz(3)
   updatedAt           DateTime             @updatedAt @db.Timestamptz(3)
   deletedAt           DateTime?            @db.Timestamptz(3)
+  accounts            Account[]
   blogs               Blog[]
   comments            Comment[]
   commentReactions    CommentReaction[]
   passwordResetTokens PasswordResetToken[]
 
   @@index([email], name: "email")
+}
+
+model Account {
+  id                String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model PasswordResetToken {

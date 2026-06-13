@@ -16,9 +16,10 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "img-src 'self' https: http: data: blob:",
   "font-src 'self' data:",
-  "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
-  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io https://va.vercel-scripts.com https://*.vercel-insights.com",
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://accounts.google.com",
+  "frame-src 'self' https://accounts.google.com",
+  "connect-src 'self' https://*.ingest.uploadthing.com https://*.uploadthing.com https://*.ufs.sh https://utfs.io https://va.vercel-scripts.com https://*.vercel-insights.com https://accounts.google.com https://oauth2.googleapis.com https://github.com https://www.linkedin.com",
   'upgrade-insecure-requests',
 ].join('; ');
 
@@ -33,6 +34,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com', pathname: '/**' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'media.licdn.com', pathname: '/**' },
     ],
   },
   async rewrites() {
@@ -57,7 +59,8 @@ const nextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value:
+              'camera=(), microphone=(), geolocation=(), identity-credentials-get=(self)',
           },
           {
             key: 'Strict-Transport-Security',

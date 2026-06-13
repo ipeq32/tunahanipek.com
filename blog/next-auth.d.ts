@@ -10,14 +10,15 @@ declare module 'next-auth' {
     id: string;
     email: string;
     name: string;
-    phone: string;
-    address: string;
+    phone?: string;
+    address?: string;
     website?: string | null;
     image?: string | null;
     bio?: string | null;
-    role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
-    createdAt: Date;
-    updatedAt: Date;
+    role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+    createdAt?: Date;
+    updatedAt?: Date;
     deletedAt?: Date | null;
+    hasPassword?: boolean;
   }
 }
