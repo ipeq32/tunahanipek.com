@@ -1,5 +1,6 @@
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
+import { canPublishProject } from '@/lib/auth-roles';
 import { getAdminProjectById } from '@/lib/data/projects';
 import {
   updateProjectTranslationPublished,
@@ -104,6 +105,15 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     if (data.published !== undefined) {
+      if (
+        !canPublishProject(
+          authContext.permissions,
+          authContext.session.user.email
+        )
+      ) {
+        return apiError(request, 'forbidden', 403);
+      }
+
       const languageCode = data.languageCode ?? locale;
       const updated = await updateProjectTranslationPublished(
         id,

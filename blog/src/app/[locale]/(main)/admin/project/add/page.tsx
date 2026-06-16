@@ -1,7 +1,7 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import ProjectForm from '@/components/project/ProjectForm';
 import { auth } from '@/auth';
-import { hasUserPermission } from '@/lib/auth-roles';
+import { hasUserPermission, canPublishProject } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { redirect } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -31,6 +31,10 @@ export default async function AddProjectPage({ params }: Props) {
       <HeaderTemplate title={t('addTitle')} description={t('description')} />
       <ProjectForm
         mode="create"
+        canPublish={canPublishProject(
+          session.user.permissions,
+          session.user.email
+        )}
         defaultValues={{
           url: '',
           image: '',

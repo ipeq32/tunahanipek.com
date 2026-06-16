@@ -23,6 +23,8 @@ function getImageUploadPermission(
       return PERMISSIONS['upload:blog-image'];
     case 'profileImageUploader':
       return PERMISSIONS['upload:profile-image'];
+    case 'projectImageUploader':
+      return PERMISSIONS['upload:project-image'];
     default:
       return undefined;
   }

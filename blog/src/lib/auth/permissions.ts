@@ -17,6 +17,7 @@ export const PERMISSIONS = {
   'project:create': 'project:create',
   'project:update': 'project:update',
   'project:delete': 'project:delete',
+  'project:publish': 'project:publish',
   'project:admin-list': 'project:admin-list',
 
   'user:read': 'user:read',
@@ -41,6 +42,7 @@ export const PERMISSIONS = {
 
   'upload:profile-image': 'upload:profile-image',
   'upload:blog-image': 'upload:blog-image',
+  'upload:project-image': 'upload:project-image',
   'upload:cv': 'upload:cv',
   'upload:delete': 'upload:delete',
 
@@ -73,7 +75,6 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       PERMISSIONS['blog:delete'],
       PERMISSIONS['blog:delete-any'],
       PERMISSIONS['blog:publish'],
-      PERMISSIONS['blog:auto-publish'],
       PERMISSIONS['blog:admin-list'],
     ],
   },
@@ -94,6 +95,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       PERMISSIONS['project:create'],
       PERMISSIONS['project:update'],
       PERMISSIONS['project:delete'],
+      PERMISSIONS['project:publish'],
       PERMISSIONS['project:admin-list'],
     ],
   },
@@ -143,6 +145,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     permissions: [
       PERMISSIONS['upload:profile-image'],
       PERMISSIONS['upload:blog-image'],
+      PERMISSIONS['upload:project-image'],
       PERMISSIONS['upload:cv'],
       PERMISSIONS['upload:delete'],
     ],

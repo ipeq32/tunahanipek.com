@@ -2,7 +2,7 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import ProjectForm from '@/components/project/ProjectForm';
 import { getAdminProjectById } from '@/lib/data/projects';
 import { auth } from '@/auth';
-import { hasUserPermission } from '@/lib/auth-roles';
+import { hasUserPermission, canPublishProject } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { notFound } from 'next/navigation';
 import { redirect } from '@/navigation';
@@ -40,6 +40,10 @@ export default async function EditProjectPage({ params }: Props) {
       <ProjectForm
         mode="edit"
         projectId={id}
+        canPublish={canPublishProject(
+          session.user.permissions,
+          session.user.email
+        )}
         defaultValues={{
           url: project.url ?? '',
           image: project.image ?? '',

@@ -69,6 +69,7 @@ export type ProjectFormValues = z.infer<typeof formSchema>;
 type ProjectFormProps = {
   mode: 'create' | 'edit';
   projectId?: string;
+  canPublish?: boolean;
   defaultValues: {
     url: string;
     image: string;
@@ -85,6 +86,7 @@ type ProjectFormProps = {
 export default function ProjectForm({
   mode,
   projectId,
+  canPublish = false,
   defaultValues,
 }: ProjectFormProps) {
   const router = useRouter();
@@ -140,7 +142,7 @@ export default function ProjectForm({
         languageCode,
         title: fields.title.trim(),
         description: fields.description,
-        published: fields.published,
+        published: canPublish ? fields.published : false,
       })),
     );
 
@@ -268,21 +270,23 @@ export default function ProjectForm({
                   )}
                 />
 
-                <Controller
-                  control={form.control}
-                  name={`translations.${language.code}.published`}
-                  render={({ field }) => (
-                    <label className="flex w-fit items-center gap-2 rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        className="h-4 w-4 rounded border-border accent-teal-600"
-                      />
-                      {t('fieldPublished')} ({language.name})
-                    </label>
-                  )}
-                />
+                {canPublish && (
+                  <Controller
+                    control={form.control}
+                    name={`translations.${language.code}.published`}
+                    render={({ field }) => (
+                      <label className="flex w-fit items-center gap-2 rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          className="h-4 w-4 rounded border-border accent-teal-600"
+                        />
+                        {t('fieldPublished')} ({language.name})
+                      </label>
+                    )}
+                  />
+                )}
               </div>
             );
           })}

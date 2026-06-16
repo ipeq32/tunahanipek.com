@@ -1,4 +1,5 @@
-import { requireAuth } from '@/lib/auth/guards';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { toggleCommentReaction } from '@/lib/data/comments';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -20,9 +21,9 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const authContext = await requireAuth();
+  const authContext = await requirePermission(PERMISSIONS['comment:react']);
   if (!authContext) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const { allowed, retryAfterMs } = checkRateLimit(

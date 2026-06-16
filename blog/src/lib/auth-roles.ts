@@ -62,6 +62,16 @@ export function canDeleteAnyBlog(
   );
 }
 
+export function canPublishProject(
+  permissions?: string[],
+  email?: string | null
+): boolean {
+  return (
+    isPrimarySuperAdmin(email) ||
+    hasPermission(permissions, PERMISSIONS['project:publish'])
+  );
+}
+
 export function canPublishBlog(
   permissions?: string[],
   email?: string | null

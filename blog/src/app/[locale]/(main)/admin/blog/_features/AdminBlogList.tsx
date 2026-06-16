@@ -29,6 +29,8 @@ import {
 
 type AdminBlogListProps = {
   initialBlogs: IGetBlog[];
+  canPublish?: boolean;
+  canDelete?: boolean;
 };
 
 type StatusFilter = 'all' | 'published' | 'drafts';
@@ -59,7 +61,11 @@ function StatCard({
   );
 }
 
-export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
+export default function AdminBlogList({
+  initialBlogs,
+  canPublish = false,
+  canDelete = false,
+}: AdminBlogListProps) {
   const t = useTranslations('Admin.Blog');
   const locale = useLocale();
   const format = useFormatter();
@@ -311,29 +317,33 @@ export default function AdminBlogList({ initialBlogs }: AdminBlogListProps) {
                     <Pencil className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button
-                  variant={blog.published ? 'secondary' : 'accent'}
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={() => togglePublished(blog.id, blog.published)}
-                >
-                  {blog.published ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  {blog.published ? t('unpublish') : t('publish')}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={() => setDeleteTarget(blog)}
-                  aria-label={t('delete')}
-                  title={t('delete')}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {canPublish && (
+                  <Button
+                    variant={blog.published ? 'secondary' : 'accent'}
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => togglePublished(blog.id, blog.published)}
+                  >
+                    {blog.published ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    {blog.published ? t('unpublish') : t('publish')}
+                  </Button>
+                )}
+                {canDelete && (
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => setDeleteTarget(blog)}
+                    aria-label={t('delete')}
+                    title={t('delete')}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}

@@ -29,6 +29,8 @@ import {
 
 type AdminProjectListProps = {
   initialProjects: ProjectDto[];
+  canPublish?: boolean;
+  canDelete?: boolean;
 };
 
 type StatusFilter = 'all' | 'published' | 'drafts';
@@ -61,6 +63,8 @@ function StatCard({
 
 export default function AdminProjectList({
   initialProjects,
+  canPublish = false,
+  canDelete = false,
 }: AdminProjectListProps) {
   const t = useTranslations('Admin.Project');
   const locale = useLocale();
@@ -283,29 +287,33 @@ export default function AdminProjectList({
                     <Pencil className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button
-                  variant={project.published ? 'secondary' : 'accent'}
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={() => togglePublished(project)}
-                >
-                  {project.published ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  {project.published ? t('unpublish') : t('publish')}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={() => setDeleteTarget(project)}
-                  aria-label={t('delete')}
-                  title={t('delete')}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {canPublish && (
+                  <Button
+                    variant={project.published ? 'secondary' : 'accent'}
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => togglePublished(project)}
+                  >
+                    {project.published ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    {project.published ? t('unpublish') : t('publish')}
+                  </Button>
+                )}
+                {canDelete && (
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => setDeleteTarget(project)}
+                    aria-label={t('delete')}
+                    title={t('delete')}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
