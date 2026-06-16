@@ -39,6 +39,7 @@ export const PERMISSIONS = {
   'resume:update': 'resume:update',
   'resume:delete': 'resume:delete',
 
+  'upload:profile-image': 'upload:profile-image',
   'upload:blog-image': 'upload:blog-image',
   'upload:cv': 'upload:cv',
   'upload:delete': 'upload:delete',
@@ -140,6 +141,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     key: 'upload',
     labelKey: 'groups.upload',
     permissions: [
+      PERMISSIONS['upload:profile-image'],
       PERMISSIONS['upload:blog-image'],
       PERMISSIONS['upload:cv'],
       PERMISSIONS['upload:delete'],
@@ -176,8 +178,23 @@ const MEMBER_PERMISSIONS: Permission[] = [
   PERMISSIONS['account:read'],
   PERMISSIONS['account:unlink'],
   PERMISSIONS['account:link'],
+  PERMISSIONS['upload:profile-image'],
   PERMISSIONS['upload:delete'],
 ];
+
+/** Minimum permissions every custom role must include. */
+export const DEFAULT_ROLE_PERMISSIONS: Permission[] = [...MEMBER_PERMISSIONS];
+
+export function isDefaultRolePermission(value: string): value is Permission {
+  return DEFAULT_ROLE_PERMISSIONS.includes(value as Permission);
+}
+
+export function withDefaultRolePermissions(permissions: string[]): Permission[] {
+  return normalizePermissions([
+    ...DEFAULT_ROLE_PERMISSIONS,
+    ...permissions,
+  ]) as Permission[];
+}
 
 export const SYSTEM_ROLE_PRESETS: Array<{
   name: string;

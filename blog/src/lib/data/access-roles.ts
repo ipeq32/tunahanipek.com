@@ -15,6 +15,7 @@ import {
   rolePermissionsSelect,
   syncRolePermissions,
 } from '@/lib/data/role-permissions';
+import { withDefaultRolePermissions } from '@/lib/auth/permissions';
 import { prisma } from '@/lib/prisma';
 
 const accessRoleSelect = {
@@ -55,7 +56,9 @@ export async function createAccessRole(input: {
   description?: string;
   permissions: string[];
 }): Promise<AccessRoleDto> {
-  const permissionKeys = assertValidRolePermissions(input.permissions);
+  const permissionKeys = assertValidRolePermissions(
+    withDefaultRolePermissions(input.permissions)
+  );
 
   const existing = await prisma.accessRole.findUnique({
     where: { slug: input.slug },
@@ -123,7 +126,9 @@ export async function updateAccessRole(
   if (input.permissions !== undefined) {
     await syncRolePermissions(
       id,
-      assertValidRolePermissions(input.permissions)
+      assertValidRolePermissions(
+        withDefaultRolePermissions(input.permissions)
+      )
     );
   }
 

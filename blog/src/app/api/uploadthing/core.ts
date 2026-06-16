@@ -15,6 +15,19 @@ type AuthImageRoute =
   | 'projectImageUploader'
   | 'profileImageUploader';
 
+function getImageUploadPermission(
+  endpoint: AuthImageRoute
+): (typeof PERMISSIONS)[keyof typeof PERMISSIONS] | undefined {
+  switch (endpoint) {
+    case 'blogImageUploader':
+      return PERMISSIONS['upload:blog-image'];
+    case 'profileImageUploader':
+      return PERMISSIONS['upload:profile-image'];
+    default:
+      return undefined;
+  }
+}
+
 /** Blog / proje / profil görselleri — UploadThing panelinde ayrı Route olarak görünür. */
 function authImageRoute(endpoint: AuthImageRoute) {
   const config = UPLOAD_CONFIG[endpoint];
@@ -26,10 +39,7 @@ function authImageRoute(endpoint: AuthImageRoute) {
     },
   })
     .middleware(async () => {
-      const permission =
-        endpoint === 'blogImageUploader'
-          ? PERMISSIONS['upload:blog-image']
-          : undefined;
+      const permission = getImageUploadPermission(endpoint);
 
       if (permission) {
         const context = await requirePermission(permission);

@@ -20,8 +20,11 @@ import {
   AdminListSkeleton,
 } from '@/components/admin/admin-ui';
 import {
+  DEFAULT_ROLE_PERMISSIONS,
   PERMISSION_GROUPS,
+  isDefaultRolePermission,
   isValidPermission,
+  withDefaultRolePermissions,
   type Permission,
 } from '@/lib/auth/permissions';
 import type { AccessRoleDto } from '@/lib/admin/roles/types';
@@ -56,7 +59,7 @@ const EMPTY_FORM: RoleFormState = {
   name: '',
   slug: '',
   description: '',
-  permissions: [],
+  permissions: [...DEFAULT_ROLE_PERMISSIONS],
 };
 
 function slugify(value: string): string {
@@ -71,23 +74,29 @@ function slugify(value: string): string {
 function PermissionCheckbox({
   checked,
   indeterminate,
+  disabled,
   onChange,
 }: {
   checked: boolean;
   indeterminate?: boolean;
+  disabled?: boolean;
   onChange: (checked: boolean) => void;
 }) {
   return (
     <input
       type="checkbox"
       checked={checked}
+      disabled={disabled}
       ref={(element) => {
         if (element) {
           element.indeterminate = Boolean(indeterminate);
         }
       }}
       onChange={(event) => onChange(event.target.checked)}
-      className="mt-0.5 h-4 w-4 rounded border-border text-teal-600 focus:ring-teal-500/30"
+      className={cn(
+        'mt-0.5 h-4 w-4 rounded border-border text-teal-600 focus:ring-teal-500/30',
+        disabled && 'cursor-not-allowed opacity-60'
+      )}
     />
   );
 }
@@ -154,8 +163,10 @@ export default function AdminRolesEditor({
       name: role.name,
       slug: role.slug,
       description: role.description ?? '',
-      permissions: role.permissions.filter(
-        (item): item is Permission => isValidPermission(item)
+      permissions: withDefaultRolePermissions(
+        role.permissions.filter((item): item is Permission =>
+          isValidPermission(item)
+        )
       ),
     });
   };
@@ -167,34 +178,51 @@ export default function AdminRolesEditor({
   };
 
   const togglePermission = (permission: Permission, checked: boolean) => {
+    if (isDefaultRolePermission(permission)) return;
+
     setForm((prev) => ({
       ...prev,
-      permissions: checked
-        ? [...prev.permissions, permission]
-        : prev.permissions.filter((item) => item !== permission),
+      permissions: withDefaultRolePermissions(
+        checked
+          ? [...prev.permissions, permission]
+          : prev.permissions.filter((item) => item !== permission)
+      ),
     }));
   };
 
   const toggleGroup = (permissions: Permission[], checked: boolean) => {
+    const optionalPermissions: Permission[] = permissions.filter(
+      (permission) => !isDefaultRolePermission(permission)
+    );
+
+    if (!optionalPermissions.length) return;
+
     setForm((prev) => {
       if (checked) {
         return {
           ...prev,
-          permissions: [...new Set([...prev.permissions, ...permissions])],
+          permissions: withDefaultRolePermissions([
+            ...prev.permissions,
+            ...optionalPermissions,
+          ]),
         };
       }
 
       return {
         ...prev,
-        permissions: prev.permissions.filter(
-          (item) => !permissions.includes(item)
+        permissions: withDefaultRolePermissions(
+          prev.permissions.filter(
+            (item) => !optionalPermissions.includes(item)
+          )
         ),
       };
     });
   };
 
   const saveRole = async () => {
-    if (!form.name.trim() || !form.permissions.length) {
+    const permissions = withDefaultRolePermissions(form.permissions);
+
+    if (!form.name.trim()) {
       toast.error(t('validationError'));
       return;
     }
@@ -205,7 +233,7 @@ export default function AdminRolesEditor({
         name: form.name.trim(),
         slug: mode === 'create' ? slugify(form.slug || form.name) : undefined,
         description: form.description.trim() || undefined,
-        permissions: form.permissions,
+        permissions,
       };
 
       const res = await fetch(
@@ -399,12 +427,59 @@ export default function AdminRolesEditor({
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm font-medium">{t('permissionsTitle')}</p>
+              <div>
+                <p className="text-sm font-medium">{t('permissionsTitle')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('defaultPermissionsHint')}
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-teal-500/20 bg-teal-500/5 p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                  <span className="text-sm font-semibold">
+                    {t('defaultPermissionsTitle')}
+                  </span>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {DEFAULT_ROLE_PERMISSIONS.map((permission) => (
+                    <div
+                      key={permission}
+                      className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm opacity-90"
+                    >
+                      <PermissionCheckbox
+                        checked
+                        disabled
+                        onChange={() => undefined}
+                      />
+                      <span>
+                        <span className="font-medium">
+                          {tPermissions(`items.${permission}.title`)}
+                        </span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {tPermissions(`items.${permission}.description`)}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className="text-sm font-medium text-muted-foreground">
+                {t('optionalPermissionsTitle')}
+              </p>
+
               {PERMISSION_GROUPS.map((group) => {
-                const allChecked = group.permissions.every((permission) =>
+                const optionalPermissions: Permission[] = group.permissions.filter(
+                  (permission) => !isDefaultRolePermission(permission)
+                );
+
+                if (!optionalPermissions.length) return null;
+
+                const allChecked = optionalPermissions.every((permission) =>
                   form.permissions.includes(permission)
                 );
-                const someChecked = group.permissions.some((permission) =>
+                const someChecked = optionalPermissions.some((permission) =>
                   form.permissions.includes(permission)
                 );
 
@@ -427,7 +502,7 @@ export default function AdminRolesEditor({
                     </div>
 
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {group.permissions.map((permission) => (
+                      {optionalPermissions.map((permission) => (
                         <label
                           key={permission}
                           className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted/40"
