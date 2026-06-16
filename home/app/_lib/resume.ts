@@ -1,24 +1,10 @@
-import { site } from "@/app/_content/site";
+import { getBlogApiBase } from "@/app/_lib/blog-urls";
 
 export type PublicResume = {
   url: string;
   fileName: string;
   updatedAt: string;
 };
-
-function getBlogApiBase(): string {
-  const internal = process.env.BLOG_INTERNAL_API_URL?.replace(/\/$/, "");
-  if (internal) {
-    return internal;
-  }
-
-  const base =
-    process.env.BLOG_API_URL ??
-    process.env.NEXT_PUBLIC_BLOG_URL ??
-    site.blogUrl;
-
-  return base.replace(/\/$/, "");
-}
 
 export async function fetchPublicResume(): Promise<PublicResume | null> {
   try {

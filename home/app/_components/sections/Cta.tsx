@@ -2,8 +2,13 @@ import { getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
+import type { PublicContact } from "@/app/_lib/contact";
 
-export default async function Cta() {
+type CtaProps = {
+  contact: PublicContact;
+};
+
+export default async function Cta({ contact }: CtaProps) {
   const t = await getTranslations("Cta");
 
   const socialLinks = [
@@ -26,7 +31,7 @@ export default async function Cta() {
           </h2>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            {site.emails.map((email) => (
+            {contact.emails.map((email) => (
               <a
                 key={email.address}
                 href={`mailto:${email.address}`}

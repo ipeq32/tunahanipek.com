@@ -1,4 +1,5 @@
 import HomePage from "@/app/_components/HomePage";
+import { fetchPublicContact } from "@/app/_lib/contact";
 import { fetchPublicResume } from "@/app/_lib/resume";
 import { locales } from "@/config";
 import { setRequestLocale } from "next-intl/server";
@@ -17,7 +18,10 @@ export default async function Page({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const resume = await fetchPublicResume();
+  const [resume, contact] = await Promise.all([
+    fetchPublicResume(),
+    fetchPublicContact(),
+  ]);
 
-  return <HomePage resume={resume} />;
+  return <HomePage resume={resume} contact={contact} />;
 }
