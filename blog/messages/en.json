@@ -1292,6 +1292,9 @@
         "errors": {
           "OAuthSignin": "An error occurred during social sign-in.",
           "Configuration": "OAuth configuration is invalid.",
+          "oauthSignin": "An error occurred during social sign-in.",
+          "configuration": "OAuth configuration is invalid.",
+          "accessDenied": "Sign-in was denied or cancelled.",
           "description": "An unknown error occurred."
         }
       }

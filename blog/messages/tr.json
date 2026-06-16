@@ -1291,6 +1291,9 @@
         "errors": {
           "OAuthSignin": "Sosyal giriş sırasında bir hata oluştu.",
           "Configuration": "OAuth yapılandırması hatalı.",
+          "oauthSignin": "Sosyal giriş sırasında bir hata oluştu.",
+          "configuration": "OAuth yapılandırması hatalı.",
+          "accessDenied": "Giriş reddedildi veya iptal edildi.",
           "description": "Bilinmeyen bir hata oluştu."
         }
       }
