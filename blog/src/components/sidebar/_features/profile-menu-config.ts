@@ -1,9 +1,10 @@
-import { hasUserPermission } from '@/lib/auth-roles';
+import { hasUserPermission, canAccessAdminPanel } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import type { ComponentProps } from 'react';
 import type { Link } from '@/navigation';
 import type { LucideIcon } from 'lucide-react';
 import {
+  BarChart3,
   FolderKanban,
   FolderPlus,
   LayoutDashboard,
@@ -46,6 +47,7 @@ type ProfileMenuTranslator = (
     | 'manageUsers'
     | 'manageRoles'
     | 'manageSiteCopy'
+    | 'viewStats'
     | `roles.${string}`
 ) => string;
 
@@ -96,6 +98,7 @@ export function buildProfileMenuConfig(
     PERMISSIONS['site-copy:read'],
     email
   );
+  const canViewStats = canAccessAdminPanel(permissions, email);
 
   const roleLabel = user?.accessRoleName ?? t(`roles.${user?.role ?? 'USER'}`);
   const initials = user?.name?.charAt(0).toUpperCase() ?? '?';
@@ -196,6 +199,15 @@ export function buildProfileMenuConfig(
       href: '/admin/site-copy',
       icon: Sparkles,
       label: t('manageSiteCopy'),
+    });
+  }
+
+  if (canViewStats) {
+    adminItems.push({
+      type: 'link',
+      href: '/admin/stats',
+      icon: BarChart3,
+      label: t('viewStats'),
     });
   }
 

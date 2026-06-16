@@ -346,6 +346,89 @@
         }
       }
     },
+    "Stats": {
+      "title": "Statistics",
+      "description": "Site-wide metrics and AI usage overview.",
+      "dashboardTitle": "Dashboard overview",
+      "refresh": "Refresh",
+      "loadError": "Failed to load statistics",
+      "lastUpdatedHint": "Data is fetched live from the server.",
+      "siteOverview": "Site overview",
+      "siteOverviewHint": "Blog, project, user and comment metrics.",
+      "blogs": {
+        "total": "Blog posts",
+        "publishedDrafts": "{published} published · {drafts} drafts"
+      },
+      "projects": {
+        "total": "Projects",
+        "publishedDrafts": "{published} published · {drafts} drafts"
+      },
+      "users": {
+        "total": "Users",
+        "breakdown": "{admins} admins · {members} members"
+      },
+      "comments": {
+        "total": "Comments",
+        "pending": "{count} pending",
+        "approved": "Approved comments",
+        "rejected": "{count} rejected"
+      },
+      "siteSnippets": {
+        "total": "Site copy lines",
+        "active": "{count} active lines"
+      },
+      "ai": {
+        "title": "AI usage",
+        "subtitle": "Per-model requests, success rate and activity history.",
+        "statusOn": "AI enabled",
+        "statusOff": "AI disabled",
+        "autoTranslate": "Auto-translate on",
+        "totalRequests": "Total requests",
+        "today": "Today",
+        "thisWeek": "This week: {count}",
+        "thisMonth": "This month",
+        "successRate": "Success: {rate}%",
+        "avgDuration": "Avg. duration",
+        "durationMs": "{ms} ms",
+        "characters": "Input: {prompt} · Output: {response} chars",
+        "dailyChart": "Last 30 days",
+        "byModel": "Usage by model",
+        "byAction": "By action",
+        "byContext": "By context",
+        "byProvider": "By provider",
+        "modelRequests": "requests",
+        "modelSuccess": "Successful",
+        "modelDuration": "Avg. time",
+        "modelChars": "Characters",
+        "modelShare": "{percent}% of total",
+        "activeModel": "Active model",
+        "noModels": "No per-model usage yet. It will appear here after you use AI features.",
+        "recentActivity": "Recent activity",
+        "noActivity": "No AI usage logged yet.",
+        "systemUser": "System",
+        "actions": {
+          "translate": "Translate",
+          "expand": "Expand",
+          "generate": "Generate",
+          "improve": "Improve",
+          "test": "Connection test"
+        },
+        "contexts": {
+          "blog": "Blog",
+          "project": "Project",
+          "site_copy_tip": "Site tip",
+          "site_copy_footer": "Footer copy",
+          "settings_test": "Settings test",
+          "auto_blog": "Auto-translate (blog)",
+          "auto_project": "Auto-translate (project)"
+        },
+        "providers": {
+          "gemini": "Gemini",
+          "groq": "Groq",
+          "ollama": "Ollama"
+        }
+      }
+    },
     "SiteCopy": {
       "title": "Site Copy",
       "description": "Edit Did you know? tips and the funny footer lines.",
@@ -1499,6 +1582,7 @@
           "manageUsers": "User Management",
           "manageRoles": "Role Management",
           "manageSiteCopy": "Site Copy",
+          "viewStats": "Statistics",
           "logout": "Logout",
           "roles": {
             "USER": "Member",

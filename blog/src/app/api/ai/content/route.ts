@@ -65,6 +65,11 @@ export async function POST(request: Request) {
         sourceLanguage,
         targetLanguage,
         fields,
+        usage: {
+          userId: context.userId,
+          action: 'translate',
+          context: contentType,
+        },
       });
 
       return NextResponse.json({ data });
@@ -74,6 +79,11 @@ export async function POST(request: Request) {
       contentType,
       language: sourceLanguage,
       fields,
+      usage: {
+        userId: context.userId,
+        action: 'expand',
+        context: contentType,
+      },
     });
 
     return NextResponse.json({ data });

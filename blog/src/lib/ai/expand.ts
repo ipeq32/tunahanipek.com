@@ -3,6 +3,7 @@ import 'server-only';
 import { extractJsonObject, pickString } from '@/lib/ai/parse-response';
 import { buildExpandPrompt } from '@/lib/ai/prompts';
 import { generateWithAi } from '@/lib/ai/provider';
+import type { AiUsageMeta } from '@/lib/ai/usage-log';
 import type { ContentFields, DecryptedAiConfig } from '@/lib/ai/types';
 import { prepareAiRichField } from '@/lib/rich-content';
 
@@ -11,6 +12,7 @@ type ExpandParams = {
   language: string;
   fields: ContentFields;
   config?: DecryptedAiConfig;
+  usage?: AiUsageMeta;
 };
 
 function sanitizeExpanded(
@@ -60,7 +62,13 @@ export async function expandContent(
     fields: params.fields as Record<string, string | undefined>,
   });
 
-  const raw = await generateWithAi(prompt, { config: params.config });
+  const raw = await generateWithAi(prompt, {
+    config: params.config,
+    usage: params.usage ?? {
+      action: 'expand',
+      context: params.contentType,
+    },
+  });
   const parsed = extractJsonObject(raw);
   return sanitizeExpanded(params.contentType, parsed);
 }

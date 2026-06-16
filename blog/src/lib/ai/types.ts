@@ -1,8 +1,10 @@
 import type { DecryptedAiConfig } from '@/lib/site-ai-settings';
+import type { AiUsageMeta } from '@/lib/ai/usage-log';
 
 export type AiGenerateOptions = {
   temperature?: number;
   maxOutputTokens?: number;
+  usage?: AiUsageMeta;
 };
 
 export interface AiProviderClient {

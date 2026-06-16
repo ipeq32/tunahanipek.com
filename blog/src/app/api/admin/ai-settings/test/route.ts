@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await testAiConnection(draft);
+    const result = await testAiConnection(draft, context.userId);
     return NextResponse.json({ data: result });
   } catch (error) {
     if (error instanceof AiNotConfiguredError) {

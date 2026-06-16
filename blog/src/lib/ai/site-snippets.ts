@@ -11,9 +11,14 @@ import {
   buildSiteSnippetTranslatePrompt,
 } from '@/lib/ai/prompts';
 import { generateWithAi } from '@/lib/ai/provider';
+import type { AiUsageMeta } from '@/lib/ai/usage-log';
 import type { DecryptedAiConfig } from '@/lib/ai/types';
 
 type SnippetType = 'TIP' | 'FOOTER_MOTTO';
+
+function snippetContext(type: SnippetType): string {
+  return type === 'TIP' ? 'site_copy_tip' : 'site_copy_footer';
+}
 
 export async function generateSiteSnippets(params: {
   type: SnippetType;
@@ -22,9 +27,16 @@ export async function generateSiteSnippets(params: {
   topic?: string;
   examples?: string[];
   config?: DecryptedAiConfig;
+  usage?: AiUsageMeta;
 }): Promise<string[]> {
   const prompt = buildSiteSnippetGeneratePrompt(params);
-  const raw = await generateWithAi(prompt, { config: params.config });
+  const raw = await generateWithAi(prompt, {
+    config: params.config,
+    usage: params.usage ?? {
+      action: 'generate',
+      context: snippetContext(params.type),
+    },
+  });
   const parsed = extractJsonObject(raw);
   const items = pickStringArray(parsed, 'items');
 
@@ -41,13 +53,20 @@ export async function translateSiteSnippets(params: {
   targetLanguage: string;
   items: string[];
   config?: DecryptedAiConfig;
+  usage?: AiUsageMeta;
 }): Promise<string[]> {
   if (!params.items.length) {
     throw new Error('No lines to translate');
   }
 
   const prompt = buildSiteSnippetTranslatePrompt(params);
-  const raw = await generateWithAi(prompt, { config: params.config });
+  const raw = await generateWithAi(prompt, {
+    config: params.config,
+    usage: params.usage ?? {
+      action: 'translate',
+      context: snippetContext(params.type),
+    },
+  });
   const parsed = extractJsonObject(raw);
   const items = pickStringArray(parsed, 'items');
 
@@ -63,9 +82,16 @@ export async function improveSiteSnippet(params: {
   locale: string;
   line: string;
   config?: DecryptedAiConfig;
+  usage?: AiUsageMeta;
 }): Promise<string> {
   const prompt = buildSiteSnippetImprovePrompt(params);
-  const raw = await generateWithAi(prompt, { config: params.config });
+  const raw = await generateWithAi(prompt, {
+    config: params.config,
+    usage: params.usage ?? {
+      action: 'improve',
+      context: snippetContext(params.type),
+    },
+  });
   const parsed = extractJsonObject(raw);
   const item = pickString(parsed, 'item');
 

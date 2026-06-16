@@ -115,4 +115,8 @@ export default {
     en: '/admin/site-copy',
     tr: '/admin/site-metinleri',
   },
+  '/admin/stats': {
+    en: '/admin/stats',
+    tr: '/admin/istatistikler',
+  },
 } satisfies Pathnames<typeof locales>;

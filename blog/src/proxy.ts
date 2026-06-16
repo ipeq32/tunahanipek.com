@@ -43,6 +43,7 @@ const adminPages = [
   pathnames['/admin/users'],
   pathnames['/admin/roles'],
   pathnames['/admin/site-copy'],
+  pathnames['/admin/stats'],
 ];
 
 const authPages = [

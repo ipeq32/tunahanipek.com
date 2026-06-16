@@ -3,6 +3,7 @@ import 'server-only';
 import { extractJsonObject, pickString } from '@/lib/ai/parse-response';
 import { buildTranslatePrompt } from '@/lib/ai/prompts';
 import { generateWithAi } from '@/lib/ai/provider';
+import type { AiUsageMeta } from '@/lib/ai/usage-log';
 import type { ContentFields, DecryptedAiConfig } from '@/lib/ai/types';
 import { prepareAiRichField } from '@/lib/rich-content';
 
@@ -12,6 +13,7 @@ type TranslateParams = {
   targetLanguage: string;
   fields: ContentFields;
   config?: DecryptedAiConfig;
+  usage?: AiUsageMeta;
 };
 
 function sanitizeFields(
@@ -62,7 +64,13 @@ export async function translateContent(
     fields: params.fields as Record<string, string | undefined>,
   });
 
-  const raw = await generateWithAi(prompt, { config: params.config });
+  const raw = await generateWithAi(prompt, {
+    config: params.config,
+    usage: params.usage ?? {
+      action: 'translate',
+      context: params.contentType,
+    },
+  });
   const parsed = extractJsonObject(raw);
   return sanitizeFields(params.contentType, parsed);
 }

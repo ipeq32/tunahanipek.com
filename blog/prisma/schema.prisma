@@ -89,6 +89,7 @@ model User {
   comments            Comment[]
   commentReactions    CommentReaction[]
   passwordResetTokens PasswordResetToken[]
+  aiUsageLogs         AiUsageLog[]
 
   @@index([email], name: "email")
 }
@@ -263,6 +264,14 @@ enum AiProvider {
   ollama
 }
 
+enum AiUsageAction {
+  translate
+  expand
+  generate
+  improve
+  test
+}
+
 enum SiteSnippetType {
   TIP
   FOOTER_MOTTO
@@ -282,6 +291,27 @@ model SiteSnippet {
   @@unique([locale, type, content])
   @@index([type, locale, sortOrder])
   @@index([type, locale, isActive])
+}
+
+/// Yapay zeka API çağrı kayıtları (istatistik ve denetim).
+model AiUsageLog {
+  id            String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId        String?        @db.Uuid
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action        AiUsageAction
+  context       String
+  provider      AiProvider
+  model         String
+  promptChars   Int            @default(0)
+  responseChars Int            @default(0)
+  durationMs    Int            @default(0)
+  success       Boolean        @default(true)
+  createdAt     DateTime       @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([context, createdAt])
 }
 
 /// Site geneli AI içerik/çeviri ayarları (süper admin).

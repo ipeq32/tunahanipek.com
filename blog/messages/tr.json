@@ -346,6 +346,89 @@
         }
       }
     },
+    "Stats": {
+      "title": "İstatistikler",
+      "description": "Site geneli metrikler ve yapay zeka kullanım özeti.",
+      "dashboardTitle": "Yönetim paneli özeti",
+      "refresh": "Yenile",
+      "loadError": "İstatistikler yüklenemedi",
+      "lastUpdatedHint": "Veriler sunucudan anlık olarak alınır.",
+      "siteOverview": "Site özeti",
+      "siteOverviewHint": "Blog, proje, kullanıcı ve yorum metrikleri.",
+      "blogs": {
+        "total": "Blog yazıları",
+        "publishedDrafts": "{published} yayında · {drafts} taslak"
+      },
+      "projects": {
+        "total": "Projeler",
+        "publishedDrafts": "{published} yayında · {drafts} taslak"
+      },
+      "users": {
+        "total": "Kullanıcılar",
+        "breakdown": "{admins} yönetici · {members} üye"
+      },
+      "comments": {
+        "total": "Yorumlar",
+        "pending": "{count} onay bekliyor",
+        "approved": "Onaylanan yorumlar",
+        "rejected": "{count} reddedildi"
+      },
+      "siteSnippets": {
+        "total": "Site metinleri",
+        "active": "{count} aktif satır"
+      },
+      "ai": {
+        "title": "Yapay zeka kullanımı",
+        "subtitle": "Model bazlı istekler, başarı oranı ve aktivite geçmişi.",
+        "statusOn": "AI aktif",
+        "statusOff": "AI kapalı",
+        "autoTranslate": "Otomatik çeviri açık",
+        "totalRequests": "Toplam istek",
+        "today": "Bugün",
+        "thisWeek": "Bu hafta: {count}",
+        "thisMonth": "Bu ay",
+        "successRate": "Başarı: %{rate}",
+        "avgDuration": "Ort. süre",
+        "durationMs": "{ms} ms",
+        "characters": "Girdi: {prompt} · Çıktı: {response} karakter",
+        "dailyChart": "Son 30 gün",
+        "byModel": "Modele göre kullanım",
+        "byAction": "İşlem türüne göre",
+        "byContext": "Bağlama göre",
+        "byProvider": "Sağlayıcıya göre",
+        "modelRequests": "istek",
+        "modelSuccess": "Başarılı",
+        "modelDuration": "Ort. süre",
+        "modelChars": "Karakter",
+        "modelShare": "Toplamın %{percent}'i",
+        "activeModel": "Aktif model",
+        "noModels": "Henüz model bazlı kullanım kaydı yok. AI ile içerik oluşturduğunuzda burada görünür.",
+        "recentActivity": "Son aktiviteler",
+        "noActivity": "Henüz AI kullanım kaydı yok.",
+        "systemUser": "Sistem",
+        "actions": {
+          "translate": "Çeviri",
+          "expand": "Genişletme",
+          "generate": "Oluşturma",
+          "improve": "İyileştirme",
+          "test": "Bağlantı testi"
+        },
+        "contexts": {
+          "blog": "Blog",
+          "project": "Proje",
+          "site_copy_tip": "Site ipucu",
+          "site_copy_footer": "Footer metni",
+          "settings_test": "Ayarlar testi",
+          "auto_blog": "Otomatik çeviri (blog)",
+          "auto_project": "Otomatik çeviri (proje)"
+        },
+        "providers": {
+          "gemini": "Gemini",
+          "groq": "Groq",
+          "ollama": "Ollama"
+        }
+      }
+    },
     "SiteCopy": {
       "title": "Site Metinleri",
       "description": "Bunu biliyor muydun? ipuçlarını ve footer'daki komik metinleri düzenleyin.",
@@ -1498,6 +1581,7 @@
           "manageUsers": "Kullanıcı Yönetimi",
           "manageRoles": "Rol Yönetimi",
           "manageSiteCopy": "Site Metinleri",
+          "viewStats": "İstatistikler",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",

@@ -95,6 +95,10 @@ export async function autoFillMissingTranslations(
         targetLanguage: targetLang.code,
         fields,
         config,
+        usage: {
+          action: 'translate',
+          context: `auto_${params.entityType}`,
+        },
       });
 
       if (params.entityType === 'blog') {

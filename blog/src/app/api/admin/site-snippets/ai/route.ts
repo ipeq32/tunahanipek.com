@@ -60,6 +60,11 @@ export async function POST(request: Request) {
         count: parsed.data.count ?? 3,
         topic: parsed.data.topic,
         examples: parsed.data.lines,
+        usage: {
+          userId: context.userId,
+          action: 'generate',
+          context: type === 'TIP' ? 'site_copy_tip' : 'site_copy_footer',
+        },
       });
 
       return NextResponse.json({ data: { items } });
@@ -81,6 +86,11 @@ export async function POST(request: Request) {
         sourceLanguage: sourceLocale,
         targetLanguage: locale,
         items: lines,
+        usage: {
+          userId: context.userId,
+          action: 'translate',
+          context: type === 'TIP' ? 'site_copy_tip' : 'site_copy_footer',
+        },
       });
 
       return NextResponse.json({ data: { items } });
@@ -94,7 +104,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const item = await improveSiteSnippet({ type, locale, line });
+    const item = await improveSiteSnippet({
+      type,
+      locale,
+      line,
+      usage: {
+        userId: context.userId,
+        action: 'improve',
+        context: type === 'TIP' ? 'site_copy_tip' : 'site_copy_footer',
+      },
+    });
     return NextResponse.json({ data: { item } });
   } catch (error) {
     if (error instanceof AiNotConfiguredError) {
