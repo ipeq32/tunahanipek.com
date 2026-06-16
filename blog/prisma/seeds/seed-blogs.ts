@@ -92,6 +92,10 @@ export async function seedBlogs(authorId: string) {
     });
 
     if (english) {
+      const englishTitle = `[EN] ${entry.title}`;
+      const englishContent = sanitizeHtml(entry.content);
+      const englishSummary = sanitizeHtml(entry.summary);
+
       await prisma.blogTranslation.upsert({
         where: {
           blogId_languageId: {
@@ -102,12 +106,17 @@ export async function seedBlogs(authorId: string) {
         create: {
           blogId: blog.id,
           languageId: english.id,
-          title: `[EN] ${entry.title}`,
-          content: sanitizeHtml(entry.content),
-          summary: sanitizeHtml(entry.summary),
-          published: false,
+          title: englishTitle,
+          content: englishContent,
+          summary: englishSummary,
+          published: entry.published,
         },
-        update: {},
+        update: {
+          title: englishTitle,
+          content: englishContent,
+          summary: englishSummary,
+          published: entry.published,
+        },
       });
     }
 
