@@ -107,24 +107,24 @@ export default async function ContactPage() {
           />
         </aside>
 
-        <div className="lg:col-span-3">
+        <div className="flex flex-col gap-8 lg:col-span-3">
           <ContactForm />
+          {mapLocation && (
+            <ContactLocationSection
+              latitude={mapLocation.latitude}
+              longitude={mapLocation.longitude}
+              addressLabel={mapLocation.addressLabel}
+              mapsHref={mapLocation.mapsHref}
+              mapTitle={t('mapTitle')}
+              openInMapsLabel={t('openInMaps')}
+              approximate={mapLocation.approximate}
+              approximateNote={
+                mapLocation.approximate ? t('mapApproximateNote') : undefined
+              }
+            />
+          )}
         </div>
       </div>
-
-      {mapLocation && (
-        <ContactLocationSection
-          className="mt-8"
-          latitude={mapLocation.latitude}
-          longitude={mapLocation.longitude}
-          addressLabel={mapLocation.addressLabel}
-          mapsHref={mapLocation.mapsHref}
-          mapTitle={t('mapTitle')}
-          openInMapsLabel={t('openInMaps')}
-          approximate={mapLocation.approximate}
-          approximateNote={mapLocation.approximate ? t('mapApproximateNote') : undefined}
-        />
-      )}
 
       <section className="relative mt-10 overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-8 text-center shadow-sm backdrop-blur-sm md:p-10">
         <div
