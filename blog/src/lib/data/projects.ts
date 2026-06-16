@@ -1,5 +1,6 @@
 import { cache } from 'react';
 
+import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import {
   mapProjectToDto,
@@ -9,22 +10,48 @@ import {
 } from '@/lib/project-mapper';
 import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { resolveLanguageCode } from '@/lib/languages';
+import {
+  buildPaginatedResult,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
 
 export async function getPublishedProjects(
   localeInput?: string,
 ): Promise<ProjectDto[]> {
+  const result = await getPublishedProjectsPaginated(localeInput ?? 'tr', 1, 100);
+  return result.data;
+}
+
+export async function getPublishedProjectsPaginated(
+  localeInput: string,
+  page: number,
+  limit: PageSize,
+): Promise<PaginatedResult<ProjectDto>> {
   const locale = await resolveLanguageCode(localeInput);
+  const skip = (page - 1) * limit;
+  const where = {
+    deletedAt: null,
+    translations: publishedTranslationFilter(locale),
+  };
 
-  const projects = await prisma.project.findMany({
-    where: {
-      deletedAt: null,
-      translations: publishedTranslationFilter(locale),
-    },
-    orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
-    include: projectListInclude,
-  });
+  const [total, projects] = await Promise.all([
+    prisma.project.count({ where }),
+    prisma.project.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
+      include: projectListInclude,
+    }),
+  ]);
 
-  return projects.map((project) => mapProjectToDto(project, locale));
+  return buildPaginatedResult(
+    projects.map((project) => mapProjectToDto(project, locale)),
+    page,
+    limit,
+    total
+  );
 }
 
 async function fetchPublishedProjectById(
@@ -51,17 +78,130 @@ export const getPublishedProjectById = cache(fetchPublishedProjectById);
 export async function getAdminProjects(
   localeInput?: string,
 ): Promise<ProjectDto[]> {
+  const result = await getAdminProjectsPaginated(localeInput ?? 'tr', 1, 100);
+  return result.data;
+}
+
+type AdminProjectFilters = {
+  search?: string;
+  status?: 'all' | 'published' | 'drafts';
+};
+
+function buildAdminProjectWhere(
+  locale: string,
+  filters: AdminProjectFilters = {}
+): Prisma.ProjectWhereInput {
+  const search = filters.search?.trim();
+  const conditions: Prisma.ProjectWhereInput[] = [{ deletedAt: null }];
+
+  if (filters.status === 'published') {
+    conditions.push({
+      translations: {
+        some: {
+          published: true,
+          language: { code: locale },
+        },
+      },
+    });
+  }
+
+  if (filters.status === 'drafts') {
+    conditions.push({
+      NOT: {
+        translations: {
+          some: {
+            published: true,
+            language: { code: locale },
+          },
+        },
+      },
+    });
+  }
+
+  if (search) {
+    conditions.push({
+      translations: {
+        some: {
+          language: { code: locale },
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      },
+    });
+  }
+
+  return { AND: conditions };
+}
+
+export type AdminProjectStats = {
+  total: number;
+  published: number;
+  drafts: number;
+};
+
+export async function getAdminProjectStats(
+  localeInput?: string
+): Promise<AdminProjectStats> {
   const locale = await resolveLanguageCode(localeInput);
+  const baseWhere = { deletedAt: null };
 
-  const projects = await prisma.project.findMany({
-    where: { deletedAt: null },
-    orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
-    include: projectDetailInclude,
-  });
+  const [total, published] = await Promise.all([
+    prisma.project.count({ where: baseWhere }),
+    prisma.project.count({
+      where: {
+        ...baseWhere,
+        translations: {
+          some: {
+            published: true,
+            language: { code: locale },
+          },
+        },
+      },
+    }),
+  ]);
 
-  return projects.map((project) =>
-    mapProjectToDto(project, locale, { includeAllTranslations: true }),
-  );
+  return {
+    total,
+    published,
+    drafts: total - published,
+  };
+}
+
+export async function getAdminProjectsPaginated(
+  localeInput: string,
+  page: number,
+  limit: PageSize,
+  filters: AdminProjectFilters = {}
+): Promise<PaginatedResult<ProjectDto> & { stats: AdminProjectStats }> {
+  const locale = await resolveLanguageCode(localeInput);
+  const skip = (page - 1) * limit;
+  const where = buildAdminProjectWhere(locale, filters);
+
+  const [total, projects, stats] = await Promise.all([
+    prisma.project.count({ where }),
+    prisma.project.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
+      include: projectDetailInclude,
+    }),
+    getAdminProjectStats(locale),
+  ]);
+
+  return {
+    ...buildPaginatedResult(
+      projects.map((project) =>
+        mapProjectToDto(project, locale, { includeAllTranslations: true })
+      ),
+      page,
+      limit,
+      total
+    ),
+    stats,
+  };
 }
 
 export async function getAdminProjectById(

@@ -170,3 +170,85 @@ Use regular ASCII spaces between words (never &nbsp; or Unicode non-breaking spa
 export function buildTestPrompt(): string {
   return 'Reply with exactly: OK';
 }
+
+export function buildSiteSnippetGeneratePrompt(params: {
+  type: 'TIP' | 'FOOTER_MOTTO';
+  locale: string;
+  count: number;
+  topic?: string;
+  examples?: string[];
+}): string {
+  const lang = getLanguageLabel(params.locale);
+  const kind =
+    params.type === 'TIP'
+      ? 'short "Did you know?" developer trivia facts'
+      : 'witty, self-deprecating developer humor lines for a portfolio footer terminal';
+
+  const examplesBlock = params.examples?.length
+    ? `\nStyle reference (match tone and HTML patterns, do not copy verbatim):\n${params.examples
+        .slice(0, 5)
+        .map((line) => `- ${line}`)
+        .join('\n')}`
+    : '';
+
+  const topicBlock = params.topic?.trim()
+    ? `\nOptional theme: ${params.topic.trim()}`
+    : '';
+
+  return `You are a senior developer writing micro-copy for a modern developer blog.
+
+Write exactly ${params.count} unique lines in ${lang} for: ${kind}.
+
+Rules:
+- Each line is ONE sentence or short quip (max ~180 characters)
+- Use HTML entities for apostrophes: &apos; not '
+- Wrap tech terms in <code>...</code> where natural (e.g. <code>git</code>, <code>null</code>)
+- Tone: smart, playful, engineer-friendly — never corporate or generic AI filler
+- For TIP: real or plausible dev facts, CS trivia, best practices
+- For FOOTER_MOTTO: dry humor, deployment jokes, debugging pain, coffee, deadlines
+- No markdown, no bullet prefixes, no numbering inside strings${topicBlock}${examplesBlock}
+
+Respond with ONLY valid JSON: { "items": string[] }`;
+}
+
+export function buildSiteSnippetTranslatePrompt(params: {
+  type: 'TIP' | 'FOOTER_MOTTO';
+  sourceLanguage: string;
+  targetLanguage: string;
+  items: string[];
+}): string {
+  const source = getLanguageLabel(params.sourceLanguage);
+  const target = getLanguageLabel(params.targetLanguage);
+
+  return `You are a senior technical translator for a developer blog.
+
+Translate these ${params.type === 'TIP' ? 'trivia tips' : 'footer humor lines'} from ${source} to ${target}.
+
+Rules:
+- Preserve HTML tags and structure (<code>, &apos;, etc.)
+- Match the original tone: witty, engineer-friendly
+- One output string per input line, same order
+- Do not add or remove lines
+
+Input JSON:
+${JSON.stringify({ items: params.items }, null, 2)}
+
+Respond with ONLY valid JSON: { "items": string[] }`;
+}
+
+export function buildSiteSnippetImprovePrompt(params: {
+  type: 'TIP' | 'FOOTER_MOTTO';
+  locale: string;
+  line: string;
+}): string {
+  const lang = getLanguageLabel(params.locale);
+
+  return `Improve this ${params.type === 'TIP' ? 'developer trivia line' : 'footer humor line'} in ${lang}.
+
+Keep the same meaning but make it sharper, funnier, or more polished.
+Preserve HTML tags (<code>, &apos;).
+
+Input: ${JSON.stringify(params.line)}
+
+Respond with ONLY valid JSON: { "item": string }`;
+}

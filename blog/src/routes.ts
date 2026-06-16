@@ -111,4 +111,8 @@ export default {
     en: '/admin/roles',
     tr: '/admin/roller',
   },
+  '/admin/site-copy': {
+    en: '/admin/site-copy',
+    tr: '/admin/site-metinleri',
+  },
 } satisfies Pathnames<typeof locales>;

@@ -4,6 +4,7 @@ import {
   seedAccessRoles,
 } from '../src/lib/db/access-role-store';
 import { PRIMARY_SUPER_ADMIN_EMAIL } from '../src/lib/admin/users/primary-super-admin';
+import { ensureSiteSnippetsSeeded } from '../src/lib/site-snippets/store';
 import { prisma } from '../src/lib/prisma';
 import { seedBlogs } from './seeds/seed-blogs';
 
@@ -45,6 +46,7 @@ async function seedAdminUser() {
 async function main() {
   await seedAccessRoles();
   const admin = await seedAdminUser();
+  await ensureSiteSnippetsSeeded();
   await seedBlogs(admin.id);
 }
 

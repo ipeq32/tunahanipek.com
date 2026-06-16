@@ -11,6 +11,11 @@ import {
 } from '@/lib/admin/users/guards';
 import type { AdminUserDto } from '@/lib/admin/users/types';
 import { prisma } from '@/lib/prisma';
+import {
+  buildPaginatedResult,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
 
 const adminUserSelect = {
   id: true,
@@ -82,13 +87,75 @@ function mapAdminUser(
 }
 
 export async function getAdminUsersDto(): Promise<AdminUserDto[]> {
-  const users = await prisma.user.findMany({
-    where: { deletedAt: null },
-    orderBy: [{ createdAt: 'desc' }],
-    select: adminUserSelect,
-  });
+  const result = await getAdminUsersPaginated(1, 100);
+  return result.data;
+}
 
-  return users.map(mapAdminUser);
+export type AdminUserStats = {
+  total: number;
+  admins: number;
+  members: number;
+};
+
+export async function getAdminUserStats(): Promise<AdminUserStats> {
+  const baseWhere = { deletedAt: null };
+
+  const [total, members] = await Promise.all([
+    prisma.user.count({ where: baseWhere }),
+    prisma.user.count({
+      where: {
+        ...baseWhere,
+        accessRole: { slug: 'member' },
+      },
+    }),
+  ]);
+
+  return {
+    total,
+    members,
+    admins: total - members,
+  };
+}
+
+export async function getAdminUsersPaginated(
+  page: number,
+  limit: PageSize,
+  filters: { search?: string; accessRoleId?: string } = {}
+): Promise<PaginatedResult<AdminUserDto> & { stats: AdminUserStats }> {
+  const skip = (page - 1) * limit;
+  const query = filters.search?.trim();
+
+  const where = {
+    deletedAt: null,
+    ...(filters.accessRoleId && filters.accessRoleId !== 'all'
+      ? { accessRoleId: filters.accessRoleId }
+      : {}),
+    ...(query
+      ? {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' as const } },
+            { email: { contains: query, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, users, stats] = await Promise.all([
+    prisma.user.count({ where }),
+    prisma.user.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ createdAt: 'desc' }],
+      select: adminUserSelect,
+    }),
+    getAdminUserStats(),
+  ]);
+
+  return {
+    ...buildPaginatedResult(users.map(mapAdminUser), page, limit, total),
+    stats,
+  };
 }
 
 export async function getAdminUserById(id: string): Promise<AdminUserDto | null> {

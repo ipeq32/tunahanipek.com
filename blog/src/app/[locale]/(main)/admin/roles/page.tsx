@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AdminRolesEditor from './_features/AdminRolesEditor';
 import { auth } from '@/auth';
-import { getAccessRolesDto } from '@/lib/data/access-roles';
+import { getAccessRolesPaginated } from '@/lib/data/access-roles';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { hasUserPermission } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getTranslations } from 'next-intl/server';
@@ -27,12 +28,15 @@ export default async function AdminRolesPage({ params }: Props) {
   }
 
   const t = await getTranslations('Admin.Roles');
-  const initialRoles = await getAccessRolesDto();
+  const initialResult = await getAccessRolesPaginated(1, DEFAULT_PAGE_SIZE);
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
-      <AdminRolesEditor initialRoles={initialRoles} />
+      <AdminRolesEditor
+        initialRoles={initialResult.data}
+        initialPagination={initialResult.pagination}
+      />
     </>
   );
 }

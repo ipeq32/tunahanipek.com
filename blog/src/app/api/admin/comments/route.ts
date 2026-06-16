@@ -1,21 +1,27 @@
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
-import { getPendingCommentsDto, updateCommentStatus } from '@/lib/data/comments';
+import { getPendingCommentsPaginated, updateCommentStatus } from '@/lib/data/comments';
+import { parsePaginationFromRequest } from '@/lib/pagination';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   const context = await requirePermission(PERMISSIONS['comment:moderate']);
   if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
-    const data = await getPendingCommentsDto();
-    return NextResponse.json({ data });
+    const { page, limit } = parsePaginationFromRequest(request);
+    const result = await getPendingCommentsPaginated(page, limit);
+
+    return NextResponse.json({
+      data: result.data,
+      pagination: result.pagination,
+    });
   } catch (error) {
     logger.error('Failed to fetch pending comments', {
       error: error instanceof Error ? error.message : 'Unknown error',

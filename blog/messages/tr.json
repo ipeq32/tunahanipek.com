@@ -269,7 +269,8 @@
           "ai": "AI",
           "resume": "Özgeçmiş",
           "upload": "Yükleme",
-          "profile": "Profil ve Hesap"
+          "profile": "Profil ve Hesap",
+          "siteCopy": "Site Metinleri"
         },
         "items": {
           "blog:read": { "title": "Blog okuma", "description": "Yayınlanmış yazıları görüntüleme" },
@@ -299,6 +300,7 @@
           "ai:status": { "title": "AI durumu", "description": "AI servis durumunu kontrol etme" },
           "ai:content-blog": { "title": "AI blog içeriği", "description": "Blog içeriği üretme" },
           "ai:content-project": { "title": "AI proje içeriği", "description": "Proje içeriği üretme" },
+          "ai:content-site-copy": { "title": "AI site metinleri", "description": "İpucu ve footer metinleri üretme" },
           "ai:settings-read": { "title": "AI ayarlarını okuma", "description": "AI ayarlarını görüntüleme" },
           "ai:settings-update": { "title": "AI ayarlarını güncelleme", "description": "AI ayarlarını değiştirme" },
           "ai:settings-test": { "title": "AI ayarlarını test etme", "description": "AI bağlantısını test etme" },
@@ -314,8 +316,78 @@
           "password:update": { "title": "Şifre güncelleme", "description": "Şifre değiştirme" },
           "account:read": { "title": "Hesap okuma", "description": "Bağlı hesapları görüntüleme" },
           "account:unlink": { "title": "Hesap bağlantısını kaldırma", "description": "OAuth hesabını kaldırma" },
-          "account:link": { "title": "Hesap bağlama", "description": "OAuth hesabı bağlama" }
+          "account:link": { "title": "Hesap bağlama", "description": "OAuth hesabı bağlama" },
+          "site-copy:read": { "title": "Site metinlerini okuma", "description": "İpucu ve footer metinlerini görüntüleme" },
+          "site-copy:update": { "title": "Site metinlerini güncelleme", "description": "İpucu ve footer metinlerini düzenleme" }
         }
+      }
+    },
+    "SiteCopy": {
+      "title": "Site Metinleri",
+      "description": "Bunu biliyor muydun? ipuçlarını ve footer'daki komik metinleri düzenleyin.",
+      "tabs": {
+        "tips": "Bunu biliyor muydun?",
+        "mottos": "Footer şakaları"
+      },
+      "localeLabel": "Dil",
+      "hint": "HTML etiketleri desteklenir (ör. <code>git</code>). Pasif satırlar sitede gösterilmez.",
+      "active": "Aktif",
+      "moveUp": "Yukarı taşı",
+      "moveDown": "Aşağı taşı",
+      "remove": "Kaldır",
+      "contentPlaceholder": "Metni buraya yazın…",
+      "addItem": "Yeni satır",
+      "addLineTitle": "Yeni satır ekle",
+      "addLineDescription": "Türkçe ve İngilizce metinleri birlikte girin. Kaydettikten sonra her iki dilde de görünür.",
+      "addLineContentLabel": "Metin ({locale})",
+      "addLineContentRequired": "{locale} metni boş olamaz.",
+      "addLineSubmit": "Her iki dile ekle",
+      "addLineAiTitle": "Yapay zeka",
+      "addLineAiDescription": "Her iki dil için tek seferde satır üretin veya bir dilde yazıp diğerine çevirin.",
+      "addLineGenerate": "AI ile oluştur",
+      "addLineGenerateSuccess": "Metin oluşturuldu",
+      "addLineTranslateSuccess": "Çeviri oluşturuldu",
+      "reload": "Veritabanından yenile",
+      "reloadTitle": "Değişiklikleri geri al",
+      "reloadConfirm": "Kaydedilmemiş değişiklikler kaybolur. Devam etmek istiyor musunuz?",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "saved": "Metinler güncellendi",
+      "saveError": "Kaydetme başarısız",
+      "loadError": "Metinler yüklenemedi",
+      "loadErrorFallback": "Veritabanından yüklenemedi; kayıtlı veya varsayılan metinler gösteriliyor.",
+      "emptyError": "En az bir aktif metin gerekli",
+      "previewTitle": "Önizleme",
+      "previewDescription": "Sitede gösterilecek ilk aktif satırın önizlemesi.",
+      "previewEmpty": "Gösterilecek aktif metin yok",
+      "refreshed": "Metinler veritabanından yenilendi",
+      "emptyList": "Henüz satır yok. Yeni satır ekleyin veya yapay zeka ile oluşturun.",
+      "stats": {
+        "total": "Toplam satır",
+        "active": "Aktif satır",
+        "locale": "Dil"
+      },
+      "tipsPanel": {
+        "title": "İpuçları",
+        "selectLine": "Bir satıra tıklayıp AI ile iyileştirebilirsiniz.",
+        "translate": "Diğer dilde içerik varsa tek tıkla çeviri oluşturulur.",
+        "save": "Değişiklikler kaydedilene kadar yalnızca bu oturumda kalır."
+      },
+      "ai": {
+        "title": "Yapay zeka ile oluştur",
+        "description": "Yeni satırlar üretin, çevirin veya seçili satırı iyileştirin.",
+        "topicPlaceholder": "İsteğe bağlı tema (ör. Kubernetes, debugging…)",
+        "generate": "3 satır oluştur",
+        "translate": "{locale} dilinden çevir",
+        "improve": "Seçili satırı iyileştir",
+        "loading": "AI durumu kontrol ediliyor…",
+        "notConfigured": "AI yapılandırılmamış.",
+        "openSettings": "Ayarlara git",
+        "generateSuccess": "{count} yeni satır eklendi",
+        "translateSuccess": "{count} satır çevrildi",
+        "improveSuccess": "Satır iyileştirildi",
+        "error": "AI işlemi başarısız"
       }
     }
   },
@@ -1375,6 +1447,7 @@
           "moderateComments": "Yorum Moderasyonu",
           "manageUsers": "Kullanıcı Yönetimi",
           "manageRoles": "Rol Yönetimi",
+          "manageSiteCopy": "Site Metinleri",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",
@@ -1471,7 +1544,9 @@
     "next": "Sonraki",
     "previousAria": "Önceki sayfaya git",
     "nextAria": "Sonraki sayfaya git",
-    "morePages": "Daha fazla sayfa"
+    "morePages": "Daha fazla sayfa",
+    "pageSize": "Sayfa boyutu",
+    "range": "{from}-{to} / {total} kayıt"
   },
   "CookieConsent": {
     "title": "Çerez tercihleri",

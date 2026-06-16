@@ -5,6 +5,7 @@ import BlogSearch from '@/components/blog/BlogSearch';
 import TaxonomyFilter from '@/components/blog/TaxonomyFilter';
 import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getAllCategories, getAllTags } from '@/lib/blog-taxonomy';
+import { DEFAULT_PAGE_SIZE, parseLimit, parsePage } from '@/lib/pagination';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
@@ -40,8 +41,8 @@ type Props = {
 async function page({ params, searchParams }: Props) {
   const { locale } = await params;
   const resolvedSearchParams = await searchParams;
-  const currentPage = parseInt(resolvedSearchParams.page || '1');
-  const limit = parseInt(resolvedSearchParams.limit || '9');
+  const currentPage = parsePage(resolvedSearchParams.page);
+  const limit = parseLimit(resolvedSearchParams.limit ?? DEFAULT_PAGE_SIZE);
   const query = resolvedSearchParams.q ?? '';
   const tag = resolvedSearchParams.tag;
   const category = resolvedSearchParams.category;

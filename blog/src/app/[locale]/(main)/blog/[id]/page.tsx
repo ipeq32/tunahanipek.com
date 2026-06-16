@@ -2,7 +2,8 @@ import BlogFeature from './_features/Blog';
 import BlogComments from '@/components/blog/BlogComments';
 import { getSession } from '@/lib/cached-session';
 import { getPublishedBlogById } from '@/lib/data/blogs';
-import { getApprovedCommentViews } from '@/lib/data/comments';
+import { getApprovedCommentViewsPaginated } from '@/lib/data/comments';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -73,9 +74,9 @@ async function page({ params }: Props) {
   const locale = parseLocale(await getLocale());
 
   const session = await getSession();
-  const [blogData, comments] = await Promise.all([
+  const [blogData, commentsResult] = await Promise.all([
     getPublishedBlogById(id, locale),
-    getApprovedCommentViews(id, locale, session?.user?.id),
+    getApprovedCommentViewsPaginated(id, locale, 1, DEFAULT_PAGE_SIZE, session?.user?.id),
   ]);
 
   if (!blogData) {
@@ -103,7 +104,8 @@ async function page({ params }: Props) {
         blogId={id}
         locale={locale}
         isAuthenticated={!!session?.user}
-        initialComments={comments}
+        initialComments={commentsResult.data}
+        initialPagination={commentsResult.pagination}
       />
     </>
   );

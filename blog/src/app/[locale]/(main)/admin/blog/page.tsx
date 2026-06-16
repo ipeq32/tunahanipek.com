@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AdminBlogList from './_features/AdminBlogList';
 import { auth } from '@/auth';
-import { getAdminBlogs } from '@/lib/data/blogs';
+import { getAdminBlogsPaginated } from '@/lib/data/blogs';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import {
   canDeleteAnyBlog,
   canPublishBlog,
@@ -31,13 +32,19 @@ export default async function AdminBlogPage({ params }: Props) {
   }
 
   const t = await getTranslations('Admin.Blog');
-  const initialBlogs = await getAdminBlogs(locale);
+  const initialResult = await getAdminBlogsPaginated(
+    locale,
+    1,
+    DEFAULT_PAGE_SIZE
+  );
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <AdminBlogList
-        initialBlogs={initialBlogs}
+        initialBlogs={initialResult.data}
+        initialPagination={initialResult.pagination}
+        initialStats={initialResult.stats}
         canPublish={canPublishBlog(
           session.user.permissions,
           session.user.email

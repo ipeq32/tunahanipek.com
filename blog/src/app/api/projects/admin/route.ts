@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
-import { getAdminProjects } from '@/lib/data/projects';
+import { getAdminProjectsPaginated } from '@/lib/data/projects';
 import { mapProjectToDto, projectDetailInclude } from '@/lib/project-mapper';
 import { upsertProjectTranslations } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
@@ -10,9 +10,19 @@ import { createProjectSchema } from '@/lib/validations/project';
 import { apiError, apiMessage } from '@/lib/api-i18n';
 import { autoFillMissingTranslations } from '@/lib/ai/auto-fill-missing';
 import { resolveRequestLocale } from '@/lib/languages';
+import { parsePaginationFromRequest } from '@/lib/pagination';
 import { after, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+
+type StatusFilter = 'all' | 'published' | 'drafts';
+
+function parseStatusFilter(value: string | null): StatusFilter {
+  if (value === 'published' || value === 'drafts') {
+    return value;
+  }
+  return 'all';
+}
 
 async function getNextSortOrder(): Promise<number> {
   const last = await prisma.project.findFirst({
@@ -32,9 +42,22 @@ export async function GET(request: Request) {
 
   try {
     const locale = await resolveRequestLocale(request);
-    const projects = await getAdminProjects(locale);
+    const { page, limit } = parsePaginationFromRequest(request);
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') ?? undefined;
+    const status = parseStatusFilter(searchParams.get('status'));
 
-    return NextResponse.json({ data: projects, locale });
+    const result = await getAdminProjectsPaginated(locale, page, limit, {
+      search,
+      status,
+    });
+
+    return NextResponse.json({
+      data: result.data,
+      pagination: result.pagination,
+      stats: result.stats,
+      locale,
+    });
   } catch (error) {
     logger.error('Failed to fetch admin projects', {
       error: error instanceof Error ? error.message : 'Unknown error',

@@ -7,6 +7,11 @@ import {
   resolveReactionAction,
   summarizeReactions,
 } from '@/lib/comments/reactions';
+import {
+  buildPaginatedResult,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
 import type {
   CommentDto,
   CommentReactionSummary,
@@ -73,30 +78,52 @@ export async function getApprovedComments(
   blogId: string,
   viewerId?: string
 ): Promise<CommentDto[]> {
-  const comments = await prisma.comment.findMany({
-    where: {
-      blogId,
-      deletedAt: null,
-      status: 'APPROVED',
-      commentId: null,
-    },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      user: { select: { name: true } },
-      reactions: reactionInclude,
-      // Yalnızca onaylı yanıtları, kronolojik (eskiden yeniye) sırada getiririz.
-      replies: {
-        where: { deletedAt: null, status: 'APPROVED' },
-        orderBy: { createdAt: 'asc' },
-        include: {
-          user: { select: { name: true } },
-          reactions: reactionInclude,
+  const result = await getApprovedCommentsPaginated(blogId, 1, 100, viewerId);
+  return result.data;
+}
+
+export async function getApprovedCommentsPaginated(
+  blogId: string,
+  page: number,
+  limit: PageSize,
+  viewerId?: string
+): Promise<PaginatedResult<CommentDto>> {
+  const skip = (page - 1) * limit;
+  const where = {
+    blogId,
+    deletedAt: null,
+    status: 'APPROVED' as const,
+    commentId: null,
+  };
+
+  const [total, comments] = await Promise.all([
+    prisma.comment.count({ where }),
+    prisma.comment.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { name: true } },
+        reactions: reactionInclude,
+        replies: {
+          where: { deletedAt: null, status: 'APPROVED' },
+          orderBy: { createdAt: 'asc' },
+          include: {
+            user: { select: { name: true } },
+            reactions: reactionInclude,
+          },
         },
       },
-    },
-  });
+    }),
+  ]);
 
-  return comments.map((comment) => mapComment(comment, viewerId));
+  return buildPaginatedResult(
+    comments.map((comment) => mapComment(comment, viewerId)),
+    page,
+    limit,
+    total
+  );
 }
 
 export async function getApprovedCommentViews(
@@ -104,26 +131,87 @@ export async function getApprovedCommentViews(
   locale: string,
   viewerId?: string
 ): Promise<CommentViewDto[]> {
-  const comments = await getApprovedComments(blogId, viewerId);
+  const result = await getApprovedCommentViewsPaginated(
+    blogId,
+    locale,
+    1,
+    20,
+    viewerId
+  );
+  return result.data;
+}
 
-  return comments.map((comment) => mapCommentToView(comment, locale));
+export async function getApprovedCommentViewsPaginated(
+  blogId: string,
+  locale: string,
+  page: number,
+  limit: PageSize,
+  viewerId?: string
+): Promise<PaginatedResult<CommentViewDto>> {
+  const result = await getApprovedCommentsPaginated(
+    blogId,
+    page,
+    limit,
+    viewerId
+  );
+
+  return {
+    ...result,
+    data: result.data.map((comment) => mapCommentToView(comment, locale)),
+  };
 }
 
 export async function getPendingCommentsDto(): Promise<PendingCommentDto[]> {
-  const comments = await getPendingComments();
+  const result = await getPendingCommentsPaginated(1, 100);
+  return result.data;
+}
 
-  return comments.map((comment) => ({
-    id: comment.id,
-    content: comment.content,
-    createdAt: comment.createdAt.toISOString(),
-    user: comment.user,
-    blog: comment.blog
-      ? {
-          id: comment.blog.id,
-          title: comment.blog.translations[0]?.title ?? comment.blog.id,
-        }
-      : null,
-  }));
+export async function getPendingCommentsPaginated(
+  page: number,
+  limit: PageSize
+): Promise<PaginatedResult<PendingCommentDto>> {
+  const skip = (page - 1) * limit;
+  const where = { deletedAt: null, status: 'PENDING' as const, commentId: null };
+
+  const [total, comments] = await Promise.all([
+    prisma.comment.count({ where }),
+    prisma.comment.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { name: true, email: true } },
+        blog: {
+          select: {
+            id: true,
+            translations: {
+              select: { title: true, language: { select: { code: true } } },
+              orderBy: { updatedAt: 'desc' },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  return buildPaginatedResult(
+    comments.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt.toISOString(),
+      user: comment.user,
+      blog: comment.blog
+        ? {
+            id: comment.blog.id,
+            title: comment.blog.translations[0]?.title ?? comment.blog.id,
+          }
+        : null,
+    })),
+    page,
+    limit,
+    total
+  );
 }
 
 export async function getPendingComments() {

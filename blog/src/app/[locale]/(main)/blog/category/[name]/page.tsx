@@ -4,6 +4,7 @@ import BlogsFeature from '../../_features/Blogs';
 import PaginationComponent from '@/components/pagination';
 import TaxonomySearch from '@/components/blog/TaxonomySearch';
 import { getPublishedBlogs } from '@/lib/data/blogs';
+import { DEFAULT_PAGE_SIZE, parseLimit, parsePage } from '@/lib/pagination';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import {
@@ -15,7 +16,7 @@ export const revalidate = 60;
 
 type Props = {
   params: Promise<{ locale: string; name: string }>;
-  searchParams: Promise<{ page?: string; q?: string }>;
+  searchParams: Promise<{ page?: string; limit?: string; q?: string }>;
 };
 
 export async function generateMetadata({
@@ -56,10 +57,10 @@ export default async function BlogCategoryPage({
 }: Props) {
   const { name: encoded, locale } = await params;
   const name = decodeURIComponent(encoded);
-  const { page, q } = await searchParams;
+  const { page, limit: limitParam, q } = await searchParams;
   const search = q?.trim();
-  const currentPage = parseInt(page || '1');
-  const limit = 9;
+  const currentPage = parsePage(page);
+  const limit = parseLimit(limitParam ?? DEFAULT_PAGE_SIZE);
   const t = await getTranslations('Blog.Taxonomy');
 
   const { data, total } = await getPublishedBlogs(currentPage, limit, {

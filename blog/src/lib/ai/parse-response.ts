@@ -46,3 +46,17 @@ export function pickString(
   const value = data[key];
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
+
+export function pickStringArray(
+  data: Record<string, unknown>,
+  key: string,
+): string[] {
+  const value = data[key];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    .map((item) => item.trim());
+}

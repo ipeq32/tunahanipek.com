@@ -11,6 +11,7 @@ import {
   PenSquare,
   Settings,
   Shield,
+  Sparkles,
   UserRound,
   Users,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ type ProfileMenuTranslator = (
     | 'moderateComments'
     | 'manageUsers'
     | 'manageRoles'
+    | 'manageSiteCopy'
     | `roles.${string}`
 ) => string;
 
@@ -87,6 +89,11 @@ export function buildProfileMenuConfig(
   const canManageRoles = hasUserPermission(
     permissions,
     PERMISSIONS['role:read'],
+    email
+  );
+  const canManageSiteCopy = hasUserPermission(
+    permissions,
+    PERMISSIONS['site-copy:read'],
     email
   );
 
@@ -180,6 +187,15 @@ export function buildProfileMenuConfig(
       href: '/admin/roles',
       icon: Shield,
       label: t('manageRoles'),
+    });
+  }
+
+  if (canManageSiteCopy) {
+    adminItems.push({
+      type: 'link',
+      href: '/admin/site-copy',
+      icon: Sparkles,
+      label: t('manageSiteCopy'),
     });
   }
 

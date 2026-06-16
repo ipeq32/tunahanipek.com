@@ -2,7 +2,8 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AdminUsersList from './_features/AdminUsersList';
 import { auth } from '@/auth';
 import { getAccessRolesDto } from '@/lib/data/access-roles';
-import { getAdminUsersDto } from '@/lib/data/users';
+import { getAdminUsersPaginated } from '@/lib/data/users';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { hasUserPermission } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getTranslations } from 'next-intl/server';
@@ -31,8 +32,8 @@ export default async function AdminUsersPage({ params }: Props) {
   const currentUserId = session.user.id;
   const canManage = isPrimarySuperAdmin(session.user.email);
   const t = await getTranslations('Admin.Users');
-  const [initialUsers, initialRoles] = await Promise.all([
-    getAdminUsersDto(),
+  const [initialResult, initialRoles] = await Promise.all([
+    getAdminUsersPaginated(1, DEFAULT_PAGE_SIZE),
     getAccessRolesDto(),
   ]);
 
@@ -40,7 +41,9 @@ export default async function AdminUsersPage({ params }: Props) {
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <AdminUsersList
-        initialUsers={initialUsers}
+        initialUsers={initialResult.data}
+        initialPagination={initialResult.pagination}
+        initialStats={initialResult.stats}
         initialRoles={initialRoles}
         currentUserId={currentUserId}
         canManage={canManage}

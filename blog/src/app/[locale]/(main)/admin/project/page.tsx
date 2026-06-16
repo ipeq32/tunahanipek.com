@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AdminProjectList from './_features/AdminProjectList';
 import { auth } from '@/auth';
-import { getAdminProjects } from '@/lib/data/projects';
+import { getAdminProjectsPaginated } from '@/lib/data/projects';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { canPublishProject, hasUserPermission } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getTranslations } from 'next-intl/server';
@@ -27,13 +28,19 @@ export default async function AdminProjectPage({ params }: Props) {
   }
 
   const t = await getTranslations('Admin.Project');
-  const initialProjects = await getAdminProjects(locale);
+  const initialResult = await getAdminProjectsPaginated(
+    locale,
+    1,
+    DEFAULT_PAGE_SIZE
+  );
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <AdminProjectList
-        initialProjects={initialProjects}
+        initialProjects={initialResult.data}
+        initialPagination={initialResult.pagination}
+        initialStats={initialResult.stats}
         canPublish={canPublishProject(
           session.user.permissions,
           session.user.email

@@ -32,6 +32,7 @@ export const PERMISSIONS = {
   'ai:status': 'ai:status',
   'ai:content-blog': 'ai:content-blog',
   'ai:content-project': 'ai:content-project',
+  'ai:content-site-copy': 'ai:content-site-copy',
   'ai:settings-read': 'ai:settings-read',
   'ai:settings-update': 'ai:settings-update',
   'ai:settings-test': 'ai:settings-test',
@@ -39,6 +40,9 @@ export const PERMISSIONS = {
   'resume:read': 'resume:read',
   'resume:update': 'resume:update',
   'resume:delete': 'resume:delete',
+
+  'site-copy:read': 'site-copy:read',
+  'site-copy:update': 'site-copy:update',
 
   'upload:profile-image': 'upload:profile-image',
   'upload:blog-image': 'upload:blog-image',
@@ -125,6 +129,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       PERMISSIONS['ai:status'],
       PERMISSIONS['ai:content-blog'],
       PERMISSIONS['ai:content-project'],
+      PERMISSIONS['ai:content-site-copy'],
       PERMISSIONS['ai:settings-read'],
       PERMISSIONS['ai:settings-update'],
       PERMISSIONS['ai:settings-test'],
@@ -137,6 +142,14 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       PERMISSIONS['resume:read'],
       PERMISSIONS['resume:update'],
       PERMISSIONS['resume:delete'],
+    ],
+  },
+  {
+    key: 'site-copy',
+    labelKey: 'groups.siteCopy',
+    permissions: [
+      PERMISSIONS['site-copy:read'],
+      PERMISSIONS['site-copy:update'],
     ],
   },
   {

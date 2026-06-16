@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+import { DataPagination } from '@/components/ui/data-pagination';
+import { parseLimit, parsePage, type PageSize } from '@/lib/pagination';
 import { useTranslations } from 'next-intl';
 
 type PaginationComponentProps = {
@@ -25,103 +18,40 @@ const PaginationComponent = ({
   total,
   currentPage,
   limit,
-  isShowPagination,
+  isShowPagination = true,
   searchQuery,
   activeTag,
   activeCategory,
 }: PaginationComponentProps) => {
-  const t = useTranslations('Pagination');
-  const totalPages = Math.ceil(total / limit);
+  const safePage = parsePage(currentPage);
+  const safeLimit = parseLimit(limit);
+  const totalPages = Math.max(1, Math.ceil(total / safeLimit));
 
-  const pageHref = (page: number) => {
+  const buildHref = (page: number, nextLimit: PageSize) => {
     const params = new URLSearchParams();
     params.set('page', String(page));
+    params.set('limit', String(nextLimit));
     if (searchQuery?.trim()) params.set('q', searchQuery.trim());
     if (activeTag?.trim()) params.set('tag', activeTag.trim());
     if (activeCategory?.trim()) params.set('category', activeCategory.trim());
     return `?${params.toString()}`;
   };
 
-  const safeCurrentPage = isNaN(currentPage) ? 1 : currentPage;
-  const safeTotalPages = isNaN(totalPages) ? 1 : totalPages;
+  if (!isShowPagination || total <= 0) {
+    return null;
+  }
 
-  const getPages = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    if (safeTotalPages <= maxVisiblePages) {
-      for (let i = 1; i <= safeTotalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-      const startPage = Math.max(safeCurrentPage - 1, 2);
-      const endPage = Math.min(safeCurrentPage + 1, safeTotalPages - 1);
-
-      if (startPage > 2) {
-        pages.push('ellipsisStart');
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
-
-      if (endPage < safeTotalPages - 1) {
-        pages.push('ellipsisEnd');
-      }
-
-      pages.push(safeTotalPages);
-    }
-
-    return pages;
-  };
-
-  return isShowPagination ? (
-    <Pagination className="mt-10">
-      <PaginationContent>
-        {safeCurrentPage > 1 && (
-          <PaginationItem>
-            <PaginationPrevious
-              href={pageHref(safeCurrentPage - 1)}
-              label={t('previous')}
-              ariaLabel={t('previousAria')}
-            />
-          </PaginationItem>
-        )}
-
-        {getPages().map((page, index) => {
-          if (page === 'ellipsisStart' || page === 'ellipsisEnd') {
-            return (
-              <PaginationItem key={`ellipsis-${index}`}>
-                <PaginationEllipsis morePagesLabel={t('morePages')} />
-              </PaginationItem>
-            );
-          }
-
-          return (
-            <PaginationItem key={`page-${page}`}>
-              <PaginationLink
-                href={pageHref(page as number)}
-                isActive={page === safeCurrentPage}
-              >
-                {String(page)}
-              </PaginationLink>
-            </PaginationItem>
-          );
-        })}
-
-        {safeCurrentPage < safeTotalPages && (
-          <PaginationItem>
-            <PaginationNext
-              href={pageHref(safeCurrentPage + 1)}
-              label={t('next')}
-              ariaLabel={t('nextAria')}
-            />
-          </PaginationItem>
-        )}
-      </PaginationContent>
-    </Pagination>
-  ) : null;
+  return (
+    <DataPagination
+      pagination={{
+        page: Math.min(safePage, totalPages),
+        limit: safeLimit,
+        total,
+        totalPages,
+      }}
+      buildHref={buildHref}
+    />
+  );
 };
 
 export default PaginationComponent;

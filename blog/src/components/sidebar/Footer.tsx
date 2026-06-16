@@ -21,9 +21,10 @@ import { SOCIAL_LINKS } from '@/lib/social';
 type FooterProps = {
   isAuthenticated: boolean;
   userName: string | null;
+  mottos?: string[];
 };
 
-const Footer = ({ isAuthenticated, userName }: FooterProps) => {
+const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
   const t = useTranslations('Footer');
 
   const emailAddress = 'tnhnipek@gmail.com';
@@ -83,7 +84,7 @@ const Footer = ({ isAuthenticated, userName }: FooterProps) => {
       <SiteContainer className="grid w-full gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
-          <RotatingMotto />
+          <RotatingMotto mottos={mottos} />
           <div className="flex gap-2">
             {socials.map(({ href, label, icon: Icon }) => (
               <Link

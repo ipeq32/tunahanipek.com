@@ -17,6 +17,11 @@ import {
 } from '@/lib/data/role-permissions';
 import { withDefaultRolePermissions } from '@/lib/auth/permissions';
 import { prisma } from '@/lib/prisma';
+import {
+  buildPaginatedResult,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
 
 const accessRoleSelect = {
   id: true,
@@ -33,12 +38,44 @@ const accessRoleSelect = {
 } as const;
 
 export async function getAccessRolesDto(): Promise<AccessRoleDto[]> {
-  const roles = await prisma.accessRole.findMany({
-    orderBy: [{ isSystem: 'desc' }, { name: 'asc' }],
-    select: accessRoleSelect,
-  });
+  const result = await getAccessRolesPaginated(1, 100);
+  return result.data;
+}
 
-  return roles.map((role) => mapAccessRoleToDto(role as AccessRoleWithPermissions));
+export async function getAccessRolesPaginated(
+  page: number,
+  limit: PageSize,
+  search?: string
+): Promise<PaginatedResult<AccessRoleDto>> {
+  const skip = (page - 1) * limit;
+  const query = search?.trim();
+
+  const where = query
+    ? {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' as const } },
+          { slug: { contains: query, mode: 'insensitive' as const } },
+        ],
+      }
+    : undefined;
+
+  const [total, roles] = await Promise.all([
+    prisma.accessRole.count({ where }),
+    prisma.accessRole.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ isSystem: 'desc' }, { name: 'asc' }],
+      select: accessRoleSelect,
+    }),
+  ]);
+
+  return buildPaginatedResult(
+    roles.map((role) => mapAccessRoleToDto(role as AccessRoleWithPermissions)),
+    page,
+    limit,
+    total
+  );
 }
 
 export async function getAccessRoleById(id: string): Promise<AccessRoleDto | null> {

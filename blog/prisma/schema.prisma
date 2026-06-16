@@ -263,6 +263,27 @@ enum AiProvider {
   ollama
 }
 
+enum SiteSnippetType {
+  TIP
+  FOOTER_MOTTO
+}
+
+/// Site geneli döner metinler (ipuçları, footer şakaları).
+model SiteSnippet {
+  id        String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  type      SiteSnippetType
+  locale    String
+  content   String
+  sortOrder Int             @default(0)
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
+
+  @@unique([locale, type, content])
+  @@index([type, locale, sortOrder])
+  @@index([type, locale, isActive])
+}
+
 /// Site geneli AI içerik/çeviri ayarları (süper admin).
 model SiteAiSettings {
   id                  String     @id @default("default")

@@ -1,15 +1,22 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IGetBlog } from '@/types/blog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import BlogImage from '@/components/blog/BlogImage';
+import { DataPagination } from '@/components/ui/data-pagination';
 import { toast } from 'sonner';
 import { Link } from '@/navigation';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import type { AdminBlogStats } from '@/lib/data/blogs';
+import {
+  type PageSize,
+  type PaginationMeta,
+} from '@/lib/pagination';
 import {
   AdminEmptyState,
   AdminListSkeleton,
@@ -29,6 +36,8 @@ import {
 
 type AdminBlogListProps = {
   initialBlogs: IGetBlog[];
+  initialPagination: PaginationMeta;
+  initialStats: AdminBlogStats;
   canPublish?: boolean;
   canDelete?: boolean;
 };
@@ -63,6 +72,8 @@ function StatCard({
 
 export default function AdminBlogList({
   initialBlogs,
+  initialPagination,
+  initialStats,
   canPublish = false,
   canDelete = false,
 }: AdminBlogListProps) {
@@ -70,8 +81,13 @@ export default function AdminBlogList({
   const locale = useLocale();
   const format = useFormatter();
   const [blogs, setBlogs] = useState<IGetBlog[]>(initialBlogs);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [stats, setStats] = useState(initialStats);
+  const [page, setPage] = useState(initialPagination.page);
+  const [limit, setLimit] = useState<PageSize>(initialPagination.limit);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [status, setStatus] = useState<StatusFilter>('all');
   const [deleteTarget, setDeleteTarget] = useState<IGetBlog | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -79,18 +95,42 @@ export default function AdminBlogList({
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/blog/admin?locale=${locale}`, {
+      const params = new URLSearchParams({
+        locale,
+        page: String(page),
+        limit: String(limit),
+      });
+      if (debouncedSearch.trim()) {
+        params.set('search', debouncedSearch.trim());
+      }
+      if (status !== 'all') {
+        params.set('status', status);
+      }
+
+      const res = await fetch(`/api/blog/admin?${params.toString()}`, {
         headers: { 'x-locale': locale },
       });
       if (!res.ok) throw new Error('Failed to load');
-      const { data } = await res.json();
-      setBlogs(data);
+      const body = await res.json();
+      setBlogs(body.data);
+      setPagination(body.pagination);
+      if (body.stats) {
+        setStats(body.stats);
+      }
     } catch {
       toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [locale, t]);
+  }, [debouncedSearch, limit, locale, page, status, t]);
+
+  useEffect(() => {
+    void fetchBlogs();
+  }, [fetchBlogs]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, status]);
 
   const togglePublished = async (id: string, published: boolean) => {
     try {
@@ -134,29 +174,6 @@ export default function AdminBlogList({
       setDeleting(false);
     }
   };
-
-  const stats = useMemo(() => {
-    const published = blogs.filter((b) => b.published).length;
-    return {
-      total: blogs.length,
-      published,
-      drafts: blogs.length - published,
-    };
-  }, [blogs]);
-
-  const filteredBlogs = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return blogs.filter((blog) => {
-      const matchesStatus =
-        status === 'all' ||
-        (status === 'published' ? blog.published : !blog.published);
-      const matchesQuery =
-        !query ||
-        blog.title.toLowerCase().includes(query) ||
-        blog.author.name.toLowerCase().includes(query);
-      return matchesStatus && matchesQuery;
-    });
-  }, [blogs, search, status]);
 
   const filters: { value: StatusFilter; label: string }[] = [
     { value: 'all', label: t('filterAll') },
@@ -225,12 +242,10 @@ export default function AdminBlogList({
       {loading ? (
         <AdminListSkeleton rows={4} />
       ) : !blogs.length ? (
-        <AdminEmptyState message={t('empty')} />
-      ) : !filteredBlogs.length ? (
-        <AdminEmptyState message={t('noResults')} />
+        <AdminEmptyState message={search.trim() ? t('noResults') : t('empty')} />
       ) : (
         <div className="space-y-3">
-          {filteredBlogs.map((blog) => (
+          {blogs.map((blog) => (
             <div
               key={blog.id}
               className="group flex flex-col gap-4 rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm transition hover:border-teal-500/30 sm:flex-row sm:items-center"
@@ -349,6 +364,15 @@ export default function AdminBlogList({
           ))}
         </div>
       )}
+
+      <DataPagination
+        pagination={pagination}
+        onPageChange={setPage}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

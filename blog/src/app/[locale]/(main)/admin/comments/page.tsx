@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import AdminCommentsList from './_features/AdminCommentsList';
 import { auth } from '@/auth';
-import { getPendingCommentsDto } from '@/lib/data/comments';
+import { getPendingCommentsPaginated } from '@/lib/data/comments';
+import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { hasUserPermission } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getTranslations } from 'next-intl/server';
@@ -27,12 +28,15 @@ export default async function AdminCommentsPage({ params }: Props) {
   }
 
   const t = await getTranslations('Admin.Comments');
-  const initialComments = await getPendingCommentsDto();
+  const initialResult = await getPendingCommentsPaginated(1, DEFAULT_PAGE_SIZE);
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
-      <AdminCommentsList initialComments={initialComments} />
+      <AdminCommentsList
+        initialComments={initialResult.data}
+        initialPagination={initialResult.pagination}
+      />
     </>
   );
 }

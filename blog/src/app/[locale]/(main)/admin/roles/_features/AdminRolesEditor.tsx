@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { DataPagination } from '@/components/ui/data-pagination';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -29,6 +30,7 @@ import {
 } from '@/lib/auth/permissions';
 import type { AccessRoleDto } from '@/lib/admin/roles/types';
 import type { AccessRoleMutationErrorCode } from '@/lib/admin/roles/types';
+import { type PageSize, type PaginationMeta } from '@/lib/pagination';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -44,6 +46,7 @@ import {
 
 type AdminRolesEditorProps = {
   initialRoles: AccessRoleDto[];
+  initialPagination: PaginationMeta;
 };
 
 type EditorMode = 'create' | 'edit' | null;
@@ -103,10 +106,14 @@ function PermissionCheckbox({
 
 export default function AdminRolesEditor({
   initialRoles,
+  initialPagination,
 }: AdminRolesEditorProps) {
   const t = useTranslations('Admin.Roles');
   const tPermissions = useTranslations('Admin.Roles.permissions');
   const [roles, setRoles] = useState<AccessRoleDto[]>(initialRoles);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [page, setPage] = useState(initialPagination.page);
+  const [limit, setLimit] = useState<PageSize>(initialPagination.limit);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<EditorMode>(null);
@@ -138,16 +145,25 @@ export default function AdminRolesEditor({
   const fetchRoles = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/roles');
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+      });
+      const res = await fetch(`/api/admin/roles?${params.toString()}`);
       if (!res.ok) throw new Error('Failed');
-      const { data } = await res.json();
-      setRoles(data);
+      const body = await res.json();
+      setRoles(body.data);
+      setPagination(body.pagination);
     } catch {
       toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [limit, page, t]);
+
+  useEffect(() => {
+    void fetchRoles();
+  }, [fetchRoles]);
 
   const openCreate = () => {
     setMode('create');
@@ -260,14 +276,10 @@ export default function AdminRolesEditor({
         throw new Error(body.error ?? 'Failed');
       }
 
-      const { data } = await res.json();
-      setRoles((prev) =>
-        mode === 'create'
-          ? [...prev, data].sort((a, b) => a.name.localeCompare(b.name))
-          : prev.map((item) => (item.id === data.id ? data : item))
-      );
+      await res.json();
       toast.success(mode === 'create' ? t('created') : t('updated'));
       closeEditor();
+      void fetchRoles();
     } catch (error) {
       const message =
         error instanceof Error
@@ -293,9 +305,9 @@ export default function AdminRolesEditor({
         throw new Error(body.error ?? 'Failed');
       }
 
-      setRoles((prev) => prev.filter((role) => role.id !== deleteTarget.id));
       toast.success(t('deleted'));
       setDeleteTarget(null);
+      void fetchRoles();
     } catch (error) {
       const message =
         error instanceof Error
@@ -615,6 +627,15 @@ export default function AdminRolesEditor({
           ))}
         </div>
       )}
+
+      <DataPagination
+        pagination={pagination}
+        onPageChange={setPage}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

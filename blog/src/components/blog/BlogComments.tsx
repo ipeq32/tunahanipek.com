@@ -4,13 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { DataPagination } from '@/components/ui/data-pagination';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
 import { cn } from '@/lib/utils';
-import { formatCommentDate } from '@/lib/comments/format-date';
 import type { CommentViewDto } from '@/lib/comments/types';
 import type { Locale } from '@/i18n/request';
+import { type PageSize, type PaginationMeta } from '@/lib/pagination';
 
 type ReactionKind = 'LIKE' | 'DISLIKE';
 
@@ -19,17 +20,7 @@ type Props = {
   locale: Locale;
   isAuthenticated: boolean;
   initialComments: CommentViewDto[];
-};
-
-type CommentApiItem = {
-  id: string;
-  content: string;
-  authorName: string;
-  createdAt: string;
-  likeCount: number;
-  dislikeCount: number;
-  myReaction: ReactionKind | null;
-  replies?: CommentApiItem[];
+  initialPagination: PaginationMeta;
 };
 
 type ReactionSummary = {
@@ -62,43 +53,44 @@ export default function BlogComments({
   locale,
   isAuthenticated,
   initialComments,
+  initialPagination,
 }: Props) {
   const t = useTranslations('Comments');
   const [comments, setComments] = useState(initialComments);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [page, setPage] = useState(initialPagination.page);
+  const [limit, setLimit] = useState<PageSize>(initialPagination.limit);
   const [content, setContent] = useState('');
   // Aktif gönderim hedefi: kök form için ROOT_FORM, yanıtlar için yorum id'si.
   const [submittingFor, setSubmittingFor] = useState<string | null>(null);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
 
-  const mapApiComments = useCallback(
-    (items: CommentApiItem[]): CommentViewDto[] =>
-      items.map((comment) => ({
-        id: comment.id,
-        content: comment.content,
-        authorName: comment.authorName,
-        createdAtLabel: formatCommentDate(comment.createdAt, locale),
-        likeCount: comment.likeCount,
-        dislikeCount: comment.dislikeCount,
-        myReaction: comment.myReaction,
-        replies: mapApiComments(comment.replies ?? []),
-      })),
-    [locale]
-  );
+  const loadComments = useCallback(async () => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    const res = await fetch(`/api/blog/${blogId}/comments?${params.toString()}`);
+    if (res.ok) {
+      const body = await res.json();
+      setComments(body.data);
+      setPagination(body.pagination);
+    }
+  }, [blogId, limit, page]);
 
   const refresh = useCallback(async () => {
-    const res = await fetch(
-      `/api/blog/${blogId}/comments`
-    );
-    if (res.ok) {
-      const { data } = await res.json();
-      setComments(mapApiComments(data));
-    }
-  }, [blogId, mapApiComments]);
+    await loadComments();
+  }, [loadComments]);
+
+  useEffect(() => {
+    void loadComments();
+  }, [loadComments]);
 
   useEffect(() => {
     setComments(initialComments);
-  }, [initialComments]);
+    setPagination(initialPagination);
+  }, [initialComments, initialPagination]);
 
   const submitComment = useCallback(
     async (text: string, parentId?: string) => {
@@ -220,6 +212,15 @@ export default function BlogComments({
           </Link>
         </p>
       )}
+
+      <DataPagination
+        pagination={pagination}
+        onPageChange={setPage}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
     </section>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { DataPagination } from '@/components/ui/data-pagination';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -20,6 +21,9 @@ import {
 import type { AccessRoleDto } from '@/lib/admin/roles/types';
 import type { AdminUserDto } from '@/lib/admin/users/types';
 import type { AdminUserMutationErrorCode } from '@/lib/admin/users/types';
+import type { AdminUserStats } from '@/lib/data/users';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { type PageSize, type PaginationMeta } from '@/lib/pagination';
 import { cn } from '@/lib/utils';
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -42,6 +46,8 @@ type RoleFilter = 'all' | string;
 
 type AdminUsersListProps = {
   initialUsers: AdminUserDto[];
+  initialPagination: PaginationMeta;
+  initialStats: AdminUserStats;
   initialRoles: AccessRoleDto[];
   currentUserId: string;
   canManage: boolean;
@@ -105,6 +111,8 @@ function AccessRoleBadge({
 
 export default function AdminUsersList({
   initialUsers,
+  initialPagination,
+  initialStats,
   initialRoles,
   currentUserId,
   canManage,
@@ -112,9 +120,14 @@ export default function AdminUsersList({
   const t = useTranslations('Admin.Users');
   const format = useFormatter();
   const [users, setUsers] = useState<AdminUserDto[]>(initialUsers);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [stats, setStats] = useState(initialStats);
+  const [page, setPage] = useState(initialPagination.page);
+  const [limit, setLimit] = useState<PageSize>(initialPagination.limit);
   const [roles, setRoles] = useState<AccessRoleDto[]>(initialRoles);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [deleteTarget, setDeleteTarget] = useState<AdminUserDto | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -143,16 +156,39 @@ export default function AdminUsersList({
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/users');
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+      });
+      if (debouncedSearch.trim()) {
+        params.set('search', debouncedSearch.trim());
+      }
+      if (roleFilter !== 'all') {
+        params.set('accessRoleId', roleFilter);
+      }
+
+      const res = await fetch(`/api/admin/users?${params.toString()}`);
       if (!res.ok) throw new Error('Failed');
-      const { data } = await res.json();
-      setUsers(data);
+      const body = await res.json();
+      setUsers(body.data);
+      setPagination(body.pagination);
+      if (body.stats) {
+        setStats(body.stats);
+      }
     } catch {
       toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [debouncedSearch, limit, page, roleFilter, t]);
+
+  useEffect(() => {
+    void fetchUsers();
+  }, [fetchUsers]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, roleFilter]);
 
   useEffect(() => {
     if (!initialRoles.length) {
@@ -189,6 +225,7 @@ export default function AdminUsersList({
       const { data } = await res.json();
       setUsers((prev) => prev.map((item) => (item.id === data.id ? data : item)));
       toast.success(t('roleUpdated'));
+      void fetchUsers();
     } catch (error) {
       const message =
         error instanceof Error
@@ -217,6 +254,7 @@ export default function AdminUsersList({
       setUsers((prev) => prev.filter((user) => user.id !== deleteTarget.id));
       toast.success(t('deleted'));
       setDeleteTarget(null);
+      void fetchUsers();
     } catch (error) {
       const message =
         error instanceof Error
@@ -227,30 +265,6 @@ export default function AdminUsersList({
       setDeleting(false);
     }
   };
-
-  const stats = useMemo(() => {
-    const privileged = users.filter(
-      (user) => user.accessRole.slug !== 'member'
-    ).length;
-    return {
-      total: users.length,
-      admins: privileged,
-      members: users.length - privileged,
-    };
-  }, [users]);
-
-  const filteredUsers = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return users.filter((user) => {
-      const matchesRole =
-        roleFilter === 'all' || user.accessRole.id === roleFilter;
-      const matchesQuery =
-        !query ||
-        user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query);
-      return matchesRole && matchesQuery;
-    });
-  }, [users, search, roleFilter]);
 
   const roleFilters: { value: RoleFilter; label: string }[] = [
     { value: 'all', label: t('filterAll') },
@@ -318,12 +332,10 @@ export default function AdminUsersList({
       {loading ? (
         <AdminListSkeleton rows={4} />
       ) : !users.length ? (
-        <AdminEmptyState message={t('empty')} />
-      ) : !filteredUsers.length ? (
-        <AdminEmptyState message={t('noResults')} />
+        <AdminEmptyState message={search.trim() || roleFilter !== 'all' ? t('noResults') : t('empty')} />
       ) : (
         <div className="space-y-3">
-          {filteredUsers.map((user) => {
+          {users.map((user) => {
             const isSelf = user.id === currentUserId;
             const initials = user.name.charAt(0).toUpperCase();
 
@@ -437,6 +449,15 @@ export default function AdminUsersList({
           })}
         </div>
       )}
+
+      <DataPagination
+        pagination={pagination}
+        onPageChange={setPage}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

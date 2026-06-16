@@ -26,7 +26,7 @@ export async function generateMetadata({
 }
 import BlogCard from '@/components/blog/BlogCard';
 import ProjectCard from '@/components/project/ProjectCard';
-import { DidYouKnow } from '@/components/ui/did-you-know';
+import { DidYouKnowShell } from '@/components/ui/did-you-know-shell';
 import {
   ArrowRight,
   FileText,
@@ -193,7 +193,7 @@ export default async function HomePage({
         </section>
       )}
 
-      <DidYouKnow size="lg" />
+      <DidYouKnowShell size="lg" />
 
       <section className="relative overflow-hidden rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-cyan-500/10 to-transparent p-8 text-center shadow-sm md:p-12">
         <div

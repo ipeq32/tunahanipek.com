@@ -1,14 +1,18 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import BlogImage from '@/components/blog/BlogImage';
+import { DataPagination } from '@/components/ui/data-pagination';
 import { toast } from 'sonner';
 import { Link } from '@/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type { ProjectDto } from '@/lib/project-mapper';
+import type { AdminProjectStats } from '@/lib/data/projects';
 import { stripHtmlText } from '@/lib/translation-form-utils';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { type PageSize, type PaginationMeta } from '@/lib/pagination';
 import {
   AdminEmptyState,
   AdminListSkeleton,
@@ -29,6 +33,8 @@ import {
 
 type AdminProjectListProps = {
   initialProjects: ProjectDto[];
+  initialPagination: PaginationMeta;
+  initialStats: AdminProjectStats;
   canPublish?: boolean;
   canDelete?: boolean;
 };
@@ -63,14 +69,21 @@ function StatCard({
 
 export default function AdminProjectList({
   initialProjects,
+  initialPagination,
+  initialStats,
   canPublish = false,
   canDelete = false,
 }: AdminProjectListProps) {
   const t = useTranslations('Admin.Project');
   const locale = useLocale();
   const [projects, setProjects] = useState<ProjectDto[]>(initialProjects);
+  const [pagination, setPagination] = useState(initialPagination);
+  const [stats, setStats] = useState(initialStats);
+  const [page, setPage] = useState(initialPagination.page);
+  const [limit, setLimit] = useState<PageSize>(initialPagination.limit);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [status, setStatus] = useState<StatusFilter>('all');
   const [deleteTarget, setDeleteTarget] = useState<ProjectDto | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -78,18 +91,42 @@ export default function AdminProjectList({
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/projects/admin?locale=${locale}`, {
+      const params = new URLSearchParams({
+        locale,
+        page: String(page),
+        limit: String(limit),
+      });
+      if (debouncedSearch.trim()) {
+        params.set('search', debouncedSearch.trim());
+      }
+      if (status !== 'all') {
+        params.set('status', status);
+      }
+
+      const res = await fetch(`/api/projects/admin?${params.toString()}`, {
         headers: { 'x-locale': locale },
       });
       if (!res.ok) throw new Error('Failed');
-      const { data } = await res.json();
-      setProjects(data);
+      const body = await res.json();
+      setProjects(body.data);
+      setPagination(body.pagination);
+      if (body.stats) {
+        setStats(body.stats);
+      }
     } catch {
       toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
-  }, [locale, t]);
+  }, [debouncedSearch, limit, locale, page, status, t]);
+
+  useEffect(() => {
+    void fetchProjects();
+  }, [fetchProjects]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, status]);
 
   const togglePublished = async (project: ProjectDto) => {
     try {
@@ -133,29 +170,6 @@ export default function AdminProjectList({
       setDeleting(false);
     }
   };
-
-  const stats = useMemo(() => {
-    const published = projects.filter((p) => p.published).length;
-    return {
-      total: projects.length,
-      published,
-      drafts: projects.length - published,
-    };
-  }, [projects]);
-
-  const filteredProjects = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return projects.filter((project) => {
-      const matchesStatus =
-        status === 'all' ||
-        (status === 'published' ? project.published : !project.published);
-      const matchesQuery =
-        !query ||
-        project.title.toLowerCase().includes(query) ||
-        project.description.toLowerCase().includes(query);
-      return matchesStatus && matchesQuery;
-    });
-  }, [projects, search, status]);
 
   const filters: { value: StatusFilter; label: string }[] = [
     { value: 'all', label: t('filterAll') },
@@ -224,12 +238,10 @@ export default function AdminProjectList({
       {loading ? (
         <AdminListSkeleton rows={3} />
       ) : !projects.length ? (
-        <AdminEmptyState message={t('empty')} />
-      ) : !filteredProjects.length ? (
-        <AdminEmptyState message={t('noResults')} />
+        <AdminEmptyState message={search.trim() ? t('noResults') : t('empty')} />
       ) : (
         <div className="space-y-3">
-          {filteredProjects.map((project) => (
+          {projects.map((project) => (
             <div
               key={project.id}
               className="group flex flex-col gap-4 rounded-xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm transition hover:border-teal-500/30 sm:flex-row sm:items-center"
@@ -319,6 +331,15 @@ export default function AdminProjectList({
           ))}
         </div>
       )}
+
+      <DataPagination
+        pagination={pagination}
+        onPageChange={setPage}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

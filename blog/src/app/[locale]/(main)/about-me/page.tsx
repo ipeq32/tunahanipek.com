@@ -21,7 +21,7 @@ export async function generateMetadata({
   });
 }
 import { Badge } from '@/components/ui/badge';
-import { DidYouKnow } from '@/components/ui/did-you-know';
+import { DidYouKnowShell } from '@/components/ui/did-you-know-shell';
 import { Link } from '@/navigation';
 import {
   ArrowRight,
@@ -251,7 +251,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <DidYouKnow className="mt-10" />
+      <DidYouKnowShell className="mt-10" />
     </>
   );
 }

@@ -3,9 +3,10 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
 import {
   createAccessRole,
-  getAccessRolesDto,
+  getAccessRolesPaginated,
 } from '@/lib/data/access-roles';
 import { logger } from '@/lib/logger';
+import { parsePaginationFromRequest } from '@/lib/pagination';
 import { createAccessRoleSchema } from '@/lib/validations/access-role';
 import { NextResponse } from 'next/server';
 
@@ -16,15 +17,22 @@ function mutationErrorResponse(error: AccessRoleMutationError) {
   return NextResponse.json({ error: error.code }, { status });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const context = await requirePermission(PERMISSIONS['role:read']);
   if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
-    const data = await getAccessRolesDto();
-    return NextResponse.json({ data });
+    const { page, limit } = parsePaginationFromRequest(request);
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') ?? undefined;
+    const result = await getAccessRolesPaginated(page, limit, search);
+
+    return NextResponse.json({
+      data: result.data,
+      pagination: result.pagination,
+    });
   } catch (error) {
     logger.error('Failed to fetch access roles', {
       error: error instanceof Error ? error.message : 'Unknown error',

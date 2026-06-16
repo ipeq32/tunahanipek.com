@@ -269,7 +269,8 @@
           "ai": "AI",
           "resume": "Resume",
           "upload": "Upload",
-          "profile": "Profile & Account"
+          "profile": "Profile & Account",
+          "siteCopy": "Site Copy"
         },
         "items": {
           "blog:read": { "title": "Read blogs", "description": "View published posts" },
@@ -299,6 +300,7 @@
           "ai:status": { "title": "AI status", "description": "Check AI availability" },
           "ai:content-blog": { "title": "AI blog content", "description": "Generate blog content" },
           "ai:content-project": { "title": "AI project content", "description": "Generate project content" },
+          "ai:content-site-copy": { "title": "AI site copy", "description": "Generate tips and footer lines" },
           "ai:settings-read": { "title": "Read AI settings", "description": "View AI settings" },
           "ai:settings-update": { "title": "Update AI settings", "description": "Modify AI settings" },
           "ai:settings-test": { "title": "Test AI settings", "description": "Test AI connection" },
@@ -314,8 +316,78 @@
           "password:update": { "title": "Update password", "description": "Change password" },
           "account:read": { "title": "Read accounts", "description": "View linked accounts" },
           "account:unlink": { "title": "Unlink account", "description": "Remove linked accounts" },
-          "account:link": { "title": "Link account", "description": "Link OAuth accounts" }
+          "account:link": { "title": "Link account", "description": "Link OAuth accounts" },
+          "site-copy:read": { "title": "Read site copy", "description": "View tips and footer jokes" },
+          "site-copy:update": { "title": "Update site copy", "description": "Edit tips and footer jokes" }
         }
+      }
+    },
+    "SiteCopy": {
+      "title": "Site Copy",
+      "description": "Edit Did you know? tips and the funny footer lines.",
+      "tabs": {
+        "tips": "Did you know?",
+        "mottos": "Footer jokes"
+      },
+      "localeLabel": "Language",
+      "hint": "HTML tags are supported (e.g. <code>git</code>). Inactive lines are hidden on the site.",
+      "active": "Active",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove",
+      "contentPlaceholder": "Enter text here…",
+      "addItem": "Add line",
+      "addLineTitle": "Add new line",
+      "addLineDescription": "Enter Turkish and English text together. Both locales are updated after you save.",
+      "addLineContentLabel": "Text ({locale})",
+      "addLineContentRequired": "{locale} text cannot be empty.",
+      "addLineSubmit": "Add to both locales",
+      "addLineAiTitle": "Artificial intelligence",
+      "addLineAiDescription": "Generate a line for both locales at once, or write in one language and translate to the other.",
+      "addLineGenerate": "Generate with AI",
+      "addLineGenerateSuccess": "Text generated",
+      "addLineTranslateSuccess": "Translation generated",
+      "reload": "Reload from database",
+      "reloadTitle": "Discard changes",
+      "reloadConfirm": "Unsaved changes will be lost. Continue?",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Copy updated",
+      "saveError": "Save failed",
+      "loadError": "Failed to load copy",
+      "loadErrorFallback": "Could not load from the database; showing saved or default copy.",
+      "emptyError": "At least one active line is required",
+      "previewTitle": "Preview",
+      "previewDescription": "Preview of the first active line shown on the site.",
+      "previewEmpty": "No active line to preview",
+      "refreshed": "Copy refreshed from database",
+      "emptyList": "No lines yet. Add one or generate with AI.",
+      "stats": {
+        "total": "Total lines",
+        "active": "Active lines",
+        "locale": "Language"
+      },
+      "tipsPanel": {
+        "title": "Tips",
+        "selectLine": "Click a line to improve it with AI.",
+        "translate": "If the other locale has content, translate in one click.",
+        "save": "Changes stay in this session until you save."
+      },
+      "ai": {
+        "title": "Generate with AI",
+        "description": "Create new lines, translate, or improve the selected line.",
+        "topicPlaceholder": "Optional theme (e.g. Kubernetes, debugging…)",
+        "generate": "Generate 3 lines",
+        "translate": "Translate from {locale}",
+        "improve": "Improve selected line",
+        "loading": "Checking AI status…",
+        "notConfigured": "AI is not configured.",
+        "openSettings": "Open settings",
+        "generateSuccess": "{count} new lines added",
+        "translateSuccess": "{count} lines translated",
+        "improveSuccess": "Line improved",
+        "error": "AI operation failed"
       }
     }
   },
@@ -1376,6 +1448,7 @@
           "moderateComments": "Comment Moderation",
           "manageUsers": "User Management",
           "manageRoles": "Role Management",
+          "manageSiteCopy": "Site Copy",
           "logout": "Logout",
           "roles": {
             "USER": "Member",
@@ -1472,7 +1545,9 @@
     "next": "Next",
     "previousAria": "Go to previous page",
     "nextAria": "Go to next page",
-    "morePages": "More pages"
+    "morePages": "More pages",
+    "pageSize": "Page size",
+    "range": "{from}-{to} of {total} items"
   },
   "CookieConsent": {
     "title": "Cookie preferences",

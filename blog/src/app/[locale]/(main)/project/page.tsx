@@ -1,14 +1,17 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
+import PaginationComponent from '@/components/pagination';
 import { FeatureCard } from '@/components/layout/feature-card';
 import BlogImage from '@/components/blog/BlogImage';
 import ProjectCard from '@/components/project/ProjectCard';
 import { Link } from '@/navigation';
-import { getPublishedProjects } from '@/lib/data/projects';
+import { getPublishedProjectsPaginated } from '@/lib/data/projects';
 import type { ProjectDto } from '@/lib/project-mapper';
 import { stripHtmlText } from '@/lib/translation-form-utils';
+import { DEFAULT_PAGE_SIZE, parseLimit, parsePage } from '@/lib/pagination';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
+import { ArrowUpRight, BookOpen, FolderGit2, Globe } from 'lucide-react';
 
 export const revalidate = 60;
 
@@ -26,7 +29,6 @@ export async function generateMetadata({
     route: '/project',
   });
 }
-import { ArrowUpRight, BookOpen, FolderGit2, Globe } from 'lucide-react';
 
 function FeaturedProject({
   project,
@@ -78,15 +80,26 @@ function FeaturedProject({
 
 export default async function ProjectPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string; limit?: string }>;
 }) {
   const { locale } = await params;
+  const resolvedSearchParams = await searchParams;
+  const currentPage = parsePage(resolvedSearchParams.page);
+  const limit = parseLimit(resolvedSearchParams.limit ?? DEFAULT_PAGE_SIZE);
   const t = await getTranslations('Pages.Project');
-  const projects = await getPublishedProjects(locale);
+  const { data: projects, pagination } = await getPublishedProjectsPaginated(
+    locale,
+    currentPage,
+    limit
+  );
 
-  const [featured, ...rest] = projects;
-  const hasProjects = projects.length > 0;
+  const showFeatured = currentPage === 1 && projects.length > 0;
+  const featured = showFeatured ? projects[0] : null;
+  const gridProjects = showFeatured ? projects.slice(1) : projects;
+  const hasProjects = pagination.total > 0;
 
   return (
     <>
@@ -108,19 +121,21 @@ export default async function ProjectPage({
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground">
               <FolderGit2 className="h-3.5 w-3.5" />
-              {t('countLabel', { count: projects.length })}
+              {t('countLabel', { count: pagination.total })}
             </span>
           </div>
 
-          <FeaturedProject
-            project={featured}
-            label={t('featured')}
-            visitLabel={t('visit')}
-          />
+          {featured && (
+            <FeaturedProject
+              project={featured}
+              label={t('featured')}
+              visitLabel={t('visit')}
+            />
+          )}
 
-          {rest.length > 0 && (
+          {gridProjects.length > 0 && (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {rest.map((project) => (
+              {gridProjects.map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
@@ -129,6 +144,13 @@ export default async function ProjectPage({
               ))}
             </div>
           )}
+
+          <PaginationComponent
+            total={pagination.total}
+            currentPage={currentPage}
+            limit={limit}
+            isShowPagination={pagination.total > limit}
+          />
         </section>
       ) : (
         <section className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/60 bg-card/40 px-6 py-16 text-center">

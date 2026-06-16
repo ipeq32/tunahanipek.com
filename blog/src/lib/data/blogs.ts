@@ -1,5 +1,6 @@
 import { cache } from 'react';
 
+import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import {
   blogDetailInclude,
@@ -8,6 +9,12 @@ import {
 } from '@/lib/blog-mapper';
 import { publishedTranslationFilter } from '@/lib/published-translation-query';
 import { resolveLanguageCode } from '@/lib/languages';
+import {
+  buildPaginatedResult,
+  DEFAULT_PAGE_SIZE,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
 import { IGetBlog } from '@/types/blog';
 
 type BlogListResult = {
@@ -43,7 +50,7 @@ async function buildWhere(filters: BlogFilters, locale: string) {
 
 export async function getPublishedBlogs(
   page = 1,
-  limit = 9,
+  limit: number = DEFAULT_PAGE_SIZE,
   filters: BlogFilters = {},
 ): Promise<BlogListResult> {
   const locale = await resolveLanguageCode(filters.locale);
@@ -110,15 +117,136 @@ export async function getBlogById(
 }
 
 export async function getAdminBlogs(localeInput?: string): Promise<IGetBlog[]> {
+  const result = await getAdminBlogsPaginated(localeInput ?? 'tr', 1, 100);
+  return result.data;
+}
+
+type AdminBlogFilters = {
+  search?: string;
+  status?: 'all' | 'published' | 'drafts';
+};
+
+export type AdminBlogStats = {
+  total: number;
+  published: number;
+  drafts: number;
+};
+
+function buildAdminBlogWhere(
+  locale: string,
+  filters: AdminBlogFilters = {}
+): Prisma.BlogWhereInput {
+  const search = filters.search?.trim();
+  const conditions: Prisma.BlogWhereInput[] = [{ deletedAt: null }];
+
+  if (filters.status === 'published') {
+    conditions.push({
+      translations: {
+        some: {
+          published: true,
+          language: { code: locale },
+        },
+      },
+    });
+  }
+
+  if (filters.status === 'drafts') {
+    conditions.push({
+      NOT: {
+        translations: {
+          some: {
+            published: true,
+            language: { code: locale },
+          },
+        },
+      },
+    });
+  }
+
+  if (search) {
+    conditions.push({
+      OR: [
+        {
+          translations: {
+            some: {
+              language: { code: locale },
+              title: { contains: search, mode: 'insensitive' },
+            },
+          },
+        },
+        {
+          author: {
+            is: {
+              name: { contains: search, mode: 'insensitive' },
+            },
+          },
+        },
+      ],
+    });
+  }
+
+  return { AND: conditions };
+}
+
+export async function getAdminBlogStats(
+  localeInput?: string
+): Promise<AdminBlogStats> {
   const locale = await resolveLanguageCode(localeInput);
+  const baseWhere = { deletedAt: null };
 
-  const blogs = await prisma.blog.findMany({
-    where: { deletedAt: null },
-    orderBy: { updatedAt: 'desc' },
-    include: blogDetailInclude,
-  });
+  const [total, published] = await Promise.all([
+    prisma.blog.count({ where: baseWhere }),
+    prisma.blog.count({
+      where: {
+        ...baseWhere,
+        translations: {
+          some: {
+            published: true,
+            language: { code: locale },
+          },
+        },
+      },
+    }),
+  ]);
 
-  return blogs.map((blog) =>
-    mapBlogToResponse(blog, locale, { includeAllTranslations: true }),
-  );
+  return {
+    total,
+    published,
+    drafts: total - published,
+  };
+}
+
+export async function getAdminBlogsPaginated(
+  localeInput: string,
+  page: number,
+  limit: PageSize,
+  filters: AdminBlogFilters = {}
+): Promise<PaginatedResult<IGetBlog> & { stats: AdminBlogStats }> {
+  const locale = await resolveLanguageCode(localeInput);
+  const skip = (page - 1) * limit;
+  const where = buildAdminBlogWhere(locale, filters);
+
+  const [total, blogs, stats] = await Promise.all([
+    prisma.blog.count({ where }),
+    prisma.blog.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { updatedAt: 'desc' },
+      include: blogDetailInclude,
+    }),
+    getAdminBlogStats(locale),
+  ]);
+
+  return {
+    ...buildPaginatedResult(
+      blogs.map((blog) =>
+        mapBlogToResponse(blog, locale, { includeAllTranslations: true })
+      ),
+      page,
+      limit,
+      total
+    ),
+    stats,
+  };
 }

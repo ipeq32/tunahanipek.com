@@ -4,6 +4,27 @@ import { auth } from '@/auth';
 import { canAccessAdminPanel } from '@/lib/auth-roles';
 import createIntlMiddleware from 'next-intl/middleware';
 
+type AppLocale = (typeof locales)[number];
+
+function resolveLocaleFromPathname(pathname: string): AppLocale {
+  const segment = pathname.split('/').filter(Boolean)[0];
+  if (segment && (locales as readonly string[]).includes(segment)) {
+    return segment as AppLocale;
+  }
+  return defaultLocale;
+}
+
+function localizePath(
+  internalPath: keyof typeof pathnames,
+  locale: AppLocale
+): string {
+  const route = pathnames[internalPath];
+  if (typeof route === 'string') {
+    return `/${locale}${route}`;
+  }
+  return `/${locale}${route[locale]}`;
+}
+
 const protectedPages = [
   pathnames['/blog/add'],
   pathnames['/profile'],
@@ -21,6 +42,7 @@ const adminPages = [
   pathnames['/admin/comments'],
   pathnames['/admin/users'],
   pathnames['/admin/roles'],
+  pathnames['/admin/site-copy'],
 ];
 
 const authPages = [
@@ -65,9 +87,11 @@ const handleAuth = async (
       from += req.nextUrl.search;
     }
 
-    return NextResponse.redirect(
-      new URL(`/auth/login?callback=${encodeURIComponent(from)}`, req.url)
-    );
+    const locale = resolveLocaleFromPathname(req.nextUrl.pathname);
+    const loginUrl = new URL(localizePath('/auth/login', locale), req.url);
+    loginUrl.searchParams.set('callback', from);
+
+    return NextResponse.redirect(loginUrl);
   }
 
   if (

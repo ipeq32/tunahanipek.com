@@ -1,14 +1,17 @@
-import { PERMISSIONS } from '@/lib/auth/permissions';
-import { requirePermission } from '@/lib/auth/guards';
+import { auth } from '@/auth';
 import {
   createComment,
-  getApprovedComments,
+  getApprovedCommentViewsPaginated,
   isValidReplyParent,
 } from '@/lib/data/comments';
+import { parsePaginationFromRequest } from '@/lib/pagination';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
+import { resolveRequestLocale } from '@/lib/languages';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,15 +24,27 @@ const COMMENT_LIMIT = 5;
 const COMMENT_WINDOW_MS = 10 * 60 * 1000;
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
   const session = await auth();
 
   try {
-    const data = await getApprovedComments(id, session?.user?.id);
-    return NextResponse.json({ data });
+    const locale = await resolveRequestLocale(request);
+    const { page, limit } = parsePaginationFromRequest(request);
+    const result = await getApprovedCommentViewsPaginated(
+      id,
+      locale,
+      page,
+      limit,
+      session?.user?.id
+    );
+
+    return NextResponse.json({
+      data: result.data,
+      pagination: result.pagination,
+    });
   } catch (error) {
     logger.error('Failed to fetch comments', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -81,8 +96,6 @@ export async function POST(
 
     const { content, parentId } = parsed.data;
 
-    // Yanıt isteklerinde üst yorumun bu bloğa ait, onaylı ve üst seviye
-    // olduğunu doğrulayarak geçersiz/çapraz referansları reddederiz.
     if (parentId && !(await isValidReplyParent(parentId, blogId))) {
       return NextResponse.json(
         { error: 'Invalid parent comment' },
