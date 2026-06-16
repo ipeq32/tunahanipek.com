@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link, redirect } from '@/navigation';
 import { cn } from '@/lib/utils';
+import { formatPhoneDisplay } from '@/lib/contact/display';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import {
@@ -170,7 +171,7 @@ export default async function ProfilePage({
               {user.phone && (
                 <span className="inline-flex items-center gap-2">
                   <Phone className="h-4 w-4 shrink-0 text-teal-500" />
-                  {user.phone}
+                  {formatPhoneDisplay(user.phone)}
                 </span>
               )}
             </div>
@@ -200,7 +201,11 @@ export default async function ProfilePage({
           <SectionTitle>{t('contactInfo')}</SectionTitle>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <InfoTile icon={Mail} label={t('email')} value={user.email ?? ''} />
-            <InfoTile icon={Phone} label={t('phone')} value={user.phone ?? ''} />
+            <InfoTile
+              icon={Phone}
+              label={t('phone')}
+              value={user.phone ? formatPhoneDisplay(user.phone) : ''}
+            />
             <InfoTile
               icon={MapPin}
               label={t('address')}

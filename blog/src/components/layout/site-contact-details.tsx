@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 
 import type { SiteOwnerProfile } from '@/lib/site-owner';
-import { buildTelHref } from '@/lib/contact/display';
+import { buildTelHref, formatPhoneDisplay } from '@/lib/contact/display';
 
 type SiteContactDetailsProps = {
   owner: SiteOwnerProfile;
@@ -60,7 +60,7 @@ export function SiteContactDetails({
           key: 'phone',
           label: phoneLabel,
           href: buildTelHref(owner.phone),
-          value: owner.phone,
+          value: formatPhoneDisplay(owner.phone),
           icon: Phone,
           external: false,
         }

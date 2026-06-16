@@ -1,6 +1,53 @@
 import type { AddressData } from '@/lib/address/types';
 import { isTurkeyCountry } from '@/lib/address/types';
 
+export function parsePhoneDigits(phone: string): string {
+  let digits = phone.replace(/\D/g, '');
+
+  if (digits.startsWith('90') && digits.length > 10) {
+    digits = digits.slice(2);
+  }
+
+  if (digits.startsWith('0') && digits.length > 10) {
+    digits = digits.slice(1);
+  }
+
+  return digits.slice(0, 10);
+}
+
+export function formatPhoneDisplay(phone: string): string {
+  const digits = parsePhoneDigits(phone);
+
+  if (digits.length === 10) {
+    return `+90 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+
+  const trimmed = phone.trim();
+  return trimmed || phone;
+}
+
+export function formatPhoneInput(phone: string): string {
+  const digits = parsePhoneDigits(phone);
+
+  if (!digits) {
+    return '';
+  }
+
+  if (digits.length <= 3) {
+    return `+90 (${digits}`;
+  }
+
+  if (digits.length <= 6) {
+    return `+90 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  }
+
+  return `+90 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+export function normalizePhoneForStorage(phone: string): string {
+  return parsePhoneDigits(phone);
+}
+
 export function resolvePublicEmail(
   contactEmail: string | null | undefined,
   email: string
@@ -10,21 +57,13 @@ export function resolvePublicEmail(
 }
 
 export function buildTelHref(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
+  const digits = parsePhoneDigits(phone);
 
   if (!digits) {
     return `tel:${phone}`;
   }
 
-  if (digits.startsWith('90') && digits.length >= 12) {
-    return `tel:+${digits}`;
-  }
-
-  if (digits.startsWith('0') && digits.length >= 10) {
-    return `tel:+90${digits.slice(1)}`;
-  }
-
-  return `tel:+${digits}`;
+  return `tel:+90${digits}`;
 }
 
 export function formatAddressShort(

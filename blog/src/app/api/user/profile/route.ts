@@ -6,6 +6,10 @@ import { revalidateSiteOwner } from '@/lib/site-owner';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { formatAddressLine } from '@/lib/address/format';
+import {
+  normalizePhoneForStorage,
+  parsePhoneDigits,
+} from '@/lib/contact/display';
 import { addressDataSchema } from '@/lib/address/types';
 import type { Prisma } from '@prisma/client';
 
@@ -13,7 +17,9 @@ export const dynamic = 'force-dynamic';
 
 const profileSchema = z.object({
   name: z.string().min(3),
-  phone: z.string().min(10),
+  phone: z.string().refine((value) => parsePhoneDigits(value).length >= 10, {
+    message: 'Phone must be at least 10 digits',
+  }),
   addressData: addressDataSchema,
   website: z.string().url().optional().or(z.literal('')),
   contactEmail: z.string().email().optional().or(z.literal('')),
@@ -44,7 +50,7 @@ export async function PATCH(request: Request) {
 
     const updateData: Prisma.UserUpdateInput = {
       name,
-      phone,
+      phone: normalizePhoneForStorage(phone),
       address,
       addressData: addressData as Prisma.InputJsonValue,
       website: website || null,

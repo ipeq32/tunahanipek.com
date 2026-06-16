@@ -18,7 +18,7 @@ import { RotatingMotto } from './_features/RotatingMotto';
 import { SiteContainer } from '@/components/layout/site-container';
 import { SOCIAL_LINKS } from '@/lib/social';
 import type { SiteOwnerProfile } from '@/lib/site-owner';
-import { buildTelHref } from '@/lib/contact/display';
+import { buildTelHref, formatPhoneDisplay } from '@/lib/contact/display';
 
 type FooterProps = {
   isAuthenticated: boolean;
@@ -32,8 +32,10 @@ const Footer = ({ isAuthenticated, userName, mottos, siteOwner }: FooterProps) =
 
   const ownerName = siteOwner?.name ?? 'Tunahan İPEK';
   const emailAddress = siteOwner?.publicEmail ?? 'tnhnipek@gmail.com';
-  const phoneNumber = siteOwner?.phone ?? null;
-  const phoneHref = phoneNumber ? buildTelHref(phoneNumber) : null;
+  const phoneNumber = siteOwner?.phone
+    ? formatPhoneDisplay(siteOwner.phone)
+    : null;
+  const phoneHref = siteOwner?.phone ? buildTelHref(siteOwner.phone) : null;
   const addressLabel = siteOwner?.addressShort ?? null;
   const mapsHref = siteOwner?.mapsHref ?? null;
   const websiteHref = siteOwner?.website ?? 'https://tunahanipek.com';

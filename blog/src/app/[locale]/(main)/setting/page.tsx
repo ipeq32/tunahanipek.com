@@ -9,6 +9,7 @@ import {
   addressDataToFormValues,
   parseAddressDataJson,
 } from '@/lib/address/types';
+import { formatPhoneInput } from '@/lib/contact/display';
 import { prisma } from '@/lib/prisma';
 import {
   getEnabledOAuthProviders,
@@ -17,6 +18,17 @@ import {
 } from '@/lib/oauth/config';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from '@/navigation';
+
+const settingUserSelect = {
+  name: true,
+  phone: true,
+  addressData: true,
+  contactEmail: true,
+  website: true,
+  image: true,
+  bio: true,
+  role: true,
+} as const;
 
 export default async function SettingPage({
   params,
@@ -37,23 +49,15 @@ export default async function SettingPage({
     });
   }
 
-  const [dbUser, enabledProviders] = await Promise.all([
+  const [dbUser, linkedAccounts, enabledProviders] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: {
-        name: true,
-        phone: true,
-        addressData: true,
-        contactEmail: true,
-        website: true,
-        image: true,
-        bio: true,
-        role: true,
-        accounts: {
-          select: { provider: true },
-          orderBy: { provider: 'asc' },
-        },
-      },
+      select: settingUserSelect,
+    }),
+    prisma.account.findMany({
+      where: { userId: session.user.id },
+      select: { provider: true },
+      orderBy: { provider: 'asc' },
     }),
     Promise.resolve(getEnabledOAuthProviders()),
   ]);
@@ -95,7 +99,7 @@ export default async function SettingPage({
               }
             : null
         }
-        linkedProviders={dbUser.accounts
+        linkedProviders={linkedAccounts
           .map((account) => account.provider)
           .filter((provider): provider is OAuthProviderId =>
             ['google', 'github', 'linkedin'].includes(provider)
@@ -104,7 +108,7 @@ export default async function SettingPage({
         showConnectedAccounts={hasAnyOAuthProvider(enabledProviders)}
         initialUser={{
           name: dbUser.name ?? '',
-          phone: dbUser.phone ?? '',
+          phone: dbUser.phone ? formatPhoneInput(dbUser.phone) : '',
           addressData: addressDataToFormValues(
             parseAddressDataJson(dbUser.addressData)
           ),

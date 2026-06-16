@@ -50,6 +50,10 @@ import {
   formValuesToAddressData,
   type AddressFormValues,
 } from '@/lib/address/types';
+import {
+  formatPhoneInput,
+  parsePhoneDigits,
+} from '@/lib/contact/display';
 import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
 
 function createProfileSchema(
@@ -61,9 +65,15 @@ function createProfileSchema(
     name: z.string().min(FIELD_LIMITS.profile.name.min, {
       message: t('validation.nameMin', { min: FIELD_LIMITS.profile.name.min }),
     }),
-    phone: z.string().min(FIELD_LIMITS.profile.phone.min, {
-      message: t('validation.phoneMin', { min: FIELD_LIMITS.profile.phone.min }),
-    }),
+    phone: z.string().refine(
+      (value) =>
+        parsePhoneDigits(value).length >= FIELD_LIMITS.profile.phone.min,
+      {
+        message: t('validation.phoneMin', {
+          min: FIELD_LIMITS.profile.phone.min,
+        }),
+      }
+    ),
     addressData: addressSchema,
     website: z
       .string()
@@ -392,13 +402,46 @@ export default function SettingsForm({
                     required
                     minLength={FIELD_LIMITS.profile.name.min}
                   />
-                  <IconField
+                  <FormField
                     control={profileForm.control}
                     name="phone"
-                    label={t('phone')}
-                    icon={Phone}
-                    required
-                    minLength={FIELD_LIMITS.profile.phone.min}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t('phone')}
+                          <FormRequiredIndicator />
+                        </FormLabel>
+                        <div className="relative">
+                          <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              inputMode="tel"
+                              autoComplete="tel"
+                              placeholder="+90 (5__) ___-____"
+                              className="pl-9"
+                              value={field.value}
+                              onChange={(event) => {
+                                field.onChange(
+                                  formatPhoneInput(event.target.value)
+                                );
+                              }}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormFieldFooter>
+                          <FormMessage />
+                          <CharacterCount
+                            value={parsePhoneDigits(String(field.value ?? ''))}
+                            min={FIELD_LIMITS.profile.phone.min}
+                            max={FIELD_LIMITS.profile.phone.min}
+                          />
+                        </FormFieldFooter>
+                      </FormItem>
+                    )}
                   />
                 </FieldGrid>
 
