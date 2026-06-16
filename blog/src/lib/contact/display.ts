@@ -15,7 +15,30 @@ export function parsePhoneDigits(phone: string): string {
     digits = digits.slice(1);
   }
 
+  // +90 prefix silinirken kalan ülke kodu parçası (ör. "+90 (90")
+  if (digits === '90') {
+    return '';
+  }
+
   return digits.slice(0, 10);
+}
+
+export function formatPhoneDigits(digits: string): string {
+  const national = digits.replace(/\D/g, '').slice(0, 10);
+
+  if (!national || national === '90') {
+    return '';
+  }
+
+  if (national.length <= 3) {
+    return `+90 (${national}`;
+  }
+
+  if (national.length <= 6) {
+    return `+90 (${national.slice(0, 3)}) ${national.slice(3)}`;
+  }
+
+  return `+90 (${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6)}`;
 }
 
 export function formatPhoneDisplay(phone: string): string {
@@ -30,21 +53,7 @@ export function formatPhoneDisplay(phone: string): string {
 }
 
 export function formatPhoneInput(phone: string): string {
-  const digits = parsePhoneDigits(phone);
-
-  if (!digits) {
-    return '';
-  }
-
-  if (digits.length <= 3) {
-    return `+90 (${digits}`;
-  }
-
-  if (digits.length <= 6) {
-    return `+90 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
-  }
-
-  return `+90 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  return formatPhoneDigits(parsePhoneDigits(phone));
 }
 
 export function normalizePhoneForStorage(phone: string): string {

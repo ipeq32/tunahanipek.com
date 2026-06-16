@@ -9,7 +9,7 @@ import {
   addressDataToFormValues,
   parseAddressDataJson,
 } from '@/lib/address/types';
-import { formatPhoneInput } from '@/lib/contact/display';
+import { parsePhoneDigits } from '@/lib/contact/display';
 import { prisma } from '@/lib/prisma';
 import {
   getEnabledOAuthProviders,
@@ -108,7 +108,7 @@ export default async function SettingPage({
         showConnectedAccounts={hasAnyOAuthProvider(enabledProviders)}
         initialUser={{
           name: dbUser.name ?? '',
-          phone: dbUser.phone ? formatPhoneInput(dbUser.phone) : '',
+          phone: dbUser.phone ? parsePhoneDigits(dbUser.phone) : '',
           addressData: addressDataToFormValues(
             parseAddressDataJson(dbUser.addressData)
           ),

@@ -51,7 +51,7 @@ import {
   type AddressFormValues,
 } from '@/lib/address/types';
 import {
-  formatPhoneInput,
+  formatPhoneDigits,
   parsePhoneDigits,
 } from '@/lib/contact/display';
 import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
@@ -420,10 +420,10 @@ export default function SettingsForm({
                               autoComplete="tel"
                               placeholder="+90 (5__) ___-____"
                               className="pl-9"
-                              value={field.value}
+                              value={formatPhoneDigits(String(field.value ?? ''))}
                               onChange={(event) => {
                                 field.onChange(
-                                  formatPhoneInput(event.target.value)
+                                  parsePhoneDigits(event.target.value),
                                 );
                               }}
                               onBlur={field.onBlur}

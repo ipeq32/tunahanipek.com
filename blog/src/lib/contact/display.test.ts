@@ -5,6 +5,7 @@ import {
   buildMapsHref,
   buildTelHref,
   formatAddressShort,
+  formatPhoneDigits,
   formatPhoneDisplay,
   formatPhoneInput,
   normalizePhoneForStorage,
@@ -55,6 +56,16 @@ describe('formatPhoneInput', () => {
   it('allows deleting formatted prefix', () => {
     expect(formatPhoneInput('+90 (')).toBe('');
     expect(formatPhoneInput('+90 (5')).toBe('+90 (5');
+    expect(formatPhoneInput('+90 (90')).toBe('');
+  });
+});
+
+describe('formatPhoneDigits', () => {
+  it('formats national digits without re-parsing prefix', () => {
+    expect(formatPhoneDigits('5416064488')).toBe('+90 (541) 606-4488');
+    expect(formatPhoneDigits('5')).toBe('+90 (5');
+    expect(formatPhoneDigits('')).toBe('');
+    expect(formatPhoneDigits('90')).toBe('');
   });
 });
 
@@ -62,6 +73,23 @@ describe('parsePhoneDigits', () => {
   it('strips +90 prefix from formatted UI string', () => {
     expect(parsePhoneDigits('+90 (')).toBe('');
     expect(parsePhoneDigits('+90 (5')).toBe('5');
+    expect(parsePhoneDigits('+90 (90')).toBe('');
+  });
+
+  it('supports sequential backspace from a full formatted number', () => {
+    let display = '+90 (541) 606-4488';
+
+    for (let i = 0; i < 25; i += 1) {
+      display = display.slice(0, -1);
+      const digits = parsePhoneDigits(display);
+      const next = formatPhoneDigits(digits);
+
+      expect(next).not.toBe('+90 (90');
+      expect(parsePhoneDigits(next)).toBe(digits);
+      display = next;
+    }
+
+    expect(display).toBe('');
   });
 });
 
