@@ -170,6 +170,43 @@
       "empty": "Henüz proje yok",
       "statusPublished": "Yayında",
       "statusDraft": "Taslak"
+    },
+    "Users": {
+      "title": "Kullanıcı Yönetimi",
+      "description": "Kullanıcı rollerini yönetin ve hesapları denetleyin.",
+      "searchPlaceholder": "İsim veya e-posta ile ara...",
+      "filterAll": "Tümü",
+      "statTotal": "Toplam",
+      "statAdmins": "Yönetici",
+      "statMembers": "Üye",
+      "refresh": "Yenile",
+      "empty": "Henüz kullanıcı yok.",
+      "noResults": "Eşleşen kullanıcı bulunamadı.",
+      "loadError": "Kullanıcılar yüklenemedi",
+      "actionError": "İşlem başarısız",
+      "roleUpdated": "Kullanıcı rolü güncellendi",
+      "deleted": "Kullanıcı silindi",
+      "delete": "Sil",
+      "deleteTitle": "Kullanıcıyı sil",
+      "deleteConfirm": "{name} kullanıcısını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "you": "Siz",
+      "verified": "Doğrulanmış",
+      "hasPassword": "Şifre",
+      "blogCount": "{count, plural, =0 {Yazı yok} one {# yazı} other {# yazı}}",
+      "commentCount": "{count, plural, =0 {Yorum yok} one {# yorum} other {# yorum}}",
+      "cannotDeleteSelf": "Kendi hesabınızı silemezsiniz",
+      "roles": {
+        "USER": "Üye",
+        "ADMIN": "Editör",
+        "SUPER_ADMIN": "Süper Admin"
+      },
+      "errors": {
+        "SELF_ROLE_CHANGE_FORBIDDEN": "Kendi rolünüzü değiştiremezsiniz",
+        "LAST_SUPER_ADMIN_FORBIDDEN": "Son süper admin kaldırılamaz",
+        "SELF_DELETE_FORBIDDEN": "Kendi hesabınızı silemezsiniz",
+        "USER_NOT_FOUND": "Kullanıcı bulunamadı"
+      }
     }
   },
   "Auth": {
@@ -1223,6 +1260,7 @@
           "manageProject": "Proje Yönetimi",
           "addProject": "Yeni proje",
           "moderateComments": "Yorum Moderasyonu",
+          "manageUsers": "Kullanıcı Yönetimi",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",

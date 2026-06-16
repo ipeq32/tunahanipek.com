@@ -76,3 +76,25 @@ export function AdminEmptyState({ message }: { message: string }) {
     </div>
   );
 }
+
+type AdminRoleBadgeProps = {
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+  label: string;
+};
+
+export function AdminRoleBadge({ role, label }: AdminRoleBadgeProps) {
+  return (
+    <span
+      className={cn(
+        'inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+        role === 'SUPER_ADMIN' &&
+          'border-teal-500/25 bg-teal-500/10 text-teal-700 dark:text-teal-300',
+        role === 'ADMIN' &&
+          'border-cyan-500/25 bg-cyan-500/10 text-cyan-800 dark:text-cyan-300',
+        role === 'USER' && 'border-border/60 bg-muted/40 text-muted-foreground'
+      )}
+    >
+      {label}
+    </span>
+  );
+}

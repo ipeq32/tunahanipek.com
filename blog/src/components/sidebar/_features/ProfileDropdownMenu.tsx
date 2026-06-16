@@ -24,6 +24,7 @@ import {
   PenSquare,
   Settings,
   UserRound,
+  Users,
 } from 'lucide-react';
 
 const FALLBACK_AVATAR =
@@ -170,6 +171,12 @@ function ProfileDropdownMenuFeature({
               href="/admin/comments"
               icon={MessagesSquare}
               label={t('moderateComments')}
+              onClick={close}
+            />
+            <MenuLink
+              href="/admin/users"
+              icon={Users}
+              label={t('manageUsers')}
               onClick={close}
             />
           </>

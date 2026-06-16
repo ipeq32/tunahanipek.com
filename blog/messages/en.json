@@ -170,6 +170,43 @@
       "empty": "No projects yet",
       "statusPublished": "Published",
       "statusDraft": "Draft"
+    },
+    "Users": {
+      "title": "User management",
+      "description": "Manage user roles and review accounts.",
+      "searchPlaceholder": "Search by name or email...",
+      "filterAll": "All",
+      "statTotal": "Total",
+      "statAdmins": "Admins",
+      "statMembers": "Members",
+      "refresh": "Refresh",
+      "empty": "No users yet.",
+      "noResults": "No matching users.",
+      "loadError": "Could not load users",
+      "actionError": "Action failed",
+      "roleUpdated": "User role updated",
+      "deleted": "User deleted",
+      "delete": "Delete",
+      "deleteTitle": "Delete user",
+      "deleteConfirm": "Are you sure you want to delete {name}? This action cannot be undone.",
+      "cancel": "Cancel",
+      "you": "You",
+      "verified": "Verified",
+      "hasPassword": "Password",
+      "blogCount": "{count, plural, =0 {No posts} one {# post} other {# posts}}",
+      "commentCount": "{count, plural, =0 {No comments} one {# comment} other {# comments}}",
+      "cannotDeleteSelf": "You cannot delete your own account",
+      "roles": {
+        "USER": "Member",
+        "ADMIN": "Editor",
+        "SUPER_ADMIN": "Super Admin"
+      },
+      "errors": {
+        "SELF_ROLE_CHANGE_FORBIDDEN": "You cannot change your own role",
+        "LAST_SUPER_ADMIN_FORBIDDEN": "The last super admin cannot be removed",
+        "SELF_DELETE_FORBIDDEN": "You cannot delete your own account",
+        "USER_NOT_FOUND": "User not found"
+      }
     }
   },
   "Auth": {
@@ -1224,6 +1261,7 @@
           "manageProject": "Project Management",
           "addProject": "New project",
           "moderateComments": "Comment Moderation",
+          "manageUsers": "User Management",
           "logout": "Logout",
           "roles": {
             "USER": "Member",
