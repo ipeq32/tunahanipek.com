@@ -1,9 +1,24 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
-import { ContactChannelCard } from '@/components/layout/contact-channel-card';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
+import { ContactForm } from './_components/ContactForm';
+import { ContactInfoPanel } from './_components/ContactInfoPanel';
+import { ContactLocationSection } from './_components/ContactLocationSection';
+import {
+  ArrowRight,
+  Github,
+  HelpCircle,
+  Instagram,
+  Linkedin,
+  Mail,
+  Twitter,
+} from 'lucide-react';
+import { SOCIAL_LINKS } from '@/lib/social';
+import { getContactMapLocation } from '@/lib/contact/location.server';
+import { getSiteOwner } from '@/lib/site-owner';
 
 export async function generateMetadata({
   params,
@@ -19,20 +34,6 @@ export async function generateMetadata({
     route: '/contact',
   });
 }
-import { ContactForm } from './_components/ContactForm';
-import {
-  ArrowRight,
-  Clock,
-  Github,
-  Instagram,
-  Linkedin,
-  Mail,
-  Sparkles,
-  Twitter,
-} from 'lucide-react';
-
-import { SOCIAL_LINKS } from '@/lib/social';
-import { getSiteOwner } from '@/lib/site-owner';
 
 function socialHandle(url: string): string {
   try {
@@ -46,6 +47,7 @@ function socialHandle(url: string): string {
 export default async function ContactPage() {
   const t = await getTranslations('Pages.Contact');
   const siteOwner = await getSiteOwner();
+  const mapLocation = await getContactMapLocation(siteOwner);
   const publicEmail = siteOwner?.publicEmail ?? 'hello@tunahanipek.com';
 
   const channels = [
@@ -86,53 +88,65 @@ export default async function ContactPage() {
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
 
-      <div className="mt-2 space-y-6">
-        <section className="relative overflow-hidden rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-cyan-500/10 to-transparent p-8 shadow-sm md:p-10">
-          <div
-            className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-teal-500/20 blur-3xl"
-            aria-hidden
+      <div className="mt-2 grid gap-8 lg:grid-cols-5 lg:items-start">
+        <aside className="lg:col-span-2 lg:sticky lg:top-24">
+          <ContactInfoPanel
+            availabilityBadge={t('availabilityBadge')}
+            body={t('body')}
+            responseNote={t('responseNote')}
+            directContactTitle={t('directContactTitle')}
+            socialTitle={t('socialTitle')}
+            siteOwner={siteOwner}
+            corporateEmailLabel={t('corporateEmailLabel')}
+            personalEmailLabel={t('personalEmailLabel')}
+            phoneLabel={t('phoneLabel')}
+            addressLabel={t('addressLabel')}
+            websiteLabel={t('websiteLabel')}
+            omitAddress={Boolean(mapLocation)}
+            channels={channels}
           />
-          <div className="relative max-w-2xl space-y-5">
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/25 bg-teal-500/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              {t('availabilityBadge')}
-            </div>
-            <p className="text-lg text-foreground/90 md:text-xl">{t('body')}</p>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="accent" size="lg" asChild>
-                <a href={`mailto:${publicEmail}`}>
-                  <Mail className="mr-2 h-4 w-4" />
-                  {t('ctaEmail')}
-                </a>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noreferrer">
-                  <Linkedin className="mr-2 h-4 w-4" />
-                  {t('ctaLinkedin')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            </div>
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Clock className="h-3.5 w-3.5" />
-              {t('responseNote')}
-            </p>
-          </div>
-        </section>
+        </aside>
 
-        <ContactForm />
-
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold tracking-tight">
-            {t('channelsTitle')}
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {channels.map((channel) => (
-              <ContactChannelCard key={channel.href} {...channel} />
-            ))}
-          </div>
-        </section>
+        <div className="lg:col-span-3">
+          <ContactForm />
+        </div>
       </div>
+
+      {mapLocation && (
+        <ContactLocationSection
+          className="mt-8"
+          latitude={mapLocation.latitude}
+          longitude={mapLocation.longitude}
+          addressLabel={mapLocation.addressLabel}
+          mapsHref={mapLocation.mapsHref}
+          mapTitle={t('mapTitle')}
+          openInMapsLabel={t('openInMaps')}
+          approximate={mapLocation.approximate}
+          approximateNote={mapLocation.approximate ? t('mapApproximateNote') : undefined}
+        />
+      )}
+
+      <section className="relative mt-10 overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-8 text-center shadow-sm backdrop-blur-sm md:p-10">
+        <div
+          className="pointer-events-none absolute -left-12 -bottom-12 h-36 w-36 rounded-full bg-cyan-500/10 blur-3xl"
+          aria-hidden
+        />
+        <div className="relative mx-auto flex max-w-lg flex-col items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400">
+            <HelpCircle className="h-5 w-5" aria-hidden />
+          </span>
+          <h2 className="text-lg font-semibold tracking-tight md:text-xl">
+            {t('faqTitle')}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t('faqDescription')}</p>
+          <Button variant="outline" asChild className="mt-1">
+            <Link href="/faq">
+              {t('faqCta')}
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      </section>
     </>
   );
 }

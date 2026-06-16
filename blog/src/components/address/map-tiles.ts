@@ -12,3 +12,4 @@ export function getMapTileUrl(theme: MapTileTheme): string {
 export const DEFAULT_MAP_CENTER: [number, number] = [39.9334, 32.8597];
 export const DEFAULT_MAP_ZOOM = 6;
 export const SELECTED_MAP_ZOOM = 16;
+export const APPROXIMATE_MAP_ZOOM = 13;

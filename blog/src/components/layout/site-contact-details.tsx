@@ -12,6 +12,7 @@ type SiteContactDetailsProps = {
   addressLabel: string;
   websiteLabel: string;
   className?: string;
+  omitAddress?: boolean;
 };
 
 export function SiteContactDetails({
@@ -22,6 +23,7 @@ export function SiteContactDetails({
   addressLabel,
   websiteLabel,
   className,
+  omitAddress = false,
 }: SiteContactDetailsProps) {
   const showCorporateEmail =
     owner.contactEmail &&
@@ -75,7 +77,7 @@ export function SiteContactDetails({
           external: true,
         }
       : null,
-    owner.addressShort && owner.mapsHref
+    owner.addressShort && owner.mapsHref && !omitAddress
       ? {
           key: 'address',
           label: addressLabel,
