@@ -199,6 +199,7 @@
       "blogCount": "{count, plural, =0 {Yazı yok} one {# yazı} other {# yazı}}",
       "commentCount": "{count, plural, =0 {Yorum yok} one {# yorum} other {# yorum}}",
       "cannotDeleteSelf": "Kendi hesabınızı silemezsiniz",
+      "viewOnlyNotice": "Salt okunur moddasınız. Rol değiştirme ve silme işlemleri yalnızca ana süper admin tarafından yapılabilir.",
       "roles": {
         "USER": "Üye",
         "ADMIN": "Editör",
@@ -208,7 +209,8 @@
         "SELF_ROLE_CHANGE_FORBIDDEN": "Kendi rolünüzü değiştiremezsiniz",
         "LAST_SUPER_ADMIN_FORBIDDEN": "Son süper admin kaldırılamaz",
         "SELF_DELETE_FORBIDDEN": "Kendi hesabınızı silemezsiniz",
-        "USER_NOT_FOUND": "Kullanıcı bulunamadı"
+        "USER_NOT_FOUND": "Kullanıcı bulunamadı",
+        "USER_MANAGEMENT_FORBIDDEN": "Kullanıcı yönetimi yetkiniz yok"
       }
     }
   },

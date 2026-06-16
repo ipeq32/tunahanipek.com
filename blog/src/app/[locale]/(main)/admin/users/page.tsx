@@ -5,6 +5,7 @@ import { getAdminUsersDto } from '@/lib/data/users';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from '@/navigation';
 import { isSuperAdmin } from '@/lib/auth-roles';
+import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -19,6 +20,7 @@ export default async function AdminUsersPage({ params }: Props) {
   }
 
   const currentUserId = session.user.id;
+  const canManage = isPrimarySuperAdmin(session.user.email);
   const t = await getTranslations('Admin.Users');
   const initialUsers = await getAdminUsersDto();
 
@@ -28,6 +30,7 @@ export default async function AdminUsersPage({ params }: Props) {
       <AdminUsersList
         initialUsers={initialUsers}
         currentUserId={currentUserId}
+        canManage={canManage}
       />
     </>
   );

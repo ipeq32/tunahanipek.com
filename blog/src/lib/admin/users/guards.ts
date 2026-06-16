@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { Role } from '@prisma/client';
+import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
 import { prisma } from '@/lib/prisma';
 import type { AdminUserMutationErrorCode } from './types';
 
@@ -8,6 +9,17 @@ export class AdminUserMutationError extends Error {
   constructor(public readonly code: AdminUserMutationErrorCode) {
     super(code);
     this.name = 'AdminUserMutationError';
+  }
+}
+
+export async function assertCanManageUsers(actorId: string): Promise<void> {
+  const actor = await prisma.user.findFirst({
+    where: { id: actorId, deletedAt: null },
+    select: { email: true },
+  });
+
+  if (!actor || !isPrimarySuperAdmin(actor.email)) {
+    throw new AdminUserMutationError('USER_MANAGEMENT_FORBIDDEN');
   }
 }
 

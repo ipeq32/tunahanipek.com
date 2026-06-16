@@ -32,6 +32,7 @@ import {
   ShieldCheck,
   Trash2,
   UserRound,
+  Eye,
 } from 'lucide-react';
 
 const FALLBACK_AVATAR =
@@ -42,6 +43,7 @@ type RoleFilter = 'all' | 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 type AdminUsersListProps = {
   initialUsers: AdminUserDto[];
   currentUserId: string;
+  canManage: boolean;
 };
 
 function StatCard({
@@ -82,6 +84,7 @@ function OAuthProviderBadge({ provider }: { provider: string }) {
 export default function AdminUsersList({
   initialUsers,
   currentUserId,
+  canManage,
 }: AdminUsersListProps) {
   const t = useTranslations('Admin.Users');
   const format = useFormatter();
@@ -100,6 +103,7 @@ export default function AdminUsersList({
         'LAST_SUPER_ADMIN_FORBIDDEN',
         'SELF_DELETE_FORBIDDEN',
         'USER_NOT_FOUND',
+        'USER_MANAGEMENT_FORBIDDEN',
       ];
 
       if (knownCodes.includes(code as AdminUserMutationErrorCode)) {
@@ -217,6 +221,13 @@ export default function AdminUsersList({
 
   return (
     <div className="mt-6 space-y-5">
+      {!canManage && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+          <Eye className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>{t('viewOnlyNotice')}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-3">
         <StatCard label={t('statTotal')} value={stats.total} />
         <StatCard label={t('statAdmins')} value={stats.admins} accent />
@@ -351,38 +362,40 @@ export default function AdminUsersList({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
-                  <Select
-                    value={user.role}
-                    disabled={updatingRoleId === user.id}
-                    onValueChange={(value) =>
-                      updateRole(user, value as AdminUserDto['role'])
-                    }
-                  >
-                    <SelectTrigger className="h-9 w-[160px] border-border/60 bg-background/80 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roleOptions.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {t(`roles.${role}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {canManage && (
+                  <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
+                    <Select
+                      value={user.role}
+                      disabled={updatingRoleId === user.id}
+                      onValueChange={(value) =>
+                        updateRole(user, value as AdminUserDto['role'])
+                      }
+                    >
+                      <SelectTrigger className="h-9 w-[160px] border-border/60 bg-background/80 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roleOptions.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {t(`roles.${role}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
 
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="h-9 w-9"
-                    disabled={isSelf}
-                    onClick={() => setDeleteTarget(user)}
-                    aria-label={t('delete')}
-                    title={isSelf ? t('cannotDeleteSelf') : t('delete')}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="h-9 w-9"
+                      disabled={isSelf}
+                      onClick={() => setDeleteTarget(user)}
+                      aria-label={t('delete')}
+                      title={isSelf ? t('cannotDeleteSelf') : t('delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             );
           })}

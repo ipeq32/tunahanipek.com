@@ -4,6 +4,7 @@ import type { Role } from '@prisma/client';
 import {
   AdminUserMutationError,
   assertCanDeleteUser,
+  assertCanManageUsers,
   assertCanUpdateUserRole,
 } from '@/lib/admin/users/guards';
 import type { AdminUserDto } from '@/lib/admin/users/types';
@@ -82,6 +83,8 @@ export async function updateAdminUserRole(
   targetUserId: string,
   role: Role
 ): Promise<AdminUserDto> {
+  await assertCanManageUsers(actorId);
+
   const target = await prisma.user.findFirst({
     where: { id: targetUserId, deletedAt: null },
     select: { id: true, role: true },
@@ -106,6 +109,8 @@ export async function softDeleteAdminUser(
   actorId: string,
   targetUserId: string
 ): Promise<void> {
+  await assertCanManageUsers(actorId);
+
   const target = await prisma.user.findFirst({
     where: { id: targetUserId, deletedAt: null },
     select: { id: true, role: true },

@@ -199,6 +199,7 @@
       "blogCount": "{count, plural, =0 {No posts} one {# post} other {# posts}}",
       "commentCount": "{count, plural, =0 {No comments} one {# comment} other {# comments}}",
       "cannotDeleteSelf": "You cannot delete your own account",
+      "viewOnlyNotice": "You are in view-only mode. Role changes and deletions can only be performed by the primary super admin.",
       "roles": {
         "USER": "Member",
         "ADMIN": "Editor",
@@ -208,7 +209,8 @@
         "SELF_ROLE_CHANGE_FORBIDDEN": "You cannot change your own role",
         "LAST_SUPER_ADMIN_FORBIDDEN": "The last super admin cannot be removed",
         "SELF_DELETE_FORBIDDEN": "You cannot delete your own account",
-        "USER_NOT_FOUND": "User not found"
+        "USER_NOT_FOUND": "User not found",
+        "USER_MANAGEMENT_FORBIDDEN": "You do not have permission to manage users"
       }
     }
   },
