@@ -25,9 +25,10 @@ export default async function EditProjectPage({ params }: Props) {
       session.user.email
     )
   ) {
-    redirect({ href: '/auth/login', locale });
+    return redirect({ href: '/auth/login', locale });
   }
 
+  const { user } = session;
   const project = await getAdminProjectById(id, locale);
 
   if (!project) {
@@ -40,10 +41,7 @@ export default async function EditProjectPage({ params }: Props) {
       <ProjectForm
         mode="edit"
         projectId={id}
-        canPublish={canPublishProject(
-          session.user.permissions,
-          session.user.email
-        )}
+        canPublish={canPublishProject(user.permissions, user.email)}
         defaultValues={{
           url: project.url ?? '',
           image: project.image ?? '',

@@ -7,6 +7,7 @@ function buildProject() {
     id: 'p1',
     url: 'https://example.com',
     image: 'https://cdn.example.com/i.png',
+    gallery: [],
     sortOrder: 0,
     createdAt: now,
     updatedAt: now,

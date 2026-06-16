@@ -23,18 +23,17 @@ export default async function AddProjectPage({ params }: Props) {
       session.user.email
     )
   ) {
-    redirect({ href: '/auth/login', locale });
+    return redirect({ href: '/auth/login', locale });
   }
+
+  const { user } = session;
 
   return (
     <>
       <HeaderTemplate title={t('addTitle')} description={t('description')} />
       <ProjectForm
         mode="create"
-        canPublish={canPublishProject(
-          session.user.permissions,
-          session.user.email
-        )}
+        canPublish={canPublishProject(user.permissions, user.email)}
         defaultValues={{
           url: '',
           image: '',

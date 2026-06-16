@@ -30,7 +30,7 @@ export default async function EditBlogPage({ params }: Props) {
   const canUpdateAny = canUpdateAnyBlog(user?.permissions, user?.email);
 
   if (!user || (!canUpdateOwn && !canUpdateAny)) {
-    redirect({ href: '/auth/login', locale });
+    return redirect({ href: '/auth/login', locale });
   }
 
   const blog = await getBlogById(id, locale, { includeAllTranslations: true });
@@ -45,7 +45,7 @@ export default async function EditBlogPage({ params }: Props) {
   });
 
   if (!raw || (!canUpdateAny && raw.authorId !== user.id)) {
-    redirect({ href: '/blog', locale });
+    return redirect({ href: '/blog', locale });
   }
 
   return (
