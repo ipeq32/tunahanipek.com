@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import { sendEmail } from '@/lib/email';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { getSiteOwnerDirect } from '@/lib/site-owner';
 import { contactSchema } from '@/lib/validations/contact';
 
 export const dynamic = 'force-dynamic';
-
-const CONTACT_INBOX = 'hello@tunahanipek.com';
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
@@ -38,8 +37,11 @@ export async function POST(request: Request) {
     const escapedName = name.replace(/[<>&]/g, '');
     const escapedMessage = message.replace(/[<>&]/g, '');
 
+    const siteOwner = await getSiteOwnerDirect();
+    const contactInbox = siteOwner?.publicEmail ?? 'hello@tunahanipek.com';
+
     const sent = await sendEmail({
-      to: CONTACT_INBOX,
+      to: contactInbox,
       subject: `Contact form: ${escapedName}`,
       html: `
         <p><strong>Name:</strong> ${escapedName}</p>

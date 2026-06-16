@@ -2,6 +2,7 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { revalidateSiteOwner } from '@/lib/site-owner';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { formatAddressLine } from '@/lib/address/format';
@@ -15,6 +16,7 @@ const profileSchema = z.object({
   phone: z.string().min(10),
   addressData: addressDataSchema,
   website: z.string().url().optional().or(z.literal('')),
+  contactEmail: z.string().email().optional().or(z.literal('')),
   image: z.string().url().optional().or(z.literal('')),
   bio: z.string().optional().or(z.literal('')),
 });
@@ -36,24 +38,32 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { name, phone, addressData, website, image, bio } = parsed.data;
+    const { name, phone, addressData, website, contactEmail, image, bio } =
+      parsed.data;
     const address = formatAddressLine(addressData);
+
+    const updateData: Prisma.UserUpdateInput = {
+      name,
+      phone,
+      address,
+      addressData: addressData as Prisma.InputJsonValue,
+      website: website || null,
+      image: image || null,
+      bio: bio || null,
+    };
+
+    if (context.isPrimarySuperAdmin) {
+      updateData.contactEmail = contactEmail?.trim() || null;
+    }
 
     const user = await prisma.user.update({
       where: { id: context.userId },
-      data: {
-        name,
-        phone,
-        address,
-        addressData: addressData as Prisma.InputJsonValue,
-        website: website || null,
-        image: image || null,
-        bio: bio || null,
-      },
+      data: updateData,
       select: {
         id: true,
         name: true,
         email: true,
+        contactEmail: true,
         phone: true,
         address: true,
         addressData: true,
@@ -62,6 +72,10 @@ export async function PATCH(request: Request) {
         bio: true,
       },
     });
+
+    if (context.isPrimarySuperAdmin) {
+      revalidateSiteOwner();
+    }
 
     return NextResponse.json({ data: user });
   } catch (error) {

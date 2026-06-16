@@ -17,25 +17,32 @@ import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
 import { SiteContainer } from '@/components/layout/site-container';
 import { SOCIAL_LINKS } from '@/lib/social';
+import type { SiteOwnerProfile } from '@/lib/site-owner';
+import { buildTelHref } from '@/lib/contact/display';
 
 type FooterProps = {
   isAuthenticated: boolean;
   userName: string | null;
   mottos?: string[];
+  siteOwner: SiteOwnerProfile | null;
 };
 
-const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
+const Footer = ({ isAuthenticated, userName, mottos, siteOwner }: FooterProps) => {
   const t = useTranslations('Footer');
 
-  const emailAddress = 'tnhnipek@gmail.com';
+  const ownerName = siteOwner?.name ?? 'Tunahan İPEK';
+  const emailAddress = siteOwner?.publicEmail ?? 'tnhnipek@gmail.com';
+  const phoneNumber = siteOwner?.phone ?? null;
+  const phoneHref = phoneNumber ? buildTelHref(phoneNumber) : null;
+  const addressLabel = siteOwner?.addressShort ?? null;
+  const mapsHref = siteOwner?.mapsHref ?? null;
+  const websiteHref = siteOwner?.website ?? 'https://tunahanipek.com';
   const emailSubject = t('Mail.subject');
   const emailBody = t('Mail.body', {
     auth: isAuthenticated ? `İsmim ${userName}` : 'Daha giriş yapmadım.',
   });
-  const recipientAddress = 'Gültepe, Albayrak Meydanı, Merkezefendi/Denizli';
 
   const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-  const googleMapsLink = `https://www.google.com/maps/search/${encodeURIComponent(recipientAddress)}`;
 
   const instagramLinks = [
     {
@@ -83,7 +90,7 @@ const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
       />
       <SiteContainer className="grid w-full gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
-          <p className="text-lg font-bold tracking-tight text-gradient">Tunahan İPEK</p>
+          <p className="text-lg font-bold tracking-tight text-gradient">{ownerName}</p>
           <RotatingMotto mottos={mottos} />
           <div className="flex gap-2">
             {socials.map(({ href, label, icon: Icon }) => (
@@ -106,15 +113,17 @@ const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
             {t('AddressInfo.title')}
           </h3>
           <ul className="space-y-3 text-sm">
-            <li>
-              <Link
-                href="tel:+905416064488"
-                className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
-              >
-                <Phone className="h-4 w-4 shrink-0" />
-                +90 (541) 606-4488
-              </Link>
-            </li>
+            {phoneNumber && phoneHref && (
+              <li>
+                <Link
+                  href={phoneHref}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
+                >
+                  <Phone className="h-4 w-4 shrink-0" />
+                  {phoneNumber}
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href={mailtoLink}
@@ -124,17 +133,19 @@ const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
                 {emailAddress}
               </Link>
             </li>
-            <li>
-              <Link
-                href={googleMapsLink}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
-              >
-                <MapPin className="h-4 w-4 shrink-0" />
-                Gültepe/DENİZLİ
-              </Link>
-            </li>
+            {addressLabel && mapsHref && (
+              <li>
+                <Link
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-teal-600 dark:hover:text-teal-400"
+                >
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  {addressLabel}
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 
@@ -193,7 +204,7 @@ const Footer = ({ isAuthenticated, userName, mottos }: FooterProps) => {
           {t.rich('ownership', {
             link: (text) => (
               <Link
-                href="https://tunahanipek.com"
+                href={websiteHref}
                 target="_blank"
                 rel="noreferrer"
                 className="font-medium text-teal-600 hover:underline dark:text-teal-400"

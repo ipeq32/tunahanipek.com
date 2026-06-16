@@ -35,6 +35,7 @@ import {
   KeyRound,
   Loader2,
   Lock,
+  Mail,
   Phone,
   type LucideIcon,
   UserRound,
@@ -53,7 +54,8 @@ import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config'
 
 function createProfileSchema(
   t: (key: string, values?: Record<string, string | number>) => string,
-  addressSchema: ReturnType<typeof createAddressFormValuesSchema>
+  addressSchema: ReturnType<typeof createAddressFormValuesSchema>,
+  includeContactEmail: boolean
 ) {
   return z.object({
     name: z.string().min(FIELD_LIMITS.profile.name.min, {
@@ -68,6 +70,14 @@ function createProfileSchema(
       .url({ message: t('validation.websiteInvalid') })
       .optional()
       .or(z.literal('')),
+    contactEmail: includeContactEmail
+      ? z
+          .string()
+          .email({ message: t('validation.contactEmailInvalid') })
+          .max(FIELD_LIMITS.contact.email.max)
+          .optional()
+          .or(z.literal(''))
+      : z.literal('').optional(),
     image: z
       .string()
       .url({ message: t('validation.imageInvalid') })
@@ -108,6 +118,7 @@ export type SettingsUserValues = {
   phone: string;
   addressData: AddressFormValues;
   website: string;
+  contactEmail?: string;
   image: string;
   bio: string;
 };
@@ -121,6 +132,7 @@ type SiteResumeInitial = {
 type SettingsFormProps = {
   initialUser: SettingsUserValues;
   canManageSiteSettings?: boolean;
+  isSiteOwner?: boolean;
   initialSiteResume?: SiteResumeInitial;
   linkedProviders?: OAuthProviderId[];
   enabledProviders?: EnabledOAuthProviders;
@@ -231,6 +243,7 @@ function IconField<T extends FieldValues>({
 export default function SettingsForm({
   initialUser,
   canManageSiteSettings = false,
+  isSiteOwner = false,
   initialSiteResume = null,
   linkedProviders = [],
   enabledProviders,
@@ -255,8 +268,8 @@ export default function SettingsForm({
   );
 
   const profileSchema = useMemo(
-    () => createProfileSchema(t, addressSchema),
-    [addressSchema, t]
+    () => createProfileSchema(t, addressSchema, isSiteOwner),
+    [addressSchema, isSiteOwner, t]
   );
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -295,6 +308,7 @@ export default function SettingsForm({
             phone: values.phone,
             addressData,
             website: values.website,
+            contactEmail: isSiteOwner ? values.contactEmail : undefined,
             image: values.image,
             bio: values.bio,
           }),
@@ -395,6 +409,18 @@ export default function SettingsForm({
                   icon={Globe}
                   placeholder={t('urlPlaceholder')}
                 />
+
+                {isSiteOwner && (
+                  <IconField
+                    control={profileForm.control}
+                    name="contactEmail"
+                    label={t('contactEmail')}
+                    icon={Mail}
+                    type="email"
+                    placeholder={t('contactEmailPlaceholder')}
+                    maxLength={FIELD_LIMITS.contact.email.max}
+                  />
+                )}
 
                 <FormField
                   control={profileForm.control}

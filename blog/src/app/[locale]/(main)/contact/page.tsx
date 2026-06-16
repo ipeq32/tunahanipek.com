@@ -32,41 +32,51 @@ import {
 } from 'lucide-react';
 
 import { SOCIAL_LINKS } from '@/lib/social';
+import { getSiteOwner } from '@/lib/site-owner';
 
-const EMAIL = 'hello@tunahanipek.com';
+function socialHandle(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.hostname.replace(/^www\./, '')}${parsed.pathname}`.replace(/\/$/, '');
+  } catch {
+    return url;
+  }
+}
 
 export default async function ContactPage() {
   const t = await getTranslations('Pages.Contact');
+  const siteOwner = await getSiteOwner();
+  const publicEmail = siteOwner?.publicEmail ?? 'hello@tunahanipek.com';
 
   const channels = [
     {
       label: t('emailLabel'),
-      value: EMAIL,
-      href: `mailto:${EMAIL}`,
+      value: publicEmail,
+      href: `mailto:${publicEmail}`,
       icon: Mail,
       external: false,
     },
     {
       label: t('githubLabel'),
-      value: 'github.com/ipeq32',
+      value: socialHandle(SOCIAL_LINKS.github),
       href: SOCIAL_LINKS.github,
       icon: Github,
     },
     {
       label: t('linkedinLabel'),
-      value: 'linkedin.com/in/tunahanipek',
+      value: socialHandle(SOCIAL_LINKS.linkedin),
       href: SOCIAL_LINKS.linkedin,
       icon: Linkedin,
     },
     {
       label: t('twitterLabel'),
-      value: 'x.com/tnhnipek',
+      value: socialHandle(SOCIAL_LINKS.twitter),
       href: SOCIAL_LINKS.twitter,
       icon: Twitter,
     },
     {
       label: t('instagramLabel'),
-      value: 'instagram.com/tnhnipek',
+      value: socialHandle(SOCIAL_LINKS.instagram),
       href: SOCIAL_LINKS.instagram,
       icon: Instagram,
     },
@@ -90,7 +100,7 @@ export default async function ContactPage() {
             <p className="text-lg text-foreground/90 md:text-xl">{t('body')}</p>
             <div className="flex flex-wrap gap-3">
               <Button variant="accent" size="lg" asChild>
-                <a href={`mailto:${EMAIL}`}>
+                <a href={`mailto:${publicEmail}`}>
                   <Mail className="mr-2 h-4 w-4" />
                   {t('ctaEmail')}
                 </a>

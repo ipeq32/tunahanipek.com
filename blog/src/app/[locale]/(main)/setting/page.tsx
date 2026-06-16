@@ -2,6 +2,7 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import SettingsForm from './_features/SettingsForm';
 import { auth } from '@/auth';
 import { hasUserPermission } from '@/lib/auth-roles';
+import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getSiteResumeDirect } from '@/lib/site-resume';
 import {
@@ -43,6 +44,7 @@ export default async function SettingPage({
         name: true,
         phone: true,
         addressData: true,
+        contactEmail: true,
         website: true,
         image: true,
         bio: true,
@@ -76,11 +78,14 @@ export default async function SettingPage({
     ? await getSiteResumeDirect()
     : null;
 
+  const isSiteOwner = isPrimarySuperAdmin(session.user.email);
+
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <SettingsForm
         canManageSiteSettings={canManageSiteSettings}
+        isSiteOwner={isSiteOwner}
         initialSiteResume={
           initialSiteResume
             ? {
@@ -104,6 +109,7 @@ export default async function SettingPage({
             parseAddressDataJson(dbUser.addressData)
           ),
           website: dbUser.website ?? '',
+          contactEmail: dbUser.contactEmail ?? '',
           image: dbUser.image ?? '',
           bio: dbUser.bio ?? '',
         }}

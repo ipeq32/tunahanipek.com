@@ -14,7 +14,14 @@
     "viewAll": "View all",
     "ctaSectionTitle": "Let's work together",
     "ctaSectionDescription": "Have a project in mind or just want to say hi? Get in touch.",
-    "ctaContact": "Get in touch"
+    "ctaContact": "Get in touch",
+    "contactTitle": "Contact details",
+    "contactDescription": "Information you update in settings appears here.",
+    "contactPersonalEmail": "Personal email",
+    "contactCorporateEmail": "Business email",
+    "contactPhone": "Phone",
+    "contactAddress": "Address",
+    "contactWebsite": "Website"
   },
   "Blog": {
     "title": "Blog",
@@ -623,6 +630,8 @@
     "phone": "Phone",
     "address": "Address",
     "website": "Website",
+    "contactEmail": "Business / contact email",
+    "contactEmailPlaceholder": "hello@example.com",
     "urlPlaceholder": "https://...",
     "image": "Profile image",
     "bio": "Bio",
@@ -642,6 +651,7 @@
       "passwordMin": "Password must be at least {min} characters.",
       "passwordMismatch": "Passwords do not match.",
       "websiteInvalid": "Enter a valid website URL.",
+      "contactEmailInvalid": "Enter a valid email address.",
       "imageInvalid": "Enter a valid image URL."
     },
     "ConnectedAccounts": {

@@ -1,6 +1,7 @@
 import { getLocale } from 'next-intl/server';
 
 import { getSession } from '@/lib/cached-session';
+import { getSiteOwner } from '@/lib/site-owner';
 import { getSiteSnippetLines } from '@/lib/site-snippets';
 
 import Footer from './Footer';
@@ -15,7 +16,11 @@ async function loadMottos(locale: string): Promise<string[] | undefined> {
 }
 
 const FooterShell = async () => {
-  const [session, locale] = await Promise.all([getSession(), getLocale()]);
+  const [session, locale, siteOwner] = await Promise.all([
+    getSession(),
+    getLocale(),
+    getSiteOwner(),
+  ]);
   const mottos = await loadMottos(locale);
 
   return (
@@ -23,6 +28,7 @@ const FooterShell = async () => {
       isAuthenticated={!!session?.user}
       userName={session?.user?.name ?? null}
       mottos={mottos}
+      siteOwner={siteOwner}
     />
   );
 };

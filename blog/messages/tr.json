@@ -14,7 +14,14 @@
     "viewAll": "Tümünü gör",
     "ctaSectionTitle": "Birlikte çalışalım",
     "ctaSectionDescription": "Bir proje fikrin mi var, yoksa sadece merhaba mı demek istiyorsun? Bana ulaş.",
-    "ctaContact": "İletişime geç"
+    "ctaContact": "İletişime geç",
+    "contactTitle": "İletişim bilgileri",
+    "contactDescription": "Ayarlardan güncellediğiniz bilgiler burada görünür.",
+    "contactPersonalEmail": "Kişisel e-posta",
+    "contactCorporateEmail": "Kurumsal e-posta",
+    "contactPhone": "Telefon",
+    "contactAddress": "Adres",
+    "contactWebsite": "Web sitesi"
   },
   "Blog": {
     "title": "Bloglar",
@@ -623,6 +630,8 @@
     "phone": "Telefon",
     "address": "Adres",
     "website": "Web sitesi",
+    "contactEmail": "Kurumsal / iletişim e-postası",
+    "contactEmailPlaceholder": "hello@ornek.com",
     "urlPlaceholder": "https://...",
     "image": "Profil görseli",
     "bio": "Biyografi",
@@ -642,6 +651,7 @@
       "passwordMin": "Şifre en az {min} karakter olmalıdır.",
       "passwordMismatch": "Şifreler eşleşmiyor.",
       "websiteInvalid": "Geçerli bir web sitesi adresi girin.",
+      "contactEmailInvalid": "Geçerli bir e-posta adresi girin.",
       "imageInvalid": "Geçerli bir görsel adresi girin."
     },
     "ConnectedAccounts": {

@@ -1,5 +1,6 @@
 import { getSiteUrl } from '@/config';
 import { SOCIAL_LINKS } from '@/lib/social';
+import type { SiteOwnerProfile } from '@/lib/site-owner';
 
 export function serializeJsonLd(data: Record<string, unknown>): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
@@ -16,13 +17,16 @@ export function buildWebSiteJsonLd(locale: string) {
   };
 }
 
-export function buildPersonJsonLd() {
+export function buildPersonJsonLd(siteOwner?: SiteOwnerProfile | null) {
   const siteUrl = getSiteUrl();
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: 'Tunahan İPEK',
-    url: siteUrl,
+    name: siteOwner?.name ?? 'Tunahan İPEK',
+    url: siteOwner?.website ?? siteUrl,
+    email: siteOwner?.publicEmail,
+    telephone: siteOwner?.phone ?? undefined,
     sameAs: [
       SOCIAL_LINKS.linkedin,
       SOCIAL_LINKS.github,

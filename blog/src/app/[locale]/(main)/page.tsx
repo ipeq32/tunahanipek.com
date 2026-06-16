@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/lib/page-metadata';
 import { JsonLd } from '@/components/json-ld';
 import { buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/json-ld';
 import { Button } from '@/components/ui/button';
+import { SiteContactDetails } from '@/components/layout/site-contact-details';
+import { getSiteOwner } from '@/lib/site-owner';
 
 export async function generateMetadata({
   params,
@@ -99,11 +101,12 @@ export default async function HomePage({
   const t = await getTranslations('HomePage');
   const tProject = await getTranslations('Pages.Project');
 
-  const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount] =
+  const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount, siteOwner] =
     await Promise.all([
       getPublishedBlogs(1, 3, { locale }),
       getPublishedProjects(locale),
       prisma.category.count({ where: { deletedAt: null } }),
+      getSiteOwner(),
     ]);
 
   const featuredProjects = projects.slice(0, 3);
@@ -111,7 +114,7 @@ export default async function HomePage({
   return (
     <div className="space-y-12 py-6 md:py-8">
       <JsonLd data={buildWebSiteJsonLd(locale)} />
-      <JsonLd data={buildPersonJsonLd()} />
+      <JsonLd data={buildPersonJsonLd(siteOwner)} />
       <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-sm md:p-10">
         <div
           className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl"
@@ -194,6 +197,27 @@ export default async function HomePage({
       )}
 
       <DidYouKnowShell size="lg" />
+
+      {siteOwner && (
+        <section className="space-y-4">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              {t('contactTitle')}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t('contactDescription')}
+            </p>
+          </div>
+          <SiteContactDetails
+            owner={siteOwner}
+            emailLabel={t('contactPersonalEmail')}
+            corporateEmailLabel={t('contactCorporateEmail')}
+            phoneLabel={t('contactPhone')}
+            addressLabel={t('contactAddress')}
+            websiteLabel={t('contactWebsite')}
+          />
+        </section>
+      )}
 
       <section className="relative overflow-hidden rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 via-cyan-500/10 to-transparent p-8 text-center shadow-sm md:p-12">
         <div
