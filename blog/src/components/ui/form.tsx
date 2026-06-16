@@ -167,6 +167,27 @@ const FormMessage = React.forwardRef<
 });
 FormMessage.displayName = 'FormMessage';
 
+function FormRequiredIndicator({ className }: { className?: string }) {
+  return (
+    <span className={cn('text-destructive', className)} aria-hidden="true">
+      {' '}
+      *
+    </span>
+  );
+}
+
+const FormFieldFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn('flex items-start justify-between gap-3', className)}
+    {...props}
+  />
+));
+FormFieldFooter.displayName = 'FormFieldFooter';
+
 export {
   useFormField,
   Form,
@@ -176,4 +197,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormRequiredIndicator,
+  FormFieldFooter,
 };

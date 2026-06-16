@@ -49,7 +49,16 @@
       "categories": "Kategoriler",
       "categoriesPlaceholder": "Teknoloji, Seyahat (virgülle)",
       "languagesSection": "Çeviriler",
-      "atLeastOneLanguage": "En az bir dilde başlık, içerik ve özet doldurulmalıdır."
+      "atLeastOneLanguage": "En az bir dilde başlık, içerik ve özet doldurulmalıdır.",
+      "validation": {
+        "titleTooShort": "Başlık en az {min} karakter olmalıdır.",
+        "titleTooLong": "Başlık en fazla {max} karakter olabilir.",
+        "summaryRequired": "Özet gereklidir.",
+        "summaryTooLong": "Özet en fazla {max} karakter olabilir.",
+        "contentRequired": "İçerik gereklidir.",
+        "imageRequired": "Görsel gereklidir.",
+        "taxonomyTooLong": "En fazla {max} karakter olabilir."
+      }
     },
     "Taxonomy": {
       "tags": "Etiketler",
@@ -154,6 +163,13 @@
       "fieldPublished": "Yayında",
       "languagesSection": "Çeviriler",
       "atLeastOneLanguage": "En az bir dilde başlık ve açıklama doldurulmalıdır.",
+      "validation": {
+        "titleTooShort": "Başlık en az {min} karakter olmalıdır.",
+        "titleTooLong": "Başlık en fazla {max} karakter olabilir.",
+        "descriptionTooShort": "Açıklama en az {min} karakter olmalıdır.",
+        "descriptionTooLong": "Açıklama en fazla {max} karakter olabilir.",
+        "urlInvalid": "Geçerli bir URL girin."
+      },
       "add": "Ekle",
       "save": "Kaydet",
       "cancel": "İptal",
@@ -248,6 +264,14 @@
       "loadError": "Roller yüklenemedi",
       "actionError": "İşlem başarısız",
       "validationError": "Rol adı gereklidir",
+      "fieldErrors": {
+        "nameMin": "Rol adı en az 2 karakter olmalıdır",
+        "nameMax": "Rol adı en fazla 64 karakter olabilir",
+        "slugMin": "Slug en az 2 karakter olmalıdır",
+        "slugMax": "Slug en fazla 48 karakter olabilir",
+        "slugInvalid": "Slug yalnızca küçük harf, rakam ve tire içerebilir",
+        "descriptionMax": "Açıklama en fazla 240 karakter olabilir"
+      },
       "created": "Rol oluşturuldu",
       "updated": "Rol güncellendi",
       "deleted": "Rol silindi",
@@ -341,6 +365,8 @@
       "addLineDescription": "Türkçe ve İngilizce metinleri birlikte girin. Kaydettikten sonra her iki dilde de görünür.",
       "addLineContentLabel": "Metin ({locale})",
       "addLineContentRequired": "{locale} metni boş olamaz.",
+      "contentTooShort": "En az {min} karakter gerekli",
+      "contentTooLong": "En fazla {max} karakter olabilir",
       "addLineSubmit": "Her iki dile ekle",
       "addLineAiTitle": "Yapay zeka",
       "addLineAiDescription": "Her iki dil için tek seferde satır üretin veya bir dilde yazıp diğerine çevirin.",
@@ -400,7 +426,10 @@
       "success": "Talebiniz alındı. E-postanızı kontrol edin.",
       "error": "İşlem başarısız",
       "devLink": "Geliştirme ortamı bağlantısı",
-      "backToLogin": "Giriş sayfasına dön"
+      "backToLogin": "Giriş sayfasına dön",
+      "validation": {
+        "emailInvalid": "Geçerli bir e-posta adresi girin."
+      }
     },
     "ResetPassword": {
       "title": "Yeni Şifre",
@@ -412,7 +441,11 @@
       "success": "Şifreniz güncellendi",
       "error": "Şifre güncellenemedi",
       "invalidToken": "Geçersiz veya süresi dolmuş bağlantı.",
-      "requestNew": "Yeni bağlantı iste"
+      "requestNew": "Yeni bağlantı iste",
+      "validation": {
+        "passwordMin": "Şifre en az {min} karakter olmalıdır.",
+        "passwordMismatch": "Şifreler eşleşmiyor."
+      }
     }
   },
   "Comments": {
@@ -430,7 +463,9 @@
     "like": "Beğen",
     "dislike": "Beğenme",
     "loginToReact": "Tepki vermek için giriş yapın",
-    "reactError": "Tepkiniz kaydedilemedi"
+    "reactError": "Tepkiniz kaydedilemedi",
+    "contentTooShort": "En az {min} karakter gerekli",
+    "contentTooLong": "En fazla {max} karakter olabilir"
   },
   "Address": {
     "sectionTitle": "Adres",
@@ -465,6 +500,13 @@
     "loading": "Yükleniyor...",
     "selectCountryFirst": "Önce ülke seçin",
     "required": "Bu alan zorunludur",
+    "validation": {
+      "countryRequired": "Ülke seçimi zorunludur.",
+      "provinceRequired": "İl seçimi zorunludur.",
+      "districtRequired": "İlçe seçimi zorunludur.",
+      "stateRequired": "Eyalet veya il seçimi zorunludur.",
+      "cityRequired": "Şehir seçimi zorunludur."
+    },
     "villageTag": "Köy",
     "map": {
       "title": "Haritadan adres seç",
@@ -511,6 +553,14 @@
     "profileError": "Profil güncellenemedi",
     "passwordSuccess": "Şifre güncellendi",
     "passwordError": "Şifre güncellenemedi",
+    "validation": {
+      "nameMin": "Ad en az {min} karakter olmalıdır.",
+      "phoneMin": "Telefon en az {min} karakter olmalıdır.",
+      "passwordMin": "Şifre en az {min} karakter olmalıdır.",
+      "passwordMismatch": "Şifreler eşleşmiyor.",
+      "websiteInvalid": "Geçerli bir web sitesi adresi girin.",
+      "imageInvalid": "Geçerli bir görsel adresi girin."
+    },
     "ConnectedAccounts": {
       "title": "Bağlı hesaplar",
       "description": "Google, GitHub veya LinkedIn hesabınızı bağlayarak alternatif giriş yöntemleri ekleyin.",
@@ -1226,7 +1276,7 @@
         "Name": {
           "stringRequiredError": "Ad gerekli.",
           "stringInvalidTypeError": "Ad formatı hatalı.",
-          "minMessage": "İsim en az 6 karakter olmalıdır."
+          "minMessage": "İsim en az 3 karakter olmalıdır."
         },
         "Phone": {
           "stringRequiredError": "Telefon gereklidir.",

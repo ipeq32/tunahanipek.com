@@ -31,6 +31,12 @@ import {
   mapSignInError,
 } from '@/lib/auth-toast';
 import type { FieldErrors } from 'react-hook-form';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { CharacterCount } from '@/components/ui/character-count';
+import {
+  FormFieldFooter,
+  FormRequiredIndicator,
+} from '@/components/ui/form';
 
 import type { EnabledOAuthProviders } from '@/lib/oauth/config';
 
@@ -79,6 +85,7 @@ export default function LoginForm({
       email: '',
       password: '',
     },
+    ...LIVE_FORM_OPTIONS,
   });
 
   const onInvalid = (errors: FieldErrors<FormData>) => {
@@ -149,7 +156,8 @@ export default function LoginForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
-                {t('Form.Email.label')} <span className="text-red-500">*</span>
+                {t('Form.Email.label')}
+                <FormRequiredIndicator />
               </FormLabel>
               <FormControl className="w-full">
                 <Input
@@ -159,7 +167,13 @@ export default function LoginForm({
                   type="email"
                 />
               </FormControl>
-              <FormMessage className="text-xs text-rose-400" />
+              <FormFieldFooter>
+                <FormMessage className="text-xs text-rose-400" />
+                <CharacterCount
+                  value={field.value}
+                  max={FIELD_LIMITS.contact.email.max}
+                />
+              </FormFieldFooter>
             </FormItem>
           )}
         />
@@ -169,8 +183,8 @@ export default function LoginForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
-                {t('Form.Password.label')}{' '}
-                <span className="text-red-500">*</span>
+                {t('Form.Password.label')}
+                <FormRequiredIndicator />
               </FormLabel>
               <FormControl className="w-full">
                 <PasswordInput
@@ -179,7 +193,14 @@ export default function LoginForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-xs text-rose-400" />
+              <FormFieldFooter>
+                <FormMessage className="text-xs text-rose-400" />
+                <CharacterCount
+                  value={field.value}
+                  min={FIELD_LIMITS.password.min}
+                  trim={false}
+                />
+              </FormFieldFooter>
             </FormItem>
           )}
         />
@@ -187,7 +208,7 @@ export default function LoginForm({
           type="submit"
           variant="accent"
           className="w-full"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
         >
           {form.formState.isSubmitting
             ? t('Form.Submit.loading')

@@ -225,50 +225,82 @@ export function parseAddressDataJson(value: unknown): AddressData | null {
   return parsed.success ? parsed.data : null;
 }
 
-export const addressFormValuesSchema = z
-  .object({
-    countryCode: z.string().min(2, 'Country is required'),
-    countryName: z.string().min(1, 'Country is required'),
-    provinceId: z.number().nullable(),
-    provinceName: z.string(),
-    districtId: z.number().nullable(),
-    districtName: z.string(),
-    stateCode: z.string(),
-    stateName: z.string(),
-    cityName: z.string(),
-    neighborhoodId: z.number().nullable(),
-    neighborhoodName: z.string(),
-    settlementType: z.enum(['neighborhood', 'village']).optional(),
-    street: z.string(),
-    buildingNo: z.string(),
-    apartment: z.string(),
-    site: z.string(),
-    details: z.string(),
-    latitude: z.number().nullable(),
-    longitude: z.number().nullable(),
-    formattedMapAddress: z.string(),
-  })
-  .superRefine((values, ctx) => {
-    if (!isTurkeyCountry(values.countryCode)) {
-      if (!values.stateCode.trim() || !values.stateName.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['stateCode'],
-        });
-      }
-      if (!values.cityName.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['cityName'],
-        });
-      }
-      return;
-    }
+export type AddressFormValidationMessages = {
+  countryRequired: string;
+  provinceRequired: string;
+  districtRequired: string;
+  stateRequired: string;
+  cityRequired: string;
+};
 
-    if (values.provinceId == null) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['provinceId'] });
-    }
-    if (values.districtId == null) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['districtId'] });
-    }
-  });
+const defaultAddressFormMessages: AddressFormValidationMessages = {
+  countryRequired: 'Country is required',
+  provinceRequired: 'Province is required',
+  districtRequired: 'District is required',
+  stateRequired: 'State is required',
+  cityRequired: 'City is required',
+};
+
+export function createAddressFormValuesSchema(
+  messages: AddressFormValidationMessages = defaultAddressFormMessages
+) {
+  return z
+    .object({
+      countryCode: z.string().min(2, messages.countryRequired),
+      countryName: z.string().min(1, messages.countryRequired),
+      provinceId: z.number().nullable(),
+      provinceName: z.string(),
+      districtId: z.number().nullable(),
+      districtName: z.string(),
+      stateCode: z.string(),
+      stateName: z.string(),
+      cityName: z.string(),
+      neighborhoodId: z.number().nullable(),
+      neighborhoodName: z.string(),
+      settlementType: z.enum(['neighborhood', 'village']).optional(),
+      street: z.string(),
+      buildingNo: z.string(),
+      apartment: z.string(),
+      site: z.string(),
+      details: z.string(),
+      latitude: z.number().nullable(),
+      longitude: z.number().nullable(),
+      formattedMapAddress: z.string(),
+    })
+    .superRefine((values, ctx) => {
+      if (!isTurkeyCountry(values.countryCode)) {
+        if (!values.stateCode.trim() || !values.stateName.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: messages.stateRequired,
+            path: ['stateCode'],
+          });
+        }
+        if (!values.cityName.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: messages.cityRequired,
+            path: ['cityName'],
+          });
+        }
+        return;
+      }
+
+      if (values.provinceId == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: messages.provinceRequired,
+          path: ['provinceId'],
+        });
+      }
+      if (values.districtId == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: messages.districtRequired,
+          path: ['districtId'],
+        });
+      }
+    });
+}
+
+export const addressFormValuesSchema = createAddressFormValuesSchema();

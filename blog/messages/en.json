@@ -49,7 +49,16 @@
       "categories": "Categories",
       "categoriesPlaceholder": "Technology, Travel (comma-separated)",
       "languagesSection": "Translations",
-      "atLeastOneLanguage": "At least one language must have title, content, and summary."
+      "atLeastOneLanguage": "At least one language must have title, content, and summary.",
+      "validation": {
+        "titleTooShort": "Title must be at least {min} characters.",
+        "titleTooLong": "Title cannot exceed {max} characters.",
+        "summaryRequired": "Summary is required.",
+        "summaryTooLong": "Summary cannot exceed {max} characters.",
+        "contentRequired": "Content is required.",
+        "imageRequired": "Image is required.",
+        "taxonomyTooLong": "Cannot exceed {max} characters."
+      }
     },
     "Taxonomy": {
       "tags": "Tags",
@@ -154,6 +163,13 @@
       "fieldPublished": "Published",
       "languagesSection": "Translations",
       "atLeastOneLanguage": "At least one language must have title and description.",
+      "validation": {
+        "titleTooShort": "Title must be at least {min} characters.",
+        "titleTooLong": "Title cannot exceed {max} characters.",
+        "descriptionTooShort": "Description must be at least {min} characters.",
+        "descriptionTooLong": "Description cannot exceed {max} characters.",
+        "urlInvalid": "Enter a valid URL."
+      },
       "add": "Add",
       "save": "Save",
       "cancel": "Cancel",
@@ -248,6 +264,14 @@
       "loadError": "Could not load roles",
       "actionError": "Action failed",
       "validationError": "Role name is required",
+      "fieldErrors": {
+        "nameMin": "Role name must be at least 2 characters",
+        "nameMax": "Role name cannot exceed 64 characters",
+        "slugMin": "Slug must be at least 2 characters",
+        "slugMax": "Slug cannot exceed 48 characters",
+        "slugInvalid": "Slug may only contain lowercase letters, numbers, and hyphens",
+        "descriptionMax": "Description cannot exceed 240 characters"
+      },
       "created": "Role created",
       "updated": "Role updated",
       "deleted": "Role deleted",
@@ -341,6 +365,8 @@
       "addLineDescription": "Enter Turkish and English text together. Both locales are updated after you save.",
       "addLineContentLabel": "Text ({locale})",
       "addLineContentRequired": "{locale} text cannot be empty.",
+      "contentTooShort": "At least {min} characters required",
+      "contentTooLong": "Maximum {max} characters allowed",
       "addLineSubmit": "Add to both locales",
       "addLineAiTitle": "Artificial intelligence",
       "addLineAiDescription": "Generate a line for both locales at once, or write in one language and translate to the other.",
@@ -400,7 +426,10 @@
       "success": "Request received. Check your email.",
       "error": "Operation failed",
       "devLink": "Development reset link",
-      "backToLogin": "Back to login"
+      "backToLogin": "Back to login",
+      "validation": {
+        "emailInvalid": "Enter a valid email address."
+      }
     },
     "ResetPassword": {
       "title": "New password",
@@ -412,7 +441,11 @@
       "success": "Password updated",
       "error": "Could not update password",
       "invalidToken": "Invalid or expired link.",
-      "requestNew": "Request a new link"
+      "requestNew": "Request a new link",
+      "validation": {
+        "passwordMin": "Password must be at least {min} characters.",
+        "passwordMismatch": "Passwords do not match."
+      }
     }
   },
   "Comments": {
@@ -430,7 +463,9 @@
     "like": "Like",
     "dislike": "Dislike",
     "loginToReact": "Sign in to react",
-    "reactError": "Could not save your reaction"
+    "reactError": "Could not save your reaction",
+    "contentTooShort": "At least {min} characters required",
+    "contentTooLong": "Maximum {max} characters allowed"
   },
   "Address": {
     "sectionTitle": "Address",
@@ -465,6 +500,13 @@
     "loading": "Loading...",
     "selectCountryFirst": "Select a country first",
     "required": "This field is required",
+    "validation": {
+      "countryRequired": "Country selection is required.",
+      "provinceRequired": "Province selection is required.",
+      "districtRequired": "District selection is required.",
+      "stateRequired": "State or province selection is required.",
+      "cityRequired": "City selection is required."
+    },
     "villageTag": "Village",
     "map": {
       "title": "Pick address on map",
@@ -511,6 +553,14 @@
     "profileError": "Could not update profile",
     "passwordSuccess": "Password updated",
     "passwordError": "Could not update password",
+    "validation": {
+      "nameMin": "Name must be at least {min} characters.",
+      "phoneMin": "Phone must be at least {min} characters.",
+      "passwordMin": "Password must be at least {min} characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "websiteInvalid": "Enter a valid website URL.",
+      "imageInvalid": "Enter a valid image URL."
+    },
     "ConnectedAccounts": {
       "title": "Connected accounts",
       "description": "Link your Google, GitHub, or LinkedIn account to add alternative sign-in methods.",

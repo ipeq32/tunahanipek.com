@@ -1,12 +1,23 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DataPagination } from '@/components/ui/data-pagination';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormFieldFooter,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormRequiredIndicator,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Sheet,
   SheetContent,
@@ -31,7 +42,15 @@ import {
 import type { AccessRoleDto } from '@/lib/admin/roles/types';
 import type { AccessRoleMutationErrorCode } from '@/lib/admin/roles/types';
 import { type PageSize, type PaginationMeta } from '@/lib/pagination';
+import {
+  createRoleFormSchema,
+  updateRoleFormSchema,
+  type CreateRoleFormValues,
+  type UpdateRoleFormValues,
+} from '@/lib/validations/access-role';
 import { cn } from '@/lib/utils';
+import { CharacterCount } from '@/components/ui/character-count';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -51,16 +70,15 @@ type AdminRolesEditorProps = {
 
 type EditorMode = 'create' | 'edit' | null;
 
-type RoleFormState = {
-  name: string;
-  slug: string;
-  description: string;
-  permissions: Permission[];
-};
-
-const EMPTY_FORM: RoleFormState = {
+const EMPTY_CREATE_FORM: CreateRoleFormValues = {
   name: '',
   slug: '',
+  description: '',
+  permissions: [...DEFAULT_ROLE_PERMISSIONS],
+};
+
+const EMPTY_UPDATE_FORM: UpdateRoleFormValues = {
+  name: '',
   description: '',
   permissions: [...DEFAULT_ROLE_PERMISSIONS],
 };
@@ -118,9 +136,50 @@ export default function AdminRolesEditor({
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<EditorMode>(null);
   const [editingRole, setEditingRole] = useState<AccessRoleDto | null>(null);
-  const [form, setForm] = useState<RoleFormState>(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState<AccessRoleDto | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const fieldErrorMessages = useMemo(
+    () => ({
+      nameMin: t('fieldErrors.nameMin'),
+      nameMax: t('fieldErrors.nameMax'),
+      slugMin: t('fieldErrors.slugMin'),
+      slugMax: t('fieldErrors.slugMax'),
+      slugInvalid: t('fieldErrors.slugInvalid'),
+      descriptionMax: t('fieldErrors.descriptionMax'),
+    }),
+    [t]
+  );
+
+  const createSchema = useMemo(
+    () => createRoleFormSchema(fieldErrorMessages),
+    [fieldErrorMessages]
+  );
+  const updateSchema = useMemo(
+    () => updateRoleFormSchema(fieldErrorMessages),
+    [fieldErrorMessages]
+  );
+
+  const createForm = useForm<CreateRoleFormValues>({
+    resolver: zodResolver(createSchema),
+    defaultValues: EMPTY_CREATE_FORM,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const editForm = useForm<UpdateRoleFormValues>({
+    resolver: zodResolver(updateSchema),
+    defaultValues: EMPTY_UPDATE_FORM,
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const isFormValid =
+    mode === 'create'
+      ? createForm.formState.isValid
+      : mode === 'edit'
+        ? editForm.formState.isValid
+        : false;
 
   const resolveMutationError = useCallback(
     (code: string) => {
@@ -168,16 +227,15 @@ export default function AdminRolesEditor({
   const openCreate = () => {
     setMode('create');
     setEditingRole(null);
-    setForm(EMPTY_FORM);
+    createForm.reset(EMPTY_CREATE_FORM);
   };
 
   const openEdit = (role: AccessRoleDto) => {
     if (role.isSystem) return;
     setMode('edit');
     setEditingRole(role);
-    setForm({
+    editForm.reset({
       name: role.name,
-      slug: role.slug,
       description: role.description ?? '',
       permissions: withDefaultRolePermissions(
         role.permissions.filter((item): item is Permission =>
@@ -190,20 +248,32 @@ export default function AdminRolesEditor({
   const closeEditor = () => {
     setMode(null);
     setEditingRole(null);
-    setForm(EMPTY_FORM);
+    createForm.reset(EMPTY_CREATE_FORM);
+    editForm.reset(EMPTY_UPDATE_FORM);
+  };
+
+  const formPermissions =
+    mode === 'create'
+      ? createForm.watch('permissions')
+      : editForm.watch('permissions');
+
+  const setFormPermissions = (permissions: Permission[]) => {
+    const next = withDefaultRolePermissions(permissions);
+    if (mode === 'create') {
+      createForm.setValue('permissions', next, { shouldValidate: true });
+      return;
+    }
+    editForm.setValue('permissions', next, { shouldValidate: true });
   };
 
   const togglePermission = (permission: Permission, checked: boolean) => {
     if (isDefaultRolePermission(permission)) return;
 
-    setForm((prev) => ({
-      ...prev,
-      permissions: withDefaultRolePermissions(
-        checked
-          ? [...prev.permissions, permission]
-          : prev.permissions.filter((item) => item !== permission)
-      ),
-    }));
+    setFormPermissions(
+      checked
+        ? [...formPermissions, permission]
+        : formPermissions.filter((item) => item !== permission)
+    );
   };
 
   const toggleGroup = (permissions: Permission[], checked: boolean) => {
@@ -213,44 +283,38 @@ export default function AdminRolesEditor({
 
     if (!optionalPermissions.length) return;
 
-    setForm((prev) => {
-      if (checked) {
-        return {
-          ...prev,
-          permissions: withDefaultRolePermissions([
-            ...prev.permissions,
-            ...optionalPermissions,
-          ]),
-        };
-      }
-
-      return {
-        ...prev,
-        permissions: withDefaultRolePermissions(
-          prev.permissions.filter(
-            (item) => !optionalPermissions.includes(item)
-          )
-        ),
-      };
-    });
-  };
-
-  const saveRole = async () => {
-    const permissions = withDefaultRolePermissions(form.permissions);
-
-    if (!form.name.trim()) {
-      toast.error(t('validationError'));
+    if (checked) {
+      setFormPermissions([...formPermissions, ...optionalPermissions]);
       return;
     }
 
+    setFormPermissions(
+      formPermissions.filter((item) => !optionalPermissions.includes(item))
+    );
+  };
+
+  const saveRole = async (
+    values: CreateRoleFormValues | UpdateRoleFormValues
+  ) => {
+    const permissions = withDefaultRolePermissions(values.permissions);
+
     setSaving(true);
     try {
-      const payload = {
-        name: form.name.trim(),
-        slug: mode === 'create' ? slugify(form.slug || form.name) : undefined,
-        description: form.description.trim() || undefined,
-        permissions,
-      };
+      const payload =
+        mode === 'create'
+          ? {
+              name: values.name.trim(),
+              slug: slugify(
+                (values as CreateRoleFormValues).slug || values.name
+              ),
+              description: values.description?.trim() || undefined,
+              permissions,
+            }
+          : {
+              name: values.name.trim(),
+              description: values.description?.trim() || undefined,
+              permissions,
+            };
 
       const res = await fetch(
         mode === 'create'
@@ -390,53 +454,168 @@ export default function AdminRolesEditor({
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="role-name">{t('name')}</Label>
-                <Input
-                  id="role-name"
-                  value={form.name}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      name: event.target.value,
-                      slug:
-                        mode === 'create' && !prev.slug
-                          ? slugify(event.target.value)
-                          : prev.slug,
-                    }))
-                  }
-                />
-              </div>
+            {mode === 'create' ? (
+              <Form {...createForm}>
+                <form
+                  id="role-editor-form"
+                  className="space-y-5"
+                  onSubmit={createForm.handleSubmit((values) =>
+                    void saveRole(values)
+                  )}
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={createForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="role-name">
+                            {t('name')}
+                            <FormRequiredIndicator />
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="role-name"
+                              {...field}
+                              onChange={(event) => {
+                                const value = event.target.value;
+                                field.onChange(value);
+                                const currentSlug = createForm.getValues('slug');
+                                if (!currentSlug) {
+                                  createForm.setValue('slug', slugify(value), {
+                                    shouldValidate: true,
+                                  });
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormFieldFooter>
+                            <FormMessage />
+                            <CharacterCount
+                              value={field.value}
+                              min={FIELD_LIMITS.role.name.min}
+                              max={FIELD_LIMITS.role.name.max}
+                            />
+                          </FormFieldFooter>
+                        </FormItem>
+                      )}
+                    />
 
-              {mode === 'create' && (
-                <div className="space-y-2">
-                  <Label htmlFor="role-slug">{t('slug')}</Label>
-                  <Input
-                    id="role-slug"
-                    value={form.slug}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, slug: event.target.value }))
-                    }
-                  />
-                </div>
-              )}
+                    <FormField
+                      control={createForm.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="role-slug">
+                            {t('slug')}
+                            <FormRequiredIndicator />
+                          </FormLabel>
+                          <FormControl>
+                            <Input id="role-slug" {...field} />
+                          </FormControl>
+                          <FormFieldFooter>
+                            <FormMessage />
+                            <CharacterCount
+                              value={field.value}
+                              min={FIELD_LIMITS.role.slug.min}
+                              max={FIELD_LIMITS.role.slug.max}
+                            />
+                          </FormFieldFooter>
+                        </FormItem>
+                      )}
+                    />
 
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="role-description">{t('descriptionLabel')}</Label>
-                <Textarea
-                  id="role-description"
-                  value={form.description}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      description: event.target.value,
-                    }))
-                  }
-                  rows={2}
-                />
-              </div>
-            </div>
+                    <FormField
+                      control={createForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel htmlFor="role-description">
+                            {t('descriptionLabel')}
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              id="role-description"
+                              rows={2}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormFieldFooter>
+                            <FormMessage />
+                            <CharacterCount
+                              value={field.value ?? ''}
+                              max={FIELD_LIMITS.role.description.max}
+                            />
+                          </FormFieldFooter>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </form>
+              </Form>
+            ) : mode === 'edit' ? (
+              <Form {...editForm}>
+                <form
+                  id="role-editor-form"
+                  className="space-y-5"
+                  onSubmit={editForm.handleSubmit((values) =>
+                    void saveRole(values)
+                  )}
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={editForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="role-name">
+                            {t('name')}
+                            <FormRequiredIndicator />
+                          </FormLabel>
+                          <FormControl>
+                            <Input id="role-name" {...field} />
+                          </FormControl>
+                          <FormFieldFooter>
+                            <FormMessage />
+                            <CharacterCount
+                              value={field.value}
+                              min={FIELD_LIMITS.role.name.min}
+                              max={FIELD_LIMITS.role.name.max}
+                            />
+                          </FormFieldFooter>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={editForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel htmlFor="role-description">
+                            {t('descriptionLabel')}
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              id="role-description"
+                              rows={2}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormFieldFooter>
+                            <FormMessage />
+                            <CharacterCount
+                              value={field.value ?? ''}
+                              max={FIELD_LIMITS.role.description.max}
+                            />
+                          </FormFieldFooter>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </form>
+              </Form>
+            ) : null}
 
             <div className="space-y-4">
               <div>
@@ -489,10 +668,10 @@ export default function AdminRolesEditor({
                 if (!optionalPermissions.length) return null;
 
                 const allChecked = optionalPermissions.every((permission) =>
-                  form.permissions.includes(permission)
+                  formPermissions.includes(permission)
                 );
                 const someChecked = optionalPermissions.some((permission) =>
-                  form.permissions.includes(permission)
+                  formPermissions.includes(permission)
                 );
 
                 return (
@@ -520,7 +699,7 @@ export default function AdminRolesEditor({
                           className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted/40"
                         >
                           <PermissionCheckbox
-                            checked={form.permissions.includes(permission)}
+                            checked={formPermissions.includes(permission)}
                             onChange={(checked) =>
                               togglePermission(permission, checked)
                             }
@@ -546,7 +725,11 @@ export default function AdminRolesEditor({
             <Button variant="outline" onClick={closeEditor}>
               {t('cancel')}
             </Button>
-            <Button onClick={saveRole} disabled={saving}>
+            <Button
+              type="submit"
+              form="role-editor-form"
+              disabled={saving || !isFormValid}
+            >
               {saving ? t('saving') : t('save')}
             </Button>
           </SheetFooter>

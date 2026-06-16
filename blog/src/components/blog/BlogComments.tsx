@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ThumbsDown, ThumbsUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CharacterCount } from '@/components/ui/character-count';
 import { Textarea } from '@/components/ui/textarea';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 import { DataPagination } from '@/components/ui/data-pagination';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -30,6 +32,12 @@ type ReactionSummary = {
 };
 
 const ROOT_FORM = 'root';
+const COMMENT_LIMITS = FIELD_LIMITS.comment.content;
+
+function isCommentContentValid(value: string): boolean {
+  const length = value.trim().length;
+  return length >= COMMENT_LIMITS.min && length <= COMMENT_LIMITS.max;
+}
 
 /** Ağaçtaki tek bir yorumu (yanıtlar dahil) id'sine göre günceller. */
 function patchComment(
@@ -191,16 +199,17 @@ export default function BlogComments({
 
       {isAuthenticated ? (
         <div className="max-w-xl space-y-3">
-          <Textarea
+          <CommentDraftField
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={setContent}
             placeholder={t('placeholder')}
-            rows={3}
           />
           <Button
             variant="accent"
             onClick={() => submitComment(content)}
-            disabled={submittingFor === ROOT_FORM}
+            disabled={
+              submittingFor === ROOT_FORM || !isCommentContentValid(content)
+            }
           >
             {t('submit')}
           </Button>
@@ -280,9 +289,9 @@ function CommentItem({
 
       {isReplyOpen && (
         <div className="mt-3 space-y-2">
-          <Textarea
+          <CommentDraftField
             value={replyContent}
-            onChange={(e) => onReplyChange(e.target.value)}
+            onChange={onReplyChange}
             placeholder={labels.placeholder}
             rows={2}
           />
@@ -290,7 +299,7 @@ function CommentItem({
             size="sm"
             variant="accent"
             onClick={onReplySubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isCommentContentValid(replyContent)}
           >
             {labels.send}
           </Button>
@@ -383,5 +392,54 @@ function ReactionButton({
       {icon}
       <span>{count}</span>
     </button>
+  );
+}
+
+type CommentDraftFieldProps = {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  rows?: number;
+};
+
+function CommentDraftField({
+  value,
+  onChange,
+  placeholder,
+  rows = 3,
+}: CommentDraftFieldProps) {
+  const t = useTranslations('Comments');
+  const trimmed = value.trim();
+  const belowMin = trimmed.length > 0 && trimmed.length < COMMENT_LIMITS.min;
+  const overMax = trimmed.length > COMMENT_LIMITS.max;
+
+  return (
+    <div className="space-y-1.5">
+      <Textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        rows={rows}
+        aria-invalid={belowMin || overMax}
+        className={cn(
+          (belowMin || overMax) &&
+            'border-destructive focus-visible:ring-destructive/30'
+        )}
+      />
+      <div className="flex items-start justify-between gap-3">
+        <p className="min-h-[1rem] text-xs text-destructive">
+          {belowMin
+            ? t('contentTooShort', { min: COMMENT_LIMITS.min })
+            : overMax
+              ? t('contentTooLong', { max: COMMENT_LIMITS.max })
+              : null}
+        </p>
+        <CharacterCount
+          value={value}
+          min={COMMENT_LIMITS.min}
+          max={COMMENT_LIMITS.max}
+        />
+      </div>
+    </div>
   );
 }

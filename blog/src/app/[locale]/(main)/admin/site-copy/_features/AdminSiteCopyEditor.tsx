@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DataPagination, createDefaultPagination } from '@/components/ui/data-pagination';
 import { Label } from '@/components/ui/label';
+import { CharacterCount } from '@/components/ui/character-count';
 import { Textarea } from '@/components/ui/textarea';
 import { AdminListCard } from '@/components/admin/admin-ui';
 import {
@@ -16,6 +17,13 @@ import type { SiteSnippetDto } from '@/lib/site-snippets';
 import { locales } from '@/config';
 import { cn } from '@/lib/utils';
 import { DEFAULT_PAGE_SIZE, type PageSize } from '@/lib/pagination';
+import {
+  SNIPPET_CONTENT_MAX,
+  SNIPPET_CONTENT_MIN,
+  canSaveSnippetDrafts,
+  validateSnippetContent,
+} from '@/lib/validations/site-snippets';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -88,6 +96,14 @@ export default function AdminSiteCopyEditor({
   fallbackByLocale,
 }: AdminSiteCopyEditorProps) {
   const t = useTranslations('Admin.SiteCopy');
+  const contentMessages = useMemo(
+    () => ({
+      required: t('addLineContentRequired', { locale: '' }),
+      tooShort: t('contentTooShort', { min: SNIPPET_CONTENT_MIN }),
+      tooLong: t('contentTooLong', { max: SNIPPET_CONTENT_MAX }),
+    }),
+    [t]
+  );
   const [locale, setLocale] = useState(initialLocale);
   const [activeTab, setActiveTab] = useState<EditorTab>('TIP');
   const [tipsByLocale, setTipsByLocale] = useState<Record<string, SnippetDraft[]>>(
@@ -134,6 +150,11 @@ export default function AdminSiteCopyEditor({
     );
     return active?.content ?? '';
   }, [currentDrafts]);
+
+  const canSave = useMemo(
+    () => canSaveSnippetDrafts(currentDrafts, contentMessages),
+    [contentMessages, currentDrafts]
+  );
 
   const sourceLocale = useMemo(() => {
     return locales.find((code) => code !== locale) ?? null;
@@ -250,17 +271,17 @@ export default function AdminSiteCopyEditor({
   }, [t]);
 
   const handleSave = async () => {
+    if (!canSave) {
+      toast.error(t('emptyError'));
+      return;
+    }
+
     const items = currentDrafts
       .map((item) => ({
         content: item.content.trim(),
         isActive: item.isActive,
       }))
       .filter((item) => item.content.length > 0);
-
-    if (!items.length) {
-      toast.error(t('emptyError'));
-      return;
-    }
 
     setSaving(true);
 
@@ -500,7 +521,7 @@ export default function AdminSiteCopyEditor({
               <Button
                 type="button"
                 variant="accent"
-                disabled={saving || refreshing}
+                disabled={saving || refreshing || !canSave}
                 onClick={() => void handleSave()}
               >
                 {saving ? (
@@ -560,6 +581,10 @@ export default function AdminSiteCopyEditor({
               ) : (
                 visibleDrafts.map((item, visibleIndex) => {
                   const index = (listPage - 1) * listLimit + visibleIndex;
+                  const contentError = validateSnippetContent(
+                    item.content,
+                    contentMessages
+                  );
                   return (
                   <div
                     key={item.localId}
@@ -663,8 +688,23 @@ export default function AdminSiteCopyEditor({
                       }}
                       rows={3}
                       placeholder={t('contentPlaceholder')}
-                      className="font-mono text-[13px] leading-relaxed"
+                      aria-invalid={Boolean(contentError)}
+                      className={cn(
+                        'font-mono text-[13px] leading-relaxed',
+                        contentError &&
+                          'border-destructive focus-visible:ring-destructive/30'
+                      )}
                     />
+                    {contentError ? (
+                      <p className="text-xs text-destructive">{contentError}</p>
+                    ) : null}
+                    <div className="flex justify-end">
+                      <CharacterCount
+                        value={item.content}
+                        min={FIELD_LIMITS.siteSnippet.content.min}
+                        max={FIELD_LIMITS.siteSnippet.content.max}
+                      />
+                    </div>
                   </div>
                   );
                 })

@@ -19,10 +19,14 @@ import {
   Form,
   FormControl,
   FormField,
+  FormFieldFooter,
   FormItem,
   FormLabel,
   FormMessage,
+  FormRequiredIndicator,
 } from '@/components/ui/form';
+import { CharacterCount } from '@/components/ui/character-count';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { ContentCard } from '@/components/layout/content-card';
@@ -35,40 +39,69 @@ import {
   type LucideIcon,
   UserRound,
 } from 'lucide-react';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import AiSettingsSection from './AiSettingsSection';
 import ConnectedAccountsSection from './ConnectedAccountsSection';
 import ResumeSettingsSection from './ResumeSettingsSection';
 import AddressFields from '@/components/address/AddressFields';
 import {
-  addressFormValuesSchema,
+  createAddressFormValuesSchema,
   formValuesToAddressData,
   type AddressFormValues,
 } from '@/lib/address/types';
 import type { EnabledOAuthProviders, OAuthProviderId } from '@/lib/oauth/config';
 
-const profileSchema = z.object({
-  name: z.string().min(3),
-  phone: z.string().min(10),
-  addressData: addressFormValuesSchema,
-  website: z.string().url().optional().or(z.literal('')),
-  image: z.string().url().optional().or(z.literal('')),
-  bio: z.string().optional().or(z.literal('')),
-});
+function createProfileSchema(
+  t: (key: string, values?: Record<string, string | number>) => string,
+  addressSchema: ReturnType<typeof createAddressFormValuesSchema>
+) {
+  return z.object({
+    name: z.string().min(FIELD_LIMITS.profile.name.min, {
+      message: t('validation.nameMin', { min: FIELD_LIMITS.profile.name.min }),
+    }),
+    phone: z.string().min(FIELD_LIMITS.profile.phone.min, {
+      message: t('validation.phoneMin', { min: FIELD_LIMITS.profile.phone.min }),
+    }),
+    addressData: addressSchema,
+    website: z
+      .string()
+      .url({ message: t('validation.websiteInvalid') })
+      .optional()
+      .or(z.literal('')),
+    image: z
+      .string()
+      .url({ message: t('validation.imageInvalid') })
+      .optional()
+      .or(z.literal('')),
+    bio: z.string().optional().or(z.literal('')),
+  });
+}
 
-const passwordSchema = (requireCurrentPassword: boolean) =>
-  z
+function createPasswordFormSchema(
+  t: (key: string, values?: Record<string, string | number>) => string,
+  requireCurrentPassword: boolean
+) {
+  const passwordMin = FIELD_LIMITS.password.min;
+
+  return z
     .object({
       currentPassword: requireCurrentPassword
-        ? z.string().min(6)
+        ? z.string().min(passwordMin, {
+            message: t('validation.passwordMin', { min: passwordMin }),
+          })
         : z.string().optional(),
-      newPassword: z.string().min(6),
-      newPasswordConfirm: z.string().min(6),
+      newPassword: z.string().min(passwordMin, {
+        message: t('validation.passwordMin', { min: passwordMin }),
+      }),
+      newPasswordConfirm: z.string().min(passwordMin, {
+        message: t('validation.passwordMin', { min: passwordMin }),
+      }),
     })
     .refine((data) => data.newPassword === data.newPasswordConfirm, {
-      message: 'Passwords do not match',
+      message: t('validation.passwordMismatch'),
       path: ['newPasswordConfirm'],
     });
+}
 
 export type SettingsUserValues = {
   name: string;
@@ -128,6 +161,10 @@ type IconFieldProps<T extends FieldValues> = {
   placeholder?: string;
   type?: string;
   autoComplete?: string;
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  countTrim?: boolean;
 };
 
 function IconField<T extends FieldValues>({
@@ -138,6 +175,10 @@ function IconField<T extends FieldValues>({
   placeholder,
   type = 'text',
   autoComplete,
+  required = false,
+  minLength,
+  maxLength,
+  countTrim = true,
 }: IconFieldProps<T>) {
   return (
     <FormField
@@ -145,7 +186,10 @@ function IconField<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {required ? <FormRequiredIndicator /> : null}
+          </FormLabel>
           <div className="relative">
             <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <FormControl>
@@ -167,7 +211,17 @@ function IconField<T extends FieldValues>({
               )}
             </FormControl>
           </div>
-          <FormMessage />
+          <FormFieldFooter>
+            <FormMessage />
+            {(minLength !== undefined || maxLength !== undefined) && (
+              <CharacterCount
+                value={String(field.value ?? '')}
+                min={minLength}
+                max={maxLength}
+                trim={countTrim}
+              />
+            )}
+          </FormFieldFooter>
         </FormItem>
       )}
     />
@@ -184,23 +238,48 @@ export default function SettingsForm({
 }: SettingsFormProps) {
   const { data: session, update } = useSession();
   const t = useTranslations('Settings');
+  const tAddress = useTranslations('Address');
   const imageCleanup = useUploadCleanup();
   const hasPassword = session?.user?.hasPassword ?? true;
+
+  const addressSchema = useMemo(
+    () =>
+      createAddressFormValuesSchema({
+        countryRequired: tAddress('validation.countryRequired'),
+        provinceRequired: tAddress('validation.provinceRequired'),
+        districtRequired: tAddress('validation.districtRequired'),
+        stateRequired: tAddress('validation.stateRequired'),
+        cityRequired: tAddress('validation.cityRequired'),
+      }),
+    [tAddress]
+  );
+
+  const profileSchema = useMemo(
+    () => createProfileSchema(t, addressSchema),
+    [addressSchema, t]
+  );
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: initialUser,
+    ...LIVE_FORM_OPTIONS,
   });
 
-  type PasswordFormValues = z.infer<ReturnType<typeof passwordSchema>>;
+  type PasswordFormValues = z.infer<ReturnType<typeof createPasswordFormSchema>>;
+
+  const passwordSchema = useMemo(
+    () => createPasswordFormSchema(t, hasPassword),
+    [hasPassword, t]
+  );
 
   const passwordForm = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordSchema(hasPassword)),
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
       newPasswordConfirm: '',
     },
+    ...LIVE_FORM_OPTIONS,
   });
 
   const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
@@ -296,12 +375,16 @@ export default function SettingsForm({
                     name="name"
                     label={t('name')}
                     icon={UserRound}
+                    required
+                    minLength={FIELD_LIMITS.profile.name.min}
                   />
                   <IconField
                     control={profileForm.control}
                     name="phone"
                     label={t('phone')}
                     icon={Phone}
+                    required
+                    minLength={FIELD_LIMITS.profile.phone.min}
                   />
                 </FieldGrid>
 
@@ -347,7 +430,11 @@ export default function SettingsForm({
             </div>
 
             <div className="flex justify-end border-t border-border/40 pt-4">
-              <Button type="submit" variant="accent" disabled={profileSubmitting}>
+              <Button
+                type="submit"
+                variant="accent"
+                disabled={profileSubmitting || !profileForm.formState.isValid}
+              >
                 {profileSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
@@ -386,6 +473,9 @@ export default function SettingsForm({
                 icon={Lock}
                 type="password"
                 autoComplete="current-password"
+                required
+                minLength={FIELD_LIMITS.password.min}
+                countTrim={false}
               />
             )}
             <FieldGrid>
@@ -396,6 +486,9 @@ export default function SettingsForm({
                 icon={KeyRound}
                 type="password"
                 autoComplete="new-password"
+                required
+                minLength={FIELD_LIMITS.password.min}
+                countTrim={false}
               />
               <IconField
                 control={passwordForm.control}
@@ -404,6 +497,9 @@ export default function SettingsForm({
                 icon={KeyRound}
                 type="password"
                 autoComplete="new-password"
+                required
+                minLength={FIELD_LIMITS.password.min}
+                countTrim={false}
               />
             </FieldGrid>
 
@@ -411,7 +507,7 @@ export default function SettingsForm({
               <Button
                 type="submit"
                 variant="accent"
-                disabled={passwordSubmitting}
+                disabled={passwordSubmitting || !passwordForm.formState.isValid}
               >
                 {passwordSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

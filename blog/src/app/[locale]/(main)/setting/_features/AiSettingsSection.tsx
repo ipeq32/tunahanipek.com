@@ -7,6 +7,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import AiSetupGuideModal from './AiSetupGuideModal';
 import { ContentCard } from '@/components/layout/content-card';
 import { Button } from '@/components/ui/button';
+import { CharacterCount } from '@/components/ui/character-count';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import {
@@ -16,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 
 type AiProvider = 'gemini' | 'groq' | 'ollama';
 
@@ -301,6 +303,13 @@ export default function AiSettingsSection() {
                   setForm((prev) => ({ ...prev, geminiModel: e.target.value }))
                 }
               />
+              <div className="flex justify-end">
+                <CharacterCount
+                  value={form.geminiModel}
+                  min={FIELD_LIMITS.aiModel.min}
+                  max={FIELD_LIMITS.aiModel.max}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -333,6 +342,13 @@ export default function AiSettingsSection() {
                   setForm((prev) => ({ ...prev, groqModel: e.target.value }))
                 }
               />
+              <div className="flex justify-end">
+                <CharacterCount
+                  value={form.groqModel}
+                  min={FIELD_LIMITS.aiModel.min}
+                  max={FIELD_LIMITS.aiModel.max}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -363,6 +379,13 @@ export default function AiSettingsSection() {
                   setForm((prev) => ({ ...prev, ollamaModel: e.target.value }))
                 }
               />
+              <div className="flex justify-end">
+                <CharacterCount
+                  value={form.ollamaModel}
+                  min={FIELD_LIMITS.aiModel.min}
+                  max={FIELD_LIMITS.aiModel.max}
+                />
+              </div>
             </div>
           </div>
         )}

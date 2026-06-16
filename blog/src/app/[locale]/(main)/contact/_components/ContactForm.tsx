@@ -6,17 +6,21 @@ import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { CharacterCount } from '@/components/ui/character-count';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
   FormField,
+  FormFieldFooter,
   FormItem,
   FormLabel,
   FormMessage,
+  FormRequiredIndicator,
 } from '@/components/ui/form';
 import { ContentCard } from '@/components/layout/content-card';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 
 type FormValues = {
   name: string;
@@ -26,20 +30,22 @@ type FormValues = {
 
 export function ContactForm() {
   const t = useTranslations('Pages.Contact.Form');
+  const limits = FIELD_LIMITS.contact;
 
   const schema = z.object({
-    name: z.string().trim().min(2, t('nameError')).max(120, t('nameError')),
-    email: z.string().email(t('emailError')).max(254, t('emailError')),
+    name: z.string().trim().min(limits.name.min, t('nameError')).max(limits.name.max, t('nameError')),
+    email: z.string().email(t('emailError')).max(limits.email.max, t('emailError')),
     message: z
       .string()
       .trim()
-      .min(10, t('messageError'))
-      .max(5000, t('messageError')),
+      .min(limits.message.min, t('messageError'))
+      .max(limits.message.max, t('messageError')),
   });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', email: '', message: '' },
+    ...LIVE_FORM_OPTIONS,
   });
 
   const onSubmit = async (values: FormValues) => {
@@ -82,11 +88,21 @@ export function ContactForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('nameLabel')}</FormLabel>
+                <FormLabel>
+                  {t('nameLabel')}
+                  <FormRequiredIndicator />
+                </FormLabel>
                 <FormControl>
                   <Input placeholder={t('namePlaceholder')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormFieldFooter>
+                  <FormMessage />
+                  <CharacterCount
+                    value={field.value}
+                    min={limits.name.min}
+                    max={limits.name.max}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -95,7 +111,10 @@ export function ContactForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('emailLabel')}</FormLabel>
+                <FormLabel>
+                  {t('emailLabel')}
+                  <FormRequiredIndicator />
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -103,7 +122,10 @@ export function ContactForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormFieldFooter>
+                  <FormMessage />
+                  <CharacterCount value={field.value} max={limits.email.max} />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -112,7 +134,10 @@ export function ContactForm() {
             name="message"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('messageLabel')}</FormLabel>
+                <FormLabel>
+                  {t('messageLabel')}
+                  <FormRequiredIndicator />
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     rows={5}
@@ -120,7 +145,14 @@ export function ContactForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormFieldFooter>
+                  <FormMessage />
+                  <CharacterCount
+                    value={field.value}
+                    min={limits.message.min}
+                    max={limits.message.max}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -128,7 +160,7 @@ export function ContactForm() {
             type="submit"
             variant="accent"
             className="w-full sm:w-auto"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
           >
             {form.formState.isSubmitting ? t('submitting') : t('submit')}
           </Button>

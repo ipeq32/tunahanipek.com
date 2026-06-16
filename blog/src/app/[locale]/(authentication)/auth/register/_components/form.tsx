@@ -6,9 +6,11 @@ import {
   Form,
   FormControl,
   FormField,
+  FormFieldFooter,
   FormItem,
   FormLabel,
   FormMessage,
+  FormRequiredIndicator,
 } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
@@ -19,100 +21,115 @@ import { useForm } from 'react-hook-form';
 import { usePathname, useRouter } from '@/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '@/components/ui/textarea';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import ImageUpload from '@/components/upload/ImageUpload';
 import AddressFields from '@/components/address/AddressFields';
 import {
-  addressFormValuesSchema,
+  createAddressFormValuesSchema,
   emptyAddressFormValues,
   formValuesToAddressData,
 } from '@/lib/address/types';
+import { CharacterCount } from '@/components/ui/character-count';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 
 export default function RegisterForm() {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('Authentication.Register');
+  const tAddress = useTranslations('Address');
 
-  const FormSchema = z.object({
-    email: z
-      .string({
-        required_error: t('Schema.Email.stringRequiredError'),
-        invalid_type_error: t('Schema.Email.stringInvalidTypeError'),
-      })
-      .email({
-        message: t('Schema.Email.emailMessage'),
-      }),
-    passwordForm: z
-      .object({
-        password: z
-          .string({
-            required_error: t('Schema.Password.stringRequiredError'),
-            invalid_type_error: t('Schema.Password.stringInvalidTypeError'),
-          })
-          .min(6, {
-            message: t('Schema.Password.minMessage'),
-          }),
-        passwordConfirm: z
-          .string({
-            required_error: t('Schema.PasswordConfirm.stringRequiredError'),
-            invalid_type_error: t(
-              'Schema.PasswordConfirm.stringInvalidTypeError'
-            ),
-          })
-          .min(6, {
-            message: t('Schema.PasswordConfirm.minMessage'),
-          }),
-      })
-      .refine((data) => data.password === data.passwordConfirm, {
-        message: t('Schema.PasswordConfirm.refineMessage'),
-        path: ['passwordConfirm'],
-      }),
-    name: z
-      .string({
-        required_error: t('Schema.Name.stringRequiredError'),
-        invalid_type_error: t('Schema.Name.stringInvalidTypeError'),
-      })
-      .min(3, {
-        message: t('Schema.Name.minMessage'),
-      }),
-    phone: z
-      .string({
-        required_error: t('Schema.Phone.stringRequiredError'),
-        invalid_type_error: t('Schema.Phone.stringInvalidTypeError'),
-      })
-      .min(10, {
-        message: t('Schema.Phone.minMessage'),
-      }),
-    addressData: addressFormValuesSchema,
-    website: z.optional(
-      z
+  const FormSchema = useMemo(() => {
+    const addressSchema = createAddressFormValuesSchema({
+      countryRequired: tAddress('validation.countryRequired'),
+      provinceRequired: tAddress('validation.provinceRequired'),
+      districtRequired: tAddress('validation.districtRequired'),
+      stateRequired: tAddress('validation.stateRequired'),
+      cityRequired: tAddress('validation.cityRequired'),
+    });
+
+    return z.object({
+      email: z
         .string({
-          invalid_type_error: t('Schema.Website.stringInvalidTypeError'),
+          required_error: t('Schema.Email.stringRequiredError'),
+          invalid_type_error: t('Schema.Email.stringInvalidTypeError'),
         })
-        .url({
-          message: t('Schema.Website.urlMessage'),
+        .email({
+          message: t('Schema.Email.emailMessage'),
+        }),
+      passwordForm: z
+        .object({
+          password: z
+            .string({
+              required_error: t('Schema.Password.stringRequiredError'),
+              invalid_type_error: t('Schema.Password.stringInvalidTypeError'),
+            })
+            .min(6, {
+              message: t('Schema.Password.minMessage'),
+            }),
+          passwordConfirm: z
+            .string({
+              required_error: t('Schema.PasswordConfirm.stringRequiredError'),
+              invalid_type_error: t(
+                'Schema.PasswordConfirm.stringInvalidTypeError'
+              ),
+            })
+            .min(6, {
+              message: t('Schema.PasswordConfirm.minMessage'),
+            }),
         })
-    ),
-    image: z.optional(
-      z
+        .refine((data) => data.password === data.passwordConfirm, {
+          message: t('Schema.PasswordConfirm.refineMessage'),
+          path: ['passwordConfirm'],
+        }),
+      name: z
         .string({
-          invalid_type_error: t('Schema.Image.stringInvalidTypeError'),
+          required_error: t('Schema.Name.stringRequiredError'),
+          invalid_type_error: t('Schema.Name.stringInvalidTypeError'),
         })
-        .url({
-          message: t('Schema.Image.urlMessage'),
-        })
-    ),
-    bio: z.optional(
-      z
+        .min(3, {
+          message: t('Schema.Name.minMessage'),
+        }),
+      phone: z
         .string({
-          invalid_type_error: t('Schema.Bio.stringInvalidTypeError'),
+          required_error: t('Schema.Phone.stringRequiredError'),
+          invalid_type_error: t('Schema.Phone.stringInvalidTypeError'),
         })
         .min(10, {
-          message: t('Schema.Bio.minMessage'),
-        })
-    ),
-  });
+          message: t('Schema.Phone.minMessage'),
+        }),
+      addressData: addressSchema,
+      website: z.optional(
+        z
+          .string({
+            invalid_type_error: t('Schema.Website.stringInvalidTypeError'),
+          })
+          .url({
+            message: t('Schema.Website.urlMessage'),
+          })
+      ),
+      image: z.optional(
+        z
+          .string({
+            invalid_type_error: t('Schema.Image.stringInvalidTypeError'),
+          })
+          .url({
+            message: t('Schema.Image.urlMessage'),
+          })
+      ),
+      bio: z.optional(
+        z
+          .string({
+            invalid_type_error: t('Schema.Bio.stringInvalidTypeError'),
+          })
+          .min(10, {
+            message: t('Schema.Bio.minMessage'),
+          })
+          .or(z.literal(''))
+      ),
+    });
+  }, [t, tAddress]);
 
   type FormData = z.infer<typeof FormSchema>;
 
@@ -131,6 +148,7 @@ export default function RegisterForm() {
       image: undefined,
       bio: undefined,
     },
+    ...LIVE_FORM_OPTIONS,
   });
 
   const onSubmit = async (data: FormData) => {
@@ -247,8 +265,8 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
-                  {t('Form.Email.label')}{' '}
-                  <span className="text-rose-500">*</span>
+                  {t('Form.Email.label')}
+                  <FormRequiredIndicator />
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -258,7 +276,13 @@ export default function RegisterForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value}
+                    max={FIELD_LIMITS.contact.email.max}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -268,8 +292,8 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
-                  {t('Form.Name.label')}{' '}
-                  <span className="text-rose-500">*</span>
+                  {t('Form.Name.label')}
+                  <FormRequiredIndicator />
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -278,7 +302,13 @@ export default function RegisterForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value}
+                    min={FIELD_LIMITS.register.name.min}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -288,8 +318,8 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
-                  {t('Form.Password.label')}{' '}
-                  <span className="text-rose-500">*</span>
+                  {t('Form.Password.label')}
+                  <FormRequiredIndicator />
                 </FormLabel>
                 <FormControl>
                   <PasswordInput
@@ -298,7 +328,14 @@ export default function RegisterForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value}
+                    min={FIELD_LIMITS.password.min}
+                    trim={false}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -308,8 +345,8 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
-                  {t('Form.PasswordConfirm.label')}{' '}
-                  <span className="text-rose-500">*</span>
+                  {t('Form.PasswordConfirm.label')}
+                  <FormRequiredIndicator />
                 </FormLabel>
                 <FormControl>
                   <PasswordInput
@@ -318,7 +355,14 @@ export default function RegisterForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value}
+                    min={FIELD_LIMITS.password.min}
+                    trim={false}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -328,8 +372,8 @@ export default function RegisterForm() {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
-                  {t('Form.Phone.label')}{' '}
-                  <span className="text-rose-500">*</span>
+                  {t('Form.Phone.label')}
+                  <FormRequiredIndicator />
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -338,7 +382,13 @@ export default function RegisterForm() {
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value}
+                    min={FIELD_LIMITS.register.phone.min}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -396,7 +446,13 @@ export default function RegisterForm() {
                     rows={3}
                   />
                 </FormControl>
-                <FormMessage className="text-xs text-rose-400" />
+                <FormFieldFooter>
+                  <FormMessage className="text-xs text-rose-400" />
+                  <CharacterCount
+                    value={field.value ?? ''}
+                    min={FIELD_LIMITS.register.bio.min}
+                  />
+                </FormFieldFooter>
               </FormItem>
             )}
           />
@@ -406,7 +462,7 @@ export default function RegisterForm() {
           type="submit"
           variant="accent"
           className="w-full"
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
         >
           {form.formState.isSubmitting
             ? t('Form.Submit.loading')

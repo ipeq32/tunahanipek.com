@@ -1,38 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormFieldFooter,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormRequiredIndicator,
+} from '@/components/ui/form';
 import { toast } from 'sonner';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
-
-const schema = z.object({
-  email: z.string().email(),
-});
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { CharacterCount } from '@/components/ui/character-count';
 
 export default function ForgotPasswordForm() {
   const t = useTranslations('Auth.ForgotPassword');
   const locale = useLocale();
   const [resetUrl, setResetUrl] = useState<string | null>(null);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email(t('validation.emailInvalid'))
+          .max(FIELD_LIMITS.contact.email.max),
+      }),
+    [t]
+  );
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { email: '' },
+    ...LIVE_FORM_OPTIONS,
   });
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      const res = await fetch(
-        `/api/auth/forgot-password`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...values, locale }),
-        }
-      );
+      const res = await fetch(`/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...values, locale }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       toast.success(t('success'));
@@ -44,18 +62,42 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="w-full space-y-4">
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          type="email"
-          placeholder={t('emailPlaceholder')}
-          {...form.register('email')}
-        />
-        <Button type="submit" variant="accent" className="w-full">
-          {t('submit')}
-        </Button>
-      </form>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('emailPlaceholder')}
+                  <FormRequiredIndicator />
+                </FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder={t('emailPlaceholder')} {...field} />
+                </FormControl>
+                <FormFieldFooter>
+                  <FormMessage />
+                  <CharacterCount
+                    value={field.value}
+                    max={FIELD_LIMITS.contact.email.max}
+                  />
+                </FormFieldFooter>
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            variant="accent"
+            className="w-full"
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
+          >
+            {t('submit')}
+          </Button>
+        </form>
+      </Form>
       {resetUrl && (
-        <p className="text-xs text-muted-foreground break-all">
+        <p className="break-all text-xs text-muted-foreground">
           {t('devLink')}: {resetUrl}
         </p>
       )}

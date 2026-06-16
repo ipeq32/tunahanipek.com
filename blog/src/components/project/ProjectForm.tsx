@@ -8,10 +8,15 @@ import {
   Form,
   FormControl,
   FormField,
+  FormFieldFooter,
   FormItem,
   FormLabel,
   FormMessage,
+  FormRequiredIndicator,
 } from '@/components/ui/form';
+import { CharacterCount } from '@/components/ui/character-count';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
 import GalleryUpload from '@/components/upload/GalleryUpload';
@@ -33,38 +38,84 @@ import {
   isProjectTranslationFilled,
 } from '@/lib/translation-form-utils';
 import AiContentActions from '@/components/content/AiContentActions';
-import {
-  normalizeExternalUrl,
-  optionalUrlField,
-} from '@/lib/validations/url-field';
+import { normalizeExternalUrl } from '@/lib/validations/url-field';
 
-const translationSchema = z.object({
-  title: z.string().default(''),
-  description: z.string().default(''),
-  published: z.boolean().default(false),
-});
+function createProjectFormSchema(
+  t: (key: string, values?: Record<string, string | number>) => string
+) {
+  const optionalProjectUrl = z.union([
+    z.literal(''),
+    z.string().trim().url({ message: t('validation.urlInvalid') }),
+  ]);
 
-const formSchema = z
-  .object({
-    url: optionalUrlField,
-    image: optionalUrlField,
-    gallery: z.array(z.string().url()).max(12),
-    translations: z.record(z.string(), translationSchema),
-  })
-  .superRefine((data, ctx) => {
-    const hasFilled = Object.values(data.translations).some((item) =>
-      isProjectTranslationFilled(item),
-    );
-    if (!hasFilled) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'At least one language must be complete',
-        path: ['translations'],
-      });
-    }
+  const translationSchema = z.object({
+    title: z
+      .string()
+      .default('')
+      .refine(
+        (value) =>
+          !value.trim() || value.trim().length >= FIELD_LIMITS.project.title.min,
+        {
+          message: t('validation.titleTooShort', {
+            min: FIELD_LIMITS.project.title.min,
+          }),
+        }
+      )
+      .refine(
+        (value) => value.trim().length <= FIELD_LIMITS.project.title.max,
+        {
+          message: t('validation.titleTooLong', {
+            max: FIELD_LIMITS.project.title.max,
+          }),
+        }
+      ),
+    description: z
+      .string()
+      .default('')
+      .refine(
+        (value) =>
+          !stripHtmlText(value) ||
+          stripHtmlText(value).length >= FIELD_LIMITS.project.description.min,
+        {
+          message: t('validation.descriptionTooShort', {
+            min: FIELD_LIMITS.project.description.min,
+          }),
+        }
+      )
+      .refine(
+        (value) =>
+          stripHtmlText(value).length <= FIELD_LIMITS.project.description.max,
+        {
+          message: t('validation.descriptionTooLong', {
+            max: FIELD_LIMITS.project.description.max,
+          }),
+        }
+      ),
+    published: z.boolean().default(false),
   });
 
-export type ProjectFormValues = z.infer<typeof formSchema>;
+  return z
+    .object({
+      url: optionalProjectUrl,
+      image: optionalProjectUrl,
+      gallery: z.array(z.string().url({ message: t('validation.urlInvalid') })).max(12),
+      translations: z.record(z.string(), translationSchema),
+    })
+    .superRefine((data, ctx) => {
+      const hasFilled = Object.values(data.translations).some((item) =>
+        isProjectTranslationFilled(item)
+      );
+      if (!hasFilled) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('atLeastOneLanguage'),
+          path: ['translations'],
+        });
+      }
+    });
+}
+
+export type ProjectFormValues = z.infer<ReturnType<typeof createProjectFormSchema>>;
 
 type ProjectFormProps = {
   mode: 'create' | 'edit';
@@ -96,6 +147,8 @@ export default function ProjectForm({
   const { languages, loading: languagesLoading } = useActiveLanguages();
   const [activeLanguage, setActiveLanguage] = useState(uiLocale);
 
+  const formSchema = useMemo(() => createProjectFormSchema(t), [t]);
+
   const initialTranslations = useMemo(
     () =>
       defaultValues.translations
@@ -112,6 +165,7 @@ export default function ProjectForm({
       gallery: defaultValues.gallery ?? [],
       translations: initialTranslations,
     },
+    ...LIVE_FORM_OPTIONS,
   });
 
   useEffect(() => {
@@ -239,13 +293,20 @@ export default function ProjectForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">
-                        {t('fieldTitle')} ({language.name}){' '}
-                        <span className="text-red-500">*</span>
+                        {t('fieldTitle')} ({language.name})
+                        <FormRequiredIndicator />
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormFieldFooter>
+                        <FormMessage />
+                        <CharacterCount
+                          value={field.value}
+                          min={FIELD_LIMITS.project.title.min}
+                          max={FIELD_LIMITS.project.title.max}
+                        />
+                      </FormFieldFooter>
                     </FormItem>
                   )}
                 />
@@ -253,11 +314,11 @@ export default function ProjectForm({
                 <FormField
                   control={form.control}
                   name={`translations.${language.code}.description`}
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="text-xs">
-                        {t('fieldDescription')}{' '}
-                        <span className="text-red-500">*</span>
+                        {t('fieldDescription')}
+                        <FormRequiredIndicator />
                       </FormLabel>
                       <FormControl>
                         <RichTextEditor
@@ -265,7 +326,20 @@ export default function ProjectForm({
                           onChange={field.onChange}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormFieldFooter>
+                        {fieldState.error ? (
+                          <p className="text-sm font-medium text-destructive">
+                            {fieldState.error.message}
+                          </p>
+                        ) : (
+                          <span />
+                        )}
+                        <CharacterCount
+                          value={stripHtmlText(field.value)}
+                          min={FIELD_LIMITS.project.description.min}
+                          max={FIELD_LIMITS.project.description.max}
+                        />
+                      </FormFieldFooter>
                     </FormItem>
                   )}
                 />
@@ -345,7 +419,11 @@ export default function ProjectForm({
             <Button
               type="submit"
               variant="accent"
-              disabled={form.formState.isSubmitting || languagesLoading}
+              disabled={
+                form.formState.isSubmitting ||
+                languagesLoading ||
+                !form.formState.isValid
+              }
             >
               {mode === 'create' ? t('add') : t('save')}
             </Button>

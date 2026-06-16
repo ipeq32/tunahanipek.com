@@ -8,10 +8,15 @@ import {
   Form,
   FormControl,
   FormField,
+  FormFieldFooter,
   FormItem,
   FormLabel,
   FormMessage,
+  FormRequiredIndicator,
 } from '@/components/ui/form';
+import { CharacterCount } from '@/components/ui/character-count';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { stripHtmlText } from '@/lib/translation-form-utils';
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
@@ -34,34 +39,82 @@ import {
 } from '@/lib/translation-form-utils';
 import AiContentActions from '@/components/content/AiContentActions';
 
-const translationSchema = z.object({
-  title: z.string().default(''),
-  content: z.string().default(''),
-  summary: z.string().default(''),
-});
-
-const formSchema = z
-  .object({
-    image: z.string().min(2),
-    shortImage: z.string().min(2),
-    tags: z.string().optional(),
-    categories: z.string().optional(),
-    translations: z.record(z.string(), translationSchema),
-  })
-  .superRefine((data, ctx) => {
-    const hasFilled = Object.values(data.translations).some((item) =>
-      isBlogTranslationFilled(item),
-    );
-    if (!hasFilled) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'At least one language must be complete',
-        path: ['translations'],
-      });
-    }
+function createBlogFormSchema(
+  t: (key: string, values?: Record<string, string | number>) => string
+) {
+  const translationSchema = z.object({
+    title: z
+      .string()
+      .default('')
+      .refine(
+        (value) =>
+          !value.trim() || value.trim().length >= FIELD_LIMITS.blog.title.min,
+        {
+          message: t('validation.titleTooShort', {
+            min: FIELD_LIMITS.blog.title.min,
+          }),
+        }
+      )
+      .refine(
+        (value) => value.trim().length <= FIELD_LIMITS.blog.title.max,
+        {
+          message: t('validation.titleTooLong', {
+            max: FIELD_LIMITS.blog.title.max,
+          }),
+        }
+      ),
+    content: z.string().default(''),
+    summary: z
+      .string()
+      .default('')
+      .refine(
+        (value) =>
+          !value.trim() || value.trim().length >= FIELD_LIMITS.blog.summary.min,
+        { message: t('validation.summaryRequired') }
+      )
+      .refine(
+        (value) => value.trim().length <= FIELD_LIMITS.blog.summary.max,
+        {
+          message: t('validation.summaryTooLong', {
+            max: FIELD_LIMITS.blog.summary.max,
+          }),
+        }
+      ),
   });
 
-export type BlogFormValues = z.infer<typeof formSchema>;
+  return z
+    .object({
+      image: z.string().min(2, t('validation.imageRequired')),
+      shortImage: z.string().min(2, t('validation.imageRequired')),
+      tags: z
+        .string()
+        .max(FIELD_LIMITS.blog.taxonomy.max, t('validation.taxonomyTooLong', {
+          max: FIELD_LIMITS.blog.taxonomy.max,
+        }))
+        .optional(),
+      categories: z
+        .string()
+        .max(FIELD_LIMITS.blog.taxonomy.max, t('validation.taxonomyTooLong', {
+          max: FIELD_LIMITS.blog.taxonomy.max,
+        }))
+        .optional(),
+      translations: z.record(z.string(), translationSchema),
+    })
+    .superRefine((data, ctx) => {
+      const hasFilled = Object.values(data.translations).some((item) =>
+        isBlogTranslationFilled(item)
+      );
+      if (!hasFilled) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('atLeastOneLanguage'),
+          path: ['translations'],
+        });
+      }
+    });
+}
+
+export type BlogFormValues = z.infer<ReturnType<typeof createBlogFormSchema>>;
 
 type BlogFormProps = {
   mode: 'create' | 'edit';
@@ -97,6 +150,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
   const { languages, loading: languagesLoading } = useActiveLanguages();
   const [activeLanguage, setActiveLanguage] = useState(uiLocale);
 
+  const formSchema = useMemo(() => createBlogFormSchema(t), [t]);
+
   const initialTranslations = useMemo(
     () =>
       defaultValues.translations
@@ -114,6 +169,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
       categories: defaultValues.categories,
       translations: initialTranslations,
     },
+    ...LIVE_FORM_OPTIONS,
   });
 
   useEffect(() => {
@@ -140,12 +196,6 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
       setActiveLanguage(uiLocale);
     }
   }, [languages, uiLocale]);
-
-  useEffect(() => {
-    Object.values(form.formState.errors).forEach((error) => {
-      if (error?.message) toast(error.message as string);
-    });
-  }, [form.formState.errors]);
 
   async function onSubmit(values: BlogFormValues) {
     const url = mode === 'create' ? `/api/blog/add` : `/api/blog/${blogId}`;
@@ -277,13 +327,20 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel className="text-xs">
-                        {t('title')} ({language.name}){' '}
-                        <span className="text-red-500">*</span>
+                        {t('title')} ({language.name})
+                        <FormRequiredIndicator />
                       </FormLabel>
                       <FormControl>
                         <Input placeholder={t('titlePlaceholder')} {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormFieldFooter>
+                        <FormMessage />
+                        <CharacterCount
+                          value={field.value}
+                          min={FIELD_LIMITS.blog.title.min}
+                          max={FIELD_LIMITS.blog.title.max}
+                        />
+                      </FormFieldFooter>
                     </FormItem>
                   )}
                 />
@@ -295,7 +352,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     render={({ field, fieldState }) => (
                       <FormItem className="w-full">
                         <FormLabel className="text-xs">
-                          {t('content')} <span className="text-red-500">*</span>
+                          {t('content')}
+                          <FormRequiredIndicator />
                         </FormLabel>
                         <FormControl>
                           <RichTextEditor
@@ -304,11 +362,11 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                             placeholder={t('contentPlaceholder')}
                           />
                         </FormControl>
-                        {fieldState.error && (
+                        {fieldState.error ? (
                           <p className="text-sm font-medium text-destructive">
                             {fieldState.error.message}
                           </p>
-                        )}
+                        ) : null}
                       </FormItem>
                     )}
                   />
@@ -318,7 +376,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                     render={({ field, fieldState }) => (
                       <FormItem className="w-full">
                         <FormLabel className="text-xs">
-                          {t('summary')} <span className="text-red-500">*</span>
+                          {t('summary')}
+                          <FormRequiredIndicator />
                         </FormLabel>
                         <FormControl>
                           <RichTextEditor
@@ -327,11 +386,20 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                             placeholder={t('summaryPlaceholder')}
                           />
                         </FormControl>
-                        {fieldState.error && (
-                          <p className="text-sm font-medium text-destructive">
-                            {fieldState.error.message}
-                          </p>
-                        )}
+                        <FormFieldFooter>
+                          {fieldState.error ? (
+                            <p className="text-sm font-medium text-destructive">
+                              {fieldState.error.message}
+                            </p>
+                          ) : (
+                            <span />
+                          )}
+                          <CharacterCount
+                            value={stripHtmlText(field.value)}
+                            min={FIELD_LIMITS.blog.summary.min}
+                            max={FIELD_LIMITS.blog.summary.max}
+                          />
+                        </FormFieldFooter>
                       </FormItem>
                     )}
                   />
@@ -350,7 +418,13 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   <FormControl>
                     <Input placeholder={t('tagsPlaceholder')} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormFieldFooter>
+                    <FormMessage />
+                    <CharacterCount
+                      value={field.value ?? ''}
+                      max={FIELD_LIMITS.blog.taxonomy.max}
+                    />
+                  </FormFieldFooter>
                 </FormItem>
               )}
             />
@@ -363,7 +437,13 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                   <FormControl>
                     <Input placeholder={t('categoriesPlaceholder')} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormFieldFooter>
+                    <FormMessage />
+                    <CharacterCount
+                      value={field.value ?? ''}
+                      max={FIELD_LIMITS.blog.taxonomy.max}
+                    />
+                  </FormFieldFooter>
                 </FormItem>
               )}
             />
@@ -380,7 +460,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel className="text-xs">
-                      {t('image')} <span className="text-red-500">*</span>
+                      {t('image')}
+                      <FormRequiredIndicator />
                     </FormLabel>
                     <ImageUpload
                       value={field.value}
@@ -400,7 +481,8 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel className="text-xs">
-                      {t('shortImage')} <span className="text-red-500">*</span>
+                      {t('shortImage')}
+                      <FormRequiredIndicator />
                     </FormLabel>
                     <ImageUpload
                       value={field.value}
@@ -422,7 +504,11 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
               type="submit"
               variant="accent"
               className="max-w-56"
-              disabled={form.formState.isSubmitting || languagesLoading}
+              disabled={
+                form.formState.isSubmitting ||
+                languagesLoading ||
+                !form.formState.isValid
+              }
             >
               {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
             </Button>
