@@ -8,6 +8,7 @@ import PdfUpload from '@/components/upload/PdfUpload';
 import { useUploadCleanup } from '@/components/upload/use-upload-cleanup';
 import { ContentCard } from '@/components/layout/content-card';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Dialog,
   DialogContent,
@@ -70,6 +71,7 @@ export default function ResumeSettingsSection({
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [saved, setSaved] = useState<ResumeData | null>(initial.saved);
   const [draftUrl, setDraftUrl] = useState(initial.draftUrl);
   const [draftFileName, setDraftFileName] = useState(initial.draftFileName);
@@ -145,9 +147,7 @@ export default function ResumeSettingsSection({
     }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm(t('resumeDeleteConfirm'))) return;
-
+  const confirmDelete = async () => {
     setDeleting(true);
     try {
       const res = await fetch('/api/admin/resume', { method: 'DELETE' });
@@ -157,6 +157,7 @@ export default function ResumeSettingsSection({
       setSaved(null);
       setDraftUrl('');
       setDraftFileName('');
+      setDeleteDialogOpen(false);
       toast.success(t('resumeDeleted'));
     } catch {
       toast.error(t('resumeDeleteError'));
@@ -240,7 +241,7 @@ export default function ResumeSettingsSection({
             type="button"
             variant="destructive"
             disabled={saving || deleting}
-            onClick={() => void handleDelete()}
+            onClick={() => setDeleteDialogOpen(true)}
           >
             {deleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -251,6 +252,17 @@ export default function ResumeSettingsSection({
           </Button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t('resumeDeleteTitle')}
+        description={t('resumeDeleteConfirm')}
+        confirmLabel={t('resumeDelete')}
+        cancelLabel={t('cancel')}
+        onConfirm={confirmDelete}
+        loading={deleting}
+      />
 
       {saved && !hasUnsavedUpload && (
         <a

@@ -14,6 +14,7 @@ import {
   AdminListSkeleton,
   AdminStatusBadge,
 } from '@/components/admin/admin-ui';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/lib/utils';
 import {
   ExternalLink,
@@ -67,6 +68,8 @@ export default function AdminProjectList({
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');
+  const [deleteTarget, setDeleteTarget] = useState<ProjectDto | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);
@@ -108,18 +111,22 @@ export default function AdminProjectList({
     }
   };
 
-  const deleteProject = async (id: string) => {
-    if (!confirm(t('deleteConfirm'))) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
     try {
-      const res = await fetch(
-        `/api/projects/${id}`,
-        { method: 'DELETE' }
-      );
+      const res = await fetch(`/api/projects/${deleteTarget.id}`, {
+        method: 'DELETE',
+      });
       if (!res.ok) throw new Error('Failed');
       toast.success(t('deleted'));
+      setDeleteTarget(null);
       fetchProjects();
     } catch {
       toast.error(t('actionError'));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -293,7 +300,7 @@ export default function AdminProjectList({
                   variant="destructive"
                   size="icon"
                   className="h-9 w-9"
-                  onClick={() => deleteProject(project.id)}
+                  onClick={() => setDeleteTarget(project)}
                   aria-label={t('delete')}
                   title={t('delete')}
                 >
@@ -304,6 +311,17 @@ export default function AdminProjectList({
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title={t('deleteTitle')}
+        description={t('deleteConfirm', { title: deleteTarget?.title ?? '' })}
+        confirmLabel={t('delete')}
+        cancelLabel={t('cancel')}
+        onConfirm={confirmDelete}
+        loading={deleting}
+      />
     </div>
   );
 }
