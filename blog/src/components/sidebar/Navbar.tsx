@@ -1,12 +1,11 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { Menu, BookOpen, FolderKanban, Home, LogOut, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -23,7 +22,11 @@ import { Link, usePathname } from '@/navigation';
 import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import MobileProfileMenu from './_features/MobileProfileMenu';
+import MobileNavItem from './_features/MobileNavItem';
+import MobileUserStrip from './_features/MobileUserStrip';
 import ProfileDropdownMenuFeature from './_features/ProfileDropdownMenu';
+import { buildProfileMenuConfig } from './_features/profile-menu-config';
 import { SiteContainer } from '@/components/layout/site-container';
 import { ToggleTheme } from '@/components/toggle-theme';
 import ToggleLanguage from '@/components/toggle-language';
@@ -34,6 +37,8 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const t = useTranslations('Navbar.Main');
+  const tProfile = useTranslations('Navbar.Main.Sidebar.Profile');
+  const tA11y = useTranslations('A11y');
   const locale = useLocale() as Locale;
 
   const from = searchParams.get('callback') || pathname;
@@ -41,15 +46,20 @@ const Navbar = () => {
   const menuLinks: Array<{
     title: string;
     href: '/' | '/about-me' | '/blog' | '/project';
+    icon: typeof Home;
   }> = [
-    { title: t('Link.home'), href: '/' },
-    { title: t('Link.about'), href: '/about-me' },
-    { title: t('Link.blog'), href: '/blog' },
-    { title: t('Link.project'), href: '/project' },
+    { title: t('Link.home'), href: '/', icon: Home },
+    { title: t('Link.about'), href: '/about-me', icon: UserRound },
+    { title: t('Link.blog'), href: '/blog', icon: BookOpen },
+    { title: t('Link.project'), href: '/project', icon: FolderKanban },
   ];
 
   const { user, status } = useAuthUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const profileConfig =
+    status === 'authenticated'
+      ? buildProfileMenuConfig(user, tProfile)
+      : null;
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -107,58 +117,86 @@ const Navbar = () => {
               <span className="sr-only">{t('Sidebar.title')}</span>
             </Button>
           </SheetTrigger>
-          <SheetContent className="flex flex-col border-border/60 bg-background/95 backdrop-blur-xl">
-            <div>
-              <SheetHeader>
-                <SheetTitle>{t('Sidebar.title')}</SheetTitle>
-                <SheetDescription>
-                  {t('Sidebar.description')} {user?.name ?? ''}
+          <SheetContent
+            closeLabel={tA11y('closeMenu')}
+            className="flex w-[min(100vw-2rem,20rem)] flex-col gap-0 border-border/50 bg-background/95 p-0 backdrop-blur-xl"
+          >
+            <div className="border-b border-border/50 px-5 pb-4 pt-6">
+              <SheetHeader className="space-y-1 text-left">
+                <SheetTitle className="text-base font-semibold tracking-tight">
+                  {t('Sidebar.title')}
+                </SheetTitle>
+                <SheetDescription className="text-xs leading-relaxed">
+                  {t('Sidebar.description')}
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6 flex flex-col gap-1">
+
+              {status === 'authenticated' && profileConfig && (
+                <MobileUserStrip
+                  user={user}
+                  roleLabel={profileConfig.roleLabel}
+                  initials={profileConfig.initials}
+                />
+              )}
+            </div>
+
+            <div className="flex flex-1 flex-col overflow-y-auto px-3 py-4">
+              <nav
+                aria-label={t('Sidebar.title')}
+                className="flex flex-col gap-0.5"
+              >
                 {menuLinks.map((link) => (
-                  <MenuLinkFeature
+                  <MobileNavItem
                     key={link.title}
-                    link={link.href}
+                    href={link.href}
+                    icon={link.icon}
+                    label={link.title}
                     onClick={closeMobileMenu}
-                    className="w-full justify-start rounded-lg"
-                  >
-                    {link.title}
-                  </MenuLinkFeature>
+                  />
                 ))}
-              </div>
-              <div className="mt-6 flex items-center justify-center gap-3 border-t border-border/60 pt-6">
+              </nav>
+
+              {status === 'authenticated' && (
+                <MobileProfileMenu
+                  user={user}
+                  onNavigate={closeMobileMenu}
+                />
+              )}
+            </div>
+
+            <div className="shrink-0 space-y-3 border-t border-border/50 px-4 py-4">
+              <div className="flex items-center justify-center gap-2 rounded-xl bg-muted/30 p-2">
                 <ToggleTheme />
                 <ToggleLanguage locale={locale} />
               </div>
+
+              <GetContactFeature onNavigate={closeMobileMenu} />
+
+              {status === 'authenticated' ? (
+                <MobileNavItem
+                  icon={LogOut}
+                  label={tProfile('logout')}
+                  variant="danger"
+                  onClick={() => {
+                    closeMobileMenu();
+                    handleLogout();
+                  }}
+                />
+              ) : (
+                <Link
+                  href={{
+                    pathname: '/auth/login',
+                    query: { callback: from },
+                  }}
+                  className="block w-full"
+                  onClick={closeMobileMenu}
+                >
+                  <Button variant="accent" className="h-10 w-full">
+                    {t('Sidebar.login')}
+                  </Button>
+                </Link>
+              )}
             </div>
-            <SheetFooter>
-              <div
-                className={`w-full gap-3 ${status === 'unauthenticated' ? 'flex flex-col-reverse' : 'flex flex-row-reverse'}`}
-              >
-                {status === 'authenticated' ? (
-                  <ProfileDropdownMenuFeature
-                    user={user}
-                    onLogout={handleLogout}
-                    onNavigate={closeMobileMenu}
-                  />
-                ) : (
-                  <Link
-                    href={{
-                      pathname: '/auth/login',
-                      query: { callback: from },
-                    }}
-                    className="w-full"
-                    onClick={closeMobileMenu}
-                  >
-                    <Button variant="accent" className="w-full">
-                      {t('Sidebar.login')}
-                    </Button>
-                  </Link>
-                )}
-                <GetContactFeature onNavigate={closeMobileMenu} />
-              </div>
-            </SheetFooter>
           </SheetContent>
         </Sheet>
       </SiteContainer>

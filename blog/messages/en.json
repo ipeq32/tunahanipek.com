@@ -1359,6 +1359,7 @@
         "login": "Login",
         "Profile": {
           "account": "My Account",
+          "openMenu": "Open account menu",
           "viewProfile": "View Profile",
           "settings": "Settings",
           "moderation": "Moderation",
@@ -1458,7 +1459,8 @@
   },
   "A11y": {
     "skipToContent": "Skip to main content",
-    "loading": "Loading"
+    "loading": "Loading",
+    "closeMenu": "Close menu"
   },
   "Pagination": {
     "previous": "Previous",

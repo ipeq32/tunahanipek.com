@@ -1358,6 +1358,7 @@
         "login": "Giriş Yap",
         "Profile": {
           "account": "Hesabım",
+          "openMenu": "Hesap menüsünü aç",
           "viewProfile": "Profili Görüntüle",
           "settings": "Ayarlar",
           "moderation": "Moderasyon",
@@ -1457,7 +1458,8 @@
   },
   "A11y": {
     "skipToContent": "Ana içeriğe geç",
-    "loading": "Yükleniyor"
+    "loading": "Yükleniyor",
+    "closeMenu": "Menüyü kapat"
   },
   "Pagination": {
     "previous": "Önceki",
