@@ -51,6 +51,18 @@ describe('formatPhoneInput', () => {
     expect(formatPhoneInput('541')).toBe('+90 (541');
     expect(formatPhoneInput('5416064488')).toBe('+90 (541) 606-4488');
   });
+
+  it('allows deleting formatted prefix', () => {
+    expect(formatPhoneInput('+90 (')).toBe('');
+    expect(formatPhoneInput('+90 (5')).toBe('+90 (5');
+  });
+});
+
+describe('parsePhoneDigits', () => {
+  it('strips +90 prefix from formatted UI string', () => {
+    expect(parsePhoneDigits('+90 (')).toBe('');
+    expect(parsePhoneDigits('+90 (5')).toBe('5');
+  });
 });
 
 describe('normalizePhoneForStorage', () => {

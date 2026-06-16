@@ -2,9 +2,12 @@ import type { AddressData } from '@/lib/address/types';
 import { isTurkeyCountry } from '@/lib/address/types';
 
 export function parsePhoneDigits(phone: string): string {
+  const trimmed = phone.trim();
   let digits = phone.replace(/\D/g, '');
 
-  if (digits.startsWith('90') && digits.length > 10) {
+  if (trimmed.startsWith('+90') && digits.startsWith('90')) {
+    digits = digits.slice(2);
+  } else if (digits.startsWith('90') && digits.length > 10) {
     digits = digits.slice(2);
   }
 
