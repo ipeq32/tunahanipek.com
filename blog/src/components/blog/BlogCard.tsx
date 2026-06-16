@@ -15,7 +15,7 @@ type BlogCardProps = {
 export default function BlogCard({ blog }: BlogCardProps) {
   const format = useFormatter();
   const now = useNow({ updateInterval: 60_000 });
-  const updatedAt = new Date(blog.updatedAt);
+  const createdAt = new Date(blog.createdAt);
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-lg hover:shadow-teal-500/10">
@@ -41,8 +41,8 @@ export default function BlogCard({ blog }: BlogCardProps) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="font-medium text-foreground/80">{blog.author.name}</span>
-          <time dateTime={updatedAt.toISOString()} suppressHydrationWarning>
-            {format.relativeTime(updatedAt, now)}
+            <time dateTime={createdAt.toISOString()} suppressHydrationWarning>
+              {format.relativeTime(createdAt, now)}
           </time>
         </div>
 

@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       prisma.blog.findMany({
         skip: offset,
         take: limit,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { createdAt: 'desc' },
         where,
         include: blogListInclude,
       }),

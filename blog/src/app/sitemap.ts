@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let blogs: { id: string; updatedAt: Date }[] = [];
+  let blogs: { id: string; createdAt: Date }[] = [];
   let tags: { name: string }[] = [];
   let categories: { name: string }[] = [];
   let projects: { id: string }[] = [];
@@ -20,8 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           deletedAt: null,
           translations: { some: { published: true } },
         },
-        select: { id: true, updatedAt: true },
-        orderBy: { updatedAt: 'desc' },
+        select: { id: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
       }),
       prisma.tag.findMany({
         where: {

@@ -62,7 +62,7 @@ export async function getPublishedBlogs(
     prisma.blog.findMany({
       skip: offset,
       take: limit,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       where,
       include: blogListInclude,
     }),
@@ -232,7 +232,7 @@ export async function getAdminBlogsPaginated(
       where,
       skip,
       take: limit,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
       include: blogDetailInclude,
     }),
     getAdminBlogStats(locale),
