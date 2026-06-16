@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { requireSuperAdminSession } from '@/lib/admin/require-super-admin';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import {
   clearSiteResume,
   getSiteResumeDirect,
@@ -19,13 +20,9 @@ const upsertSchema = z.object({
     .regex(/\.pdf$/i, 'File name must end with .pdf'),
 });
 
-async function requireSuperAdmin() {
-  return requireSuperAdminSession();
-}
-
 export async function GET() {
-  const session = await requireSuperAdmin();
-  if (!session) {
+  const context = await requirePermission(PERMISSIONS['resume:read']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -55,8 +52,8 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const session = await requireSuperAdmin();
-  if (!session) {
+  const context = await requirePermission(PERMISSIONS['resume:update']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -92,8 +89,8 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE() {
-  const session = await requireSuperAdmin();
-  if (!session) {
+  const context = await requirePermission(PERMISSIONS['resume:delete']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

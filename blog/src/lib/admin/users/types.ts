@@ -1,11 +1,19 @@
 import type { Role } from '@prisma/client';
 
+export type AdminUserAccessRoleDto = {
+  id: string;
+  name: string;
+  slug: string;
+  isSystem: boolean;
+};
+
 export type AdminUserDto = {
   id: string;
   name: string;
   email: string;
   image: string | null;
   role: Role;
+  accessRole: AdminUserAccessRoleDto;
   createdAt: string;
   hasPassword: boolean;
   oauthProviders: string[];
@@ -19,4 +27,5 @@ export type AdminUserMutationErrorCode =
   | 'LAST_SUPER_ADMIN_FORBIDDEN'
   | 'SELF_DELETE_FORBIDDEN'
   | 'USER_NOT_FOUND'
+  | 'ACCESS_ROLE_NOT_FOUND'
   | 'USER_MANAGEMENT_FORBIDDEN';

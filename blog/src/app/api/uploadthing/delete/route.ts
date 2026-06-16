@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { deleteUploadedFiles } from '@/lib/uploadthing-server';
 import { logger } from '@/lib/logger';
 
@@ -11,8 +12,8 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const context = await requirePermission(PERMISSIONS['upload:delete']);
+  if (!context) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

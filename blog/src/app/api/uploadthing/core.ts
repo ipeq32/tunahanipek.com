@@ -1,7 +1,7 @@
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requireAuth, requirePermission } from '@/lib/auth/guards';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { UPLOAD_CONFIG } from '@/lib/upload-config';
 
@@ -26,13 +26,25 @@ function authImageRoute(endpoint: AuthImageRoute) {
     },
   })
     .middleware(async () => {
-      const session = await auth();
+      const permission =
+        endpoint === 'blogImageUploader'
+          ? PERMISSIONS['upload:blog-image']
+          : undefined;
 
-      if (!session?.user?.id) {
+      if (permission) {
+        const context = await requirePermission(permission);
+        if (!context) {
+          throw new UploadThingError('Forbidden');
+        }
+        return { userId: context.userId };
+      }
+
+      const context = await requireAuth();
+      if (!context) {
         throw new UploadThingError('Unauthorized');
       }
 
-      return { userId: session.user.id };
+      return { userId: context.userId };
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       uploadedBy: metadata.userId,
@@ -72,7 +84,7 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ file }) => ({ url: file.ufsUrl })),
 
-  /** Site özgeçmişi (PDF) — görsellerden tamamen ayrı route; yalnızca SUPER_ADMIN. */
+  /** Site özgeçmişi (PDF) — görsellerden tamamen ayrı route. */
   cvUploader: f({
     pdf: {
       maxFileSize: UPLOAD_CONFIG.cvUploader.maxFileSize,
@@ -80,17 +92,12 @@ export const ourFileRouter = {
     },
   })
     .middleware(async () => {
-      const session = await auth();
-
-      if (!session?.user?.id) {
-        throw new UploadThingError('Unauthorized');
-      }
-
-      if (!isSuperAdmin(session.user.role)) {
+      const context = await requirePermission(PERMISSIONS['upload:cv']);
+      if (!context) {
         throw new UploadThingError('Forbidden');
       }
 
-      return { userId: session.user.id };
+      return { userId: context.userId };
     })
     .onUploadComplete(async ({ metadata, file }) => ({
       uploadedBy: metadata.userId,

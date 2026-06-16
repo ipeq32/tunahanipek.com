@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { isModerator } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import {
   getDecryptedAiConfig,
   isAiConfigured,
@@ -9,8 +9,8 @@ import {
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user || !isModerator(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['ai:status']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

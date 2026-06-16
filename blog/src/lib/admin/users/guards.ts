@@ -1,7 +1,7 @@
-import 'server-only';
-
 import type { Role } from '@prisma/client';
+import { SYSTEM_ROLE_SLUGS } from '@/lib/auth/permissions';
 import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
+import { countActiveSuperAdmins } from '@/lib/data/users';
 import { prisma } from '@/lib/prisma';
 import type { AdminUserMutationErrorCode } from './types';
 
@@ -23,31 +23,27 @@ export async function assertCanManageUsers(actorId: string): Promise<void> {
   }
 }
 
-async function countActiveSuperAdmins(excludeUserId?: string): Promise<number> {
-  return prisma.user.count({
-    where: {
-      deletedAt: null,
-      role: 'SUPER_ADMIN',
-      ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
-    },
-  });
-}
-
-export async function assertCanUpdateUserRole(
+export async function assertCanUpdateUserAccessRole(
   actorId: string,
   targetUserId: string,
-  currentRole: Role,
-  newRole: Role
+  currentRoleSlug: string,
+  nextRoleSlug: string
 ): Promise<void> {
-  if (currentRole === newRole) {
+  if (currentRoleSlug === nextRoleSlug) {
     return;
   }
 
-  if (actorId === targetUserId && newRole !== 'SUPER_ADMIN') {
+  if (
+    actorId === targetUserId &&
+    nextRoleSlug !== SYSTEM_ROLE_SLUGS.superAdmin
+  ) {
     throw new AdminUserMutationError('SELF_ROLE_CHANGE_FORBIDDEN');
   }
 
-  if (currentRole === 'SUPER_ADMIN' && newRole !== 'SUPER_ADMIN') {
+  if (
+    currentRoleSlug === SYSTEM_ROLE_SLUGS.superAdmin &&
+    nextRoleSlug !== SYSTEM_ROLE_SLUGS.superAdmin
+  ) {
     const remainingSuperAdmins = await countActiveSuperAdmins(targetUserId);
     if (remainingSuperAdmins === 0) {
       throw new AdminUserMutationError('LAST_SUPER_ADMIN_FORBIDDEN');
@@ -58,16 +54,19 @@ export async function assertCanUpdateUserRole(
 export async function assertCanDeleteUser(
   actorId: string,
   targetUserId: string,
-  targetRole: Role
+  targetRole: Role,
+  targetRoleSlug: string
 ): Promise<void> {
   if (actorId === targetUserId) {
     throw new AdminUserMutationError('SELF_DELETE_FORBIDDEN');
   }
 
-  if (targetRole === 'SUPER_ADMIN') {
+  if (targetRoleSlug === SYSTEM_ROLE_SLUGS.superAdmin) {
     const remainingSuperAdmins = await countActiveSuperAdmins(targetUserId);
     if (remainingSuperAdmins === 0) {
       throw new AdminUserMutationError('LAST_SUPER_ADMIN_FORBIDDEN');
     }
   }
+
+  void targetRole;
 }

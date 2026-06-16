@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { requireSuperAdminSession } from '@/lib/admin/require-super-admin';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { logger } from '@/lib/logger';
 import {
   getSiteAiSettings,
@@ -9,13 +10,9 @@ import { upsertAiSettingsSchema } from '@/lib/validations/ai-settings';
 
 export const dynamic = 'force-dynamic';
 
-async function requireSuperAdmin() {
-  return requireSuperAdminSession();
-}
-
 export async function GET() {
-  const session = await requireSuperAdmin();
-  if (!session) {
+  const context = await requirePermission(PERMISSIONS['ai:settings-read']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -34,8 +31,8 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const session = await requireSuperAdmin();
-  if (!session) {
+  const context = await requirePermission(PERMISSIONS['ai:settings-update']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

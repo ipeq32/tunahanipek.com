@@ -1,4 +1,5 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
@@ -12,10 +13,10 @@ type RouteContext = {
 };
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const session = await auth();
+  const authContext = await requirePermission(PERMISSIONS['account:unlink']);
   const { provider } = await context.params;
 
-  if (!session?.user?.id) {
+  if (!authContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -25,7 +26,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: authContext.userId },
       include: { accounts: true },
     });
 

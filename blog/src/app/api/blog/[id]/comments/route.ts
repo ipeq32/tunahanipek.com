@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { requireAuth } from '@/lib/auth/guards';
 import {
   createComment,
   getApprovedComments,
@@ -44,13 +45,13 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const authContext = await requireAuth();
+  if (!authContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { allowed, retryAfterMs } = checkRateLimit(
-    `comment:${session.user.id}:${getClientIp(request)}`,
+    `comment:${authContext.userId}:${getClientIp(request)}`,
     COMMENT_LIMIT,
     COMMENT_WINDOW_MS
   );
@@ -91,7 +92,7 @@ export async function POST(
 
     const data = await createComment(
       blogId,
-      session.user.id,
+      authContext.userId,
       content,
       parentId
     );

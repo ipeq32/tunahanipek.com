@@ -2,7 +2,11 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogForm from '@/components/blog/BlogForm';
 import { getBlogById } from '@/lib/data/blogs';
 import { auth } from '@/auth';
-import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
+import {
+  canUpdateAnyBlog,
+  hasUserPermission,
+} from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { notFound } from 'next/navigation';
 import { redirect } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -17,11 +21,17 @@ export default async function EditBlogPage({ params }: Props) {
   const session = await auth();
   const t = await getTranslations('Blog.Edit');
 
-  if (!session?.user || !isModerator(session.user.role)) {
+  const user = session?.user;
+  const canUpdateOwn = hasUserPermission(
+    user?.permissions,
+    PERMISSIONS['blog:update'],
+    user?.email
+  );
+  const canUpdateAny = canUpdateAnyBlog(user?.permissions, user?.email);
+
+  if (!user || (!canUpdateOwn && !canUpdateAny)) {
     redirect({ href: '/auth/login', locale });
   }
-
-  const user = session!.user!;
 
   const blog = await getBlogById(id, locale, { includeAllTranslations: true });
 
@@ -34,10 +44,7 @@ export default async function EditBlogPage({ params }: Props) {
     select: { authorId: true },
   });
 
-  if (
-    !raw ||
-    (!isSuperAdmin(user.role) && raw.authorId !== user.id!)
-  ) {
+  if (!raw || (!canUpdateAny && raw.authorId !== user.id)) {
     redirect({ href: '/blog', locale });
   }
 
@@ -52,7 +59,12 @@ export default async function EditBlogPage({ params }: Props) {
           shortImage: blog.shortImage,
           tags: blog.tags.join(', '),
           categories: blog.categories.join(', '),
-          translations: blog.translations,
+          translations: blog.translations?.map((translation) => ({
+            languageCode: translation.languageCode,
+            title: translation.title,
+            content: translation.content,
+            summary: translation.summary,
+          })),
         }}
       />
     </>

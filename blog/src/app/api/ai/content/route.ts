@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { expandContent } from '@/lib/ai/expand';
 import { translateContent } from '@/lib/ai/translate';
 import { AiNotConfiguredError } from '@/lib/ai/types';
-import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { aiContentRequestSchema } from '@/lib/validations/ai-settings';
@@ -14,28 +14,6 @@ const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60_000;
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const user = session?.user;
-
-  if (!user || !isModerator(user.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-
-  const rateKey = `ai-content:${user.id ?? getClientIp(request)}`;
-  const rate = checkRateLimit(rateKey, RATE_LIMIT, RATE_WINDOW_MS);
-
-  if (!rate.allowed) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': String(Math.ceil(rate.retryAfterMs / 1000)),
-        },
-      },
-    );
-  }
-
   try {
     const parsed = aiContentRequestSchema.safeParse(await request.json());
 
@@ -48,8 +26,29 @@ export async function POST(request: Request) {
 
     const { action, contentType, sourceLanguage, fields } = parsed.data;
 
-    if (contentType === 'project' && !isSuperAdmin(user.role)) {
+    const permission =
+      contentType === 'project'
+        ? PERMISSIONS['ai:content-project']
+        : PERMISSIONS['ai:content-blog'];
+
+    const context = await requirePermission(permission);
+    if (!context) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const rateKey = `ai-content:${context.userId ?? getClientIp(request)}`;
+    const rate = checkRateLimit(rateKey, RATE_LIMIT, RATE_WINDOW_MS);
+
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil(rate.retryAfterMs / 1000)),
+          },
+        },
+      );
     }
 
     if (action === 'translate') {

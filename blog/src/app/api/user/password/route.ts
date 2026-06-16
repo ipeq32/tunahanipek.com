@@ -1,4 +1,5 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { compare, hash } from 'bcryptjs';
@@ -19,9 +20,8 @@ const passwordSchema = z
   });
 
 export async function PATCH(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
+  const context = await requirePermission(PERMISSIONS['password:update']);
+  if (!context) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -39,7 +39,7 @@ export async function PATCH(request: Request) {
     const { currentPassword, newPassword } = parsed.data;
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: context.userId },
     });
 
     if (!user) {

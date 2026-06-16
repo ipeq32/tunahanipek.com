@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
+import { getDefaultAccessRoleId } from '@/lib/auth/access-roles';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { formatAddressLine } from '@/lib/address/format';
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await hash(password, 10);
+    const defaultAccessRoleId = await getDefaultAccessRoleId();
 
     await prisma.user.create({
       data: {
@@ -84,6 +86,7 @@ export async function POST(request: Request) {
         website: website || null,
         image: image || null,
         bio: bio || null,
+        accessRoleId: defaultAccessRoleId,
       },
     });
 

@@ -1,11 +1,13 @@
 import 'server-only';
 
 import type { Role } from '@prisma/client';
+import { syncUserLegacyRole } from '@/lib/auth/access-roles';
+import { SYSTEM_ROLE_SLUGS } from '@/lib/auth/permissions';
 import {
   AdminUserMutationError,
   assertCanDeleteUser,
   assertCanManageUsers,
-  assertCanUpdateUserRole,
+  assertCanUpdateUserAccessRole,
 } from '@/lib/admin/users/guards';
 import type { AdminUserDto } from '@/lib/admin/users/types';
 import { prisma } from '@/lib/prisma';
@@ -19,6 +21,14 @@ const adminUserSelect = {
   createdAt: true,
   hashedPassword: true,
   emailVerified: true,
+  accessRole: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      isSystem: true,
+    },
+  },
   accounts: {
     select: { provider: true },
   },
@@ -40,6 +50,12 @@ function mapAdminUser(
     createdAt: Date;
     hashedPassword: string | null;
     emailVerified: Date | null;
+    accessRole: {
+      id: string;
+      name: string;
+      slug: string;
+      isSystem: boolean;
+    };
     accounts: { provider: string }[];
     _count: { blogs: number; comments: number };
   }
@@ -50,6 +66,12 @@ function mapAdminUser(
     email: user.email,
     image: user.image,
     role: user.role,
+    accessRole: {
+      id: user.accessRole.id,
+      name: user.accessRole.name,
+      slug: user.accessRole.slug,
+      isSystem: user.accessRole.isSystem,
+    },
     createdAt: user.createdAt.toISOString(),
     hasPassword: Boolean(user.hashedPassword),
     oauthProviders: user.accounts.map((account) => account.provider),
@@ -62,7 +84,7 @@ function mapAdminUser(
 export async function getAdminUsersDto(): Promise<AdminUserDto[]> {
   const users = await prisma.user.findMany({
     where: { deletedAt: null },
-    orderBy: [{ role: 'asc' }, { createdAt: 'desc' }],
+    orderBy: [{ createdAt: 'desc' }],
     select: adminUserSelect,
   });
 
@@ -78,27 +100,49 @@ export async function getAdminUserById(id: string): Promise<AdminUserDto | null>
   return user ? mapAdminUser(user) : null;
 }
 
-export async function updateAdminUserRole(
+export async function updateAdminUserAccessRole(
   actorId: string,
   targetUserId: string,
-  role: Role
+  accessRoleId: string
 ): Promise<AdminUserDto> {
   await assertCanManageUsers(actorId);
 
-  const target = await prisma.user.findFirst({
-    where: { id: targetUserId, deletedAt: null },
-    select: { id: true, role: true },
-  });
+  const [target, nextRole] = await Promise.all([
+    prisma.user.findFirst({
+      where: { id: targetUserId, deletedAt: null },
+      select: {
+        id: true,
+        role: true,
+        accessRole: {
+          select: { id: true, slug: true },
+        },
+      },
+    }),
+    prisma.accessRole.findUnique({
+      where: { id: accessRoleId },
+      select: { id: true, slug: true },
+    }),
+  ]);
 
   if (!target) {
     throw new AdminUserMutationError('USER_NOT_FOUND');
   }
 
-  await assertCanUpdateUserRole(actorId, targetUserId, target.role, role);
+  if (!nextRole) {
+    throw new AdminUserMutationError('ACCESS_ROLE_NOT_FOUND');
+  }
 
-  const updated = await prisma.user.update({
+  await assertCanUpdateUserAccessRole(
+    actorId,
+    targetUserId,
+    target.accessRole.slug,
+    nextRole.slug
+  );
+
+  await syncUserLegacyRole(targetUserId, accessRoleId);
+
+  const updated = await prisma.user.findUniqueOrThrow({
     where: { id: targetUserId },
-    data: { role },
     select: adminUserSelect,
   });
 
@@ -113,17 +157,38 @@ export async function softDeleteAdminUser(
 
   const target = await prisma.user.findFirst({
     where: { id: targetUserId, deletedAt: null },
-    select: { id: true, role: true },
+    select: {
+      id: true,
+      role: true,
+      accessRole: { select: { slug: true } },
+    },
   });
 
   if (!target) {
     throw new AdminUserMutationError('USER_NOT_FOUND');
   }
 
-  await assertCanDeleteUser(actorId, targetUserId, target.role);
+  await assertCanDeleteUser(
+    actorId,
+    targetUserId,
+    target.role,
+    target.accessRole.slug
+  );
 
   await prisma.user.update({
     where: { id: targetUserId },
     data: { deletedAt: new Date() },
+  });
+}
+
+export async function countActiveSuperAdmins(
+  excludeUserId?: string
+): Promise<number> {
+  return prisma.user.count({
+    where: {
+      deletedAt: null,
+      accessRole: { slug: SYSTEM_ROLE_SLUGS.superAdmin },
+      ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
+    },
   });
 }

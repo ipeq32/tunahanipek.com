@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defaultLocale, locales, pathnames, routing } from './config';
 import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { canAccessAdminPanel } from '@/lib/auth-roles';
 import createIntlMiddleware from 'next-intl/middleware';
 
 const protectedPages = [
@@ -20,6 +20,7 @@ const adminPages = [
   '/admin/proje/*',
   pathnames['/admin/comments'],
   pathnames['/admin/users'],
+  pathnames['/admin/roles'],
 ];
 
 const authPages = [
@@ -69,7 +70,11 @@ const handleAuth = async (
     );
   }
 
-  if (isAuth && isAdminPage && !isSuperAdmin(session?.user?.role)) {
+  if (
+    isAuth &&
+    isAdminPage &&
+    !canAccessAdminPanel(session?.user?.permissions, session?.user?.email)
+  ) {
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 

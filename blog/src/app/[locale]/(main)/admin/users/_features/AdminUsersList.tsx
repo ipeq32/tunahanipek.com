@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,8 @@ import {
 import {
   AdminEmptyState,
   AdminListSkeleton,
-  AdminRoleBadge,
 } from '@/components/admin/admin-ui';
+import type { AccessRoleDto } from '@/lib/admin/roles/types';
 import type { AdminUserDto } from '@/lib/admin/users/types';
 import type { AdminUserMutationErrorCode } from '@/lib/admin/users/types';
 import { cn } from '@/lib/utils';
@@ -38,10 +38,11 @@ import {
 const FALLBACK_AVATAR =
   'https://img.icons8.com/?size=100&id=21441&format=png&color=000000';
 
-type RoleFilter = 'all' | 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+type RoleFilter = 'all' | string;
 
 type AdminUsersListProps = {
   initialUsers: AdminUserDto[];
+  initialRoles: AccessRoleDto[];
   currentUserId: string;
   canManage: boolean;
 };
@@ -81,14 +82,37 @@ function OAuthProviderBadge({ provider }: { provider: string }) {
   );
 }
 
+function AccessRoleBadge({
+  name,
+  isSystem,
+}: {
+  name: string;
+  isSystem: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        'inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+        isSystem
+          ? 'border-teal-500/25 bg-teal-500/10 text-teal-700 dark:text-teal-300'
+          : 'border-cyan-500/25 bg-cyan-500/10 text-cyan-800 dark:text-cyan-300'
+      )}
+    >
+      {name}
+    </span>
+  );
+}
+
 export default function AdminUsersList({
   initialUsers,
+  initialRoles,
   currentUserId,
   canManage,
 }: AdminUsersListProps) {
   const t = useTranslations('Admin.Users');
   const format = useFormatter();
   const [users, setUsers] = useState<AdminUserDto[]>(initialUsers);
+  const [roles, setRoles] = useState<AccessRoleDto[]>(initialRoles);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
@@ -103,6 +127,7 @@ export default function AdminUsersList({
         'LAST_SUPER_ADMIN_FORBIDDEN',
         'SELF_DELETE_FORBIDDEN',
         'USER_NOT_FOUND',
+        'ACCESS_ROLE_NOT_FOUND',
         'USER_MANAGEMENT_FORBIDDEN',
       ];
 
@@ -129,15 +154,31 @@ export default function AdminUsersList({
     }
   }, [t]);
 
-  const updateRole = async (user: AdminUserDto, role: AdminUserDto['role']) => {
-    if (user.role === role) return;
+  useEffect(() => {
+    if (!initialRoles.length) {
+      fetch('/api/admin/roles')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((body) => {
+          if (body?.data) {
+            setRoles(body.data);
+          }
+        })
+        .catch(() => undefined);
+    }
+  }, [initialRoles.length]);
+
+  const updateAccessRole = async (
+    user: AdminUserDto,
+    accessRoleId: string
+  ) => {
+    if (user.accessRole.id === accessRoleId) return;
 
     setUpdatingRoleId(user.id);
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role }),
+        body: JSON.stringify({ accessRoleId }),
       });
 
       if (!res.ok) {
@@ -188,20 +229,21 @@ export default function AdminUsersList({
   };
 
   const stats = useMemo(() => {
-    const admins = users.filter(
-      (user) => user.role === 'ADMIN' || user.role === 'SUPER_ADMIN'
+    const privileged = users.filter(
+      (user) => user.accessRole.slug !== 'member'
     ).length;
     return {
       total: users.length,
-      admins,
-      members: users.length - admins,
+      admins: privileged,
+      members: users.length - privileged,
     };
   }, [users]);
 
   const filteredUsers = useMemo(() => {
     const query = search.trim().toLowerCase();
     return users.filter((user) => {
-      const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+      const matchesRole =
+        roleFilter === 'all' || user.accessRole.id === roleFilter;
       const matchesQuery =
         !query ||
         user.name.toLowerCase().includes(query) ||
@@ -212,12 +254,8 @@ export default function AdminUsersList({
 
   const roleFilters: { value: RoleFilter; label: string }[] = [
     { value: 'all', label: t('filterAll') },
-    { value: 'USER', label: t('roles.USER') },
-    { value: 'ADMIN', label: t('roles.ADMIN') },
-    { value: 'SUPER_ADMIN', label: t('roles.SUPER_ADMIN') },
+    ...roles.map((role) => ({ value: role.id, label: role.name })),
   ];
-
-  const roleOptions: AdminUserDto['role'][] = ['USER', 'ADMIN', 'SUPER_ADMIN'];
 
   return (
     <div className="mt-6 space-y-5">
@@ -246,7 +284,7 @@ export default function AdminUsersList({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-lg border border-border/60 bg-card/60 p-0.5">
+          <div className="inline-flex max-w-full flex-wrap rounded-lg border border-border/60 bg-card/60 p-0.5">
             {roleFilters.map((filter) => (
               <button
                 key={filter.value}
@@ -306,9 +344,9 @@ export default function AdminUsersList({
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-semibold leading-tight">{user.name}</p>
-                      <AdminRoleBadge
-                        role={user.role}
-                        label={t(`roles.${user.role}`)}
+                      <AccessRoleBadge
+                        name={user.accessRole.name}
+                        isSystem={user.accessRole.isSystem}
                       />
                       {isSelf && (
                         <Badge variant="accent" className="text-[10px]">
@@ -365,19 +403,17 @@ export default function AdminUsersList({
                 {canManage && (
                   <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
                     <Select
-                      value={user.role}
+                      value={user.accessRole.id}
                       disabled={updatingRoleId === user.id}
-                      onValueChange={(value) =>
-                        updateRole(user, value as AdminUserDto['role'])
-                      }
+                      onValueChange={(value) => updateAccessRole(user, value)}
                     >
-                      <SelectTrigger className="h-9 w-[160px] border-border/60 bg-background/80 text-sm">
+                      <SelectTrigger className="h-9 w-[180px] border-border/60 bg-background/80 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {roleOptions.map((role) => (
-                          <SelectItem key={role} value={role}>
-                            {t(`roles.${role}`)}
+                        {roles.map((role) => (
+                          <SelectItem key={role.id} value={role.id}>
+                            {role.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

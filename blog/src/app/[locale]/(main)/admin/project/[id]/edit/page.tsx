@@ -2,7 +2,8 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import ProjectForm from '@/components/project/ProjectForm';
 import { getAdminProjectById } from '@/lib/data/projects';
 import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { hasUserPermission } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { notFound } from 'next/navigation';
 import { redirect } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -16,7 +17,14 @@ export default async function EditProjectPage({ params }: Props) {
   const session = await auth();
   const t = await getTranslations('Admin.Project');
 
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  if (
+    !session?.user ||
+    !hasUserPermission(
+      session.user.permissions,
+      PERMISSIONS['project:update'],
+      session.user.email
+    )
+  ) {
     redirect({ href: '/auth/login', locale });
   }
 

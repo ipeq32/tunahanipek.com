@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { getAdminProjects } from '@/lib/data/projects';
 import { mapProjectToDto, projectDetailInclude } from '@/lib/project-mapper';
 import { upsertProjectTranslations } from '@/lib/project-translations';
@@ -25,8 +25,8 @@ async function getNextSortOrder(): Promise<number> {
 }
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['project:admin-list']);
+  if (!context) {
     return apiError(request, 'forbidden', 403);
   }
 
@@ -45,8 +45,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const locale = await resolveRequestLocale(request);
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['project:create']);
+  if (!context) {
     return apiError(request, 'forbidden', 403);
   }
 

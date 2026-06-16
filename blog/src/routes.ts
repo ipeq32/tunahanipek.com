@@ -107,4 +107,8 @@ export default {
     en: '/admin/users',
     tr: '/admin/kullanicilar',
   },
+  '/admin/roles': {
+    en: '/admin/roles',
+    tr: '/admin/roller',
+  },
 } satisfies Pathnames<typeof locales>;

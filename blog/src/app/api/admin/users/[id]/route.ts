@@ -1,12 +1,12 @@
-import { auth } from '@/auth';
 import { AdminUserMutationError } from '@/lib/admin/users/guards';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requireAnyPermission } from '@/lib/auth/guards';
 import {
   softDeleteAdminUser,
-  updateAdminUserRole,
+  updateAdminUserAccessRole,
 } from '@/lib/data/users';
 import { logger } from '@/lib/logger';
-import { updateAdminUserRoleSchema } from '@/lib/validations/admin-user';
+import { updateAdminUserAccessRoleSchema } from '@/lib/validations/admin-user';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -20,24 +20,26 @@ function mutationErrorResponse(error: AdminUserMutationError) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id || !isSuperAdmin(session.user.role)) {
+  const authContext = await requireAnyPermission([
+    PERMISSIONS['user:update-role'],
+  ]);
+  if (!authContext) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const parsed = updateAdminUserRoleSchema.safeParse(body);
+    const parsed = updateAdminUserAccessRoleSchema.safeParse(body);
 
     if (!parsed.success) {
       return NextResponse.json({ error: 'Validation failed' }, { status: 400 });
     }
 
-    const data = await updateAdminUserRole(
-      session.user.id,
+    const data = await updateAdminUserAccessRole(
+      authContext.userId,
       id,
-      parsed.data.role
+      parsed.data.accessRoleId
     );
 
     return NextResponse.json({ data });
@@ -57,14 +59,14 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user?.id || !isSuperAdmin(session.user.role)) {
+  const authContext = await requireAnyPermission([PERMISSIONS['user:delete']]);
+  if (!authContext) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
     const { id } = await context.params;
-    await softDeleteAdminUser(session.user.id, id);
+    await softDeleteAdminUser(authContext.userId, id);
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof AdminUserMutationError) {

@@ -1,4 +1,5 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { verifyGoogleIdToken } from '@/lib/google/verify-id-token';
 import { linkOAuthAccountToUser } from '@/lib/oauth/sync-oauth-user';
 import { logger } from '@/lib/logger';
@@ -12,10 +13,10 @@ const linkGoogleSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const session = await auth();
+  const context = await requirePermission(PERMISSIONS['account:link']);
   const googleClientId = process.env.AUTH_GOOGLE_ID;
 
-  if (!session?.user?.id || !session.user.email) {
+  if (!context || !context.session.user.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
 
     const payload = await verifyGoogleIdToken(parsed.data.credential, googleClientId);
 
-    if (payload.email.toLowerCase() !== session.user.email.toLowerCase()) {
+    if (payload.email.toLowerCase() !== context.session.user.email.toLowerCase()) {
       return NextResponse.json(
         { error: 'Google account email does not match your profile email' },
         { status: 400 }
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     await linkOAuthAccountToUser(
-      session.user.id,
+      context.userId,
       {
         email: payload.email,
         name: payload.name,
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     logger.error('Google account link failed', {
-      userId: session.user.id,
+      userId: context.userId,
       error: error instanceof Error ? error.message : 'Unknown error',
     });
 

@@ -1,6 +1,6 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { getAdminBlogs } from '@/lib/data/blogs';
-import { isSuperAdmin } from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { apiError } from '@/lib/api-i18n';
 import { resolveRequestLocale } from '@/lib/languages';
@@ -9,10 +9,8 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const session = await auth();
-  const user = session?.user;
-
-  if (!user || !isSuperAdmin(user.role)) {
+  const context = await requirePermission(PERMISSIONS['blog:admin-list']);
+  if (!context) {
     return apiError(request, 'forbidden', 403);
   }
 

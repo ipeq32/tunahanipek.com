@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { testAiConnection } from '@/lib/ai/test-connection';
 import { AiNotConfiguredError } from '@/lib/ai/types';
 import { logger } from '@/lib/logger';
@@ -29,8 +29,8 @@ function buildDraftConfig(
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['ai:settings-test']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

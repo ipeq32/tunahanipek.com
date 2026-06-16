@@ -1,4 +1,5 @@
 import type { Account, User } from '@prisma/client';
+import { getDefaultAccessRoleId } from '@/lib/auth/access-roles';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 
@@ -163,12 +164,15 @@ export async function syncOAuthUser(
     });
   }
 
+  const defaultAccessRoleId = await getDefaultAccessRoleId();
+
   const createdUser = await prisma.user.create({
     data: {
       email,
       name: profile.name?.trim() || email.split('@')[0] || 'User',
       image: profile.image ?? null,
       emailVerified: profile.emailVerified ?? new Date(),
+      accessRoleId: defaultAccessRoleId,
       accounts: {
         create: accountData,
       },

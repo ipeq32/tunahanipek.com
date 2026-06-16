@@ -1,20 +1,28 @@
 import { hashSync } from 'bcryptjs';
+import {
+  getAccessRoleIdByLegacyRole,
+  seedAccessRoles,
+} from '../src/lib/db/access-role-store';
+import { PRIMARY_SUPER_ADMIN_EMAIL } from '../src/lib/admin/users/primary-super-admin';
 import { prisma } from '../src/lib/prisma';
 import { seedBlogs } from './seeds/seed-blogs';
 
-const ADMIN_EMAIL = 'admin@admin.com';
-
 async function seedAdminUser() {
   const password = hashSync('1234asdf', 12);
+  const superAdminRoleId = await getAccessRoleIdByLegacyRole('SUPER_ADMIN');
 
   return prisma.user.upsert({
-    where: { email: ADMIN_EMAIL },
-    update: {},
+    where: { email: PRIMARY_SUPER_ADMIN_EMAIL },
+    update: {
+      accessRoleId: superAdminRoleId,
+      role: 'SUPER_ADMIN',
+    },
     create: {
-      email: ADMIN_EMAIL,
+      email: PRIMARY_SUPER_ADMIN_EMAIL,
       name: 'Admin',
       hashedPassword: password,
       role: 'SUPER_ADMIN',
+      accessRoleId: superAdminRoleId,
       address:
         'Atatürk Mah., İstiklal Cad. No 1, Kadıköy/İstanbul, Türkiye',
       addressData: {
@@ -35,6 +43,7 @@ async function seedAdminUser() {
 }
 
 async function main() {
+  await seedAccessRoles();
   const admin = await seedAdminUser();
   await seedBlogs(admin.id);
 }

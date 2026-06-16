@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useAiStatus } from '@/hooks/use-ai-status';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { hasUserPermission } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import type { LanguageDto } from '@/lib/languages';
 import {
   isBlogTranslationFilled,
@@ -99,7 +100,11 @@ export default function AiContentActions(props: AiContentActionsProps) {
   const t = useTranslations('Content.Ai');
   const { data: session } = useSession();
   const { available, loading: statusLoading } = useAiStatus();
-  const canManageAiSettings = isSuperAdmin(session?.user?.role);
+  const canManageAiSettings = hasUserPermission(
+    session?.user?.permissions,
+    PERMISSIONS['ai:settings-read'],
+    session?.user?.email
+  );
   const [busyAction, setBusyAction] = useState<'translate' | 'expand' | null>(
     null,
   );

@@ -15,6 +15,43 @@ enum Role {
   USER
 }
 
+model Permission {
+  id              String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  key             String           @unique
+  groupKey        String
+  sortOrder       Int              @default(0)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(3)
+  rolePermissions RolePermission[]
+
+  @@index([groupKey, sortOrder])
+}
+
+model AccessRole {
+  id              String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name            String
+  slug            String           @unique
+  description     String?
+  isSystem        Boolean          @default(false)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(3)
+  users           User[]
+  rolePermissions RolePermission[]
+
+  @@index([isSystem])
+}
+
+model RolePermission {
+  accessRoleId String     @db.Uuid
+  permissionId String     @db.Uuid
+  accessRole   AccessRole @relation(fields: [accessRoleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@id([accessRoleId, permissionId])
+  @@index([permissionId])
+}
+
 model Language {
   id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   code      String   @unique
@@ -42,6 +79,8 @@ model User {
   image               String?
   bio                 String?
   role                Role                 @default(USER)
+  accessRoleId        String               @db.Uuid
+  accessRole          AccessRole           @relation(fields: [accessRoleId], references: [id], onDelete: Restrict)
   createdAt           DateTime             @default(now()) @db.Timestamptz(3)
   updatedAt           DateTime             @updatedAt @db.Timestamptz(3)
   deletedAt           DateTime?            @db.Timestamptz(3)

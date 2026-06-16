@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import SettingsForm from './_features/SettingsForm';
 import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { hasUserPermission } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { getSiteResumeDirect } from '@/lib/site-resume';
 import {
   addressDataToFormValues,
@@ -59,15 +60,27 @@ export default async function SettingPage({
     return redirect({ href: '/auth/login', locale });
   }
 
-  const userIsSuperAdmin = isSuperAdmin(dbUser.role);
+  const canManageSiteSettings =
+    hasUserPermission(
+      session.user.permissions,
+      PERMISSIONS['ai:settings-read'],
+      session.user.email
+    ) ||
+    hasUserPermission(
+      session.user.permissions,
+      PERMISSIONS['resume:read'],
+      session.user.email
+    );
 
-  const initialSiteResume = userIsSuperAdmin ? await getSiteResumeDirect() : null;
+  const initialSiteResume = canManageSiteSettings
+    ? await getSiteResumeDirect()
+    : null;
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
       <SettingsForm
-        isSuperAdmin={userIsSuperAdmin}
+        canManageSiteSettings={canManageSiteSettings}
         initialSiteResume={
           initialSiteResume
             ? {

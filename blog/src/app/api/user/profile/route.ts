@@ -1,4 +1,5 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { NextResponse } from 'next/server';
@@ -19,9 +20,8 @@ const profileSchema = z.object({
 });
 
 export async function PATCH(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
+  const context = await requirePermission(PERMISSIONS['profile:update']);
+  if (!context) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -40,7 +40,7 @@ export async function PATCH(request: Request) {
     const address = formatAddressLine(addressData);
 
     const user = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: context.userId },
       data: {
         name,
         phone,

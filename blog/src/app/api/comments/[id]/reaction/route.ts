@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { requireAuth } from '@/lib/auth/guards';
 import { toggleCommentReaction } from '@/lib/data/comments';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -20,13 +20,13 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const authContext = await requireAuth();
+  if (!authContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { allowed, retryAfterMs } = checkRateLimit(
-    `reaction:${session.user.id}:${getClientIp(request)}`,
+    `reaction:${authContext.userId}:${getClientIp(request)}`,
     REACTION_LIMIT,
     REACTION_WINDOW_MS
   );
@@ -56,7 +56,7 @@ export async function POST(
 
     const summary = await toggleCommentReaction(
       commentId,
-      session.user.id,
+      authContext.userId,
       parsed.data.type
     );
 

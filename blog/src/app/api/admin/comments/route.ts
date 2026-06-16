@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { getPendingCommentsDto, updateCommentStatus } from '@/lib/data/comments';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -8,8 +8,8 @@ import { logger } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['comment:moderate']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -33,8 +33,8 @@ const patchSchema = z.object({
 });
 
 export async function PATCH(request: Request) {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const context = await requirePermission(PERMISSIONS['comment:moderate']);
+  if (!context) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

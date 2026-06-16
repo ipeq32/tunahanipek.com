@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
-import { canAutoPublish, isModerator } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { syncBlogTaxonomy } from '@/lib/blog-taxonomy';
@@ -18,14 +18,8 @@ export async function POST(req: Request) {
   const locale = await resolveRequestLocale(req);
 
   try {
-    const session = await auth();
-    const user = session?.user;
-
-    if (!user) {
-      return apiError(req, 'unauthorized', 401);
-    }
-
-    if (!isModerator(user.role)) {
+    const context = await requirePermission(PERMISSIONS['blog:create']);
+    if (!context) {
       return apiError(req, 'forbidden', 403);
     }
 
@@ -40,19 +34,17 @@ export async function POST(req: Request) {
 
     const { image, shortImage, tags, categories, translations } = parsed.data;
 
-    const autoPublish = canAutoPublish(user.role);
-
     const res = await prisma.blog.create({
       data: {
         image,
         shortImage,
         author: {
-          connect: { id: user.id },
+          connect: { id: context.userId },
         },
       },
     });
 
-    await upsertBlogTranslations(res.id, translations, autoPublish);
+    await upsertBlogTranslations(res.id, translations);
     await syncBlogTaxonomy(res.id, tags, categories);
 
     const blog = await prisma.blog.findUnique({

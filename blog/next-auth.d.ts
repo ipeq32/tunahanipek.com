@@ -16,6 +16,10 @@ declare module 'next-auth' {
     image?: string | null;
     bio?: string | null;
     role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+    accessRoleId?: string;
+    accessRoleSlug?: string;
+    accessRoleName?: string;
+    permissions?: string[];
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date | null;

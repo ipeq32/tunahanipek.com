@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { hasUserPermission } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { useTranslations } from 'next-intl';
 import { User } from 'next-auth';
 import { Link } from '@/navigation';
@@ -25,6 +27,7 @@ import {
   Settings,
   UserRound,
   Users,
+  Shield,
 } from 'lucide-react';
 
 const FALLBACK_AVATAR =
@@ -73,9 +76,44 @@ function ProfileDropdownMenuFeature({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const t = useTranslations('Navbar.Main.Sidebar.Profile');
 
-  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
-  const isModerator = user?.role === 'ADMIN' || isSuperAdmin;
-  const roleKey = user?.role ?? 'USER';
+  const permissions = user?.permissions ?? [];
+  const email = user?.email;
+  const canCreateBlog = hasUserPermission(
+    permissions,
+    PERMISSIONS['blog:create'],
+    email
+  );
+  const canManageBlog = hasUserPermission(
+    permissions,
+    PERMISSIONS['blog:admin-list'],
+    email
+  );
+  const canManageProjects = hasUserPermission(
+    permissions,
+    PERMISSIONS['project:admin-list'],
+    email
+  );
+  const canCreateProject = hasUserPermission(
+    permissions,
+    PERMISSIONS['project:create'],
+    email
+  );
+  const canModerateComments = hasUserPermission(
+    permissions,
+    PERMISSIONS['comment:moderate'],
+    email
+  );
+  const canManageUsers = hasUserPermission(
+    permissions,
+    PERMISSIONS['user:read'],
+    email
+  );
+  const canManageRoles = hasUserPermission(
+    permissions,
+    PERMISSIONS['role:read'],
+    email
+  );
+  const roleLabel = user?.accessRoleName ?? t(`roles.${user?.role ?? 'USER'}`);
   const initials = user?.name?.charAt(0).toUpperCase() ?? '?';
 
   const close = () => {
@@ -110,7 +148,7 @@ function ProfileDropdownMenuFeature({
               {user?.email}
             </p>
             <Badge variant="accent" className="mt-1 text-[10px]">
-              {t(`roles.${roleKey}`)}
+              {roleLabel}
             </Badge>
           </div>
         </div>
@@ -130,7 +168,7 @@ function ProfileDropdownMenuFeature({
           onClick={close}
         />
 
-        {isModerator && (
+        {canCreateBlog && (
           <>
             <DropdownMenuSeparator />
             <SectionLabel>{t('moderation')}</SectionLabel>
@@ -140,7 +178,7 @@ function ProfileDropdownMenuFeature({
               label={t('addBlog')}
               onClick={close}
             />
-            {isSuperAdmin && (
+            {canCreateProject && (
               <MenuLink
                 href="/admin/project/add"
                 icon={FolderPlus}
@@ -151,34 +189,54 @@ function ProfileDropdownMenuFeature({
           </>
         )}
 
-        {isSuperAdmin && (
+        {(canManageBlog ||
+          canManageProjects ||
+          canModerateComments ||
+          canManageUsers ||
+          canManageRoles) && (
           <>
             <DropdownMenuSeparator />
             <SectionLabel>{t('admin')}</SectionLabel>
-            <MenuLink
-              href="/admin/blog"
-              icon={LayoutDashboard}
-              label={t('manageBlog')}
-              onClick={close}
-            />
-            <MenuLink
-              href="/admin/project"
-              icon={FolderKanban}
-              label={t('manageProject')}
-              onClick={close}
-            />
-            <MenuLink
-              href="/admin/comments"
-              icon={MessagesSquare}
-              label={t('moderateComments')}
-              onClick={close}
-            />
-            <MenuLink
-              href="/admin/users"
-              icon={Users}
-              label={t('manageUsers')}
-              onClick={close}
-            />
+            {canManageBlog && (
+              <MenuLink
+                href="/admin/blog"
+                icon={LayoutDashboard}
+                label={t('manageBlog')}
+                onClick={close}
+              />
+            )}
+            {canManageProjects && (
+              <MenuLink
+                href="/admin/project"
+                icon={FolderKanban}
+                label={t('manageProject')}
+                onClick={close}
+              />
+            )}
+            {canModerateComments && (
+              <MenuLink
+                href="/admin/comments"
+                icon={MessagesSquare}
+                label={t('moderateComments')}
+                onClick={close}
+              />
+            )}
+            {canManageUsers && (
+              <MenuLink
+                href="/admin/users"
+                icon={Users}
+                label={t('manageUsers')}
+                onClick={close}
+              />
+            )}
+            {canManageRoles && (
+              <MenuLink
+                href="/admin/roles"
+                icon={Shield}
+                label={t('manageRoles')}
+                onClick={close}
+              />
+            )}
           </>
         )}
 

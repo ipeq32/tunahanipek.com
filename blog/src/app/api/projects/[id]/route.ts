@@ -1,5 +1,5 @@
-import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requirePermission } from '@/lib/auth/guards';
 import { getAdminProjectById } from '@/lib/data/projects';
 import {
   updateProjectTranslationPublished,
@@ -26,8 +26,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: RouteContext) {
   const locale = await resolveRequestLocale(request);
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const authContext = await requirePermission(PERMISSIONS['project:update']);
+  if (!authContext) {
     return apiError(request, 'forbidden', 403);
   }
 
@@ -140,8 +140,8 @@ export async function PATCH(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  const authContext = await requirePermission(PERMISSIONS['project:delete']);
+  if (!authContext) {
     return apiError(request, 'forbidden', 403);
   }
 

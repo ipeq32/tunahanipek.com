@@ -7,12 +7,16 @@ import type { Account, Profile } from 'next-auth';
 import { logger } from '@/lib/logger';
 import {
   linkOAuthAccountToUser,
-  mapUserForAuthSession,
   syncOAuthUser,
 } from '@/lib/oauth/sync-oauth-user';
 import { clearLinkIntent, readLinkIntent } from '@/lib/oauth/link-intent';
 import { getEnabledOAuthProviders } from '@/lib/oauth/config';
 import { verifyGoogleIdToken } from '@/lib/google/verify-id-token';
+import {
+  getAuthSessionUserByEmail,
+  getAuthSessionUserById,
+  type AuthSessionUser,
+} from '@/lib/auth/session-user';
 
 export const runtime = 'nodejs';
 
@@ -91,7 +95,7 @@ function getOAuthAccountFromSignIn(
 
 async function populateTokenFromUser(
   token: Record<string, unknown>,
-  user: Awaited<ReturnType<typeof mapUserForAuthSession>>
+  user: AuthSessionUser
 ) {
   token.id = user.id;
   token.email = user.email;
@@ -102,6 +106,10 @@ async function populateTokenFromUser(
   token.image = user.image;
   token.bio = user.bio;
   token.role = user.role;
+  token.accessRoleId = user.accessRoleId;
+  token.accessRoleSlug = user.accessRoleSlug;
+  token.accessRoleName = user.accessRoleName;
+  token.permissions = user.permissions;
   token.createdAt = user.createdAt;
   token.updatedAt = user.updatedAt;
   token.deletedAt = user.deletedAt;
@@ -161,7 +169,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   }
                 );
 
-                return mapUserForAuthSession(user);
+                const sessionUser = await getAuthSessionUserById(user.id);
+                return sessionUser;
               } catch (error) {
                 logger.warn('Google One Tap verification failed', {
                   error:
@@ -204,6 +213,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: {
             email: String(email),
           },
+          select: {
+            id: true,
+            hashedPassword: true,
+          },
         });
 
         if (!user?.hashedPassword) {
@@ -219,7 +232,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        return mapUserForAuthSession(user);
+        return getAuthSessionUserById(user.id);
       },
     }),
   ],
@@ -283,19 +296,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async jwt({ token, user, account }) {
       if (user && account && isOAuthProvider(account.provider)) {
-        const { prisma } = await import('./lib/prisma');
         const dbUser = token.id
-          ? await prisma.user.findUnique({ where: { id: token.id as string } })
-          : await prisma.user.findUnique({ where: { email: user.email! } });
+          ? await getAuthSessionUserById(token.id as string)
+          : await getAuthSessionUserByEmail(user.email!);
 
         if (dbUser) {
-          await populateTokenFromUser(token, mapUserForAuthSession(dbUser));
+          await populateTokenFromUser(token, dbUser);
         }
       } else if (user) {
-        await populateTokenFromUser(
-          token,
-          user as Awaited<ReturnType<typeof mapUserForAuthSession>>
-        );
+        await populateTokenFromUser(token, user as AuthSessionUser);
       }
 
       return token;
@@ -304,6 +313,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user.id = token.id as string;
         session.user.role = token.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+        session.user.accessRoleId = token.accessRoleId as string;
+        session.user.accessRoleSlug = token.accessRoleSlug as string;
+        session.user.accessRoleName = token.accessRoleName as string;
+        session.user.permissions = (token.permissions as string[]) ?? [];
         session.user.phone = (token.phone as string | undefined) ?? '';
         session.user.address = (token.address as string | undefined) ?? '';
         session.user.website = token.website as string;

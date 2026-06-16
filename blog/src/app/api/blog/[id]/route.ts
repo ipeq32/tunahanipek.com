@@ -1,4 +1,5 @@
-import { auth } from '@/auth';
+import { PERMISSIONS } from '@/lib/auth/permissions';
+import { requireAnyPermission } from '@/lib/auth/guards';
 import { prisma } from '@/lib/prisma';
 import { blogDetailInclude, mapBlogToResponse } from '@/lib/blog-mapper';
 import { publishedTranslationFilter } from '@/lib/published-translation-query';
@@ -7,7 +8,11 @@ import {
   updateBlogTranslationPublished,
   upsertBlogTranslations,
 } from '@/lib/blog-translations';
-import { isModerator, isSuperAdmin } from '@/lib/auth-roles';
+import {
+  canDeleteAnyBlog,
+  canPublishBlog,
+  canUpdateAnyBlog,
+} from '@/lib/auth-roles';
 import { logger } from '@/lib/logger';
 import { revalidateBlogDetail, revalidateBlogList } from '@/lib/revalidate-public';
 import { updateBlogSchema } from '@/lib/validations/blog';
@@ -68,10 +73,12 @@ export async function PATCH(
 ) {
   const { id } = await context.params;
   const locale = await resolveRequestLocale(request);
-  const session = await auth();
-  const user = session?.user;
+  const authContext = await requireAnyPermission([
+    PERMISSIONS['blog:update'],
+    PERMISSIONS['blog:update-any'],
+  ]);
 
-  if (!user || !isModerator(user.role)) {
+  if (!authContext) {
     return apiError(request, 'forbidden', 403);
   }
 
@@ -92,8 +99,9 @@ export async function PATCH(
       return apiError(request, 'blog.notFound', 404);
     }
 
-    const isOwner = existing.authorId === user.id;
-    if (!isSuperAdmin(user.role) && !isOwner) {
+    const userEmail = authContext.session.user.email;
+    const isOwner = existing.authorId === authContext.userId;
+    if (!canUpdateAnyBlog(authContext.permissions, userEmail) && !isOwner) {
       return apiError(request, 'forbidden', 403);
     }
 
@@ -130,7 +138,10 @@ export async function PATCH(
       await upsertBlogTranslations(id, body.translations);
     }
 
-    if (body.published !== undefined && isSuperAdmin(user.role)) {
+    if (
+      body.published !== undefined &&
+      canPublishBlog(authContext.permissions, userEmail)
+    ) {
       const languageCode = body.languageCode ?? locale;
       const updated = await updateBlogTranslationPublished(
         id,
@@ -183,10 +194,12 @@ export async function DELETE(
   context: { params: Promise<Params> },
 ) {
   const { id } = await context.params;
-  const session = await auth();
-  const user = session?.user;
+  const authContext = await requireAnyPermission([
+    PERMISSIONS['blog:delete'],
+    PERMISSIONS['blog:delete-any'],
+  ]);
 
-  if (!user || !isModerator(user.role)) {
+  if (!authContext) {
     return apiError(request, 'forbidden', 403);
   }
 
@@ -197,8 +210,9 @@ export async function DELETE(
       return apiError(request, 'blog.notFound', 404);
     }
 
-    const isOwner = existing.authorId === user.id;
-    if (!isSuperAdmin(user.role) && !isOwner) {
+    const userEmail = authContext.session.user.email;
+    const isOwner = existing.authorId === authContext.userId;
+    if (!canDeleteAnyBlog(authContext.permissions, userEmail) && !isOwner) {
       return apiError(request, 'forbidden', 403);
     }
 

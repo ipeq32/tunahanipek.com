@@ -1,7 +1,8 @@
 import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import ProjectForm from '@/components/project/ProjectForm';
 import { auth } from '@/auth';
-import { isSuperAdmin } from '@/lib/auth-roles';
+import { hasUserPermission } from '@/lib/auth-roles';
+import { PERMISSIONS } from '@/lib/auth/permissions';
 import { redirect } from '@/navigation';
 import { getTranslations } from 'next-intl/server';
 
@@ -14,7 +15,14 @@ export default async function AddProjectPage({ params }: Props) {
   const session = await auth();
   const t = await getTranslations('Admin.Project');
 
-  if (!session?.user || !isSuperAdmin(session.user.role)) {
+  if (
+    !session?.user ||
+    !hasUserPermission(
+      session.user.permissions,
+      PERMISSIONS['project:create'],
+      session.user.email
+    )
+  ) {
     redirect({ href: '/auth/login', locale });
   }
 

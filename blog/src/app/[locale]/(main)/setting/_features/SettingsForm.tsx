@@ -87,7 +87,7 @@ type SiteResumeInitial = {
 
 type SettingsFormProps = {
   initialUser: SettingsUserValues;
-  isSuperAdmin?: boolean;
+  canManageSiteSettings?: boolean;
   initialSiteResume?: SiteResumeInitial;
   linkedProviders?: OAuthProviderId[];
   enabledProviders?: EnabledOAuthProviders;
@@ -176,7 +176,7 @@ function IconField<T extends FieldValues>({
 
 export default function SettingsForm({
   initialUser,
-  isSuperAdmin = false,
+  canManageSiteSettings = false,
   initialSiteResume = null,
   linkedProviders = [],
   enabledProviders,
@@ -423,10 +423,10 @@ export default function SettingsForm({
         </Form>
       </ContentCard>
 
-      {isSuperAdmin && (
+      {canManageSiteSettings && (
         <ResumeSettingsSection initialResume={initialSiteResume} />
       )}
-      {isSuperAdmin && <AiSettingsSection />}
+      {canManageSiteSettings && <AiSettingsSection />}
     </div>
   );
 }
