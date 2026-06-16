@@ -4,6 +4,12 @@ import type { BlogSeedEntry } from '../../blog-types';
 import type { EducationalArticleDef } from '../../content-builder';
 import { finalizeArticles } from '../../article-expansion';
 import { CATEGORY_PLAN, EXPECTED_TUTORIAL_COUNT } from '../../category-plan';
+import {
+  assertAllSeedBlogsHavePublishDates,
+  assertBlogSeedsSortedByPublishDate,
+  resolveSeededBlogCreatedAt,
+  sortBlogSeedsByPublishDate,
+} from '../../seed-blog-dates';
 import { tutorialsPart1 } from './part-1';
 import { tutorialsPart2 } from './part-2';
 import { tutorialsPart3 } from './part-3';
@@ -52,9 +58,16 @@ function toBlogSeedEntry(def: EducationalArticleDef): BlogSeedEntry {
     published: true,
     summary: entry.summary,
     content: entry.content,
+    createdAt: resolveSeededBlogCreatedAt(def.title),
   };
 }
 
-export const tutorialBlogPosts: BlogSeedEntry[] = allTutorialDefs.map(toBlogSeedEntry);
+const unsortedBlogPosts = allTutorialDefs.map(toBlogSeedEntry);
+assertAllSeedBlogsHavePublishDates(unsortedBlogPosts.map((entry) => entry.title));
+
+export const tutorialBlogPosts: BlogSeedEntry[] =
+  sortBlogSeedsByPublishDate(unsortedBlogPosts);
+
+assertBlogSeedsSortedByPublishDate(tutorialBlogPosts);
 
 export const TUTORIAL_COUNT = tutorialBlogPosts.length;

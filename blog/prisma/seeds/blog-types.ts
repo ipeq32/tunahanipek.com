@@ -7,4 +7,6 @@ export type BlogSeedEntry = {
   tags: string[];
   categories: string[];
   published: boolean;
+  /** Yayın tarihi — seed listesi ve DB createdAt ile aynı */
+  createdAt: Date;
 };

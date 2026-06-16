@@ -3,10 +3,7 @@ import { sanitizeHtml } from '../../src/lib/sanitize';
 import { seedLanguagesIfEmpty } from './seed-languages';
 import { blogSeeds } from './blog-data';
 import type { BlogSeedEntry } from './blog-types';
-import {
-  assertAllSeedBlogsHavePublishDates,
-  resolveSeededBlogCreatedAt,
-} from './seed-blog-dates';
+import { assertBlogSeedsSortedByPublishDate } from './seed-blog-dates';
 
 async function connectTaxonomy(blogId: string, entry: BlogSeedEntry) {
   await prisma.blog.update({
@@ -40,10 +37,10 @@ export async function seedBlogs(authorId: string) {
     throw new Error('Turkish language seed is missing');
   }
 
-  assertAllSeedBlogsHavePublishDates(blogSeeds.map((entry) => entry.title));
+  assertBlogSeedsSortedByPublishDate(blogSeeds);
 
   for (const entry of blogSeeds) {
-    const createdAt = resolveSeededBlogCreatedAt(entry.title);
+    const { createdAt } = entry;
     const existingTranslation = await prisma.blogTranslation.findFirst({
       where: {
         title: entry.title,
