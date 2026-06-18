@@ -1,10 +1,15 @@
-import { getTranslations } from "next-intl/server";
+import { ExternalLink } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
+import { getBlogAboutUrl } from "@/app/_lib/blog-urls";
+import type { Locale } from "@/config";
 
 export default async function About() {
+  const locale = (await getLocale()) as Locale;
   const t = await getTranslations("About");
   const paragraphs = t.raw("paragraphs") as string[];
+  const aboutUrl = getBlogAboutUrl(locale);
 
   return (
     <section id="about" className="scroll-mt-20 py-12 lg:py-16">
@@ -24,6 +29,17 @@ export default async function About() {
               {paragraphs.map((paragraph) => (
                 <p key={paragraph.slice(0, 40)}>{paragraph}</p>
               ))}
+              <p className="pt-2">
+                <a
+                  href={aboutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent transition hover:opacity-80"
+                >
+                  {t("readMore")}
+                  <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
+                </a>
+              </p>
             </div>
           </div>
         </div>

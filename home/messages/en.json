@@ -50,6 +50,7 @@
   },
   "About": {
     "badge": "About me",
+    "readMore": "Read more on my blog about page",
     "title": "The Architectural Developer",
     "paragraphs": [
       "I'm a software developer based in Denizli, Turkey, focused on building scalable, detail-oriented, and user-centric web and mobile products.",

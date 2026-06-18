@@ -50,6 +50,7 @@
   },
   "About": {
     "badge": "Hakkımda",
+    "readMore": "Blog hakkımda sayfasında devamını oku",
     "title": "Mimari Geliştirici",
     "paragraphs": [
       "Denizli merkezli bir yazılım geliştiriciyim. Detay odaklı, ölçeklenebilir ve kullanıcı odaklı web/mobil ürünler geliştirmeye odaklanıyorum.",

@@ -1,4 +1,5 @@
 import { site } from "@/app/_content/site";
+import { blogPathnames, type BlogPathname } from "@/app/_lib/blog-pathnames";
 import type { Locale } from "@/config";
 
 export function getBlogApiBase(): string {
@@ -15,10 +16,17 @@ export function getBlogApiBase(): string {
   return base.replace(/\/$/, "");
 }
 
-export function getBlogContactUrl(locale: Locale): string {
+export function getBlogPageUrl(locale: Locale, pathname: BlogPathname): string {
   const blogBase = getBlogApiBase();
+  const path = blogPathnames[pathname][locale];
 
-  return locale === "tr"
-    ? `${blogBase}/tr/iletisim`
-    : `${blogBase}/en/contact`;
+  return `${blogBase}/${locale}${path}`;
+}
+
+export function getBlogContactUrl(locale: Locale): string {
+  return getBlogPageUrl(locale, "/contact");
+}
+
+export function getBlogAboutUrl(locale: Locale): string {
+  return getBlogPageUrl(locale, "/about-me");
 }
