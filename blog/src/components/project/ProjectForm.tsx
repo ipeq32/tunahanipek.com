@@ -38,6 +38,7 @@ import {
   isProjectTranslationFilled,
 } from '@/lib/translation-form-utils';
 import AiContentActions from '@/components/content/AiContentActions';
+import ProjectScreenshotCapture from '@/components/project/ProjectScreenshotCapture';
 import { normalizeExternalUrl } from '@/lib/validations/url-field';
 
 function createProjectFormSchema(
@@ -367,6 +368,31 @@ export default function ProjectForm({
 
           <FormField
             control={form.control}
+            name="url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs">{t('fieldUrl')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('urlPlaceholder')} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <ProjectScreenshotCapture
+            projectUrl={form.watch('url')}
+            hasExistingMedia={Boolean(form.watch('image') || form.watch('gallery').length > 0)}
+            disabled={form.formState.isSubmitting}
+            cleanup={imageCleanup}
+            onApply={({ image, gallery }) => {
+              form.setValue('image', image, { shouldValidate: true });
+              form.setValue('gallery', gallery, { shouldValidate: true });
+            }}
+          />
+
+          <FormField
+            control={form.control}
             name="image"
             render={({ field }) => (
               <FormItem>
@@ -396,20 +422,6 @@ export default function ProjectForm({
                   endpoint="projectImageUploader"
                   cleanup={imageCleanup}
                 />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs">{t('fieldUrl')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('urlPlaceholder')} {...field} />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

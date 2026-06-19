@@ -851,6 +851,33 @@
       "notConfigured": "AI is not configured.",
       "openSettings": "Open settings",
       "notConfiguredContactAdmin": "Only a super admin can configure AI from the Settings page."
+    },
+    "ProjectScreenshots": {
+      "cardTitle": "Project screenshots",
+      "cardDescription": "Visits the project URL, captures the most impressive sections, and uses AI to pick the best shots for the cover and gallery.",
+      "aiFallbackHint": "Without Gemini configured, screenshots are selected sequentially; enable Gemini in Settings for smarter selection.",
+      "captureButton": "Capture screenshots",
+      "capturing": "Capturing…",
+      "capturingSteps": "Loading the page, scanning sections, and uploading images…",
+      "urlRequired": "Enter a valid project URL first.",
+      "urlHint": "Enter the project URL to capture screenshots.",
+      "captureSuccess": "Screenshots are ready — review the preview.",
+      "captureError": "Could not capture screenshots. Check the URL or try again later.",
+      "applyButton": "Apply to project",
+      "discardButton": "Discard",
+      "applied": "Images applied to the form",
+      "coverBadge": "Cover",
+      "previewAlt": "Preview {index}",
+      "aiSelected": "AI selected {count} images",
+      "authDialogTitle": "Authentication may be required",
+      "authDialogDescription": "This site looks like a login or sign-up page. If you continue, you'll likely get screenshots of the auth screen. Do you still want to proceed?",
+      "authDialogHints": "Detected signals: {hints}",
+      "authDialogConfirm": "Continue anyway",
+      "authDialogCancel": "Cancel",
+      "replaceDialogTitle": "Replace existing images?",
+      "replaceDialogDescription": "Applying new screenshots will overwrite the current cover and gallery images.",
+      "replaceDialogConfirm": "Continue",
+      "replaceDialogCancel": "Cancel"
     }
   },
   "Pages": {

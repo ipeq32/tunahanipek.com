@@ -25,6 +25,7 @@ const contentSecurityPolicy = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['playwright', 'playwright-core'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'utfs.io', pathname: '/**' },

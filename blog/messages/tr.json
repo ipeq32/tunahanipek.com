@@ -850,6 +850,33 @@
       "notConfigured": "AI yapılandırılmamış.",
       "openSettings": "Ayarlara git",
       "notConfiguredContactAdmin": "Yapılandırma yalnızca süper yönetici tarafından Ayarlar sayfasından yapılabilir."
+    },
+    "ProjectScreenshots": {
+      "cardTitle": "Proje ekran görüntüleri",
+      "cardDescription": "Proje URL'sinden sayfayı ziyaret eder, en etkileyici bölümlerin ekran görüntülerini alır ve AI ile kapak + galeri için en iyilerini seçer.",
+      "aiFallbackHint": "Gemini yapılandırılmamışsa ekran görüntüleri sırayla seçilir; en iyi sonuç için Ayarlar'dan Gemini'yi etkinleştirin.",
+      "captureButton": "Ekran görüntüsü al",
+      "capturing": "Alınıyor…",
+      "capturingSteps": "Sayfa yükleniyor, bölümler taranıyor ve görseller yükleniyor…",
+      "urlRequired": "Önce geçerli bir proje URL'si girin.",
+      "urlHint": "Ekran görüntüsü almak için proje URL'sini girin.",
+      "captureSuccess": "Ekran görüntüleri hazır — önizlemeyi onaylayın.",
+      "captureError": "Ekran görüntüsü alınamadı. URL'yi kontrol edin veya daha sonra tekrar deneyin.",
+      "applyButton": "Projeye uygula",
+      "discardButton": "Vazgeç",
+      "applied": "Görseller forma uygulandı",
+      "coverBadge": "Kapak",
+      "previewAlt": "Önizleme {index}",
+      "aiSelected": "AI {count} görsel seçti",
+      "authDialogTitle": "Oturum gerekebilir",
+      "authDialogDescription": "Bu site giriş veya kayıt ekranına benziyor. Devam ederseniz muhtemelen oturum ekranının ekran görüntüleri alınır. Yine de devam etmek istiyor musunuz?",
+      "authDialogHints": "Tespit edilen işaretler: {hints}",
+      "authDialogConfirm": "Yine de devam et",
+      "authDialogCancel": "İptal",
+      "replaceDialogTitle": "Mevcut görseller değiştirilsin mi?",
+      "replaceDialogDescription": "Yeni ekran görüntüleri uygulandığında mevcut kapak ve galeri görsellerinin üzerine yazılır.",
+      "replaceDialogConfirm": "Devam et",
+      "replaceDialogCancel": "İptal"
     }
   },
   "Pages": {
