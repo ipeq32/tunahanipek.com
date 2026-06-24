@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -63,6 +63,8 @@ type WebhookMonitorDashboardProps = {
 };
 
 type TabKey = 'events' | 'sources';
+
+const POLL_INTERVAL_MS = 15_000;
 
 const SEVERITY_STYLES = {
   INFO: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
@@ -149,6 +151,12 @@ export default function WebhookMonitorDashboard({
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
+  const statsSnapshotRef = useRef({
+    totalEvents: initialStats.totalEvents,
+    unreadEvents: initialStats.unreadEvents,
+  });
 
   const [newSource, setNewSource] = useState({
     name: '',
@@ -171,7 +179,7 @@ export default function WebhookMonitorDashboard({
   }, []);
 
   const loadEvents = useCallback(
-    async (page = pagination.page) => {
+    async (page = pagination.page, options?: { silent?: boolean }) => {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(pagination.limit),
@@ -201,6 +209,16 @@ export default function WebhookMonitorDashboard({
 
       setEvents(json.data.data);
       setPagination(json.data.pagination);
+      setSelectedEvent((current) => {
+        if (!current) {
+          return null;
+        }
+        return json.data.data.find((event) => event.id === current.id) ?? current;
+      });
+
+      if (!options?.silent) {
+        setLastUpdatedAt(new Date());
+      }
     },
     [
       debouncedSearch,
@@ -216,12 +234,70 @@ export default function WebhookMonitorDashboard({
     setLoading(true);
     try {
       await Promise.all([refreshSources(), loadEvents()]);
+      setLastUpdatedAt(new Date());
     } catch {
       toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
   }, [loadEvents, refreshSources, t]);
+
+  const pollRefresh = useCallback(async () => {
+    if (document.visibilityState !== 'visible') {
+      return;
+    }
+
+    setIsPolling(true);
+    try {
+      const previous = statsSnapshotRef.current;
+      const sourcesResponse = await fetch('/api/admin/webhooks/sources');
+      if (!sourcesResponse.ok) {
+        return;
+      }
+
+      const sourcesJson = (await sourcesResponse.json()) as {
+        data: { sources: WebhookSourceDto[]; stats: WebhookDashboardStats };
+      };
+
+      const nextStats = sourcesJson.data.stats;
+      setSources(sourcesJson.data.sources);
+      setStats(nextStats);
+      await loadEvents(pagination.page, { silent: true });
+
+      if (nextStats.totalEvents > previous.totalEvents) {
+        toast.info(t('newEventReceived'));
+      }
+
+      statsSnapshotRef.current = {
+        totalEvents: nextStats.totalEvents,
+        unreadEvents: nextStats.unreadEvents,
+      };
+      setLastUpdatedAt(new Date());
+    } catch {
+      // Sessiz arka plan yenilemesi — kullanıcıyı gereksiz toast ile rahatsız etme.
+    } finally {
+      setIsPolling(false);
+    }
+  }, [loadEvents, pagination.page, t]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      void pollRefresh();
+    }, POLL_INTERVAL_MS);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void pollRefresh();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [pollRefresh]);
 
   const handleCreateSource = async () => {
     if (!newSource.name.trim() || !newSource.slug.trim()) {
@@ -458,11 +534,33 @@ export default function WebhookMonitorDashboard({
           <Webhook className="mr-2 h-4 w-4" />
           {t('tabs.sources')}
         </Button>
-        <div className="ml-auto flex gap-2">
-          <Button variant="outline" size="sm" onClick={refreshAll} disabled={loading}>
-            <RefreshCw className={cn('mr-2 h-4 w-4', loading && 'animate-spin')} />
-            {t('refresh')}
-          </Button>
+        <div className="ml-auto flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
+              <span
+                className={cn(
+                  'h-2 w-2 rounded-full',
+                  isPolling ? 'animate-pulse bg-teal-500' : 'bg-teal-500/70',
+                )}
+              />
+              {t('liveUpdates')}
+            </span>
+            <Button variant="outline" size="sm" onClick={refreshAll} disabled={loading}>
+              <RefreshCw className={cn('mr-2 h-4 w-4', loading && 'animate-spin')} />
+              {t('refresh')}
+            </Button>
+          </div>
+          {lastUpdatedAt && (
+            <p className="text-[11px] text-muted-foreground">
+              {t('lastUpdated', {
+                time: format.dateTime(lastUpdatedAt, {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                }),
+              })}
+            </p>
+          )}
         </div>
       </div>
 
