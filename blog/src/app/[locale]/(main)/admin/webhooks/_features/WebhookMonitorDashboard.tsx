@@ -62,6 +62,7 @@ import type {
   WebhookEventDto,
   WebhookSourceDto,
 } from '@/lib/data/webhooks';
+import { listWebhookIntegrations, isWebhookIntegrationKey } from '@/lib/webhooks/integrations';
 import type { PaginationMeta } from '@/lib/pagination';
 import { cn } from '@/lib/utils';
 
@@ -265,6 +266,7 @@ export default function WebhookMonitorDashboard({
   const [creating, setCreating] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventDto | null>(null);
   const [revealedCredentials, setRevealedCredentials] = useState<{
+    integrationKey: string;
     endpointUrl: string;
     endpointPath: string;
     endpointQuery: string;
@@ -288,7 +290,7 @@ export default function WebhookMonitorDashboard({
     name: '',
     slug: '',
     description: '',
-    provider: 'GENERIC' as 'GENERIC' | 'COOLIFY',
+    integrationKey: 'generic',
     enabled: true,
   });
 
@@ -461,7 +463,7 @@ export default function WebhookMonitorDashboard({
           name: newSource.name.trim(),
           slug: newSource.slug.trim().toLowerCase(),
           description: newSource.description.trim() || undefined,
-          provider: newSource.provider,
+          integrationKey: newSource.integrationKey,
           enabled: newSource.enabled,
         }),
       });
@@ -478,6 +480,7 @@ export default function WebhookMonitorDashboard({
 
       if (json.data) {
         setRevealedCredentials({
+          integrationKey: json.data.source.integrationKey,
           endpointUrl: json.data.source.endpointUrl,
           endpointPath: json.data.source.endpointPath,
           endpointQuery: `?key=${json.data.secret}`,
@@ -492,7 +495,7 @@ export default function WebhookMonitorDashboard({
           name: '',
           slug: '',
           description: '',
-          provider: 'GENERIC',
+          integrationKey: 'generic',
           enabled: true,
         });
         toast.success(t('sourceCreated'));
@@ -551,6 +554,7 @@ export default function WebhookMonitorDashboard({
       }
 
       setRevealedCredentials({
+        integrationKey: json.data.source.integrationKey,
         endpointUrl: json.data.source.endpointUrl,
         endpointPath: json.data.source.endpointPath,
         endpointQuery: `?key=${json.data.secret}`,
@@ -648,11 +652,25 @@ export default function WebhookMonitorDashboard({
     }
   };
 
-  const providerOptions = useMemo(
-    () => [
-      { value: 'GENERIC', label: t('providers.generic') },
-      { value: 'COOLIFY', label: t('providers.coolify') },
-    ],
+  const integrationOptions = useMemo(
+    () =>
+      listWebhookIntegrations().map((integration) => ({
+        value: integration.key,
+        label: t(`integrations.${integration.key}.label` as 'integrations.generic.label'),
+        description: t(
+          `integrations.${integration.key}.description` as 'integrations.generic.description',
+        ),
+      })),
+    [t],
+  );
+
+  const integrationLabel = useCallback(
+    (key: string) => {
+      if (!isWebhookIntegrationKey(key)) {
+        return key;
+      }
+      return t(`integrations.${key}.label` as 'integrations.generic.label');
+    },
     [t],
   );
 
@@ -998,24 +1016,31 @@ export default function WebhookMonitorDashboard({
                 />
               </div>
               <div>
-                <Label>{t('fields.provider')}</Label>
+                <Label>{t('fields.integration')}</Label>
                 <Select
-                  value={newSource.provider}
-                  onValueChange={(value: 'GENERIC' | 'COOLIFY') =>
-                    setNewSource((current) => ({ ...current, provider: value }))
+                  value={newSource.integrationKey}
+                  onValueChange={(value) =>
+                    setNewSource((current) => ({ ...current, integrationKey: value }))
                   }
                 >
                   <SelectTrigger className="mt-1.5">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {providerOptions.map((option) => (
+                    {integrationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="mt-2 rounded-lg border border-border/60 bg-muted/20 p-3 text-xs text-muted-foreground">
+                  {
+                    integrationOptions.find(
+                      (option) => option.value === newSource.integrationKey,
+                    )?.description
+                  }
+                </p>
               </div>
               <div>
                 <Label>{t('fields.enabled')}</Label>
@@ -1063,7 +1088,7 @@ export default function WebhookMonitorDashboard({
                       <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <h4 className="font-semibold">{source.name}</h4>
-                          <Badge variant="outline">{source.provider}</Badge>
+                          <Badge variant="outline">{integrationLabel(source.integrationKey)}</Badge>
                           {source.enabled ? (
                             <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
                               <CheckCircle2 className="mr-1 h-3 w-3" />
@@ -1203,9 +1228,13 @@ export default function WebhookMonitorDashboard({
           </DialogHeader>
           <div className="space-y-4">
             <div className="rounded-xl border border-teal-500/30 bg-teal-500/10 p-4 text-sm text-teal-950 dark:text-teal-100">
-              <p className="font-medium">{t('coolifyHintTitle')}</p>
+              <p className="font-medium">{t('setupHintTitle')}</p>
               <p className="mt-1 text-teal-900/80 dark:text-teal-100/80">
-                {t('coolifyHint')}
+                {revealedCredentials
+                  ? t(
+                      `integrations.${revealedCredentials.integrationKey}.setupHint` as 'integrations.generic.setupHint',
+                    )
+                  : null}
               </p>
             </div>
 

@@ -6,7 +6,6 @@ import type {
   Prisma,
   WebhookEventSeverity,
   WebhookEventStatus,
-  WebhookProvider,
 } from '@prisma/client';
 
 import { buildPaginationMeta, type PaginationMeta } from '@/lib/pagination';
@@ -25,7 +24,7 @@ export type WebhookSourceDto = {
   name: string;
   slug: string;
   description: string | null;
-  provider: WebhookProvider;
+  integrationKey: string;
   enabled: boolean;
   endpointPath: string;
   endpointQueryHint: string;
@@ -45,7 +44,7 @@ export type WebhookEventDto = {
   sourceId: string;
   sourceName: string;
   sourceSlug: string;
-  provider: WebhookProvider;
+  integrationKey: string;
   eventType: string;
   severity: WebhookEventSeverity;
   title: string;
@@ -74,7 +73,7 @@ function toSourceDto(
     name: string;
     slug: string;
     description: string | null;
-    provider: WebhookProvider;
+    integrationKey: string;
     enabled: boolean;
     secretEnc: string;
     lastEventAt: Date | null;
@@ -93,7 +92,7 @@ function toSourceDto(
     name: source.name,
     slug: source.slug,
     description: source.description,
-    provider: source.provider,
+    integrationKey: source.integrationKey,
     enabled: source.enabled,
     endpointPath: display.path,
     endpointQueryHint: display.queryHint,
@@ -110,7 +109,7 @@ const sourceListSelect = {
   name: true,
   slug: true,
   description: true,
-  provider: true,
+  integrationKey: true,
   enabled: true,
   secretEnc: true,
   lastEventAt: true,
@@ -167,7 +166,7 @@ export async function createWebhookSource(input: {
   name: string;
   slug: string;
   description?: string;
-  provider: WebhookProvider;
+  integrationKey: string;
   enabled: boolean;
 }): Promise<{ source: WebhookSourceWithUrlDto; secret: string }> {
   const secret = generateWebhookSecret();
@@ -177,7 +176,7 @@ export async function createWebhookSource(input: {
       name: input.name,
       slug: input.slug,
       description: input.description ?? null,
-      provider: input.provider,
+      integrationKey: input.integrationKey,
       enabled: input.enabled,
       secretEnc: encryptSecret(secret),
     },
@@ -198,7 +197,7 @@ export async function updateWebhookSource(
   input: {
     name?: string;
     description?: string | null;
-    provider?: WebhookProvider;
+    integrationKey?: string;
     enabled?: boolean;
   }
 ): Promise<WebhookSourceDto | null> {
@@ -286,7 +285,7 @@ export async function getWebhookSourceBySlug(slug: string) {
       id: true,
       slug: true,
       enabled: true,
-      provider: true,
+      integrationKey: true,
       secretEnc: true,
     },
   });
@@ -294,15 +293,18 @@ export async function getWebhookSourceBySlug(slug: string) {
 
 export async function recordWebhookEvent(input: {
   sourceId: string;
-  provider: WebhookProvider;
+  integrationKey: string;
   payload: unknown;
   headers: Headers;
   clientIp: string;
 }) {
-  const parsed = clampWebhookEventFields(
-    parseWebhookEvent(input.provider, input.payload),
-  );
   const sanitizedHeaders = sanitizeWebhookHeaders(input.headers);
+  const parsed = clampWebhookEventFields(
+    parseWebhookEvent(input.integrationKey, {
+      payload: input.payload,
+      headers: sanitizedHeaders,
+    }),
+  );
 
   const [event] = await prisma.$transaction([
     prisma.webhookEvent.create({
@@ -385,7 +387,7 @@ export async function listWebhookEvents(input: {
           select: {
             name: true,
             slug: true,
-            provider: true,
+            integrationKey: true,
           },
         },
       },
@@ -398,7 +400,7 @@ export async function listWebhookEvents(input: {
       sourceId: event.sourceId,
       sourceName: event.source.name,
       sourceSlug: event.source.slug,
-      provider: event.source.provider,
+      integrationKey: event.source.integrationKey,
       eventType: event.eventType,
       severity: event.severity,
       title: event.title,
@@ -443,7 +445,7 @@ export async function updateWebhookEventStatus(
         select: {
           name: true,
           slug: true,
-          provider: true,
+          integrationKey: true,
         },
       },
     },
@@ -454,7 +456,7 @@ export async function updateWebhookEventStatus(
     sourceId: event.sourceId,
     sourceName: event.source.name,
     sourceSlug: event.source.slug,
-    provider: event.source.provider,
+    integrationKey: event.source.integrationKey,
     eventType: event.eventType,
     severity: event.severity,
     title: event.title,

@@ -486,6 +486,38 @@
         "generic": "Generic (any service)",
         "coolify": "Coolify"
       },
+      "integrations": {
+        "generic": {
+          "label": "Generic (any service)",
+          "description": "Works with any HTTP client. Send JSON with event, type, title, message, success, or severity fields.",
+          "setupHint": "Paste the full webhook URL into your service, or authenticate with Authorization: Bearer <secret> or X-Webhook-Secret header."
+        },
+        "coolify": {
+          "label": "Coolify",
+          "description": "Parses Coolify notification payloads (deployments, disk usage, unreachable servers, etc.).",
+          "setupHint": "Paste the full Webhook URL into Coolify → Notifications → Webhook URL (POST). Do not paste only the secret."
+        },
+        "github": {
+          "label": "GitHub",
+          "description": "Parses GitHub webhook payloads using the X-GitHub-Event header and repository metadata.",
+          "setupHint": "In your repo → Settings → Webhooks, set Payload URL to the full URL below and choose the events you need."
+        },
+        "gitlab": {
+          "label": "GitLab",
+          "description": "Parses GitLab webhook payloads using X-Gitlab-Event and project metadata.",
+          "setupHint": "In your project → Settings → Webhooks, paste the full URL and select trigger events."
+        },
+        "uptime-kuma": {
+          "label": "Uptime Kuma",
+          "description": "Parses monitor up/down notifications from Uptime Kuma.",
+          "setupHint": "In your monitor → Notifications → Webhook, paste the full URL as the notification endpoint."
+        },
+        "grafana": {
+          "label": "Grafana",
+          "description": "Parses Grafana alerting webhook payloads (unified alerting).",
+          "setupHint": "In Grafana → Alerting → Contact points, add a Webhook contact point with the full URL below."
+        }
+      },
       "emptyEvents": "No events yet",
       "emptyEventsHint": "Create a webhook source and point an external service to the endpoint URL.",
       "emptySources": "No sources yet",
@@ -501,7 +533,7 @@
         "name": "Name",
         "slug": "Slug (URL path)",
         "description": "Description",
-        "provider": "Provider",
+        "integration": "Integration",
         "enabled": "Status",
         "enabledHint": "Disabled sources reject incoming webhooks."
       },
@@ -510,7 +542,7 @@
       },
       "endpointUrl": "Webhook URL",
       "copyUrl": "Copy URL",
-      "copyUrlHint": "Copy includes the full secret in the URL (for Coolify and similar tools).",
+      "copyUrlHint": "Copy includes the full secret in the URL. Some tools require the query key; others accept Bearer or X-Webhook-Secret.",
       "copySecret": "Copy secret",
       "copied": "Copied to clipboard",
       "rotateSecret": "Rotate secret",
@@ -518,8 +550,7 @@
       "secretTitle": "Webhook URL & secret",
       "secretDescription": "Save these now. The full URL is shown only once after creation or rotation.",
       "secretOnlyLabel": "Secret only (already included in the URL above)",
-      "coolifyHintTitle": "For Coolify",
-      "coolifyHint": "Paste the full Webhook URL below into Coolify → Notifications → Webhook URL (POST). Do not paste only the secret.",
+      "setupHintTitle": "Setup instructions",
       "secretWarning": "Anyone with this URL can send events to your blog. Keep it private and rotate if leaked.",
       "enabled": "Enabled",
       "disabled": "Disabled",

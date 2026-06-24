@@ -486,6 +486,38 @@
         "generic": "Genel (herhangi bir servis)",
         "coolify": "Coolify"
       },
+      "integrations": {
+        "generic": {
+          "label": "Genel (herhangi bir servis)",
+          "description": "Her HTTP istemcisiyle çalışır. event, type, title, message, success veya severity alanları içeren JSON gönderin.",
+          "setupHint": "Tam webhook URL'sini servisinize yapıştırın veya Authorization: Bearer <secret> / X-Webhook-Secret başlığıyla kimlik doğrulayın."
+        },
+        "coolify": {
+          "label": "Coolify",
+          "description": "Coolify bildirim payload'larını ayrıştırır (deployment, disk kullanımı, erişilemeyen sunucular vb.).",
+          "setupHint": "Tam Webhook URL'sini Coolify → Notifications → Webhook URL (POST) alanına yapıştırın. Yalnızca secret'ı yapıştırmayın."
+        },
+        "github": {
+          "label": "GitHub",
+          "description": "X-GitHub-Event başlığı ve depo meta verileriyle GitHub webhook payload'larını ayrıştırır.",
+          "setupHint": "Depo → Settings → Webhooks bölümünde Payload URL olarak aşağıdaki tam URL'yi girin ve ihtiyacınız olan olayları seçin."
+        },
+        "gitlab": {
+          "label": "GitLab",
+          "description": "X-Gitlab-Event ve proje meta verileriyle GitLab webhook payload'larını ayrıştırır.",
+          "setupHint": "Proje → Settings → Webhooks bölümünde tam URL'yi yapıştırın ve tetikleyici olayları seçin."
+        },
+        "uptime-kuma": {
+          "label": "Uptime Kuma",
+          "description": "Uptime Kuma monitor up/down bildirimlerini ayrıştırır.",
+          "setupHint": "Monitor → Notifications → Webhook bölümünde tam URL'yi bildirim endpoint'i olarak yapıştırın."
+        },
+        "grafana": {
+          "label": "Grafana",
+          "description": "Grafana alerting webhook payload'larını ayrıştırır (unified alerting).",
+          "setupHint": "Grafana → Alerting → Contact points bölümünde Webhook contact point ekleyin ve aşağıdaki tam URL'yi kullanın."
+        }
+      },
       "emptyEvents": "Henüz olay yok",
       "emptyEventsHint": "Bir webhook kaynağı oluşturun ve harici servisi endpoint URL'sine yönlendirin.",
       "emptySources": "Henüz kaynak yok",
@@ -501,7 +533,7 @@
         "name": "Ad",
         "slug": "Slug (URL yolu)",
         "description": "Açıklama",
-        "provider": "Sağlayıcı",
+        "integration": "Entegrasyon",
         "enabled": "Durum",
         "enabledHint": "Devre dışı kaynaklar gelen webhook'ları reddeder."
       },
@@ -510,7 +542,7 @@
       },
       "endpointUrl": "Webhook URL",
       "copyUrl": "URL kopyala",
-      "copyUrlHint": "Kopyalama tam secret içeren URL'yi verir (Coolify vb. için).",
+      "copyUrlHint": "Kopyalama tam secret içeren URL'yi verir. Bazı araçlar query key ister; diğerleri Bearer veya X-Webhook-Secret kabul eder.",
       "copySecret": "Secret kopyala",
       "copied": "Panoya kopyalandı",
       "rotateSecret": "Secret yenile",
@@ -518,8 +550,7 @@
       "secretTitle": "Webhook URL ve secret",
       "secretDescription": "Bunları şimdi kaydedin. Tam URL yalnızca oluşturma veya yenileme sonrası bir kez gösterilir.",
       "secretOnlyLabel": "Yalnızca secret (yukarıdaki URL'de zaten var)",
-      "coolifyHintTitle": "Coolify için",
-      "coolifyHint": "Aşağıdaki tam Webhook URL'sini Coolify → Notifications → Webhook URL (POST) alanına yapıştırın. Yalnızca secret'ı yapıştırmayın.",
+      "setupHintTitle": "Kurulum talimatları",
       "secretWarning": "Bu URL'ye sahip herkes blogunuza olay gönderebilir. Gizli tutun, sızdıysa yenileyin.",
       "enabled": "Aktif",
       "disabled": "Pasif",

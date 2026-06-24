@@ -315,11 +315,6 @@ model AiUsageLog {
   @@index([context, createdAt])
 }
 
-enum WebhookProvider {
-  GENERIC
-  COOLIFY
-}
-
 enum WebhookEventSeverity {
   INFO
   SUCCESS
@@ -339,7 +334,7 @@ model WebhookSource {
   name        String
   slug        String           @unique
   description String?
-  provider    WebhookProvider  @default(GENERIC)
+  integrationKey String           @default("generic")
   secretEnc   String
   enabled     Boolean          @default(true)
   lastEventAt DateTime?        @db.Timestamptz(3)

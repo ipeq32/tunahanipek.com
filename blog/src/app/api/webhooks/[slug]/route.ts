@@ -95,7 +95,7 @@ export async function POST(request: Request, context: RouteContext) {
   try {
     const event = await recordWebhookEvent({
       sourceId: source.id,
-      provider: source.provider,
+      integrationKey: source.integrationKey,
       payload,
       headers: request.headers,
       clientIp,
