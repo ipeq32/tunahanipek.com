@@ -119,4 +119,8 @@ export default {
     en: '/admin/stats',
     tr: '/admin/istatistikler',
   },
+  '/admin/webhooks': {
+    en: '/admin/webhooks',
+    tr: '/admin/webhooklar',
+  },
 } satisfies Pathnames<typeof locales>;

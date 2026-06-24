@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { defaultLocale, locales, pathnames, routing } from './config';
 import { auth } from '@/auth';
 import { canAccessAdminPanel } from '@/lib/auth-roles';
+import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
 import createIntlMiddleware from 'next-intl/middleware';
 
 type AppLocale = (typeof locales)[number];
@@ -44,7 +45,10 @@ const adminPages = [
   pathnames['/admin/roles'],
   pathnames['/admin/site-copy'],
   pathnames['/admin/stats'],
+  pathnames['/admin/webhooks'],
 ];
+
+const superAdminPages = [pathnames['/admin/webhooks']];
 
 const authPages = [
   pathnames['/auth/login'],
@@ -77,7 +81,8 @@ const handleAuth = async (
   req: NextRequest,
   isAuthPage: boolean,
   isProtectedPage: boolean,
-  isAdminPage: boolean
+  isAdminPage: boolean,
+  isSuperAdminPage: boolean
 ) => {
   const session = await auth();
   const isAuth = !!session?.user;
@@ -99,6 +104,14 @@ const handleAuth = async (
     isAuth &&
     isAdminPage &&
     !canAccessAdminPanel(session?.user?.permissions, session?.user?.email)
+  ) {
+    return NextResponse.redirect(new URL('/', req.nextUrl));
+  }
+
+  if (
+    isAuth &&
+    isSuperAdminPage &&
+    !isPrimarySuperAdmin(session?.user?.email)
   ) {
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
@@ -125,12 +138,14 @@ export async function proxy(req: NextRequest) {
   const isAuthPage = testPagesRegex(authPages, req.nextUrl.pathname);
   const isProtectedPage = testPagesRegex(protectedPages, req.nextUrl.pathname);
   const isAdminPage = testPagesRegex(adminPages, req.nextUrl.pathname);
+  const isSuperAdminPage = testPagesRegex(superAdminPages, req.nextUrl.pathname);
 
   const response = await handleAuth(
     req,
     isAuthPage,
     isProtectedPage,
-    isAdminPage
+    isAdminPage,
+    isSuperAdminPage
   );
 
   setLocaleCookie(req, response);

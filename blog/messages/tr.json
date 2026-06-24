@@ -436,6 +436,96 @@
         }
       }
     },
+    "Webhooks": {
+      "title": "Webhook İzleme",
+      "description": "Harici sitelerden webhook ile altyapı olaylarını ve logları toplayın.",
+      "refresh": "Yenile",
+      "loadError": "Webhook verileri yüklenemedi",
+      "actionError": "İşlem başarısız",
+      "search": "Ara",
+      "searchPlaceholder": "Başlık veya olay türüne göre ara…",
+      "applyFilters": "Filtrele",
+      "markAllRead": "Tümünü okundu işaretle",
+      "markedAllRead": "Tüm olaylar okundu olarak işaretlendi",
+      "viewPayload": "Payload görüntüle",
+      "markRead": "Okundu",
+      "archive": "Arşivle",
+      "headers": "İstek başlıkları",
+      "tabs": {
+        "events": "Olaylar",
+        "sources": "Kaynaklar"
+      },
+      "stats": {
+        "sources": "Kaynak",
+        "activeSources": "Aktif",
+        "totalEvents": "Toplam olay",
+        "unreadEvents": "Okunmamış",
+        "errors24h": "Hata (24s)"
+      },
+      "filters": {
+        "source": "Kaynak",
+        "severity": "Önem",
+        "status": "Durum",
+        "all": "Tümü"
+      },
+      "severity": {
+        "info": "Bilgi",
+        "success": "Başarılı",
+        "warning": "Uyarı",
+        "error": "Hata"
+      },
+      "status": {
+        "new": "Yeni",
+        "read": "Okundu",
+        "archived": "Arşiv"
+      },
+      "providers": {
+        "generic": "Genel (herhangi bir servis)",
+        "coolify": "Coolify"
+      },
+      "emptyEvents": "Henüz olay yok",
+      "emptyEventsHint": "Bir webhook kaynağı oluşturun ve harici servisi endpoint URL'sine yönlendirin.",
+      "emptySources": "Henüz kaynak yok",
+      "emptySourcesHint": "Güvenli bir webhook endpoint'i oluşturmak için kaynak ekleyin.",
+      "createSource": "Kaynak oluştur",
+      "creating": "Oluşturuluyor…",
+      "sourceCreated": "Webhook kaynağı oluşturuldu",
+      "sourceUpdated": "Kaynak güncellendi",
+      "sourceDeleted": "Kaynak silindi",
+      "secretRotated": "Secret yenilendi",
+      "sourceList": "Kayıtlı kaynaklar",
+      "fields": {
+        "name": "Ad",
+        "slug": "Slug (URL yolu)",
+        "description": "Açıklama",
+        "provider": "Sağlayıcı",
+        "enabled": "Durum",
+        "enabledHint": "Devre dışı kaynaklar gelen webhook'ları reddeder."
+      },
+      "validation": {
+        "required": "Ad ve slug zorunludur"
+      },
+      "endpointUrl": "Webhook URL",
+      "copyUrl": "URL kopyala",
+      "copySecret": "Secret kopyala",
+      "copied": "Panoya kopyalandı",
+      "rotateSecret": "Secret yenile",
+      "secretPreview": "Secret: {preview}",
+      "secretTitle": "Webhook secret",
+      "secretDescription": "Bu secret'ı şimdi kaydedin. Yalnızca oluşturma veya yenileme sonrası bir kez gösterilir.",
+      "secretWarning": "Bu URL'ye sahip herkes blogunuza olay gönderebilir. Gizli tutun, sızdıysa yenileyin.",
+      "enabled": "Aktif",
+      "disabled": "Pasif",
+      "enable": "Etkinleştir",
+      "disable": "Devre dışı",
+      "delete": "Sil",
+      "cancel": "İptal",
+      "deleteTitle": "Webhook kaynağını sil",
+      "deleteConfirm": "Kaynak ve tüm olayları kalıcı olarak silinecek.",
+      "unread": "okunmamış",
+      "eventCount": "{count, plural, =0 {Olay yok} one {# olay} other {# olay}}",
+      "lastEvent": "Son olay: {date}"
+    },
     "SiteCopy": {
       "title": "Site Metinleri",
       "description": "Bunu biliyor muydun? ipuçlarını ve footer'daki komik metinleri düzenleyin.",
@@ -1634,6 +1724,7 @@
           "manageRoles": "Rol Yönetimi",
           "manageSiteCopy": "Site Metinleri",
           "viewStats": "İstatistikler",
+          "manageWebhooks": "Webhook İzleme",
           "logout": "Oturumu kapat",
           "roles": {
             "USER": "Üye",

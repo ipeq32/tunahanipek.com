@@ -315,6 +315,61 @@ model AiUsageLog {
   @@index([context, createdAt])
 }
 
+enum WebhookProvider {
+  GENERIC
+  COOLIFY
+}
+
+enum WebhookEventSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum WebhookEventStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+/// Harici servislerden webhook almak için kayıtlı kaynak (süper admin).
+model WebhookSource {
+  id          String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String
+  slug        String           @unique
+  description String?
+  provider    WebhookProvider  @default(GENERIC)
+  secretEnc   String
+  enabled     Boolean          @default(true)
+  lastEventAt DateTime?        @db.Timestamptz(3)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime         @updatedAt @db.Timestamptz(3)
+  events      WebhookEvent[]
+
+  @@index([enabled])
+}
+
+/// Webhook kaynaklarından gelen olay kayıtları.
+model WebhookEvent {
+  id         String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  sourceId   String               @db.Uuid
+  source     WebhookSource        @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  eventType  String               @default("unknown")
+  severity   WebhookEventSeverity @default(INFO)
+  title      String
+  payload    Json
+  headers    Json?
+  clientIp   String?
+  status     WebhookEventStatus   @default(NEW)
+  receivedAt DateTime             @default(now()) @db.Timestamptz(3)
+
+  @@index([sourceId, receivedAt])
+  @@index([status, receivedAt])
+  @@index([severity, receivedAt])
+  @@index([eventType])
+}
+
 /// Site geneli AI içerik/çeviri ayarları (süper admin).
 model SiteAiSettings {
   id                  String     @id @default("default")

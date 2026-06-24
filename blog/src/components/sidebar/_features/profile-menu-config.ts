@@ -1,4 +1,5 @@
 import { hasUserPermission, canAccessAdminPanel } from '@/lib/auth-roles';
+import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import type { ComponentProps } from 'react';
 import type { Link } from '@/navigation';
@@ -15,6 +16,7 @@ import {
   Sparkles,
   UserRound,
   Users,
+  Webhook,
 } from 'lucide-react';
 import type { User } from 'next-auth';
 
@@ -48,6 +50,7 @@ type ProfileMenuTranslator = (
     | 'manageRoles'
     | 'manageSiteCopy'
     | 'viewStats'
+    | 'manageWebhooks'
     | `roles.${string}`
 ) => string;
 
@@ -99,6 +102,7 @@ export function buildProfileMenuConfig(
     email
   );
   const canViewStats = canAccessAdminPanel(permissions, email);
+  const canManageWebhooks = isPrimarySuperAdmin(email);
 
   const roleLabel = user?.accessRoleName ?? t(`roles.${user?.role ?? 'USER'}`);
   const initials = user?.name?.charAt(0).toUpperCase() ?? '?';
@@ -208,6 +212,15 @@ export function buildProfileMenuConfig(
       href: '/admin/stats',
       icon: BarChart3,
       label: t('viewStats'),
+    });
+  }
+
+  if (canManageWebhooks) {
+    adminItems.push({
+      type: 'link',
+      href: '/admin/webhooks',
+      icon: Webhook,
+      label: t('manageWebhooks'),
     });
   }
 

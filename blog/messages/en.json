@@ -436,6 +436,96 @@
         }
       }
     },
+    "Webhooks": {
+      "title": "Webhook Monitor",
+      "description": "Collect infrastructure events and logs from external sites via webhooks.",
+      "refresh": "Refresh",
+      "loadError": "Failed to load webhook data",
+      "actionError": "Action failed",
+      "search": "Search",
+      "searchPlaceholder": "Search events by title or type…",
+      "applyFilters": "Apply filters",
+      "markAllRead": "Mark all as read",
+      "markedAllRead": "All events marked as read",
+      "viewPayload": "View payload",
+      "markRead": "Mark read",
+      "archive": "Archive",
+      "headers": "Request headers",
+      "tabs": {
+        "events": "Events",
+        "sources": "Sources"
+      },
+      "stats": {
+        "sources": "Sources",
+        "activeSources": "Active",
+        "totalEvents": "Total events",
+        "unreadEvents": "Unread",
+        "errors24h": "Errors (24h)"
+      },
+      "filters": {
+        "source": "Source",
+        "severity": "Severity",
+        "status": "Status",
+        "all": "All"
+      },
+      "severity": {
+        "info": "Info",
+        "success": "Success",
+        "warning": "Warning",
+        "error": "Error"
+      },
+      "status": {
+        "new": "New",
+        "read": "Read",
+        "archived": "Archived"
+      },
+      "providers": {
+        "generic": "Generic (any service)",
+        "coolify": "Coolify"
+      },
+      "emptyEvents": "No events yet",
+      "emptyEventsHint": "Create a webhook source and point an external service to the endpoint URL.",
+      "emptySources": "No sources yet",
+      "emptySourcesHint": "Add a source to generate a secure webhook endpoint.",
+      "createSource": "Create source",
+      "creating": "Creating…",
+      "sourceCreated": "Webhook source created",
+      "sourceUpdated": "Source updated",
+      "sourceDeleted": "Source deleted",
+      "secretRotated": "Secret rotated",
+      "sourceList": "Registered sources",
+      "fields": {
+        "name": "Name",
+        "slug": "Slug (URL path)",
+        "description": "Description",
+        "provider": "Provider",
+        "enabled": "Status",
+        "enabledHint": "Disabled sources reject incoming webhooks."
+      },
+      "validation": {
+        "required": "Name and slug are required"
+      },
+      "endpointUrl": "Webhook URL",
+      "copyUrl": "Copy URL",
+      "copySecret": "Copy secret",
+      "copied": "Copied to clipboard",
+      "rotateSecret": "Rotate secret",
+      "secretPreview": "Secret: {preview}",
+      "secretTitle": "Webhook secret",
+      "secretDescription": "Save this secret now. It is shown only once after creation or rotation.",
+      "secretWarning": "Anyone with this URL can send events to your blog. Keep it private and rotate if leaked.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enable": "Enable",
+      "disable": "Disable",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "deleteTitle": "Delete webhook source",
+      "deleteConfirm": "This will permanently delete the source and all its events.",
+      "unread": "unread",
+      "eventCount": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "lastEvent": "Last event: {date}"
+    },
     "SiteCopy": {
       "title": "Site Copy",
       "description": "Edit Did you know? tips and the funny footer lines.",
@@ -1635,6 +1725,7 @@
           "manageRoles": "Role Management",
           "manageSiteCopy": "Site Copy",
           "viewStats": "Statistics",
+          "manageWebhooks": "Webhook Monitor",
           "logout": "Logout",
           "roles": {
             "USER": "Member",
