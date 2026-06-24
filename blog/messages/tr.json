@@ -507,6 +507,7 @@
       },
       "endpointUrl": "Webhook URL",
       "copyUrl": "URL kopyala",
+      "copyUrlHint": "Kopyalama tam secret içeren URL'yi verir (Coolify vb. için).",
       "copySecret": "Secret kopyala",
       "copied": "Panoya kopyalandı",
       "rotateSecret": "Secret yenile",

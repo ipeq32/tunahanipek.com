@@ -769,7 +769,9 @@ export default function WebhookMonitorDashboard({
                             <Link2 className="h-3.5 w-3.5" />
                             {t('endpointUrl')}
                           </div>
-                          <p className="mt-2 break-all font-mono text-xs">{source.endpointUrl}</p>
+                          <p className="mt-2 break-all font-mono text-xs">
+                            {source.endpointUrlDisplay}
+                          </p>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <Button
                               size="sm"
@@ -793,7 +795,7 @@ export default function WebhookMonitorDashboard({
                             </Button>
                           </div>
                           <p className="mt-2 text-xs text-muted-foreground">
-                            {t('secretPreview', { preview: source.secretPreview })}
+                            {t('copyUrlHint')}
                           </p>
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -907,6 +909,7 @@ export default function WebhookMonitorDashboard({
                 <Copy className="mr-2 h-4 w-4" />
                 {t('copyUrl')}
               </Button>
+              <p className="mt-2 text-xs text-muted-foreground">{t('copyUrlHint')}</p>
             </div>
 
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-100">
@@ -914,27 +917,6 @@ export default function WebhookMonitorDashboard({
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>{t('secretWarning')}</p>
               </div>
-            </div>
-
-            <div>
-              <p className="mb-2 text-sm font-medium">{t('secretOnlyLabel')}</p>
-              <pre className="overflow-x-auto rounded-xl bg-muted/40 p-4 text-xs">
-                {revealedCredentials?.secret}
-              </pre>
-              <Button
-                variant="outline"
-                className="mt-3 w-full sm:w-auto"
-                onClick={() =>
-                  revealedCredentials
-                    ? void copyToClipboard(revealedCredentials.secret).then(() =>
-                        toast.success(t('copied')),
-                      )
-                    : undefined
-                }
-              >
-                <Copy className="mr-2 h-4 w-4" />
-                {t('copySecret')}
-              </Button>
             </div>
           </div>
         </DialogContent>

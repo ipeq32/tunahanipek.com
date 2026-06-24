@@ -507,6 +507,7 @@
       },
       "endpointUrl": "Webhook URL",
       "copyUrl": "Copy URL",
+      "copyUrlHint": "Copy includes the full secret in the URL (for Coolify and similar tools).",
       "copySecret": "Copy secret",
       "copied": "Copied to clipboard",
       "rotateSecret": "Rotate secret",
