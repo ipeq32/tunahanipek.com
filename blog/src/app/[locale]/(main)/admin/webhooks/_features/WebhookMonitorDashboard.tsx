@@ -138,7 +138,10 @@ export default function WebhookMonitorDashboard({
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventDto | null>(null);
-  const [revealedSecret, setRevealedSecret] = useState<string | null>(null);
+  const [revealedCredentials, setRevealedCredentials] = useState<{
+    endpointUrl: string;
+    secret: string;
+  } | null>(null);
   const [deleteSourceId, setDeleteSourceId] = useState<string | null>(null);
 
   const [search, setSearch] = useState('');
@@ -251,7 +254,10 @@ export default function WebhookMonitorDashboard({
       }
 
       if (json.data) {
-        setRevealedSecret(json.data.secret);
+        setRevealedCredentials({
+          endpointUrl: json.data.source.endpointUrl,
+          secret: json.data.secret,
+        });
         setSources((current) => [json.data!.source, ...current]);
         setStats((current) => ({
           ...current,
@@ -320,7 +326,10 @@ export default function WebhookMonitorDashboard({
         return;
       }
 
-      setRevealedSecret(json.data.secret);
+      setRevealedCredentials({
+        endpointUrl: json.data.source.endpointUrl,
+        secret: json.data.secret,
+      });
       setSources((current) =>
         current.map((item) =>
           item.id === sourceId ? json.data!.source : item,
@@ -863,34 +872,70 @@ export default function WebhookMonitorDashboard({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!revealedSecret} onOpenChange={() => setRevealedSecret(null)}>
-        <DialogContent>
+      <Dialog
+        open={!!revealedCredentials}
+        onOpenChange={() => setRevealedCredentials(null)}
+      >
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('secretTitle')}</DialogTitle>
             <DialogDescription>{t('secretDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="rounded-xl border border-teal-500/30 bg-teal-500/10 p-4 text-sm text-teal-950 dark:text-teal-100">
+              <p className="font-medium">{t('coolifyHintTitle')}</p>
+              <p className="mt-1 text-teal-900/80 dark:text-teal-100/80">
+                {t('coolifyHint')}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-medium">{t('endpointUrl')}</p>
+              <pre className="overflow-x-auto rounded-xl border border-border/60 bg-muted/40 p-4 text-xs leading-relaxed">
+                {revealedCredentials?.endpointUrl}
+              </pre>
+              <Button
+                className="mt-3 w-full sm:w-auto"
+                onClick={() =>
+                  revealedCredentials
+                    ? void copyToClipboard(revealedCredentials.endpointUrl).then(() =>
+                        toast.success(t('copied')),
+                      )
+                    : undefined
+                }
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                {t('copyUrl')}
+              </Button>
+            </div>
+
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-100">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>{t('secretWarning')}</p>
               </div>
             </div>
-            <pre className="overflow-x-auto rounded-xl bg-muted/40 p-4 text-xs">
-              {revealedSecret}
-            </pre>
-            <Button
-              onClick={() =>
-                revealedSecret
-                  ? void copyToClipboard(revealedSecret).then(() =>
-                      toast.success(t('copied')),
-                    )
-                  : undefined
-              }
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              {t('copySecret')}
-            </Button>
+
+            <div>
+              <p className="mb-2 text-sm font-medium">{t('secretOnlyLabel')}</p>
+              <pre className="overflow-x-auto rounded-xl bg-muted/40 p-4 text-xs">
+                {revealedCredentials?.secret}
+              </pre>
+              <Button
+                variant="outline"
+                className="mt-3 w-full sm:w-auto"
+                onClick={() =>
+                  revealedCredentials
+                    ? void copyToClipboard(revealedCredentials.secret).then(() =>
+                        toast.success(t('copied')),
+                      )
+                    : undefined
+                }
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                {t('copySecret')}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
