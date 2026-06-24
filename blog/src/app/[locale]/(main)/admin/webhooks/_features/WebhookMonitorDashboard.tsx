@@ -190,8 +190,16 @@ function WebhookUrlPreview({
   );
 }
 
-async function copyToClipboard(value: string) {
-  await navigator.clipboard.writeText(value);
+async function copySourceEndpointUrl(sourceId: string) {
+  const response = await fetch(`/api/admin/webhooks/sources/${sourceId}/endpoint-url`);
+  if (!response.ok) {
+    throw new Error('copy_failed');
+  }
+  const json = (await response.json()) as { data?: { endpointUrl?: string } };
+  if (!json.data?.endpointUrl) {
+    throw new Error('copy_failed');
+  }
+  await copyToClipboard(json.data.endpointUrl);
 }
 
 function FilterMenu({
@@ -232,6 +240,10 @@ function FilterMenu({
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+async function copyToClipboard(value: string) {
+  await navigator.clipboard.writeText(value);
 }
 
 export default function WebhookMonitorDashboard({
@@ -455,7 +467,7 @@ export default function WebhookMonitorDashboard({
       });
 
       const json = (await response.json()) as {
-        data?: { source: WebhookSourceDto; secret: string };
+        data?: { source: WebhookSourceDto & { endpointUrl: string }; secret: string };
         error?: string;
       };
 
@@ -529,7 +541,7 @@ export default function WebhookMonitorDashboard({
       );
 
       const json = (await response.json()) as {
-        data?: { source: WebhookSourceDto; secret: string };
+        data?: { source: WebhookSourceDto & { endpointUrl: string }; secret: string };
         error?: string;
       };
 
@@ -1083,9 +1095,9 @@ export default function WebhookMonitorDashboard({
                               size="sm"
                               variant="outline"
                               onClick={() =>
-                                void copyToClipboard(source.endpointUrl).then(() =>
-                                  toast.success(t('copied')),
-                                )
+                                void copySourceEndpointUrl(source.id)
+                                  .then(() => toast.success(t('copied')))
+                                  .catch(() => toast.error(t('actionError')))
                               }
                             >
                               <Copy className="mr-2 h-4 w-4" />

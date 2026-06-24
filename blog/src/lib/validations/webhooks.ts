@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { WEBHOOK_SLUG_PATTERN } from '@/lib/webhooks/constants';
 
 export const createWebhookSourceSchema = z.object({
   name: z.string().trim().min(2).max(80),
@@ -9,7 +9,7 @@ export const createWebhookSourceSchema = z.object({
     .trim()
     .min(2)
     .max(48)
-    .regex(slugPattern, 'Slug must be lowercase alphanumeric with hyphens'),
+    .regex(WEBHOOK_SLUG_PATTERN, 'Slug must be lowercase alphanumeric with hyphens'),
   description: z.string().trim().max(240).optional(),
   provider: z.enum(['GENERIC', 'COOLIFY']).default('GENERIC'),
   enabled: z.boolean().default(true),

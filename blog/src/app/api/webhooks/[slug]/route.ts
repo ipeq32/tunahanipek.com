@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 
-import {
-  getWebhookSourceBySlug,
-  recordWebhookEvent,
-} from '@/lib/data/webhooks';
+import { recordWebhookEvent } from '@/lib/data/webhooks';
 import { logger } from '@/lib/logger';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { authenticateWebhookRequest } from '@/lib/webhooks/authenticate-request';
 import {
-  extractWebhookSecret,
-  verifyWebhookSecret,
-} from '@/lib/webhooks/verify-secret';
+  WEBHOOK_AUTH_RATE_LIMIT_PER_MINUTE,
+  WEBHOOK_RATE_LIMIT_PER_MINUTE,
+} from '@/lib/webhooks/constants';
+import {
+  readWebhookBody,
+  WebhookBodyTooLargeError,
+} from '@/lib/webhooks/read-body';
+import { sanitizePayloadForStorage } from '@/lib/webhooks/sanitize-payload';
+import { extractWebhookSecret } from '@/lib/webhooks/verify-secret';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,11 +21,40 @@ type RouteContext = {
   params: Promise<{ slug: string }>;
 };
 
+function parseWebhookPayload(body: string, contentType: string): unknown {
+  if (!body.trim()) {
+    return { message: 'Empty webhook payload' };
+  }
+
+  if (contentType.includes('application/json')) {
+    return JSON.parse(body) as unknown;
+  }
+
+  try {
+    return JSON.parse(body) as unknown;
+  } catch {
+    return { message: body };
+  }
+}
+
 export async function POST(request: Request, context: RouteContext) {
   const { slug } = await context.params;
   const clientIp = getClientIp(request);
 
-  const rateLimit = checkRateLimit(`webhook:${slug}:${clientIp}`, 120, 60_000);
+  const authRateLimit = checkRateLimit(
+    `webhook:auth:${clientIp}`,
+    WEBHOOK_AUTH_RATE_LIMIT_PER_MINUTE,
+    60_000,
+  );
+  if (!authRateLimit.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  const rateLimit = checkRateLimit(
+    `webhook:${slug}:${clientIp}`,
+    WEBHOOK_RATE_LIMIT_PER_MINUTE,
+    60_000,
+  );
   if (!rateLimit.allowed) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -31,16 +64,9 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const source = await getWebhookSourceBySlug(slug);
-  if (!source || !source.enabled) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  }
-
-  if (!verifyWebhookSecret(providedSecret, source.secretEnc)) {
-    logger.warn('Webhook rejected: invalid secret', {
-      slug,
-      clientIp,
-    });
+  const source = await authenticateWebhookRequest(slug, providedSecret);
+  if (!source) {
+    logger.warn('Webhook rejected: authentication failed', { clientIp });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -48,21 +74,17 @@ export async function POST(request: Request, context: RouteContext) {
   const contentType = request.headers.get('content-type') ?? '';
 
   try {
-    if (contentType.includes('application/json')) {
-      payload = await request.json();
-    } else {
-      const text = await request.text();
-      if (!text.trim()) {
-        payload = { message: 'Empty webhook payload' };
-      } else {
-        try {
-          payload = JSON.parse(text);
-        } catch {
-          payload = { message: text };
-        }
-      }
-    }
+    const body = await readWebhookBody(request);
+    payload = sanitizePayloadForStorage(parseWebhookPayload(body, contentType));
   } catch (error) {
+    if (error instanceof WebhookBodyTooLargeError) {
+      return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+    }
+
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    }
+
     logger.warn('Webhook payload parse failed', {
       slug,
       error: error instanceof Error ? error.message : 'Unknown error',

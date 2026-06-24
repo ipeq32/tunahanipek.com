@@ -17,6 +17,7 @@ import {
   formatWebhookEndpointDisplay,
 } from '@/lib/webhooks/build-endpoint-url';
 import { parseWebhookEvent } from '@/lib/webhooks/parse-event';
+import { clampWebhookEventFields } from '@/lib/webhooks/sanitize-payload';
 import { sanitizeWebhookHeaders } from '@/lib/webhooks/sanitize-headers';
 
 export type WebhookSourceDto = {
@@ -26,7 +27,6 @@ export type WebhookSourceDto = {
   description: string | null;
   provider: WebhookProvider;
   enabled: boolean;
-  endpointUrl: string;
   endpointPath: string;
   endpointQueryHint: string;
   lastEventAt: string | null;
@@ -34,6 +34,10 @@ export type WebhookSourceDto = {
   updatedAt: string;
   eventCount: number;
   unreadCount: number;
+};
+
+export type WebhookSourceWithUrlDto = WebhookSourceDto & {
+  endpointUrl: string;
 };
 
 export type WebhookEventDto = {
@@ -82,7 +86,6 @@ function toSourceDto(
   secretPlain?: string
 ): WebhookSourceDto {
   const secret = secretPlain ?? decryptSecret(source.secretEnc);
-  const endpointUrl = buildWebhookEndpointUrl(source.slug, secret);
   const display = formatWebhookEndpointDisplay(source.slug, secret);
 
   return {
@@ -92,7 +95,6 @@ function toSourceDto(
     description: source.description,
     provider: source.provider,
     enabled: source.enabled,
-    endpointUrl,
     endpointPath: display.path,
     endpointQueryHint: display.queryHint,
     lastEventAt: source.lastEventAt?.toISOString() ?? null,
@@ -167,7 +169,7 @@ export async function createWebhookSource(input: {
   description?: string;
   provider: WebhookProvider;
   enabled: boolean;
-}): Promise<{ source: WebhookSourceDto; secret: string }> {
+}): Promise<{ source: WebhookSourceWithUrlDto; secret: string }> {
   const secret = generateWebhookSecret();
 
   const created = await prisma.webhookSource.create({
@@ -183,7 +185,10 @@ export async function createWebhookSource(input: {
   });
 
   return {
-    source: toSourceDto(created, secret),
+    source: {
+      ...toSourceDto(created, secret),
+      endpointUrl: buildWebhookEndpointUrl(created.slug, secret),
+    },
     secret,
   };
 }
@@ -231,7 +236,7 @@ export async function deleteWebhookSource(id: string): Promise<boolean> {
 
 export async function rotateWebhookSourceSecret(
   id: string
-): Promise<{ source: WebhookSourceDto; secret: string } | null> {
+): Promise<{ source: WebhookSourceWithUrlDto; secret: string } | null> {
   const existing = await prisma.webhookSource.findUnique({
     where: { id },
     select: { id: true },
@@ -250,9 +255,28 @@ export async function rotateWebhookSourceSecret(
   });
 
   return {
-    source: toSourceDto(updated, secret),
+    source: {
+      ...toSourceDto(updated, secret),
+      endpointUrl: buildWebhookEndpointUrl(updated.slug, secret),
+    },
     secret,
   };
+}
+
+export async function getWebhookSourceEndpointUrl(
+  id: string,
+): Promise<string | null> {
+  const source = await prisma.webhookSource.findUnique({
+    where: { id },
+    select: { slug: true, secretEnc: true },
+  });
+
+  if (!source) {
+    return null;
+  }
+
+  const secret = decryptSecret(source.secretEnc);
+  return buildWebhookEndpointUrl(source.slug, secret);
 }
 
 export async function getWebhookSourceBySlug(slug: string) {
@@ -275,7 +299,9 @@ export async function recordWebhookEvent(input: {
   headers: Headers;
   clientIp: string;
 }) {
-  const parsed = parseWebhookEvent(input.provider, input.payload);
+  const parsed = clampWebhookEventFields(
+    parseWebhookEvent(input.provider, input.payload),
+  );
   const sanitizedHeaders = sanitizeWebhookHeaders(input.headers);
 
   const [event] = await prisma.$transaction([
