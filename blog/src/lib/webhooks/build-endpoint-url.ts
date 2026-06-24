@@ -1,27 +1,43 @@
-import { maskSecret } from '@/lib/secret-crypto';
-
-export function buildWebhookEndpointUrl(slug: string, secret: string): string {
-  const baseUrl =
+function getWebhookPublicBaseUrl(): string {
+  return (
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') ??
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
-    'http://localhost:3000';
+    'http://localhost:3000'
+  );
+}
 
-  const url = new URL(`/api/webhooks/${encodeURIComponent(slug)}`, baseUrl);
+export function buildWebhookEndpointUrl(slug: string, secret: string): string {
+  const url = new URL(
+    `/api/webhooks/${encodeURIComponent(slug)}`,
+    getWebhookPublicBaseUrl(),
+  );
   url.searchParams.set('key', secret);
   return url.toString();
 }
 
-export function maskWebhookEndpointUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    const key = parsed.searchParams.get('key');
-
-    if (key) {
-      parsed.searchParams.set('key', maskSecret(key));
-    }
-
-    return parsed.toString();
-  } catch {
-    return url;
+export function maskWebhookKeyForDisplay(secret: string): string {
+  const trimmed = secret.trim();
+  if (trimmed.length <= 4) {
+    return '****';
   }
+  return `****${trimmed.slice(-4)}`;
+}
+
+export function buildWebhookEndpointPath(slug: string): string {
+  return `${getWebhookPublicBaseUrl()}/api/webhooks/${encodeURIComponent(slug)}`;
+}
+
+export function formatWebhookEndpointDisplay(slug: string, secret: string): {
+  path: string;
+  queryHint: string;
+  maskedUrl: string;
+} {
+  const path = buildWebhookEndpointPath(slug);
+  const queryHint = `?key=${maskWebhookKeyForDisplay(secret)}`;
+
+  return {
+    path,
+    queryHint,
+    maskedUrl: `${path}${queryHint}`,
+  };
 }

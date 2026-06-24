@@ -119,6 +119,25 @@ function Panel({ children, className }: { children: ReactNode; className?: strin
   );
 }
 
+function WebhookUrlPreview({
+  path,
+  query,
+  queryClassName,
+}: {
+  path: string;
+  query: string;
+  queryClassName?: string;
+}) {
+  return (
+    <div className="overflow-x-auto rounded-xl border border-border/60 bg-muted/40 p-4 font-mono text-xs leading-relaxed">
+      <div className="break-all">{path}</div>
+      <div className={cn('break-all', queryClassName ?? 'text-muted-foreground')}>
+        {query}
+      </div>
+    </div>
+  );
+}
+
 async function copyToClipboard(value: string) {
   await navigator.clipboard.writeText(value);
 }
@@ -142,7 +161,8 @@ export default function WebhookMonitorDashboard({
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventDto | null>(null);
   const [revealedCredentials, setRevealedCredentials] = useState<{
     endpointUrl: string;
-    secret: string;
+    endpointPath: string;
+    endpointQuery: string;
   } | null>(null);
   const [deleteSourceId, setDeleteSourceId] = useState<string | null>(null);
 
@@ -332,7 +352,8 @@ export default function WebhookMonitorDashboard({
       if (json.data) {
         setRevealedCredentials({
           endpointUrl: json.data.source.endpointUrl,
-          secret: json.data.secret,
+          endpointPath: json.data.source.endpointPath,
+          endpointQuery: `?key=${json.data.secret}`,
         });
         setSources((current) => [json.data!.source, ...current]);
         setStats((current) => ({
@@ -404,7 +425,8 @@ export default function WebhookMonitorDashboard({
 
       setRevealedCredentials({
         endpointUrl: json.data.source.endpointUrl,
-        secret: json.data.secret,
+        endpointPath: json.data.source.endpointPath,
+        endpointQuery: `?key=${json.data.secret}`,
       });
       setSources((current) =>
         current.map((item) =>
@@ -867,9 +889,12 @@ export default function WebhookMonitorDashboard({
                             <Link2 className="h-3.5 w-3.5" />
                             {t('endpointUrl')}
                           </div>
-                          <p className="mt-2 break-all font-mono text-xs">
-                            {source.endpointUrlDisplay}
-                          </p>
+                          <div className="mt-2">
+                            <WebhookUrlPreview
+                              path={source.endpointPath}
+                              query={source.endpointQueryHint}
+                            />
+                          </div>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <Button
                               size="sm"
@@ -991,9 +1016,11 @@ export default function WebhookMonitorDashboard({
 
             <div>
               <p className="mb-2 text-sm font-medium">{t('endpointUrl')}</p>
-              <pre className="overflow-x-auto rounded-xl border border-border/60 bg-muted/40 p-4 text-xs leading-relaxed">
-                {revealedCredentials?.endpointUrl}
-              </pre>
+              <WebhookUrlPreview
+                path={revealedCredentials?.endpointPath ?? ''}
+                query={revealedCredentials?.endpointQuery ?? ''}
+                queryClassName="text-teal-700 dark:text-teal-300"
+              />
               <Button
                 className="mt-3 w-full sm:w-auto"
                 onClick={() =>

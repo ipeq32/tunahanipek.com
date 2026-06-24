@@ -14,7 +14,7 @@ import { prisma } from '@/lib/prisma';
 import { encryptSecret, decryptSecret } from '@/lib/secret-crypto';
 import {
   buildWebhookEndpointUrl,
-  maskWebhookEndpointUrl,
+  formatWebhookEndpointDisplay,
 } from '@/lib/webhooks/build-endpoint-url';
 import { parseWebhookEvent } from '@/lib/webhooks/parse-event';
 import { sanitizeWebhookHeaders } from '@/lib/webhooks/sanitize-headers';
@@ -27,7 +27,8 @@ export type WebhookSourceDto = {
   provider: WebhookProvider;
   enabled: boolean;
   endpointUrl: string;
-  endpointUrlDisplay: string;
+  endpointPath: string;
+  endpointQueryHint: string;
   lastEventAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -82,6 +83,7 @@ function toSourceDto(
 ): WebhookSourceDto {
   const secret = secretPlain ?? decryptSecret(source.secretEnc);
   const endpointUrl = buildWebhookEndpointUrl(source.slug, secret);
+  const display = formatWebhookEndpointDisplay(source.slug, secret);
 
   return {
     id: source.id,
@@ -91,7 +93,8 @@ function toSourceDto(
     provider: source.provider,
     enabled: source.enabled,
     endpointUrl,
-    endpointUrlDisplay: maskWebhookEndpointUrl(endpointUrl),
+    endpointPath: display.path,
+    endpointQueryHint: display.queryHint,
     lastEventAt: source.lastEventAt?.toISOString() ?? null,
     createdAt: source.createdAt.toISOString(),
     updatedAt: source.updatedAt.toISOString(),
