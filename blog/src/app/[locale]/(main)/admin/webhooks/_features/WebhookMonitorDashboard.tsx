@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
+  Activity,
   AlertTriangle,
   Archive,
   Bell,
@@ -12,6 +13,7 @@ import {
   Eye,
   Link2,
   Plus,
+  Radio,
   RefreshCw,
   RotateCcw,
   Search,
@@ -19,6 +21,8 @@ import {
   Trash2,
   Webhook,
   XCircle,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 
 import {
@@ -29,6 +33,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DataPagination } from '@/components/ui/data-pagination';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -75,16 +85,32 @@ const SEVERITY_STYLES = {
   ERROR: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
 } as const;
 
+const SEVERITY_ACCENT = {
+  INFO: 'from-slate-400/80 to-slate-500/40',
+  SUCCESS: 'from-emerald-400/90 to-teal-500/50',
+  WARNING: 'from-amber-400/90 to-orange-500/50',
+  ERROR: 'from-rose-400/90 to-red-500/50',
+} as const;
+
 function StatCard({
   label,
   value,
   accent,
+  icon: Icon,
 }: {
   label: string;
   value: number;
   accent?: 'teal' | 'rose' | 'amber';
+  icon: typeof Radio;
 }) {
-  const accentClass =
+  const accentRing =
+    accent === 'rose'
+      ? 'from-rose-500/20'
+      : accent === 'amber'
+        ? 'from-amber-500/20'
+        : 'from-teal-500/20';
+
+  const valueClass =
     accent === 'rose'
       ? 'text-rose-600 dark:text-rose-400'
       : accent === 'amber'
@@ -94,26 +120,52 @@ function StatCard({
           : undefined;
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card/80 px-4 py-3 shadow-sm backdrop-blur-sm">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-      <p className={cn('mt-1 text-2xl font-bold tabular-nums', accentClass)}>
-        {value}
-      </p>
+    <div className="group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card/95 via-card/80 to-card/60 p-4 shadow-lg shadow-black/5 backdrop-blur-xl transition hover:border-border/80">
+      <div
+        className={cn(
+          'pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-60',
+          accentRing,
+        )}
+      />
+      <div className="relative flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            {label}
+          </p>
+          <p className={cn('mt-2 text-3xl font-bold tabular-nums tracking-tight', valueClass)}>
+            {value}
+          </p>
+        </div>
+        <div className="rounded-xl border border-border/50 bg-background/50 p-2.5 text-muted-foreground shadow-inner">
+          <Icon className="h-4 w-4" />
+        </div>
+      </div>
     </div>
   );
 }
 
-function Panel({ children, className }: { children: ReactNode; className?: string }) {
+function Panel({
+  children,
+  className,
+  accent = 'teal',
+}: {
+  children: ReactNode;
+  className?: string;
+  accent?: 'teal' | 'violet';
+}) {
+  const accents = {
+    teal: 'from-teal-500 via-cyan-400 to-emerald-400',
+    violet: 'from-violet-500 via-purple-400 to-fuchsia-400',
+  };
+
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-2xl border border-border/50 bg-card/70 shadow-sm backdrop-blur-md',
+        'overflow-hidden rounded-2xl border border-border/40 bg-card/50 shadow-xl shadow-black/5 backdrop-blur-xl',
         className,
       )}
     >
-      <div className="h-0.5 w-full bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-400" />
+      <div className={cn('h-px w-full bg-gradient-to-r opacity-80', accents[accent])} />
       <div className="p-5 md:p-6">{children}</div>
     </div>
   );
@@ -142,6 +194,46 @@ async function copyToClipboard(value: string) {
   await navigator.clipboard.writeText(value);
 }
 
+function FilterMenu({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+}) {
+  const selected = options.find((option) => option.value === value);
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex h-10 w-full items-center justify-between rounded-lg border border-border/70 bg-background/60 px-3 text-sm shadow-sm transition-colors hover:border-border hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+        >
+          <span className="truncate text-left">{selected?.label}</span>
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="max-h-64 w-[var(--radix-dropdown-menu-trigger-width)] overflow-y-auto"
+      >
+        {options.map((option) => (
+          <DropdownMenuItem
+            key={option.value}
+            onClick={() => onChange(option.value)}
+            className={cn(option.value === value && 'bg-accent font-medium')}
+          >
+            {option.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export default function WebhookMonitorDashboard({
   initialSources,
   initialStats,
@@ -157,6 +249,7 @@ export default function WebhookMonitorDashboard({
   const [events, setEvents] = useState(initialEvents);
   const [pagination, setPagination] = useState(initialPagination);
   const [loading, setLoading] = useState(false);
+  const [filtering, setFiltering] = useState(false);
   const [creating, setCreating] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventDto | null>(null);
   const [revealedCredentials, setRevealedCredentials] = useState<{
@@ -170,7 +263,8 @@ export default function WebhookMonitorDashboard({
   const debouncedSearch = useDebouncedValue(search, 300);
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('NEW');
+  const skipAutoFilterRef = useRef(true);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const statsSnapshotRef = useRef({
@@ -318,6 +412,27 @@ export default function WebhookMonitorDashboard({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [pollRefresh]);
+
+  useEffect(() => {
+    if (skipAutoFilterRef.current) {
+      skipAutoFilterRef.current = false;
+      return;
+    }
+
+    let cancelled = false;
+    setFiltering(true);
+
+    void loadEvents(1, { silent: true }).finally(() => {
+      if (!cancelled) {
+        setFiltering(false);
+        setLastUpdatedAt(new Date());
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedSearch, sourceFilter, severityFilter, statusFilter, loadEvents]);
 
   const handleCreateSource = async () => {
     if (!newSource.name.trim() || !newSource.slug.trim()) {
@@ -529,33 +644,97 @@ export default function WebhookMonitorDashboard({
     [t],
   );
 
+  const sourceFilterOptions = useMemo(
+    () => [
+      { value: 'all', label: t('filters.all') },
+      ...sources.map((source) => ({ value: source.id, label: source.name })),
+    ],
+    [sources, t],
+  );
+
+  const severityFilterOptions = useMemo(
+    () => [
+      { value: 'all', label: t('filters.all') },
+      { value: 'ERROR', label: t('severity.error') },
+      { value: 'WARNING', label: t('severity.warning') },
+      { value: 'SUCCESS', label: t('severity.success') },
+      { value: 'INFO', label: t('severity.info') },
+    ],
+    [t],
+  );
+
+  const statusFilterOptions = useMemo(
+    () => [
+      { value: 'all', label: t('filters.all') },
+      { value: 'NEW', label: t('status.new') },
+      { value: 'READ', label: t('status.read') },
+      { value: 'ARCHIVED', label: t('status.archived') },
+    ],
+    [t],
+  );
+
   return (
     <div className="space-y-6">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        <StatCard label={t('stats.sources')} value={stats.totalSources} accent="teal" />
-        <StatCard label={t('stats.activeSources')} value={stats.activeSources} />
-        <StatCard label={t('stats.totalEvents')} value={stats.totalEvents} />
-        <StatCard label={t('stats.unreadEvents')} value={stats.unreadEvents} accent="amber" />
-        <StatCard label={t('stats.errors24h')} value={stats.errorEvents24h} accent="rose" />
+        <StatCard
+          label={t('stats.sources')}
+          value={stats.totalSources}
+          accent="teal"
+          icon={Radio}
+        />
+        <StatCard
+          label={t('stats.activeSources')}
+          value={stats.activeSources}
+          icon={Zap}
+        />
+        <StatCard
+          label={t('stats.totalEvents')}
+          value={stats.totalEvents}
+          icon={Activity}
+        />
+        <StatCard
+          label={t('stats.unreadEvents')}
+          value={stats.unreadEvents}
+          accent="amber"
+          icon={Bell}
+        />
+        <StatCard
+          label={t('stats.errors24h')}
+          value={stats.errorEvents24h}
+          accent="rose"
+          icon={AlertTriangle}
+        />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant={tab === 'events' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setTab('events')}
-        >
-          <Bell className="mr-2 h-4 w-4" />
-          {t('tabs.events')}
-        </Button>
-        <Button
-          variant={tab === 'sources' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setTab('sources')}
-        >
-          <Webhook className="mr-2 h-4 w-4" />
-          {t('tabs.sources')}
-        </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="inline-flex rounded-xl border border-border/50 bg-muted/30 p-1 shadow-inner">
+          <button
+            type="button"
+            onClick={() => setTab('events')}
+            className={cn(
+              'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition',
+              tab === 'events'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <Bell className="h-4 w-4" />
+            {t('tabs.events')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('sources')}
+            className={cn(
+              'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition',
+              tab === 'sources'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <Webhook className="h-4 w-4" />
+            {t('tabs.sources')}
+          </button>
+        </div>
         <div className="ml-auto flex flex-col items-end gap-1">
           <div className="flex items-center gap-2">
             <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
@@ -588,77 +767,66 @@ export default function WebhookMonitorDashboard({
 
       {tab === 'events' ? (
         <Panel>
-          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end">
-            <div className="flex-1">
-              <Label htmlFor="webhook-search">{t('search')}</Label>
-              <div className="relative mt-1.5">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="webhook-search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      void loadEvents(1);
-                    }
-                  }}
-                  placeholder={t('searchPlaceholder')}
-                  className="pl-9"
-                />
-              </div>
-            </div>
-            <div className="grid flex-1 gap-3 sm:grid-cols-3">
+          <div className="mb-6 rounded-2xl border border-border/40 bg-muted/20 p-4 md:p-5">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_auto] lg:items-end">
               <div>
-                <Label>{t('filters.source')}</Label>
-                <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('filters.all')}</SelectItem>
-                    {sources.map((source) => (
-                      <SelectItem key={source.id} value={source.id}>
-                        {source.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="webhook-search" className="text-xs uppercase tracking-wide text-muted-foreground">
+                  {t('search')}
+                </Label>
+                <div className="relative mt-2">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="webhook-search"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder={t('searchPlaceholder')}
+                    className="h-10 border-border/60 bg-background/70 pl-9 shadow-sm"
+                  />
+                </div>
               </div>
-              <div>
-                <Label>{t('filters.severity')}</Label>
-                <Select value={severityFilter} onValueChange={setSeverityFilter}>
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('filters.all')}</SelectItem>
-                    <SelectItem value="ERROR">{t('severity.error')}</SelectItem>
-                    <SelectItem value="WARNING">{t('severity.warning')}</SelectItem>
-                    <SelectItem value="SUCCESS">{t('severity.success')}</SelectItem>
-                    <SelectItem value="INFO">{t('severity.info')}</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {t('filters.source')}
+                  </Label>
+                  <div className="mt-2">
+                    <FilterMenu
+                      value={sourceFilter}
+                      options={sourceFilterOptions}
+                      onChange={setSourceFilter}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {t('filters.severity')}
+                  </Label>
+                  <div className="mt-2">
+                  <FilterMenu
+                    value={severityFilter}
+                    options={severityFilterOptions}
+                    onChange={setSeverityFilter}
+                  />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {t('filters.status')}
+                  </Label>
+                  <div className="mt-2">
+                  <FilterMenu
+                    value={statusFilter}
+                    options={statusFilterOptions}
+                    onChange={setStatusFilter}
+                  />
+                  </div>
+                </div>
               </div>
-              <div>
-                <Label>{t('filters.status')}</Label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('filters.all')}</SelectItem>
-                    <SelectItem value="NEW">{t('status.new')}</SelectItem>
-                    <SelectItem value="READ">{t('status.read')}</SelectItem>
-                    <SelectItem value="ARCHIVED">{t('status.archived')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => void loadEvents(1)}>
-                {t('applyFilters')}
-              </Button>
-              <Button variant="outline" onClick={() => void handleMarkAllRead()}>
+              <Button
+                variant="outline"
+                className="h-10 shrink-0 border-border/60 bg-background/70"
+                onClick={() => void handleMarkAllRead()}
+              >
                 <Eye className="mr-2 h-4 w-4" />
                 {t('markAllRead')}
               </Button>
@@ -670,14 +838,25 @@ export default function WebhookMonitorDashboard({
           ) : events.length === 0 ? (
             <AdminEmptyState message={`${t('emptyEvents')}. ${t('emptyEventsHint')}`} />
           ) : (
-            <div className="space-y-3">
+            <div
+              className={cn(
+                'space-y-3 transition-opacity',
+                filtering && 'pointer-events-none opacity-60',
+              )}
+            >
               {events.map((event) => (
                 <div
                   key={event.id}
-                  className="rounded-xl border border-border/60 bg-background/60 p-4 transition hover:border-teal-500/30"
+                  className="group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-r from-background/80 to-background/40 p-4 shadow-sm transition hover:border-border/80 hover:shadow-md"
                 >
-                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="min-w-0 flex-1 space-y-2">
+                  <div
+                    className={cn(
+                      'absolute inset-y-0 left-0 w-1 bg-gradient-to-b',
+                      SEVERITY_ACCENT[event.severity],
+                    )}
+                  />
+                  <div className="flex flex-col gap-3 pl-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 flex-1 space-y-2.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge
                           variant="outline"
@@ -686,14 +865,16 @@ export default function WebhookMonitorDashboard({
                           {t(`severity.${event.severity.toLowerCase()}` as 'severity.info')}
                         </Badge>
                         <Badge variant="default">{event.sourceName}</Badge>
-                        <Badge variant="outline">{event.eventType}</Badge>
+                        <Badge variant="outline" className="font-mono text-[10px]">
+                          {event.eventType}
+                        </Badge>
                         {event.status === 'NEW' && (
                           <Badge className="bg-teal-600 text-white hover:bg-teal-600">
                             {t('status.new')}
                           </Badge>
                         )}
                       </div>
-                      <p className="font-medium">{event.title}</p>
+                      <p className="text-base font-medium leading-snug">{event.title}</p>
                       <p className="text-sm text-muted-foreground">
                         {format.dateTime(new Date(event.receivedAt), {
                           dateStyle: 'medium',
@@ -702,10 +883,11 @@ export default function WebhookMonitorDashboard({
                         {event.clientIp ? ` · ${event.clientIp}` : ''}
                       </p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 opacity-90 transition group-hover:opacity-100">
                       <Button
                         size="sm"
                         variant="outline"
+                        className="border-border/60 bg-background/60"
                         onClick={() => setSelectedEvent(event)}
                       >
                         {t('viewPayload')}
@@ -714,6 +896,7 @@ export default function WebhookMonitorDashboard({
                         <Button
                           size="sm"
                           variant="outline"
+                          className="border-border/60 bg-background/60"
                           onClick={() => void handleEventStatus(event, 'READ')}
                         >
                           <Eye className="mr-2 h-4 w-4" />
@@ -746,7 +929,7 @@ export default function WebhookMonitorDashboard({
         </Panel>
       ) : (
         <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
-          <Panel>
+          <Panel accent="violet">
             <div className="mb-4 flex items-center gap-2">
               <Plus className="h-4 w-4 text-teal-600" />
               <h3 className="font-semibold">{t('createSource')}</h3>
@@ -862,7 +1045,7 @@ export default function WebhookMonitorDashboard({
                 {sources.map((source) => (
                   <div
                     key={source.id}
-                    className="rounded-xl border border-border/60 bg-background/60 p-4"
+                    className="rounded-2xl border border-border/50 bg-gradient-to-br from-background/80 to-background/40 p-5 shadow-sm transition hover:border-border/80 hover:shadow-md"
                   >
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0 flex-1 space-y-2">

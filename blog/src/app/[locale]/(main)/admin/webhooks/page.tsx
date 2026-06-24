@@ -31,7 +31,11 @@ export default async function AdminWebhooksPage({ params }: Props) {
   const [sources, stats, eventsResult] = await Promise.all([
     listWebhookSources(),
     getWebhookDashboardStats(),
-    listWebhookEvents({ page: 1, pageSize: DEFAULT_PAGE_SIZE }),
+    listWebhookEvents({
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      status: 'NEW',
+    }),
   ]);
 
   return (
