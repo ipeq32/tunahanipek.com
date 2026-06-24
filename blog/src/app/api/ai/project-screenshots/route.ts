@@ -9,7 +9,7 @@ import { projectScreenshotRequestSchema } from '@/lib/validations/project-screen
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 60_000;
