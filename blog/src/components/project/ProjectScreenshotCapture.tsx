@@ -1,12 +1,12 @@
 'use client';
 
-import { Camera, Check, Loader2, MonitorSmartphone, Sparkles, X } from 'lucide-react';
+import { Camera, Loader2, MonitorSmartphone } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import BlogImage from '@/components/blog/BlogImage';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ScreenshotPreviewPanel } from '@/components/project/ScreenshotPreviewPanel';
 import { SiteAuthDialog } from '@/components/project/SiteAuthDialog';
 import { useAiStatus } from '@/hooks/use-ai-status';
 import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
@@ -211,70 +211,14 @@ export default function ProjectScreenshotCapture({
           </div>
 
           {step === 'preview' && preview && (
-            <div className="space-y-3 rounded-lg border border-border/50 bg-background/60 p-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="truncate text-xs font-medium text-muted-foreground">
-                  {preview.pageTitle}
-                </p>
-                <span className="inline-flex items-center gap-1 rounded-full bg-teal-500/10 px-2 py-0.5 text-[10px] font-medium text-teal-700 dark:text-teal-300">
-                  <Sparkles className="h-3 w-3" />
-                  {t('aiSelected', { count: preview.gallery.length })}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {preview.gallery.map((url, index) => {
-                  const isCover = url === preview.image;
-                  return (
-                    <div
-                      key={url}
-                      className={cn(
-                        'relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted/30',
-                        isCover
-                          ? 'border-teal-500/60 ring-2 ring-teal-500/20'
-                          : 'border-border/60',
-                      )}
-                    >
-                      <BlogImage
-                        src={url}
-                        alt={t('previewAlt', { index: index + 1 })}
-                        fill
-                        className="object-cover"
-                      />
-                      {isCover && (
-                        <span className="absolute left-1.5 top-1.5 rounded-md bg-teal-600/90 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                          {t('coverBadge')}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="accent"
-                  onClick={applyPreview}
-                  disabled={disabled}
-                >
-                  <Check className="h-4 w-4" />
-                  {t('applyButton')}
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={discardPreview}
-                  disabled={disabled}
-                  className="bg-background/70"
-                >
-                  <X className="h-4 w-4" />
-                  {t('discardButton')}
-                </Button>
-              </div>
-            </div>
+            <ScreenshotPreviewPanel
+              coverUrl={preview.image}
+              gallery={preview.gallery}
+              pageTitle={preview.pageTitle}
+              disabled={disabled}
+              onApply={applyPreview}
+              onDiscard={discardPreview}
+            />
           )}
 
           {step !== 'preview' && (

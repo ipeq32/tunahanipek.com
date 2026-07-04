@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ImagePlus, Loader2, Trash2, ZoomIn } from 'lucide-react';
-import BlogImage from '@/components/blog/BlogImage';
+import { MediaPreviewImage } from '@/components/ui/media-preview-image';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
@@ -142,28 +142,34 @@ export default function GalleryUpload({
           {value.map((url, index) => (
             <div
               key={url}
-              className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm"
+              className={cn(
+                'group relative aspect-[4/3] overflow-hidden rounded-xl',
+                'border border-border/50 bg-muted/20 shadow-sm',
+                'ring-1 ring-black/5 transition duration-300',
+                'hover:border-teal-500/30 hover:shadow-md hover:ring-teal-500/10',
+                'dark:ring-white/5',
+              )}
             >
-              <BlogImage
+              <MediaPreviewImage
                 src={url}
                 alt={t('previewAlt', { index: index + 1 })}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 640px) 50vw, 200px"
+                imageClassName="transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <button
                   type="button"
                   disabled={disabled || busy}
                   onClick={() => handleRemove(url)}
                   aria-label={t('remove')}
                   title={t('remove')}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/90 text-white backdrop-blur-sm transition hover:bg-red-600 disabled:opacity-50"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/55 text-white backdrop-blur-md transition hover:bg-red-500/90 disabled:opacity-50"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
-              <span className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur-sm">
+              <span className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white/95 backdrop-blur-md">
                 <ZoomIn className="h-3 w-3" />
                 {index + 1}
               </span>

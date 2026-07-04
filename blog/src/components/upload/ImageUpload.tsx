@@ -11,6 +11,7 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import BlogImage from '@/components/blog/BlogImage';
+import { MediaPreviewImage } from '@/components/ui/media-preview-image';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
@@ -240,17 +241,17 @@ export default function ImageUpload({
       {value ? (
         <div
           className={cn(
-            'group relative w-full overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm',
+            'group relative w-full overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm ring-1 ring-black/5 dark:ring-white/5',
             heightClassName,
             dropHighlightClass,
           )}
         >
-          <BlogImage
-            key={value}
+          <MediaPreviewImage
             src={value}
             alt="upload preview"
-            fill
-            className="object-cover"
+            sizes="(max-width: 640px) 100vw, 480px"
+            priority
+            imageClassName="object-cover"
           />
 
           <div className="absolute right-2 top-2 flex gap-1.5">
