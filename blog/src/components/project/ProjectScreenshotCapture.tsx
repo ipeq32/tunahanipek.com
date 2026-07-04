@@ -55,6 +55,7 @@ export default function ProjectScreenshotCapture({
   onApply,
 }: ProjectScreenshotCaptureProps) {
   const t = useTranslations('Content.ProjectScreenshots');
+  const tAuth = useTranslations('Content.SiteAuth');
   const { available: aiAvailable, loading: aiStatusLoading } = useAiStatus();
   const [step, setStep] = useState<CaptureStep>('idle');
   const [preview, setPreview] = useState<CapturePreview | null>(null);
@@ -106,11 +107,15 @@ export default function ProjectScreenshotCapture({
       if (json.data?.status === 'requires_auth') {
         setAuthHints(json.data.hints);
         setAuthDialogOpen(true);
+        if (json.data.hints.includes('login_failed')) {
+          toast.error(tAuth('loginFailed'));
+        }
         setStep('idle');
         return;
       }
 
       if (json.data?.status === 'success') {
+        setAuthDialogOpen(false);
         setPreview({
           image: json.data.image,
           gallery: json.data.gallery,
@@ -139,7 +144,6 @@ export default function ProjectScreenshotCapture({
 
   async function handleAuthLogin(credentials: SiteAuthCredentials) {
     onSiteAuthCredentialsChange?.(credentials);
-    setAuthDialogOpen(false);
     await requestCapture({ credentials });
   }
 

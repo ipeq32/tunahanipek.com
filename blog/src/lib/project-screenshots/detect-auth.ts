@@ -1,7 +1,7 @@
 import type { Page } from 'playwright-core';
 import type { AuthDetectionResult } from '@/lib/project-screenshots/types';
 
-const AUTH_PATH_PATTERNS = [
+export const AUTH_PATH_PATTERNS = [
   /\/login\b/i,
   /\/signin\b/i,
   /\/sign-in\b/i,
@@ -11,6 +11,10 @@ const AUTH_PATH_PATTERNS = [
   /\/giris\b/i,
   /\/kayit\b/i,
 ];
+
+export function isAuthPathname(pathname: string): boolean {
+  return AUTH_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
+}
 
 const LOGIN_TITLE_PATTERNS = [
   /log\s*in/i,
@@ -28,7 +32,7 @@ function pathnameChangedToAuth(originalUrl: string, currentUrl: string): boolean
     if (original.hostname !== current.hostname) {
       return false;
     }
-    return AUTH_PATH_PATTERNS.some((pattern) => pattern.test(current.pathname));
+    return isAuthPathname(current.pathname);
   } catch {
     return false;
   }

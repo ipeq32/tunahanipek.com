@@ -1006,6 +1006,7 @@
       "dialogTitle": "Site oturumu gerekli",
       "dialogDescription": "Bu site giriş ekranına yönlendiriyor. Devam etmek için siteye ait kullanıcı adı ve şifreyi girin.",
       "dialogHints": "Tespit edilen işaretler: {hints}",
+      "loginFailed": "Giriş başarısız. Kullanıcı adı ve şifreyi kontrol edip tekrar deneyin.",
       "loginAndContinue": "Giriş yap ve devam et",
       "continueWithoutAuth": "Giriş ekranını yine de kullan",
       "cancel": "İptal"

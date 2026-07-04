@@ -107,6 +107,7 @@ function findSourceLanguage(
 
 export default function AiContentActions(props: AiContentActionsProps) {
   const t = useTranslations('Content.Ai');
+  const tAuth = useTranslations('Content.SiteAuth');
   const { data: session } = useSession();
   const { available, loading: statusLoading } = useAiStatus();
   const canManageAiSettings = hasUserPermission(
@@ -202,6 +203,9 @@ export default function AiContentActions(props: AiContentActionsProps) {
         setAuthHints(json.data.hints);
         setPendingAction(action === 'expand' ? 'expand' : null);
         setAuthDialogOpen(true);
+        if (json.data.hints.includes('login_failed')) {
+          toast.error(tAuth('loginFailed'));
+        }
         return;
       }
 
@@ -214,6 +218,8 @@ export default function AiContentActions(props: AiContentActionsProps) {
       }
 
       if (json.data && !('status' in json.data)) {
+        setAuthDialogOpen(false);
+        setPendingAction(null);
         props.onApply(json.data);
         toast.success(
           action === 'translate' ? t('translateSuccess') : t('expandSuccess'),
@@ -232,8 +238,6 @@ export default function AiContentActions(props: AiContentActionsProps) {
     if (props.contentType === 'project') {
       props.onSiteAuthCredentialsChange?.(credentials);
     }
-
-    setAuthDialogOpen(false);
 
     if (pendingAction === 'expand') {
       await runAction('expand', credentials);

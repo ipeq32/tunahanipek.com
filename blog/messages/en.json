@@ -1007,6 +1007,7 @@
       "dialogTitle": "Site sign-in required",
       "dialogDescription": "This site redirects to a login screen. Enter the project credentials to continue.",
       "dialogHints": "Detected signals: {hints}",
+      "loginFailed": "Sign-in failed. Check the username and password, then try again.",
       "loginAndContinue": "Sign in and continue",
       "continueWithoutAuth": "Use login screen anyway",
       "cancel": "Cancel"

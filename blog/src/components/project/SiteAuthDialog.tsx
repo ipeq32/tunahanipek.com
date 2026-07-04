@@ -54,15 +54,22 @@ export function SiteAuthDialog({
   const canLogin =
     credentials.username.trim().length > 0 && credentials.password.length > 0;
 
+  const loginFailed = hints.includes('login_failed');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md gap-0 p-0">
+      <DialogContent className="max-h-none h-auto max-w-md gap-0 p-0">
         <DialogHeader className="space-y-2 px-6 pb-2 pt-6 text-left">
           <DialogTitle className="text-base font-semibold tracking-tight">
             {t('dialogTitle')}
           </DialogTitle>
           <DialogDescription className="text-sm leading-relaxed">
             {t('dialogDescription')}
+            {loginFailed && (
+              <span className="mt-2 block text-sm text-destructive">
+                {t('loginFailed')}
+              </span>
+            )}
             {hints.length > 0 && (
               <span className="mt-2 block text-xs text-muted-foreground">
                 {t('dialogHints', { hints: hints.join(', ') })}
@@ -108,34 +115,38 @@ export function SiteAuthDialog({
           </div>
         </div>
 
-        <DialogFooter className="mt-4 flex flex-col gap-2 border-t border-border/50 bg-muted/20 px-6 py-4 sm:flex-row sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            className="bg-background/80"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            {t('cancel')}
-          </Button>
-          {onContinueWithoutAuth && (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => void onContinueWithoutAuth()}
-              disabled={loading}
-            >
-              {t('continueWithoutAuth')}
-            </Button>
-          )}
+        <DialogFooter className="mt-0 flex flex-col gap-2 border-t border-border/50 bg-muted/20 px-6 py-4">
           <Button
             type="button"
             variant="accent"
+            className="w-full"
             onClick={() => void onLogin(credentials)}
             disabled={loading || !canLogin}
           >
             {t('loginAndContinue')}
           </Button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-background/80 sm:w-auto"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
+              {t('cancel')}
+            </Button>
+            {onContinueWithoutAuth && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-auto whitespace-normal py-2 text-center sm:max-w-[14rem] sm:text-right"
+                onClick={() => void onContinueWithoutAuth()}
+                disabled={loading}
+              >
+                {t('continueWithoutAuth')}
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
