@@ -1,6 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
+import { resolveAuthCallbackPath } from '@/lib/auth/callback-path';
 import {
   requestGoogleCredential,
   type GoogleCredentialRequestResult,
@@ -32,11 +33,11 @@ async function completeGoogleCredentialSignIn(
 
   onSuccess?.();
 
-  if (callbackPath?.startsWith('/')) {
-    window.location.assign(callbackPath);
-  } else {
-    window.location.reload();
-  }
+  const destination = resolveAuthCallbackPath(
+    callbackPath,
+    `${window.location.pathname}${window.location.search}`,
+  );
+  window.location.assign(destination);
 }
 
 export async function signInWithGoogleCredential({

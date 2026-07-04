@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import LoginForm from '@/app/[locale]/(authentication)/auth/login/_components/form';
 import { GoogleOneTap } from '@/components/auth/google-one-tap';
 import { useSession } from 'next-auth/react';
@@ -18,6 +17,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { isPublicRegistrationEnabledClient } from '@/lib/public-registration-client';
 import type { EnabledOAuthProviders } from '@/lib/oauth/config';
+import { useAuthCallbackPath } from '@/lib/auth/use-auth-callback-path';
 
 type LoginModalClientProps = {
   enabledProviders: EnabledOAuthProviders;
@@ -30,10 +30,10 @@ export default function LoginModalClient({
 }: LoginModalClientProps) {
   const [isOpened, setIsOpened] = useState(true);
 
-  const searchParams = useSearchParams();
   const session = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const callback = useAuthCallbackPath();
 
   const t = useTranslations('Authentication.Login.Page.Modal');
 
@@ -45,8 +45,6 @@ export default function LoginModalClient({
       router.push('/auth/register');
     }
   };
-
-  const callback = searchParams.get('callback') || '/';
 
   useEffect(() => {
     if (!isOpened) {

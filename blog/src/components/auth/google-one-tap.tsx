@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { resolveAuthCallbackPath } from '@/lib/auth/callback-path';
 import {
   isGoogleOneTapEnabled,
   resetGoogleOneTapSession,
@@ -56,13 +57,11 @@ export function GoogleOneTap({ disabled = false }: GoogleOneTapProps) {
         return;
       }
 
-      const callbackPath = searchParamsRef.current.get('callback');
-      if (callbackPath?.startsWith('/')) {
-        window.location.assign(callbackPath);
-        return;
-      }
-
-      routerRef.current.refresh();
+      const callbackPath = resolveAuthCallbackPath(
+        searchParamsRef.current.get('callback'),
+        `${window.location.pathname}${window.location.search}`,
+      );
+      window.location.assign(callbackPath);
     });
 
     showGoogleOneTap(clientId).catch(() => {

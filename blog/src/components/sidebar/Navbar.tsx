@@ -20,7 +20,7 @@ import MenuLinkFeature from './_features/MenuLink';
 import handleSignout from '@/actions/handleSignout';
 import { Link, usePathname } from '@/navigation';
 import { toast } from 'sonner';
-import { useSearchParams } from 'next/navigation';
+import { useAuthCallbackPath } from '@/lib/auth/use-auth-callback-path';
 import { useLocale, useTranslations } from 'next-intl';
 import MobileProfileMenu from './_features/MobileProfileMenu';
 import MobileNavItem from './_features/MobileNavItem';
@@ -33,15 +33,13 @@ import ToggleLanguage from '@/components/toggle-language';
 import type { Locale } from '@/i18n/request';
 
 const Navbar = () => {
-  const searchParams = useSearchParams();
   const pathname = usePathname();
+  const from = useAuthCallbackPath();
 
   const t = useTranslations('Navbar.Main');
   const tProfile = useTranslations('Navbar.Main.Sidebar.Profile');
   const tA11y = useTranslations('A11y');
   const locale = useLocale() as Locale;
-
-  const from = searchParams.get('callback') || pathname;
 
   const menuLinks: Array<{
     title: string;

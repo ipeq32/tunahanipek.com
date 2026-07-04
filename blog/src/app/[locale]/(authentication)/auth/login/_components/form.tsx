@@ -18,15 +18,13 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { signIn } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname as useNextPathname } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SignInResponse } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/navigation';
 import {
   authToastError,
-  authToastSuccess,
   firstFieldErrorMessage,
   mapSignInError,
 } from '@/lib/auth-toast';
@@ -37,6 +35,7 @@ import {
   FormFieldFooter,
   FormRequiredIndicator,
 } from '@/components/ui/form';
+import { resolveAuthCallbackPath } from '@/lib/auth/callback-path';
 
 import type { EnabledOAuthProviders } from '@/lib/oauth/config';
 
@@ -51,8 +50,8 @@ export default function LoginForm({
   enabledProviders,
   showOAuth = false,
 }: LoginFormProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
+  const nextPathname = useNextPathname();
 
   const t = useTranslations('Authentication.Login');
 
@@ -121,15 +120,11 @@ export default function LoginForm({
         setOpenModal(false);
       }
 
-      const callbackPath = searchParams.get('callback');
-      if (callbackPath?.startsWith('/')) {
-        window.location.assign(callbackPath);
-        return;
-      }
-
-      router.push('/');
-      router.refresh();
-      authToastSuccess(t('Error.Ok.title'), t('Error.Ok.description'));
+      const callbackPath = resolveAuthCallbackPath(
+        searchParams.get('callback'),
+        nextPathname,
+      );
+      window.location.assign(callbackPath);
     } catch {
       authToastError(t('Error.Fail.title'), t('Error.Fail.description'));
     }

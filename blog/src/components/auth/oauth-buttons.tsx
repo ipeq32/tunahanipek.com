@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Github, Linkedin } from 'lucide-react';
 import { startOAuthSignIn } from '@/lib/oauth/start-oauth-sign-in';
-import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import {
   authToastError,
   mapSignInError,
 } from '@/lib/auth-toast';
+import { useAuthCallbackPath } from '@/lib/auth/use-auth-callback-path';
 import { GoogleFedCmButton } from '@/components/auth/google-fedcm-button';
 import { signInWithGoogleCredential } from '@/lib/google/sign-in-with-google-credential';
 
@@ -53,10 +53,8 @@ export function OAuthButtons({
   showOAuth = false,
 }: OAuthButtonsProps) {
   const t = useTranslations('Authentication.Login.OAuth');
-  const searchParams = useSearchParams();
+  const callbackUrl = useAuthCallbackPath();
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
-
-  const callbackUrl = searchParams.get('callback') || '/';
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   if (!showOAuth || !enabledProviders) {
