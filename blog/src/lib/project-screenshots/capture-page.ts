@@ -1,23 +1,38 @@
 import 'server-only';
 
 import type { Page } from 'playwright-core';
+
+import { extractInternalPaths } from '@/lib/ai/site-context-parse';
 import { logger } from '@/lib/logger';
-import { detectAuthRequirement } from '@/lib/project-screenshots/detect-auth';
-import { launchScreenshotBrowser } from '@/lib/project-screenshots/launch-browser';
+import {
+  navigateToPage,
+  prepareAuthenticatedPage,
+} from '@/lib/project-screenshots/prepare-authenticated-page';
+import {
+  pathToScreenshotLabel,
+  selectScreenshotSamplePaths,
+} from '@/lib/project-screenshots/select-sample-paths';
+import { withBrowserPage } from '@/lib/project-screenshots/with-browser-page';
 import type {
   AuthDetectionResult,
   CapturedScreenshot,
 } from '@/lib/project-screenshots/types';
+import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
 
 const VIEWPORT = { width: 1440, height: 900 };
-const MAX_CAPTURES = 6;
-const NAVIGATION_TIMEOUT_MS = 30_000;
+const MAX_TOTAL_CAPTURES = 10;
+const HOME_MAX_SHOTS = 2;
 const SCROLL_SETTLE_MS = 450;
 
 export type PageCaptureResult = {
   captures: CapturedScreenshot[];
   auth: AuthDetectionResult;
   pageTitle: string;
+};
+
+export type CapturePageOptions = {
+  credentials?: SiteAuthCredentials;
+  proceedDespiteAuth?: boolean;
 };
 
 function computeScrollPositions(
@@ -32,7 +47,7 @@ function computeScrollPositions(
   const maxScroll = scrollHeight - viewportHeight;
   const sectionCount = Math.min(
     maxCaptures,
-    Math.max(3, Math.ceil(scrollHeight / viewportHeight)),
+    Math.max(2, Math.ceil(scrollHeight / viewportHeight)),
   );
 
   const positions = Array.from({ length: sectionCount }, (_, index) => {
@@ -43,83 +58,146 @@ function computeScrollPositions(
   return [...new Set(positions)];
 }
 
-async function navigateToPage(page: Page, url: string): Promise<void> {
-  try {
-    await page.goto(url, {
-      waitUntil: 'networkidle',
-      timeout: NAVIGATION_TIMEOUT_MS,
-    });
-  } catch {
-    await page.goto(url, {
-      waitUntil: 'domcontentloaded',
-      timeout: NAVIGATION_TIMEOUT_MS,
-    });
-  }
+async function captureViewportShot(
+  page: Page,
+  id: string,
+  label: string,
+  scrollY = 0,
+): Promise<CapturedScreenshot> {
+  await page.evaluate((y) => window.scrollTo(0, y), scrollY);
+  await page.waitForTimeout(SCROLL_SETTLE_MS);
 
-  await page.waitForTimeout(1200);
+  const buffer = await page.screenshot({
+    type: 'jpeg',
+    quality: 82,
+    animations: 'disabled',
+  });
+
+  return {
+    id,
+    label,
+    buffer: Buffer.from(buffer),
+    scrollY,
+  };
 }
 
-async function captureAtPositions(page: Page): Promise<CapturedScreenshot[]> {
-  const scrollHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-  const positions = computeScrollPositions(scrollHeight, VIEWPORT.height, MAX_CAPTURES);
+async function captureHomeShots(
+  page: Page,
+  startIndex: number,
+): Promise<CapturedScreenshot[]> {
+  const scrollHeight = await page.evaluate(
+    () => document.documentElement.scrollHeight,
+  );
+  const positions = computeScrollPositions(
+    scrollHeight,
+    VIEWPORT.height,
+    HOME_MAX_SHOTS,
+  );
+
   const captures: CapturedScreenshot[] = [];
 
   for (let index = 0; index < positions.length; index += 1) {
     const scrollY = positions[index] ?? 0;
-    await page.evaluate((y) => window.scrollTo(0, y), scrollY);
-    await page.waitForTimeout(SCROLL_SETTLE_MS);
-
-    const buffer = await page.screenshot({
-      type: 'jpeg',
-      quality: 82,
-      animations: 'disabled',
-    });
-
-    captures.push({
-      id: `shot-${index}`,
-      label: index === 0 ? 'hero' : `section-${index}`,
-      buffer: Buffer.from(buffer),
-      scrollY,
-    });
+    captures.push(
+      await captureViewportShot(
+        page,
+        `shot-${startIndex + index}`,
+        index === 0 ? 'home-hero' : 'home-section',
+        scrollY,
+      ),
+    );
   }
-
-  await page.evaluate(() => window.scrollTo(0, 0));
 
   return captures;
 }
 
-export async function capturePageScreenshots(url: string): Promise<PageCaptureResult> {
-  const browser = await launchScreenshotBrowser();
+async function captureImportantPages(
+  page: Page,
+  baseUrl: URL,
+  paths: string[],
+  startIndex: number,
+): Promise<CapturedScreenshot[]> {
+  const captures: CapturedScreenshot[] = [];
+  let shotIndex = startIndex;
 
-  try {
-    const context = await browser.newContext({
-      viewport: VIEWPORT,
-      deviceScaleFactor: 1,
-      userAgent:
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      locale: 'en-US',
+  for (const path of paths) {
+    if (shotIndex >= MAX_TOTAL_CAPTURES) {
+      break;
+    }
+
+    const pageUrl = new URL(path, baseUrl).toString();
+
+    try {
+      await navigateToPage(page, pageUrl);
+      captures.push(
+        await captureViewportShot(
+          page,
+          `shot-${shotIndex}`,
+          pathToScreenshotLabel(path),
+        ),
+      );
+      shotIndex += 1;
+    } catch (error) {
+      logger.warn('Important page screenshot skipped', {
+        path,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  return captures;
+}
+
+export async function capturePageScreenshots(
+  url: string,
+  options: CapturePageOptions = {},
+): Promise<PageCaptureResult> {
+  return withBrowserPage(async (page) => {
+    const prepared = await prepareAuthenticatedPage(page, url, {
+      credentials: options.credentials,
     });
 
-    const page = await context.newPage();
+    if (prepared.auth.requiresAuth && !prepared.authenticated) {
+      if (!options.proceedDespiteAuth) {
+        return {
+          captures: [],
+          auth: prepared.auth,
+          pageTitle: await page.title(),
+        };
+      }
+    }
 
-    await navigateToPage(page, url);
+    const baseUrl = new URL(url);
+    const homeCaptures = await captureHomeShots(page, 0);
+    const navPaths = extractInternalPaths(await page.content(), baseUrl);
+    const samplePaths = selectScreenshotSamplePaths(navPaths, {
+      authenticated: prepared.authenticated,
+    });
+    const extraCaptures = await captureImportantPages(
+      page,
+      baseUrl,
+      samplePaths,
+      homeCaptures.length,
+    );
 
-    const auth = await detectAuthRequirement(page, url);
-    const captures = await captureAtPositions(page);
+    const captures = [...homeCaptures, ...extraCaptures].slice(
+      0,
+      MAX_TOTAL_CAPTURES,
+    );
     const pageTitle = await page.title();
 
     logger.info('Project page screenshots captured', {
       url,
       captureCount: captures.length,
-      requiresAuth: auth.requiresAuth,
+      sampledPaths: samplePaths,
+      requiresAuth: prepared.auth.requiresAuth,
+      authenticated: prepared.authenticated,
     });
 
-    return { captures, auth, pageTitle };
-  } finally {
-    await browser.close().catch((error) => {
-      logger.warn('Failed to close Playwright browser', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-    });
-  }
+    return {
+      captures,
+      auth: prepared.auth,
+      pageTitle,
+    };
+  });
 }

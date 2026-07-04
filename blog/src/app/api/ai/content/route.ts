@@ -3,7 +3,7 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
 import { expandContent } from '@/lib/ai/expand';
 import { translateContent } from '@/lib/ai/translate';
-import { AiNotConfiguredError } from '@/lib/ai/types';
+import { AiNotConfiguredError, SiteAuthRequiredError } from '@/lib/ai/types';
 import { logger } from '@/lib/logger';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { aiContentRequestSchema } from '@/lib/validations/ai-settings';
@@ -79,6 +79,8 @@ export async function POST(request: Request) {
       contentType,
       language: sourceLanguage,
       fields,
+      projectUrl: parsed.data.projectUrl,
+      authCredentials: parsed.data.authCredentials,
       usage: {
         userId: context.userId,
         action: 'expand',
@@ -88,6 +90,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ data });
   } catch (error) {
+    if (error instanceof SiteAuthRequiredError) {
+      return NextResponse.json(
+        {
+          error: 'Site authentication is required',
+          data: { status: 'requires_auth', hints: error.hints },
+        },
+        { status: 401 },
+      );
+    }
+
     if (error instanceof AiNotConfiguredError) {
       return NextResponse.json(
         {

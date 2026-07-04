@@ -972,6 +972,7 @@
       "cardTitle": "Generate with AI",
       "translateButton": "Generate {language} translation",
       "expandButton": "Generate professional content",
+      "expandWithSiteHint": "The project URL will be scanned; title and description are used together as input.",
       "translateSuccess": "Translation generated",
       "expandSuccess": "Content generated",
       "translateError": "Could not generate translation",
@@ -979,6 +980,20 @@
       "notConfigured": "AI is not configured.",
       "openSettings": "Open settings",
       "notConfiguredContactAdmin": "Only a super admin can configure AI from the Settings page."
+    },
+    "SiteAuth": {
+      "title": "Site login (optional)",
+      "description": "If the project URL requires sign-in, credentials are used to scan protected areas too. They are never saved.",
+      "username": "Username or email",
+      "usernamePlaceholder": "demo@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "dialogTitle": "Site sign-in required",
+      "dialogDescription": "This site redirects to a login screen. Enter the project credentials to continue.",
+      "dialogHints": "Detected signals: {hints}",
+      "loginAndContinue": "Sign in and continue",
+      "continueWithoutAuth": "Use login screen anyway",
+      "cancel": "Cancel"
     },
     "ProjectScreenshots": {
       "cardTitle": "Project screenshots",

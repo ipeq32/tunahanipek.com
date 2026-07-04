@@ -1,3 +1,5 @@
+import type { SiteContext } from '@/lib/ai/site-context';
+
 type LanguageLabel = { source: string; target: string };
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -131,8 +133,9 @@ export function buildExpandPrompt(params: {
   contentType: 'blog' | 'project';
   language: string;
   fields: Record<string, string | undefined>;
+  siteContext?: SiteContext | null;
 }): string {
-  const { contentType, language, fields } = params;
+  const { contentType, language, fields, siteContext } = params;
   const lang = getLanguageLabel(language);
 
   const outputKeys =
@@ -145,15 +148,32 @@ export function buildExpandPrompt(params: {
       ? buildBlogExpandRequirements(lang)
       : buildProjectExpandRequirements(lang);
 
+  const siteContextBlock = siteContext
+    ? `
+Live website context (fetched from the project URL — use this to understand what the product does, its sections, and positioning; do not invent metrics or clients not supported by this data):
+${JSON.stringify(
+  {
+    url: siteContext.url,
+    pageTitle: siteContext.pageTitle,
+    metaDescription: siteContext.metaDescription,
+    headings: siteContext.headings,
+    navPaths: siteContext.navPaths,
+    sampledPages: siteContext.sampledPages,
+  },
+  null,
+  2,
+)}`
+    : '';
+
   return `You are a senior technical writer and software architect crafting content for a modern developer blog and portfolio.
 
 Write entirely in ${lang}. Your output must read like carefully edited, publication-ready prose — not a rough draft or generic AI summary.
 
-Task: expand the short input below into rich, professional content. Infer reasonable technical context from the topic, but never fabricate specific facts, metrics, company names, dates, or results not implied by the input.
+Task: expand the input below into rich, professional content. Combine every provided field (title, summary/description, notes) as source material. Infer reasonable technical context from the topic and any website data, but never fabricate specific facts, metrics, company names, dates, or results not implied by the input.
 
 Content type: ${contentType}
 Input JSON:
-${JSON.stringify(fields, null, 2)}
+${JSON.stringify(fields, null, 2)}${siteContextBlock}
 
 Global rules:
 - Rich text fields must use Markdown only (never HTML)

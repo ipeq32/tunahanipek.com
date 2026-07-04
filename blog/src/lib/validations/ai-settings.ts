@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { siteAuthCredentialsSchema } from '@/lib/validations/site-auth';
+
 export const aiProviderSchema = z.enum(['gemini', 'groq', 'ollama']);
 
 export const upsertAiSettingsSchema = z.object({
@@ -27,6 +29,8 @@ export const aiContentRequestSchema = z.object({
     summary: z.string().optional(),
     description: z.string().optional(),
   }),
+  projectUrl: z.string().trim().optional(),
+  authCredentials: siteAuthCredentialsSchema.optional(),
 });
 
 export type UpsertAiSettingsInput = z.infer<typeof upsertAiSettingsSchema>;

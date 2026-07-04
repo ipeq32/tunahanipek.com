@@ -971,6 +971,7 @@
       "cardTitle": "Yapay zeka ile oluştur",
       "translateButton": "{language} çevirisini oluştur",
       "expandButton": "Profesyonel içerik oluştur",
+      "expandWithSiteHint": "Proje URL'si taranacak; başlık ve açıklama birlikte değerlendirilecek.",
       "translateSuccess": "Çeviri oluşturuldu",
       "expandSuccess": "İçerik oluşturuldu",
       "translateError": "Çeviri oluşturulamadı",
@@ -978,6 +979,20 @@
       "notConfigured": "AI yapılandırılmamış.",
       "openSettings": "Ayarlara git",
       "notConfiguredContactAdmin": "Yapılandırma yalnızca süper yönetici tarafından Ayarlar sayfasından yapılabilir."
+    },
+    "SiteAuth": {
+      "title": "Site giriş bilgileri (isteğe bağlı)",
+      "description": "Proje URL'si giriş gerektiriyorsa kullanıcı adı ve şifre ile korumalı alanlar da taranır. Bilgiler kaydedilmez.",
+      "username": "Kullanıcı adı veya e-posta",
+      "usernamePlaceholder": "demo@ornek.com",
+      "password": "Şifre",
+      "passwordPlaceholder": "••••••••",
+      "dialogTitle": "Site oturumu gerekli",
+      "dialogDescription": "Bu site giriş ekranına yönlendiriyor. Devam etmek için siteye ait kullanıcı adı ve şifreyi girin.",
+      "dialogHints": "Tespit edilen işaretler: {hints}",
+      "loginAndContinue": "Giriş yap ve devam et",
+      "continueWithoutAuth": "Giriş ekranını yine de kullan",
+      "cancel": "İptal"
     },
     "ProjectScreenshots": {
       "cardTitle": "Proje ekran görüntüleri",

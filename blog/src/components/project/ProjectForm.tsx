@@ -39,7 +39,9 @@ import {
 } from '@/lib/translation-form-utils';
 import AiContentActions from '@/components/content/AiContentActions';
 import ProjectScreenshotCapture from '@/components/project/ProjectScreenshotCapture';
+import ProjectSiteAuthFields from '@/components/project/ProjectSiteAuthFields';
 import { normalizeExternalUrl } from '@/lib/validations/url-field';
+import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
 
 function createProjectFormSchema(
   t: (key: string, values?: Record<string, string | number>) => string
@@ -147,6 +149,11 @@ export default function ProjectForm({
   const imageCleanup = useUploadCleanup();
   const { languages, loading: languagesLoading } = useActiveLanguages();
   const [activeLanguage, setActiveLanguage] = useState(uiLocale);
+  const [siteAuthCredentials, setSiteAuthCredentials] =
+    useState<SiteAuthCredentials>({
+      username: '',
+      password: '',
+    });
 
   const formSchema = useMemo(() => createProjectFormSchema(t), [t]);
 
@@ -271,6 +278,9 @@ export default function ProjectForm({
                   languages={languages}
                   activeFields={form.watch(`translations.${language.code}`)}
                   allTranslations={form.watch('translations')}
+                  projectUrl={form.watch('url')}
+                  siteAuthCredentials={siteAuthCredentials}
+                  onSiteAuthCredentialsChange={setSiteAuthCredentials}
                   disabled={form.formState.isSubmitting}
                   onApply={(fields) => {
                     if (fields.title) {
@@ -380,8 +390,18 @@ export default function ProjectForm({
             )}
           />
 
+          {Boolean(form.watch('url')?.trim()) && (
+            <ProjectSiteAuthFields
+              value={siteAuthCredentials}
+              onChange={setSiteAuthCredentials}
+              disabled={form.formState.isSubmitting}
+            />
+          )}
+
           <ProjectScreenshotCapture
             projectUrl={form.watch('url')}
+            siteAuthCredentials={siteAuthCredentials}
+            onSiteAuthCredentialsChange={setSiteAuthCredentials}
             hasExistingMedia={Boolean(form.watch('image') || form.watch('gallery').length > 0)}
             disabled={form.formState.isSubmitting}
             cleanup={imageCleanup}

@@ -9,14 +9,21 @@ import { getDecryptedAiConfig } from '@/lib/site-ai-settings';
 type CaptureProjectScreenshotsInput = {
   url: string;
   proceedDespiteAuth?: boolean;
+  authCredentials?: {
+    username: string;
+    password: string;
+  };
 };
 
 export async function captureProjectScreenshots(
   input: CaptureProjectScreenshotsInput,
 ): Promise<ProjectScreenshotCaptureResult> {
-  const { captures, auth, pageTitle } = await capturePageScreenshots(input.url);
+  const { captures, auth, pageTitle } = await capturePageScreenshots(input.url, {
+    credentials: input.authCredentials,
+    proceedDespiteAuth: input.proceedDespiteAuth,
+  });
 
-  if (auth.requiresAuth && !input.proceedDespiteAuth) {
+  if (auth.requiresAuth && captures.length === 0 && !input.proceedDespiteAuth) {
     return {
       status: 'requires_auth',
       hints: auth.hints,

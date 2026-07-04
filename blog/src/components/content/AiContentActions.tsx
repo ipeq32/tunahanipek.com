@@ -12,11 +12,17 @@ import { hasUserPermission } from '@/lib/auth-roles';
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import type { LanguageDto } from '@/lib/languages';
 import {
+  canExpandBlogTranslation,
+  canExpandProjectTranslation,
   isBlogTranslationFilled,
   isProjectTranslationFilled,
-  isShortHtmlContent,
-  stripHtmlText,
 } from '@/lib/translation-form-utils';
+import { normalizeExternalUrl } from '@/lib/validations/url-field';
+import {
+  hasSiteAuthCredentials,
+  type SiteAuthCredentials,
+} from '@/lib/validations/site-auth';
+import { SiteAuthDialog } from '@/components/project/SiteAuthDialog';
 import { cn } from '@/lib/utils';
 
 type BlogFields = {
@@ -46,6 +52,9 @@ type AiContentActionsProps =
       languages: LanguageDto[];
       activeFields: ProjectFields;
       allTranslations: Record<string, ProjectFields>;
+      projectUrl?: string;
+      siteAuthCredentials?: SiteAuthCredentials;
+      onSiteAuthCredentialsChange?: (credentials: SiteAuthCredentials) => void;
       disabled?: boolean;
       onApply: (fields: ProjectFields) => void;
     };
@@ -108,6 +117,9 @@ export default function AiContentActions(props: AiContentActionsProps) {
   const [busyAction, setBusyAction] = useState<'translate' | 'expand' | null>(
     null,
   );
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authHints, setAuthHints] = useState<string[]>([]);
+  const [pendingAction, setPendingAction] = useState<'expand' | null>(null);
 
   const sourceLanguage = findSourceLanguage(
     props.languages,
@@ -125,21 +137,21 @@ export default function AiContentActions(props: AiContentActionsProps) {
 
   const canExpand =
     props.contentType === 'blog'
-      ? Boolean(
-          props.activeFields.title?.trim() &&
-            (!stripHtmlText((props.activeFields as BlogFields).content) ||
-              isShortHtmlContent((props.activeFields as BlogFields).content) ||
-              isShortHtmlContent((props.activeFields as BlogFields).summary)),
-        ) && !activeFilled
-      : Boolean(
-          props.activeFields.title?.trim() &&
-            (!stripHtmlText((props.activeFields as ProjectFields).description) ||
-              isShortHtmlContent(
-                (props.activeFields as ProjectFields).description,
-              )),
-        ) && !activeFilled;
+      ? canExpandBlogTranslation(props.activeFields as BlogFields, activeFilled)
+      : canExpandProjectTranslation(
+          props.activeFields as ProjectFields,
+          props.projectUrl,
+          activeFilled,
+        );
 
-  async function runAction(action: 'translate' | 'expand') {
+  const usesSiteContext =
+    props.contentType === 'project' &&
+    Boolean(normalizeExternalUrl(props.projectUrl));
+
+  async function runAction(
+    action: 'translate' | 'expand',
+    credentialsOverride?: SiteAuthCredentials,
+  ) {
     setBusyAction(action);
 
     try {
@@ -147,6 +159,10 @@ export default function AiContentActions(props: AiContentActionsProps) {
         action === 'translate' && sourceLanguage
           ? props.allTranslations[sourceLanguage]
           : props.activeFields;
+
+      const authCredentials =
+        credentialsOverride ??
+        (props.contentType === 'project' ? props.siteAuthCredentials : undefined);
 
       const body = {
         action,
@@ -156,6 +172,14 @@ export default function AiContentActions(props: AiContentActionsProps) {
         targetLanguage:
           action === 'translate' ? props.activeLanguage : undefined,
         fields: toAiRequestFields(props.contentType, sourceFields),
+        ...(props.contentType === 'project' &&
+          props.projectUrl?.trim() && {
+            projectUrl: normalizeExternalUrl(props.projectUrl) ?? props.projectUrl.trim(),
+          }),
+        ...(props.contentType === 'project' &&
+          hasSiteAuthCredentials(authCredentials) && {
+            authCredentials,
+          }),
       };
 
       const res = await fetch('/api/ai/content', {
@@ -165,9 +189,23 @@ export default function AiContentActions(props: AiContentActionsProps) {
       });
 
       const json = (await res.json()) as {
-        data?: BlogFields & ProjectFields;
+        data?:
+          | (BlogFields & ProjectFields)
+          | { status: 'requires_auth'; hints: string[] };
         error?: string;
       };
+
+      if (
+        res.status === 401 &&
+        json.data &&
+        'status' in json.data &&
+        json.data.status === 'requires_auth'
+      ) {
+        setAuthHints(json.data.hints);
+        setPendingAction(action === 'expand' ? 'expand' : null);
+        setAuthDialogOpen(true);
+        return;
+      }
 
       if (!res.ok) {
         toast.error(
@@ -177,7 +215,7 @@ export default function AiContentActions(props: AiContentActionsProps) {
         return;
       }
 
-      if (json.data) {
+      if (json.data && !('status' in json.data)) {
         props.onApply(json.data);
         toast.success(
           action === 'translate' ? t('translateSuccess') : t('expandSuccess'),
@@ -189,6 +227,18 @@ export default function AiContentActions(props: AiContentActionsProps) {
       );
     } finally {
       setBusyAction(null);
+    }
+  }
+
+  async function handleAuthLogin(credentials: SiteAuthCredentials) {
+    if (props.contentType === 'project') {
+      props.onSiteAuthCredentialsChange?.(credentials);
+    }
+
+    setAuthDialogOpen(false);
+
+    if (pendingAction === 'expand') {
+      await runAction('expand', credentials);
     }
   }
 
@@ -232,6 +282,9 @@ export default function AiContentActions(props: AiContentActionsProps) {
       <p className="text-xs font-medium text-violet-700 dark:text-violet-300">
         {t('cardTitle')}
       </p>
+      {usesSiteContext && canExpand && (
+        <p className="text-xs text-muted-foreground">{t('expandWithSiteHint')}</p>
+      )}
       <div className="flex flex-wrap gap-2">
         {canTranslate && (
           <Button
@@ -268,6 +321,17 @@ export default function AiContentActions(props: AiContentActionsProps) {
           </Button>
         )}
       </div>
+
+      {props.contentType === 'project' && (
+        <SiteAuthDialog
+          open={authDialogOpen}
+          onOpenChange={setAuthDialogOpen}
+          hints={authHints}
+          initialCredentials={props.siteAuthCredentials}
+          loading={busyAction === 'expand'}
+          onLogin={handleAuthLogin}
+        />
+      )}
     </div>
   );
 }

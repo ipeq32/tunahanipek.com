@@ -41,3 +41,13 @@ export class AiGenerationError extends Error {
     this.name = 'AiGenerationError';
   }
 }
+
+export class SiteAuthRequiredError extends Error {
+  readonly hints: string[];
+
+  constructor(hints: string[]) {
+    super('Site authentication is required');
+    this.name = 'SiteAuthRequiredError';
+    this.hints = hints;
+  }
+}

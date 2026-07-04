@@ -7,7 +7,10 @@ import { useTranslations } from 'next-intl';
 import BlogImage from '@/components/blog/BlogImage';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { SiteAuthDialog } from '@/components/project/SiteAuthDialog';
 import { useAiStatus } from '@/hooks/use-ai-status';
+import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
+import { hasSiteAuthCredentials } from '@/lib/validations/site-auth';
 import { cn } from '@/lib/utils';
 import type { UploadCleanup } from '@/components/upload/use-upload-cleanup';
 
@@ -21,6 +24,8 @@ type CaptureStep = 'idle' | 'capturing' | 'preview';
 
 type ProjectScreenshotCaptureProps = {
   projectUrl: string;
+  siteAuthCredentials?: SiteAuthCredentials;
+  onSiteAuthCredentialsChange?: (credentials: SiteAuthCredentials) => void;
   hasExistingMedia: boolean;
   disabled?: boolean;
   cleanup?: UploadCleanup;
@@ -42,6 +47,8 @@ type ApiResponse =
 
 export default function ProjectScreenshotCapture({
   projectUrl,
+  siteAuthCredentials,
+  onSiteAuthCredentialsChange,
   hasExistingMedia,
   disabled,
   cleanup,
@@ -57,7 +64,12 @@ export default function ProjectScreenshotCapture({
 
   const urlReady = Boolean(projectUrl.trim());
 
-  async function requestCapture(proceedDespiteAuth = false) {
+  async function requestCapture(
+    options: {
+      proceedDespiteAuth?: boolean;
+      credentials?: SiteAuthCredentials;
+    } = {},
+  ) {
     if (!urlReady) {
       toast.error(t('urlRequired'));
       return;
@@ -66,12 +78,17 @@ export default function ProjectScreenshotCapture({
     setStep('capturing');
 
     try {
+      const credentials = options.credentials ?? siteAuthCredentials;
+
       const res = await fetch('/api/ai/project-screenshots', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           url: projectUrl.trim(),
-          proceedDespiteAuth,
+          proceedDespiteAuth: options.proceedDespiteAuth ?? false,
+          ...(hasSiteAuthCredentials(credentials) && {
+            authCredentials: credentials,
+          }),
         }),
       });
 
@@ -117,7 +134,13 @@ export default function ProjectScreenshotCapture({
       setReplaceDialogOpen(true);
       return;
     }
-    void requestCapture(false);
+    void requestCapture({});
+  }
+
+  async function handleAuthLogin(credentials: SiteAuthCredentials) {
+    onSiteAuthCredentialsChange?.(credentials);
+    setAuthDialogOpen(false);
+    await requestCapture({ credentials });
   }
 
   function applyPreview() {
@@ -282,27 +305,16 @@ export default function ProjectScreenshotCapture({
         </div>
       </div>
 
-      <ConfirmDialog
+      <SiteAuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
-        title={t('authDialogTitle')}
-        description={
-          <span>
-            {t('authDialogDescription')}
-            {authHints.length > 0 && (
-              <span className="mt-2 block text-xs text-muted-foreground">
-                {t('authDialogHints', { hints: authHints.join(', ') })}
-              </span>
-            )}
-          </span>
-        }
-        confirmLabel={t('authDialogConfirm')}
-        cancelLabel={t('authDialogCancel')}
-        destructive={false}
-        confirmVariant="accent"
-        onConfirm={async () => {
+        hints={authHints}
+        initialCredentials={siteAuthCredentials}
+        loading={step === 'capturing'}
+        onLogin={handleAuthLogin}
+        onContinueWithoutAuth={async () => {
           setAuthDialogOpen(false);
-          await requestCapture(true);
+          await requestCapture({ proceedDespiteAuth: true });
         }}
       />
 
@@ -317,7 +329,7 @@ export default function ProjectScreenshotCapture({
         confirmVariant="accent"
         onConfirm={async () => {
           setReplaceDialogOpen(false);
-          await requestCapture(false);
+          await requestCapture({});
         }}
       />
     </>

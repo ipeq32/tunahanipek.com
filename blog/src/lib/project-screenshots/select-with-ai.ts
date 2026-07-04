@@ -33,9 +33,9 @@ function buildSelectionPrompt(pageTitle: string, captureCount: number): string {
   return [
     'You are a senior portfolio curator reviewing website screenshots for a developer portfolio.',
     `Page title: "${pageTitle}"`,
-    `There are ${captureCount} screenshots attached in order (shot-0 = top of page, higher indices = lower sections).`,
-    'Pick the most visually impressive screenshots that showcase UI design, layout quality, and product polish.',
-    'Avoid shots that are mostly blank, error pages, cookie banners only, or login forms unless nothing else exists.',
+    `There are ${captureCount} screenshots attached in order.`,
+    'Labels describe each view (e.g. home-hero, dashboard, admin-users, features).',
+    'Prefer product UI, dashboards, and polished feature screens over login pages or empty states.',
     `Select exactly one cover image (best first impression) and up to ${MAX_GALLERY} gallery images.`,
     'Return ONLY valid JSON with this shape:',
     '{"coverIndex":0,"galleryIndices":[0,1,2]}',
@@ -95,9 +95,13 @@ export async function selectBestScreenshots(
       base64: capture.buffer.toString('base64'),
     }));
 
+    const labelSummary = captures
+      .map((capture, index) => `${index}: ${capture.label}`)
+      .join(', ');
+
     const response = await generateGeminiVisionJson(
       config,
-      buildSelectionPrompt(pageTitle, captures.length),
+      `${buildSelectionPrompt(pageTitle, captures.length)}\nScreenshot labels: ${labelSummary}`,
       images,
     );
 
