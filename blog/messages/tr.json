@@ -411,6 +411,7 @@
         "activeModel": "Aktif model",
         "noModels": "Henüz model bazlı kullanım kaydı yok. AI ile içerik oluşturduğunuzda burada görünür.",
         "recentActivity": "Son aktiviteler",
+        "viewAllActivity": "Tüm aktiviteler ({count})",
         "noActivity": "Henüz AI kullanım kaydı yok.",
         "systemUser": "Sistem",
         "actions": {
@@ -434,6 +435,13 @@
           "groq": "Groq",
           "ollama": "Ollama"
         }
+      },
+      "activity": {
+        "title": "AI aktiviteleri",
+        "description": "Tüm yapay zeka istek geçmişi ve kullanım kayıtları.",
+        "listTitle": "Aktivite kayıtları",
+        "backToStats": "İstatistiklere dön",
+        "loadError": "Aktiviteler yüklenemedi"
       }
     },
     "Webhooks": {

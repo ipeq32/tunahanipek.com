@@ -411,6 +411,7 @@
         "activeModel": "Active model",
         "noModels": "No per-model usage yet. It will appear here after you use AI features.",
         "recentActivity": "Recent activity",
+        "viewAllActivity": "All activity ({count})",
         "noActivity": "No AI usage logged yet.",
         "systemUser": "System",
         "actions": {
@@ -434,6 +435,13 @@
           "groq": "Groq",
           "ollama": "Ollama"
         }
+      },
+      "activity": {
+        "title": "AI activity",
+        "description": "Full AI request history and usage logs.",
+        "listTitle": "Activity log",
+        "backToStats": "Back to statistics",
+        "loadError": "Failed to load activity"
       }
     },
     "Webhooks": {

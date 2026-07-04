@@ -6,9 +6,16 @@ import { getAdminBlogStats } from '@/lib/data/blogs';
 import { getAdminProjectStats } from '@/lib/data/projects';
 import { getAdminUserStats } from '@/lib/data/users';
 import {
+  buildPaginatedResult,
+  type PageSize,
+  type PaginatedResult,
+} from '@/lib/pagination';
+import {
   getSiteAiSettings,
   type SiteAiSettingsDto,
 } from '@/lib/site-ai-settings';
+
+export const RECENT_AI_ACTIVITY_PREVIEW_LIMIT = 5;
 
 export type CountBucket = {
   key: string;
@@ -217,6 +224,60 @@ function buildModelStats(
     .sort((a, b) => b.requests - a.requests);
 }
 
+function mapAiUsageLog(row: {
+  id: string;
+  action: AiUsageAction;
+  context: string;
+  provider: AiProvider;
+  model: string;
+  durationMs: number;
+  success: boolean;
+  createdAt: Date;
+  user: { name: string | null } | null;
+}): RecentAiUsageLog {
+  return {
+    id: row.id,
+    action: row.action,
+    context: row.context,
+    provider: row.provider,
+    model: row.model,
+    durationMs: row.durationMs,
+    success: row.success,
+    createdAt: row.createdAt.toISOString(),
+    userName: row.user?.name ?? null,
+  };
+}
+
+export async function getAiUsageLogsPaginated(
+  page: number,
+  limit: PageSize,
+): Promise<PaginatedResult<RecentAiUsageLog>> {
+  if (!('aiUsageLog' in prisma) || !prisma.aiUsageLog) {
+    return buildPaginatedResult([], page, limit, 0);
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [total, rows] = await Promise.all([
+    prisma.aiUsageLog.count(),
+    prisma.aiUsageLog.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { name: true } },
+      },
+    }),
+  ]);
+
+  return buildPaginatedResult(
+    rows.map(mapAiUsageLog),
+    page,
+    limit,
+    total,
+  );
+}
+
 async function getAiStats(): Promise<AdminAiStats> {
   if (!('aiUsageLog' in prisma) || !prisma.aiUsageLog) {
     return EMPTY_AI_STATS;
@@ -279,7 +340,7 @@ async function getAiStats(): Promise<AdminAiStats> {
       orderBy: { createdAt: 'asc' },
     }),
     prisma.aiUsageLog.findMany({
-      take: 15,
+      take: RECENT_AI_ACTIVITY_PREVIEW_LIMIT,
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { name: true } },
@@ -317,17 +378,7 @@ async function getAiStats(): Promise<AdminAiStats> {
     ),
     byModel: buildModelStats(totalRequests, byModelRaw, successByModelRaw),
     dailyLast30Days: buildDailySeries(dailyRows, 30),
-    recentLogs: recentLogsRaw.map((row) => ({
-      id: row.id,
-      action: row.action,
-      context: row.context,
-      provider: row.provider,
-      model: row.model,
-      durationMs: row.durationMs,
-      success: row.success,
-      createdAt: row.createdAt.toISOString(),
-      userName: row.user?.name ?? null,
-    })),
+    recentLogs: recentLogsRaw.map(mapAiUsageLog),
   };
 }
 

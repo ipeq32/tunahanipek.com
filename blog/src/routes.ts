@@ -119,6 +119,10 @@ export default {
     en: '/admin/stats',
     tr: '/admin/istatistikler',
   },
+  '/admin/stats/activity': {
+    en: '/admin/stats/activity',
+    tr: '/admin/istatistikler/aktiviteler',
+  },
   '/admin/webhooks': {
     en: '/admin/webhooks',
     tr: '/admin/webhooklar',
