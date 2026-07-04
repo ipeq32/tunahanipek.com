@@ -72,12 +72,15 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : 'Screenshot capture failed';
 
-    const isBrowserMissing = /Executable doesn't exist|browserType.launch/i.test(message);
+    const isBrowserMissing =
+      /Executable doesn't exist|browserType\.launch|browsers\.json|playwright-core/i.test(
+        message,
+      );
     if (isBrowserMissing) {
       return NextResponse.json(
         {
           error:
-            'Playwright browser is not installed on the server. Run: npx playwright install chromium',
+            'Screenshot browser is unavailable in this environment. Ensure @sparticuz/chromium is deployed and AWS_LAMBDA_JS_RUNTIME=nodejs22.x is set on Vercel.',
         },
         { status: 503 },
       );

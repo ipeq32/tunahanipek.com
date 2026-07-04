@@ -1,4 +1,4 @@
-import type { Page } from 'playwright';
+import type { Page } from 'playwright-core';
 import type { AuthDetectionResult } from '@/lib/project-screenshots/types';
 
 const AUTH_PATH_PATTERNS = [

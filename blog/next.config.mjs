@@ -25,7 +25,13 @@ const contentSecurityPolicy = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['playwright', 'playwright-core'],
+  serverExternalPackages: ['playwright-core', '@sparticuz/chromium'],
+  outputFileTracingIncludes: {
+    '/api/ai/project-screenshots': [
+      './node_modules/@sparticuz/chromium/**',
+      './node_modules/playwright-core/**',
+    ],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'utfs.io', pathname: '/**' },

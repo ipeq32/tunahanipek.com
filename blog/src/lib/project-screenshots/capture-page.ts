@@ -1,8 +1,9 @@
 import 'server-only';
 
-import type { Page } from 'playwright';
+import type { Page } from 'playwright-core';
 import { logger } from '@/lib/logger';
 import { detectAuthRequirement } from '@/lib/project-screenshots/detect-auth';
+import { launchScreenshotBrowser } from '@/lib/project-screenshots/launch-browser';
 import type {
   AuthDetectionResult,
   CapturedScreenshot,
@@ -88,9 +89,7 @@ async function captureAtPositions(page: Page): Promise<CapturedScreenshot[]> {
 }
 
 export async function capturePageScreenshots(url: string): Promise<PageCaptureResult> {
-  const { chromium } = await import('playwright');
-
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchScreenshotBrowser();
 
   try {
     const context = await browser.newContext({
