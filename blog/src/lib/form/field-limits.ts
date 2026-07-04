@@ -19,7 +19,7 @@ export const FIELD_LIMITS = {
   },
   project: {
     title: { min: 2, max: 200 },
-    description: { min: 2, max: 2000 },
+    description: { min: 2, max: 10000 },
     gallery: { max: 12 },
   },
   comment: {

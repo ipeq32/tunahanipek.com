@@ -1,4 +1,5 @@
 import type { SiteContext } from '@/lib/ai/site-context';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 
 type LanguageLabel = { source: string; target: string };
 
@@ -126,7 +127,8 @@ function buildProjectExpandRequirements(lang: string): string {
   - ### ${sections[5]}: 1–2 paragraphs — outcomes, lessons learned, and possible next steps grounded in the input
 - Use ### headings only in project descriptions (never ## or #)
 - Keep lists flat (single level); no tables, images, or fenced code blocks unless essential
-- Write like a portfolio piece for senior engineers — polished, specific, and modern; avoid vague marketing copy`;
+- Write like a portfolio piece for senior engineers — polished, specific, and modern; avoid vague marketing copy
+- Keep the full description under ${FIELD_LIMITS.project.description.max} characters (plain text, excluding HTML tags)`;
 }
 
 export function buildExpandPrompt(params: {

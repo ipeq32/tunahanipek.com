@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { FIELD_LIMITS } from '@/lib/form/field-limits';
 import { optionalNullableUrlField, optionalUrlField } from './url-field';
 
 const httpUrl = z.string().trim().url();
@@ -6,7 +7,10 @@ const httpUrl = z.string().trim().url();
 const translationSchema = z.object({
   languageCode: z.string().trim().min(2).max(10),
   title: z.string().trim().min(2).max(200),
-  description: z.string().min(2).max(2000),
+  description: z
+    .string()
+    .min(FIELD_LIMITS.project.description.min)
+    .max(FIELD_LIMITS.project.description.max),
   published: z.boolean().optional(),
 });
 
