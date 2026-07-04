@@ -1,5 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { DeleteSourceMapsPlugin } from 'webpack-delete-sourcemaps-plugin';
+import { SERVERLESS_BROWSER_TRACE_INCLUDES } from './serverless-browser-includes.mjs';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -27,11 +28,8 @@ const contentSecurityPolicy = [
 const nextConfig = {
   serverExternalPackages: ['playwright-core', '@sparticuz/chromium'],
   outputFileTracingIncludes: {
-    '/api/ai/project-screenshots': [
-      './node_modules/@sparticuz/chromium/bin/**',
-      './node_modules/@sparticuz/chromium/build/**',
-      './node_modules/playwright-core/**',
-    ],
+    '/api/ai/project-screenshots': SERVERLESS_BROWSER_TRACE_INCLUDES,
+    '/api/ai/content': SERVERLESS_BROWSER_TRACE_INCLUDES,
   },
   images: {
     remotePatterns: [

@@ -3,6 +3,7 @@ import 'server-only';
 import type { Page } from 'playwright-core';
 
 import { launchScreenshotBrowser } from '@/lib/project-screenshots/launch-browser';
+import { isBrowserUnavailableError } from '@/lib/project-screenshots/browser-errors';
 import { logger } from '@/lib/logger';
 
 const VIEWPORT = { width: 1440, height: 900 };
@@ -10,7 +11,17 @@ const VIEWPORT = { width: 1440, height: 900 };
 export async function withBrowserPage<T>(
   handler: (page: Page) => Promise<T>,
 ): Promise<T> {
-  const browser = await launchScreenshotBrowser();
+  let browser;
+
+  try {
+    browser = await launchScreenshotBrowser();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    if (isBrowserUnavailableError(message)) {
+      throw new Error(`Browser launch failed: ${message}`);
+    }
+    throw error;
+  }
 
   try {
     const context = await browser.newContext({

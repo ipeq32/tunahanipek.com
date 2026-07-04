@@ -4,6 +4,10 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
 import { logger } from '@/lib/logger';
 import { captureProjectScreenshots } from '@/lib/project-screenshots/capture-project-screenshots';
+import {
+  BROWSER_UNAVAILABLE_MESSAGE,
+  isBrowserUnavailableError,
+} from '@/lib/project-screenshots/browser-errors';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { projectScreenshotRequestSchema } from '@/lib/validations/project-screenshots';
 
@@ -73,15 +77,10 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : 'Screenshot capture failed';
 
-    const isBrowserMissing =
-      /Executable doesn't exist|browserType\.launch|browsers\.json|does not exist|shared libraries|libnss|libnspr|chromium/i.test(
-        message,
-      );
-    if (isBrowserMissing) {
+    if (isBrowserUnavailableError(message)) {
       return NextResponse.json(
         {
-          error:
-            'Screenshot browser is unavailable in this environment. Redeploy after the latest changes. On Vercel: disable Fluid Compute, set AWS_LAMBDA_JS_RUNTIME=nodejs22.x, and ensure @sparticuz/chromium is bundled.',
+          error: BROWSER_UNAVAILABLE_MESSAGE,
           detail: message,
         },
         { status: 503 },

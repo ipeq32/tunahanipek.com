@@ -12,6 +12,7 @@ import {
   stripHtmlToText,
 } from '@/lib/ai/site-context-parse';
 import { fetchSiteContextWithBrowser } from '@/lib/ai/site-context-browser';
+import { isBrowserUnavailableError } from '@/lib/project-screenshots/browser-errors';
 import { normalizeExternalUrl } from '@/lib/validations/url-field';
 import {
   hasSiteAuthCredentials,
@@ -145,19 +146,33 @@ export async function fetchSiteContext(
   const { credentials } = options;
 
   if (hasSiteAuthCredentials(credentials)) {
-    const browserContext = await fetchSiteContextWithBrowser(
-      normalized,
-      credentials,
-    );
+    try {
+      const browserContext = await fetchSiteContextWithBrowser(
+        normalized,
+        credentials,
+      );
 
-    if (!browserContext) {
-      return {
-        status: 'requires_auth',
-        hints: ['login_failed'],
-      };
+      if (!browserContext) {
+        return {
+          status: 'requires_auth',
+          hints: ['login_failed'],
+        };
+      }
+
+      return { status: 'success', context: browserContext };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+
+      if (isBrowserUnavailableError(message)) {
+        logger.error('Browser unavailable for authenticated site context', {
+          url: normalized,
+          error: message,
+        });
+        return null;
+      }
+
+      throw error;
     }
-
-    return { status: 'success', context: browserContext };
   }
 
   const homeHtml = await fetchHtml(normalized);

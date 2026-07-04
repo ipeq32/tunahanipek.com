@@ -8,6 +8,10 @@
     "src/app/api/ai/project-screenshots/route.ts": {
       "memory": 1024,
       "maxDuration": 60
+    },
+    "src/app/api/ai/content/route.ts": {
+      "memory": 1024,
+      "maxDuration": 60
     }
   }
 }

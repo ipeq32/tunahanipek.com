@@ -7,8 +7,14 @@ import { AiNotConfiguredError, SiteAuthRequiredError } from '@/lib/ai/types';
 import { logger } from '@/lib/logger';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { aiContentRequestSchema } from '@/lib/validations/ai-settings';
+import {
+  BROWSER_UNAVAILABLE_MESSAGE,
+  isBrowserUnavailableError,
+} from '@/lib/project-screenshots/browser-errors';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 const RATE_LIMIT = 10;
 const RATE_WINDOW_MS = 60_000;
@@ -112,12 +118,25 @@ export async function POST(request: Request) {
 
     logger.error('AI content generation failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
     });
+
+    const message =
+      error instanceof Error ? error.message : 'Content generation failed';
+
+    if (isBrowserUnavailableError(message)) {
+      return NextResponse.json(
+        {
+          error: BROWSER_UNAVAILABLE_MESSAGE,
+          detail: message,
+        },
+        { status: 503 },
+      );
+    }
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error ? error.message : 'Content generation failed',
+        error: message,
       },
       { status: 502 },
     );
