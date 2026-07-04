@@ -1,3 +1,5 @@
+import { isUsableExternalUrl } from '@/lib/validations/url-field';
+
 export function stripHtmlText(value?: string): string {
   if (!value) return '';
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -15,32 +17,17 @@ export function hasBlogExpandSeed(fields: {
 }): boolean {
   return Boolean(
     fields.title?.trim() ||
-      stripHtmlText(fields.summary).length >= 3 ||
-      stripHtmlText(fields.content).length >= 3,
+      stripHtmlText(fields.summary).length >= 1 ||
+      stripHtmlText(fields.content).length >= 1,
   );
 }
 
-export function canExpandBlogTranslation(
-  fields: {
-    title?: string;
-    content?: string;
-    summary?: string;
-  },
-  activeFilled: boolean,
-): boolean {
-  if (activeFilled || !hasBlogExpandSeed(fields)) {
-    return false;
-  }
-
-  const content = stripHtmlText(fields.content);
-  const summary = stripHtmlText(fields.summary);
-
-  return (
-    !content ||
-    isShortHtmlContent(fields.content) ||
-    !summary ||
-    isShortHtmlContent(fields.summary)
-  );
+export function canExpandBlogTranslation(fields: {
+  title?: string;
+  content?: string;
+  summary?: string;
+}): boolean {
+  return hasBlogExpandSeed(fields);
 }
 
 export function hasProjectExpandSeed(
@@ -52,8 +39,8 @@ export function hasProjectExpandSeed(
 ): boolean {
   return Boolean(
     fields.title?.trim() ||
-      stripHtmlText(fields.description).length >= 3 ||
-      projectUrl?.trim(),
+      stripHtmlText(fields.description).length >= 1 ||
+      isUsableExternalUrl(projectUrl),
   );
 }
 
@@ -63,14 +50,8 @@ export function canExpandProjectTranslation(
     description?: string;
   },
   projectUrl: string | undefined | null,
-  activeFilled: boolean,
 ): boolean {
-  if (activeFilled || !hasProjectExpandSeed(fields, projectUrl)) {
-    return false;
-  }
-
-  const description = stripHtmlText(fields.description);
-  return !description || isShortHtmlContent(fields.description);
+  return hasProjectExpandSeed(fields, projectUrl);
 }
 
 export function isBlogTranslationFilled(fields: {

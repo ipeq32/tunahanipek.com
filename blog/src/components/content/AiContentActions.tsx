@@ -17,7 +17,7 @@ import {
   isBlogTranslationFilled,
   isProjectTranslationFilled,
 } from '@/lib/translation-form-utils';
-import { normalizeExternalUrl } from '@/lib/validations/url-field';
+import { isUsableExternalUrl, normalizeExternalUrl } from '@/lib/validations/url-field';
 import {
   hasSiteAuthCredentials,
   type SiteAuthCredentials,
@@ -137,16 +137,14 @@ export default function AiContentActions(props: AiContentActionsProps) {
 
   const canExpand =
     props.contentType === 'blog'
-      ? canExpandBlogTranslation(props.activeFields as BlogFields, activeFilled)
+      ? canExpandBlogTranslation(props.activeFields as BlogFields)
       : canExpandProjectTranslation(
           props.activeFields as ProjectFields,
           props.projectUrl,
-          activeFilled,
         );
 
   const usesSiteContext =
-    props.contentType === 'project' &&
-    Boolean(normalizeExternalUrl(props.projectUrl));
+    props.contentType === 'project' && isUsableExternalUrl(props.projectUrl);
 
   async function runAction(
     action: 'translate' | 'expand',

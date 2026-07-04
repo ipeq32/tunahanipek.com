@@ -23,6 +23,19 @@ export function normalizeExternalUrl(value: string | null | undefined): string |
   return `https://${trimmed}`;
 }
 
+export function isUsableExternalUrl(value: string | null | undefined): boolean {
+  const normalized = normalizeExternalUrl(value);
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    return new URL(normalized).hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export function toFormUrlValue(value: string | null | undefined): string {
   return value?.trim() ?? '';
 }
