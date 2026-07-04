@@ -45,3 +45,7 @@ export const updateProjectSchema = z
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+export const reorderProjectsSchema = z.object({
+  orderedIds: z.array(z.string().uuid()).min(1),
+});

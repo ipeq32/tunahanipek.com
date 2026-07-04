@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import {
   ExternalLink,
   EyeOff,
+  GripVertical,
   Pencil,
   Plus,
   RefreshCw,
@@ -30,6 +31,7 @@ import {
   Send,
   Trash2,
 } from 'lucide-react';
+import AdminProjectOrderPanel from './AdminProjectOrderPanel';
 
 type AdminProjectListProps = {
   initialProjects: ProjectDto[];
@@ -37,6 +39,7 @@ type AdminProjectListProps = {
   initialStats: AdminProjectStats;
   canPublish?: boolean;
   canDelete?: boolean;
+  canReorder?: boolean;
 };
 
 type StatusFilter = 'all' | 'published' | 'drafts';
@@ -73,6 +76,7 @@ export default function AdminProjectList({
   initialStats,
   canPublish = false,
   canDelete = false,
+  canReorder = false,
 }: AdminProjectListProps) {
   const t = useTranslations('Admin.Project');
   const locale = useLocale();
@@ -87,6 +91,7 @@ export default function AdminProjectList({
   const [status, setStatus] = useState<StatusFilter>('all');
   const [deleteTarget, setDeleteTarget] = useState<ProjectDto | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [sortMode, setSortMode] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);
@@ -225,6 +230,19 @@ export default function AdminProjectList({
             <RefreshCw className="h-4 w-4" />
           </Button>
 
+          {canReorder && (
+            <Button
+              type="button"
+              variant={sortMode ? 'accent' : 'outline'}
+              size="sm"
+              className="gap-1.5"
+              onClick={() => setSortMode((current) => !current)}
+            >
+              <GripVertical className="h-4 w-4" />
+              {sortMode ? t('orderDone') : t('orderTitle')}
+            </Button>
+          )}
+
           <Button variant="accent" size="sm" asChild>
             <Link href="/admin/project/add" className="gap-1.5">
               <Plus className="h-4 w-4" />
@@ -234,7 +252,12 @@ export default function AdminProjectList({
         </div>
       </div>
 
-      {loading ? (
+      {sortMode && canReorder ? (
+        <AdminProjectOrderPanel
+          onClose={() => setSortMode(false)}
+          onSaved={fetchProjects}
+        />
+      ) : loading ? (
         <AdminListSkeleton rows={3} />
       ) : !projects.length ? (
         <AdminEmptyState message={search.trim() ? t('noResults') : t('empty')} />
@@ -331,14 +354,16 @@ export default function AdminProjectList({
         </div>
       )}
 
-      <DataPagination
-        pagination={pagination}
-        onPageChange={setPage}
-        onLimitChange={(nextLimit) => {
-          setLimit(nextLimit);
-          setPage(1);
-        }}
-      />
+      {!sortMode && (
+        <DataPagination
+          pagination={pagination}
+          onPageChange={setPage}
+          onLimitChange={(nextLimit) => {
+            setLimit(nextLimit);
+            setPage(1);
+          }}
+        />
+      )}
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

@@ -216,3 +216,44 @@ export async function getAdminProjectById(
     ? mapProjectToDto(project, locale, { includeAllTranslations: true })
     : null;
 }
+
+export async function getAllAdminProjectsForSort(
+  localeInput: string,
+): Promise<ProjectDto[]> {
+  const locale = await resolveLanguageCode(localeInput);
+
+  const projects = await prisma.project.findMany({
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
+    include: projectDetailInclude,
+  });
+
+  return projects.map((project) =>
+    mapProjectToDto(project, locale, { includeAllTranslations: true }),
+  );
+}
+
+export async function reorderAdminProjects(orderedIds: string[]): Promise<void> {
+  const uniqueIds = new Set(orderedIds);
+  if (uniqueIds.size !== orderedIds.length) {
+    throw new Error('Duplicate project ids');
+  }
+
+  const existing = await prisma.project.findMany({
+    where: { deletedAt: null, id: { in: orderedIds } },
+    select: { id: true },
+  });
+
+  if (existing.length !== orderedIds.length) {
+    throw new Error('Invalid project ids');
+  }
+
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.project.update({
+        where: { id },
+        data: { sortOrder: index },
+      }),
+    ),
+  );
+}

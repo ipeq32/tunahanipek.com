@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
-import { getAdminProjectsPaginated } from '@/lib/data/projects';
+import { getAdminProjectsPaginated, getAllAdminProjectsForSort } from '@/lib/data/projects';
 import { mapProjectToDto, projectDetailInclude } from '@/lib/project-mapper';
 import { upsertProjectTranslations } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
@@ -46,6 +46,16 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') ?? undefined;
     const status = parseStatusFilter(searchParams.get('status'));
+    const sortable = searchParams.get('sortable') === '1';
+
+    if (sortable) {
+      const data = await getAllAdminProjectsForSort(locale);
+
+      return NextResponse.json({
+        data,
+        locale,
+      });
+    }
 
     const result = await getAdminProjectsPaginated(locale, page, limit, {
       search,

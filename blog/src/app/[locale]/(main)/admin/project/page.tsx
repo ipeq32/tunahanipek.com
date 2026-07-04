@@ -50,6 +50,11 @@ export default async function AdminProjectPage({ params }: Props) {
           PERMISSIONS['project:delete'],
           session.user.email
         )}
+        canReorder={hasUserPermission(
+          session.user.permissions,
+          PERMISSIONS['project:update'],
+          session.user.email
+        )}
       />
     </>
   );
