@@ -1,4 +1,5 @@
 import type { LanguageDto } from '@/lib/languages';
+import { isProjectTranslationFilled } from '@/lib/translation-form-utils';
 
 export type BlogTranslationFormValue = {
   title: string;
@@ -9,8 +10,23 @@ export type BlogTranslationFormValue = {
 export type ProjectTranslationFormValue = {
   title: string;
   description: string;
-  published: boolean;
 };
+
+export function deriveProjectPublished(
+  translations: Record<string, Pick<ProjectTranslationFormValue, 'title' | 'description'> & {
+    published?: boolean;
+  }>,
+): boolean {
+  const filled = Object.values(translations).filter((item) =>
+    isProjectTranslationFilled(item),
+  );
+
+  if (filled.length === 0) {
+    return false;
+  }
+
+  return filled.every((item) => item.published === true);
+}
 
 export function buildEmptyBlogTranslations(
   languages: LanguageDto[],
@@ -37,7 +53,6 @@ export function buildEmptyProjectTranslations(
       {
         title: '',
         description: '',
-        published: false,
       },
     ]),
   );
@@ -83,7 +98,6 @@ export function projectTranslationsFromDto(
       base[item.languageCode] = {
         title: item.title,
         description: item.description,
-        published: item.published,
       };
     }
   }

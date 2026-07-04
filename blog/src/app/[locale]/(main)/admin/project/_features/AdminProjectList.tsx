@@ -140,7 +140,6 @@ export default function AdminProjectList({
           },
           body: JSON.stringify({
             published: !project.published,
-            languageCode: locale,
           }),
         }
       );

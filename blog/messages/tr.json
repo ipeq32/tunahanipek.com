@@ -168,6 +168,7 @@
       "fieldGallery": "Proje galerisi",
       "fieldSort": "Sıra",
       "fieldPublished": "Yayında",
+      "fieldPublishedHint": "Kaydedilen tüm doldurulmuş çeviriler için geçerlidir.",
       "languagesSection": "Çeviriler",
       "atLeastOneLanguage": "En az bir dilde başlık ve açıklama doldurulmalıdır.",
       "validation": {

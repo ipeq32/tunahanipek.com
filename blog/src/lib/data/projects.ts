@@ -99,7 +99,6 @@ function buildAdminProjectWhere(
       translations: {
         some: {
           published: true,
-          language: { code: locale },
         },
       },
     });
@@ -111,7 +110,6 @@ function buildAdminProjectWhere(
         translations: {
           some: {
             published: true,
-            language: { code: locale },
           },
         },
       },
@@ -155,7 +153,6 @@ export async function getAdminProjectStats(
         translations: {
           some: {
             published: true,
-            language: { code: locale },
           },
         },
       },

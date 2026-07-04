@@ -107,6 +107,10 @@ function pickPublishedTranslation(
   };
 }
 
+function isProjectPublishedAny(translations: ProjectTranslationRow[]): boolean {
+  return translations.some((translation) => translation.published);
+}
+
 export function mapProjectToDto(
   project: ProjectWithTranslations,
   locale: string,
@@ -137,7 +141,9 @@ export function mapProjectToDto(
     image: project.image,
     gallery: project.gallery ?? [],
     sortOrder: project.sortOrder,
-    published: translation?.published ?? false,
+    published: options?.includeAllTranslations
+      ? isProjectPublishedAny(project.translations)
+      : (translation?.published ?? false),
     locale: translation?.language.code ?? locale,
     isLocaleFallback: picked.isLocaleFallback,
     availableLocales: [...new Set(availableLocales)],

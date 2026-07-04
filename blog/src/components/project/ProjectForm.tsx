@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +31,7 @@ import TranslationTabs from '@/components/i18n/TranslationTabs';
 import { useActiveLanguages } from '@/hooks/use-active-languages';
 import {
   buildEmptyProjectTranslations,
+  deriveProjectPublished,
   projectTranslationsFromDto,
 } from '@/lib/translation-form';
 import {
@@ -44,7 +45,7 @@ import { normalizeExternalUrl } from '@/lib/validations/url-field';
 import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
 
 function createProjectFormSchema(
-  t: (key: string, values?: Record<string, string | number>) => string
+  t: (key: string, values?: Record<string, string | number>) => string,
 ) {
   const optionalProjectUrl = z.union([
     z.literal(''),
@@ -94,7 +95,6 @@ function createProjectFormSchema(
           }),
         }
       ),
-    published: z.boolean().default(false),
   });
 
   return z
@@ -102,6 +102,7 @@ function createProjectFormSchema(
       url: optionalProjectUrl,
       image: optionalProjectUrl,
       gallery: z.array(z.string().url({ message: t('validation.urlInvalid') })).max(12),
+      published: z.boolean().default(false),
       translations: z.record(z.string(), translationSchema),
     })
     .superRefine((data, ctx) => {
@@ -165,6 +166,21 @@ export default function ProjectForm({
     [defaultValues.translations, languages],
   );
 
+  const initialPublished = useMemo(() => {
+    if (!defaultValues.translations?.length) {
+      return false;
+    }
+
+    const byCode = Object.fromEntries(
+      defaultValues.translations.map((item) => [
+        item.languageCode,
+        item,
+      ]),
+    );
+
+    return deriveProjectPublished(byCode);
+  }, [defaultValues.translations]);
+
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -172,6 +188,7 @@ export default function ProjectForm({
       image: defaultValues.image,
       gallery: defaultValues.gallery ?? [],
       translations: initialTranslations,
+      published: initialPublished,
     },
     ...LIVE_FORM_OPTIONS,
   });
@@ -185,9 +202,10 @@ export default function ProjectForm({
         translations: defaultValues.translations
           ? projectTranslationsFromDto(languages, defaultValues.translations)
           : buildEmptyProjectTranslations(languages),
+        published: initialPublished,
       });
     }
-  }, [defaultValues, form, languages, languagesLoading]);
+  }, [defaultValues, form, initialPublished, languages, languagesLoading]);
 
   useEffect(() => {
     if (languages.some((l) => l.code === uiLocale)) {
@@ -199,12 +217,14 @@ export default function ProjectForm({
     const url =
       mode === 'create' ? `/api/projects/admin` : `/api/projects/${projectId}`;
 
+    const publish = canPublish ? values.published : false;
+
     const translations = filterProjectTranslationsForSubmit(
       Object.entries(values.translations).map(([languageCode, fields]) => ({
         languageCode,
         title: fields.title.trim(),
         description: fields.description,
-        published: canPublish ? fields.published : false,
+        published: publish,
       })),
     );
 
@@ -355,23 +375,6 @@ export default function ProjectForm({
                   )}
                 />
 
-                {canPublish && (
-                  <Controller
-                    control={form.control}
-                    name={`translations.${language.code}.published`}
-                    render={({ field }) => (
-                      <label className="flex w-fit items-center gap-2 rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={field.value}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                          className="h-4 w-4 rounded border-border accent-teal-600"
-                        />
-                        {t('fieldPublished')} ({language.name})
-                      </label>
-                    )}
-                  />
-                )}
               </div>
             );
           })}
@@ -447,7 +450,35 @@ export default function ProjectForm({
             )}
           />
 
-          <div className="flex flex-wrap gap-2 border-t border-border/40 pt-4">
+          <div className="flex flex-col gap-4 border-t border-border/40 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            {canPublish ? (
+              <FormField
+                control={form.control}
+                name="published"
+                render={({ field }) => (
+                  <FormItem className="space-y-1">
+                    <label className="flex w-fit items-center gap-2 rounded-lg border border-border/40 bg-background/40 px-3 py-2.5 text-sm">
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={(event) => field.onChange(event.target.checked)}
+                          className="h-4 w-4 rounded border-border accent-teal-600"
+                        />
+                      </FormControl>
+                      {t('fieldPublished')}
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('fieldPublishedHint')}
+                    </p>
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <span />
+            )}
+
+            <div className="flex flex-wrap gap-2 sm:justify-end">
             <Button
               type="submit"
               variant="accent"
@@ -466,6 +497,7 @@ export default function ProjectForm({
             >
               {t('cancel')}
             </Button>
+            </div>
           </div>
         </form>
       </Form>

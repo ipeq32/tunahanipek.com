@@ -3,7 +3,7 @@ import { requirePermission } from '@/lib/auth/guards';
 import { canPublishProject } from '@/lib/auth-roles';
 import { getAdminProjectById } from '@/lib/data/projects';
 import {
-  updateProjectTranslationPublished,
+  updateAllProjectTranslationsPublished,
   upsertProjectTranslations,
 } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
@@ -114,19 +114,21 @@ export async function PATCH(request: Request, context: RouteContext) {
         return apiError(request, 'forbidden', 403);
       }
 
-      const languageCode = data.languageCode ?? locale;
-      const updated = await updateProjectTranslationPublished(
+      const updatedCount = await updateAllProjectTranslationsPublished(
         id,
-        languageCode,
         data.published,
       );
 
-      if (!updated) {
-        return apiError(request, 'language.notFound', 400);
+      if (updatedCount === 0) {
+        return apiError(request, 'project.notFound', 404);
       }
     }
 
     revalidateProjectDetail(id);
+
+    if (data.published !== undefined) {
+      revalidateProjectList();
+    }
 
     if (data.translations?.length) {
       after(async () => {

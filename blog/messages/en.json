@@ -168,6 +168,7 @@
       "fieldGallery": "Project gallery",
       "fieldSort": "Sort order",
       "fieldPublished": "Published",
+      "fieldPublishedHint": "Applies to every filled translation you save.",
       "languagesSection": "Translations",
       "atLeastOneLanguage": "At least one language must have title and description.",
       "validation": {

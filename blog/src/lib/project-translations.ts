@@ -60,6 +60,18 @@ export async function upsertProjectTranslations(
   }
 }
 
+export async function updateAllProjectTranslationsPublished(
+  projectId: string,
+  published: boolean,
+): Promise<number> {
+  const result = await prisma.projectTranslation.updateMany({
+    where: { projectId },
+    data: { published },
+  });
+
+  return result.count;
+}
+
 export async function updateProjectTranslationPublished(
   projectId: string,
   languageCode: string,

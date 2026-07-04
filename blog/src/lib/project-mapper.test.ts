@@ -57,10 +57,27 @@ describe('mapProjectToDto', () => {
     expect(dto.image).toBeNull();
   });
 
-  it('includes all translations when requested', () => {
-    const dto = mapProjectToDto(buildProject(), 'en', {
+  it('uses project-wide published state in admin mode', () => {
+    const project = buildProject();
+    project.translations[1].published = false;
+
+    const dto = mapProjectToDto(project, 'en', {
       includeAllTranslations: true,
     });
-    expect(dto.translations).toHaveLength(2);
+
+    expect(dto.published).toBe(true);
+  });
+
+  it('marks project as draft when no translation is published in admin mode', () => {
+    const project = buildProject();
+    project.translations.forEach((translation) => {
+      translation.published = false;
+    });
+
+    const dto = mapProjectToDto(project, 'en', {
+      includeAllTranslations: true,
+    });
+
+    expect(dto.published).toBe(false);
   });
 });
