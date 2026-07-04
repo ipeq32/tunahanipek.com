@@ -153,7 +153,8 @@ export default function GalleryUpload({
               <MediaPreviewImage
                 src={url}
                 alt={t('previewAlt', { index: index + 1 })}
-                sizes="(max-width: 640px) 50vw, 200px"
+                sizes="(max-width: 640px) 50vw, 240px"
+                quality={90}
                 imageClassName="transition-transform duration-500 group-hover:scale-105"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

@@ -5,6 +5,12 @@ import type { Page } from 'playwright-core';
 import { extractInternalPaths } from '@/lib/ai/site-context-parse';
 import { logger } from '@/lib/logger';
 import {
+  SCREENSHOT_DEVICE_SCALE_FACTOR,
+  SCREENSHOT_JPEG_QUALITY,
+  SCREENSHOT_SCROLL_SETTLE_MS,
+  SCREENSHOT_VIEWPORT,
+} from '@/lib/project-screenshots/capture-settings';
+import {
   navigateToPage,
   prepareAuthenticatedPage,
 } from '@/lib/project-screenshots/prepare-authenticated-page';
@@ -19,10 +25,10 @@ import type {
 } from '@/lib/project-screenshots/types';
 import type { SiteAuthCredentials } from '@/lib/validations/site-auth';
 
-const VIEWPORT = { width: 1440, height: 900 };
+const VIEWPORT = SCREENSHOT_VIEWPORT;
 const MAX_TOTAL_CAPTURES = 10;
 const HOME_MAX_SHOTS = 2;
-const SCROLL_SETTLE_MS = 450;
+const SCROLL_SETTLE_MS = SCREENSHOT_SCROLL_SETTLE_MS;
 
 export type PageCaptureResult = {
   captures: CapturedScreenshot[];
@@ -65,11 +71,12 @@ async function captureViewportShot(
   scrollY = 0,
 ): Promise<CapturedScreenshot> {
   await page.evaluate((y) => window.scrollTo(0, y), scrollY);
+  await page.evaluate(() => document.fonts?.ready ?? Promise.resolve());
   await page.waitForTimeout(SCROLL_SETTLE_MS);
 
   const buffer = await page.screenshot({
     type: 'jpeg',
-    quality: 82,
+    quality: SCREENSHOT_JPEG_QUALITY,
     animations: 'disabled',
   });
 

@@ -91,7 +91,8 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
                 src={src}
                 alt={t('galleryImageAlt', { title, index: index + 1 })}
                 fill
-                sizes="(max-width: 768px) 50vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 640px"
+                quality={90}
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -155,7 +156,8 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
                   index: activeIndex + 1,
                 })}
                 fill
-                sizes="100vw"
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                quality={95}
                 className="object-contain"
                 priority
               />

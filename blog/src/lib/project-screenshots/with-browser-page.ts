@@ -4,9 +4,11 @@ import type { Page } from 'playwright-core';
 
 import { launchScreenshotBrowser } from '@/lib/project-screenshots/launch-browser';
 import { isBrowserUnavailableError } from '@/lib/project-screenshots/browser-errors';
+import {
+  SCREENSHOT_DEVICE_SCALE_FACTOR,
+  SCREENSHOT_VIEWPORT,
+} from '@/lib/project-screenshots/capture-settings';
 import { logger } from '@/lib/logger';
-
-const VIEWPORT = { width: 1440, height: 900 };
 
 export async function withBrowserPage<T>(
   handler: (page: Page) => Promise<T>,
@@ -25,8 +27,8 @@ export async function withBrowserPage<T>(
 
   try {
     const context = await browser.newContext({
-      viewport: VIEWPORT,
-      deviceScaleFactor: 1,
+      viewport: SCREENSHOT_VIEWPORT,
+      deviceScaleFactor: SCREENSHOT_DEVICE_SCALE_FACTOR,
       userAgent:
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       locale: 'en-US',

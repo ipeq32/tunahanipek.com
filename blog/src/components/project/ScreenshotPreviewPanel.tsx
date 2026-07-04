@@ -79,7 +79,8 @@ export function ScreenshotPreviewPanel({
           <MediaPreviewImage
             src={coverUrl}
             alt={t('previewAlt', { index: 1 })}
-            sizes="(max-width: 640px) 100vw, 560px"
+            sizes="(max-width: 640px) 100vw, 1120px"
+            quality={92}
             priority
             imageClassName="object-cover object-top"
             onReady={() => markReady(coverUrl)}
@@ -116,7 +117,8 @@ export function ScreenshotPreviewPanel({
                   <MediaPreviewImage
                     src={url}
                     alt={t('previewAlt', { index: index + 2 })}
-                    sizes="120px"
+                    sizes="200px"
+                    quality={90}
                     onReady={() => markReady(url)}
                   />
                 </div>

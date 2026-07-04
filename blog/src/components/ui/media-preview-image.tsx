@@ -11,6 +11,7 @@ type MediaPreviewImageProps = {
   imageClassName?: string;
   sizes?: string;
   priority?: boolean;
+  quality?: number;
   onReady?: () => void;
 };
 
@@ -21,6 +22,7 @@ export function MediaPreviewImage({
   imageClassName,
   sizes,
   priority = false,
+  quality = 92,
   onReady,
 }: MediaPreviewImageProps) {
   const [loaded, setLoaded] = useState(false);
@@ -48,6 +50,7 @@ export function MediaPreviewImage({
         alt={alt}
         fill
         sizes={sizes}
+        quality={quality}
         priority={priority}
         className={cn(
           'object-cover transition-[opacity,transform] duration-500 ease-out',

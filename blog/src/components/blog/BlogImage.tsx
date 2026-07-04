@@ -10,6 +10,9 @@ import { useEffect, useMemo, useState } from 'react';
 const DEFAULT_FILL_SIZES =
   '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
 
+/** Next.js default is 75 — too soft for portfolio and screenshot previews */
+const DEFAULT_IMAGE_QUALITY = 88;
+
 type BlogImageProps = Omit<ImageProps, 'src' | 'onError'> & {
   src?: string | null;
   /** Liste küçük görseli yüklenemezse denenecek tam kapak URL'si */
@@ -22,6 +25,7 @@ export default function BlogImage({
   alt,
   sizes,
   fill,
+  quality = DEFAULT_IMAGE_QUALITY,
   ...props
 }: BlogImageProps) {
   const candidates = useMemo(
@@ -45,6 +49,7 @@ export default function BlogImage({
       {...props}
       fill={fill}
       sizes={resolvedSizes}
+      quality={quality}
       src={currentSrc}
       alt={alt}
       onError={() => {

@@ -250,6 +250,7 @@ export default function ImageUpload({
             src={value}
             alt="upload preview"
             sizes="(max-width: 640px) 100vw, 480px"
+            quality={92}
             priority
             imageClassName="object-cover"
           />
