@@ -1,16 +1,39 @@
 import 'server-only';
 
-import path from 'node:path';
 import type { Browser } from 'playwright-core';
 import { logger } from '@/lib/logger';
+import {
+  ensureServerlessChromiumEnv,
+  isServerlessRuntime,
+  resolveChromiumBinDirectory,
+  resolveRemoteChromiumPackUrl,
+} from '@/lib/project-screenshots/serverless-chromium';
 
-function isServerlessRuntime(): boolean {
-  return (
-    process.env.VERCEL === '1' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME)
-  );
+async function resolveServerlessExecutablePath(
+  chromium: typeof import('@sparticuz/chromium').default,
+): Promise<string> {
+  const localBin = resolveChromiumBinDirectory();
+
+  if (localBin) {
+    try {
+      return await chromium.executablePath(localBin);
+    } catch (error) {
+      logger.warn('Bundled Chromium bin failed, trying remote pack', {
+        binPath: localBin,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  } else {
+    logger.warn('Bundled Chromium bin directory missing from deployment trace');
+  }
+
+  const remotePackUrl = resolveRemoteChromiumPackUrl();
+  return chromium.executablePath(remotePackUrl);
 }
 
 async function launchServerlessBrowser(): Promise<Browser> {
+  ensureServerlessChromiumEnv();
+
   const [{ chromium: playwright }, chromiumModule] = await Promise.all([
     import('playwright-core'),
     import('@sparticuz/chromium'),
@@ -19,8 +42,7 @@ async function launchServerlessBrowser(): Promise<Browser> {
   const chromium = chromiumModule.default;
   chromium.setGraphicsMode = false;
 
-  const executablePath = await chromium.executablePath();
-  process.env.LD_LIBRARY_PATH = path.dirname(executablePath);
+  const executablePath = await resolveServerlessExecutablePath(chromium);
 
   logger.info('Launching serverless Chromium for screenshots');
 

@@ -67,20 +67,22 @@ export async function POST(request: Request) {
 
     logger.error('Project screenshot capture failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     const message =
       error instanceof Error ? error.message : 'Screenshot capture failed';
 
     const isBrowserMissing =
-      /Executable doesn't exist|browserType\.launch|browsers\.json|playwright-core/i.test(
+      /Executable doesn't exist|browserType\.launch|browsers\.json|does not exist|shared libraries|libnss|libnspr|chromium/i.test(
         message,
       );
     if (isBrowserMissing) {
       return NextResponse.json(
         {
           error:
-            'Screenshot browser is unavailable in this environment. Ensure @sparticuz/chromium is deployed and AWS_LAMBDA_JS_RUNTIME=nodejs22.x is set on Vercel.',
+            'Screenshot browser is unavailable in this environment. Redeploy after the latest changes. On Vercel: disable Fluid Compute, set AWS_LAMBDA_JS_RUNTIME=nodejs22.x, and ensure @sparticuz/chromium is bundled.',
+          detail: message,
         },
         { status: 503 },
       );

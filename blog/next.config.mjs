@@ -28,7 +28,8 @@ const nextConfig = {
   serverExternalPackages: ['playwright-core', '@sparticuz/chromium'],
   outputFileTracingIncludes: {
     '/api/ai/project-screenshots': [
-      './node_modules/@sparticuz/chromium/**',
+      './node_modules/@sparticuz/chromium/bin/**',
+      './node_modules/@sparticuz/chromium/build/**',
       './node_modules/playwright-core/**',
     ],
   },
