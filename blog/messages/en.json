@@ -1360,8 +1360,8 @@
   },
   "Upload": {
     "cta": "Upload image",
-    "hint": "PNG, JPG or WEBP · max 8MB",
-    "avatarHint": "PNG, JPG or WEBP · max 2MB",
+    "hint": "PNG, JPG or WEBP · max 8MB · drag & drop or paste",
+    "avatarHint": "PNG, JPG or WEBP · max 2MB · drag & drop or paste",
     "replace": "Replace",
     "remove": "Remove",
     "uploaded": "Uploaded",
@@ -1373,7 +1373,7 @@
     "tooLarge": "File is too large. You can upload up to {size}.",
     "Gallery": {
       "cta": "Add gallery images",
-      "hint": "PNG, JPG or WEBP · up to {remaining}/{max} images",
+      "hint": "PNG, JPG or WEBP · up to {remaining}/{max} images · drag & drop or paste",
       "previewAlt": "Gallery preview {index}",
       "remove": "Remove",
       "success": "{count, plural, one {# image uploaded} other {# images uploaded}}",

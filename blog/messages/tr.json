@@ -1359,8 +1359,8 @@
   },
   "Upload": {
     "cta": "Görsel yükle",
-    "hint": "PNG, JPG veya WEBP · en fazla 8MB",
-    "avatarHint": "PNG, JPG veya WEBP · en fazla 2MB",
+    "hint": "PNG, JPG veya WEBP · en fazla 8MB · sürükle-bırak veya yapıştır",
+    "avatarHint": "PNG, JPG veya WEBP · en fazla 2MB · sürükle-bırak veya yapıştır",
     "replace": "Değiştir",
     "remove": "Kaldır",
     "uploaded": "Yüklendi",
@@ -1372,7 +1372,7 @@
     "tooLarge": "Dosya çok büyük. En fazla {size} yükleyebilirsiniz.",
     "Gallery": {
       "cta": "Galeri görseli ekle",
-      "hint": "PNG, JPG veya WEBP · en fazla {remaining}/{max} görsel",
+      "hint": "PNG, JPG veya WEBP · en fazla {remaining}/{max} görsel · sürükle-bırak veya yapıştır",
       "previewAlt": "Galeri önizlemesi {index}",
       "remove": "Kaldır",
       "success": "{count, plural, one {# görsel yüklendi} other {# görsel yüklendi}}",

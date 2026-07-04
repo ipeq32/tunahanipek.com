@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ImagePlus, Loader2, Trash2, ZoomIn } from 'lucide-react';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
 import { compressImage } from '@/lib/image-compression';
 import type { UploadCleanup } from '@/components/upload/use-upload-cleanup';
+import { useImageDropPaste } from '@/components/upload/use-image-drop-paste';
 
 const DEFAULT_MAX_IMAGES = 12;
 
@@ -68,41 +69,62 @@ export default function GalleryUpload({
     onChange(value.filter((item) => item !== url));
   };
 
-  const handleSelect = async (files: FileList | null) => {
-    if (!files?.length || !canAdd) return;
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      if (!files.length || !canAdd) return;
 
-    const selected = Array.from(files).slice(0, remaining);
-    const { maxFileSizeBytes, maxFileSizeLabel, compression } =
-      UPLOAD_CONFIG[endpoint];
+      const selected = files.slice(0, remaining);
+      const { maxFileSizeBytes, maxFileSizeLabel, compression } =
+        UPLOAD_CONFIG[endpoint];
 
-    const prepared: File[] = [];
+      const prepared: File[] = [];
 
-    try {
-      setIsCompressing(true);
-      for (const file of selected) {
-        let fileToUpload = file;
-        if (file.size > maxFileSizeBytes) {
-          fileToUpload = await compressImage(file, compression);
+      try {
+        setIsCompressing(true);
+        for (const file of selected) {
+          let fileToUpload = file;
+          if (file.size > maxFileSizeBytes) {
+            fileToUpload = await compressImage(file, compression);
+          }
+          if (fileToUpload.size > maxFileSizeBytes) {
+            toast.error(t('tooLarge', { size: maxFileSizeLabel }));
+            continue;
+          }
+          prepared.push(fileToUpload);
         }
-        if (fileToUpload.size > maxFileSizeBytes) {
-          toast.error(t('tooLarge', { size: maxFileSizeLabel }));
-          continue;
-        }
-        prepared.push(fileToUpload);
+      } catch {
+        toast.error(t('compressFailed'));
+        return;
+      } finally {
+        setIsCompressing(false);
       }
-    } catch {
-      toast.error(t('compressFailed'));
-      return;
-    } finally {
-      setIsCompressing(false);
-    }
 
-    if (prepared.length === 0) return;
-    await startUpload(prepared);
+      if (prepared.length === 0) return;
+      await startUpload(prepared);
+    },
+    [canAdd, endpoint, remaining, startUpload, t],
+  );
+
+  const { zoneRef, isDragging, dropZoneProps } = useImageDropPaste({
+    disabled: disabled || busy || !canAdd,
+    multiple: true,
+    onFiles: (files) => {
+      void handleFiles(files);
+    },
+  });
+
+  const handleSelect = async (files: FileList | null) => {
+    if (!files?.length) return;
+    await handleFiles(Array.from(files));
   };
 
+  const dropHighlightClass =
+    isDragging && !busy
+      ? 'border-teal-500 bg-teal-500/[0.08] ring-2 ring-teal-500/25'
+      : '';
+
   return (
-    <div className="space-y-3">
+    <div ref={zoneRef} className="space-y-3" {...dropZoneProps}>
       <input
         ref={inputRef}
         type="file"
@@ -157,6 +179,7 @@ export default function GalleryUpload({
           onClick={openPicker}
           className={cn(
             'relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-border/70 bg-background/40 px-4 py-8 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.03] disabled:cursor-not-allowed disabled:opacity-60',
+            dropHighlightClass,
           )}
         >
           {busy ? (

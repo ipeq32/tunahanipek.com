@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
 import { compressImage } from '@/lib/image-compression';
 import type { UploadCleanup } from '@/components/upload/use-upload-cleanup';
+import { useImageDropPaste } from '@/components/upload/use-image-drop-paste';
 
 type ImageUploadProps = {
   value?: string;
@@ -78,38 +79,54 @@ export default function ImageUpload({
     inputRef.current?.click();
   };
 
-  const handleSelect = async (files: FileList | null) => {
-    const file = files?.[0];
-    if (!file) return;
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      const file = files[0];
+      if (!file) return;
 
-    const { maxFileSizeBytes, maxFileSizeLabel, compression } =
-      UPLOAD_CONFIG[endpoint];
+      const { maxFileSizeBytes, maxFileSizeLabel, compression } =
+        UPLOAD_CONFIG[endpoint];
 
-    let fileToUpload = file;
+      let fileToUpload = file;
 
-    // Büyük görselleri yükleme öncesi tarayıcıda sıkıştırıp boyutlandırarak hem
-    // bant genişliğinden tasarruf ederiz hem de sunucu limitine takılmayı önleriz.
-    if (file.size > maxFileSizeBytes) {
-      try {
-        setIsCompressing(true);
-        fileToUpload = await compressImage(file, compression);
-      } catch {
-        toast.error(t('compressFailed'));
-        return;
-      } finally {
-        setIsCompressing(false);
+      if (file.size > maxFileSizeBytes) {
+        try {
+          setIsCompressing(true);
+          fileToUpload = await compressImage(file, compression);
+        } catch {
+          toast.error(t('compressFailed'));
+          return;
+        } finally {
+          setIsCompressing(false);
+        }
       }
-    }
 
-    // Sıkıştırma sonrası hâlâ limitin üzerindeyse (ör. zaten yoğun sıkıştırılmış
-    // bir görsel) kullanıcıyı net biçimde bilgilendiririz.
-    if (fileToUpload.size > maxFileSizeBytes) {
-      toast.error(t('tooLarge', { size: maxFileSizeLabel }));
-      return;
-    }
+      if (fileToUpload.size > maxFileSizeBytes) {
+        toast.error(t('tooLarge', { size: maxFileSizeLabel }));
+        return;
+      }
 
-    await startUpload([fileToUpload]);
+      await startUpload([fileToUpload]);
+    },
+    [endpoint, startUpload, t],
+  );
+
+  const { zoneRef, isDragging, dropZoneProps } = useImageDropPaste({
+    disabled: disabled || busy,
+    onFiles: (files) => {
+      void handleFiles(files);
+    },
+  });
+
+  const handleSelect = async (files: FileList | null) => {
+    if (!files?.length) return;
+    await handleFiles(Array.from(files));
   };
+
+  const dropHighlightClass =
+    isDragging && !busy
+      ? 'border-teal-500 bg-teal-500/[0.08] ring-2 ring-teal-500/25'
+      : '';
 
   const fileInput = (
     <input
@@ -126,11 +143,20 @@ export default function ImageUpload({
 
   if (variant === 'avatar') {
     return (
-      <div className={cn('flex flex-col items-center gap-2', className)}>
+      <div
+        ref={zoneRef}
+        className={cn('flex flex-col items-center gap-2', className)}
+        {...dropZoneProps}
+      >
         {fileInput}
         <div className="group relative h-28 w-28">
           {value ? (
-            <div className="relative h-full w-full overflow-hidden rounded-full border border-border/60 bg-muted/30 shadow-sm ring-2 ring-teal-500/20">
+            <div
+              className={cn(
+                'relative h-full w-full overflow-hidden rounded-full border border-border/60 bg-muted/30 shadow-sm ring-2 ring-teal-500/20',
+                dropHighlightClass,
+              )}
+            >
               <BlogImage
                 key={value}
                 src={value}
@@ -153,7 +179,10 @@ export default function ImageUpload({
               type="button"
               disabled={disabled || busy}
               onClick={openPicker}
-              className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-full border border-dashed border-border/70 bg-background/40 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
+              className={cn(
+                'flex h-full w-full flex-col items-center justify-center gap-1 rounded-full border border-dashed border-border/70 bg-background/40 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.04] disabled:cursor-not-allowed disabled:opacity-60',
+                dropHighlightClass,
+              )}
             >
               {busy ? (
                 <UploadingOverlay
@@ -201,14 +230,19 @@ export default function ImageUpload({
   }
 
   return (
-    <div className={cn('w-full', className)}>
+    <div
+      ref={zoneRef}
+      className={cn('w-full', className)}
+      {...dropZoneProps}
+    >
       {fileInput}
 
       {value ? (
         <div
           className={cn(
             'group relative w-full overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm',
-            heightClassName
+            heightClassName,
+            dropHighlightClass,
           )}
         >
           <BlogImage
@@ -264,7 +298,8 @@ export default function ImageUpload({
           onClick={openPicker}
           className={cn(
             'relative flex w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-border/70 bg-background/40 px-4 text-center transition hover:border-teal-500/50 hover:bg-teal-500/[0.03] disabled:cursor-not-allowed disabled:opacity-60',
-            heightClassName
+            heightClassName,
+            dropHighlightClass,
           )}
         >
           {busy ? (
