@@ -16,6 +16,10 @@ import {
 } from '@/components/ui/form';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import {
+  useFormSubmitDisabled,
+  useTriggerInitialValidation,
+} from '@/lib/form/submit-state';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
@@ -196,6 +200,17 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
       setActiveLanguage(uiLocale);
     }
   }, [languages, uiLocale]);
+
+  useTriggerInitialValidation(
+    form,
+    !languagesLoading && languages.length > 0,
+    [languagesLoading, languages.length, defaultValues, mode, blogId],
+  );
+
+  const submitDisabled = useFormSubmitDisabled(
+    form.control,
+    languagesLoading,
+  );
 
   async function onSubmit(values: BlogFormValues) {
     const url = mode === 'create' ? `/api/blog/add` : `/api/blog/${blogId}`;
@@ -504,11 +519,7 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
               type="submit"
               variant="accent"
               className="max-w-56"
-              disabled={
-                form.formState.isSubmitting ||
-                languagesLoading ||
-                !form.formState.isValid
-              }
+              disabled={submitDisabled}
             >
               {mode === 'create' ? t('submitCreate') : t('submitUpdate')}
             </Button>

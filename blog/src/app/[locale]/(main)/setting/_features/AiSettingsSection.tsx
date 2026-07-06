@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Loader2, Sparkles } from 'lucide-react';
@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { FIELD_LIMITS } from '@/lib/form/field-limits';
+import { canSubmitAiSettings } from '@/lib/validations/ai-settings';
 
 type AiProvider = 'gemini' | 'groq' | 'ollama';
 
@@ -140,6 +141,23 @@ export default function AiSettingsSection() {
     ollamaModel: form.ollamaModel,
     autoTranslateOnSave: form.autoTranslateOnSave,
   });
+
+  const canSave = useMemo(
+    () =>
+      canSubmitAiSettings(payload(), saved),
+    [
+      form.autoTranslateOnSave,
+      form.enabled,
+      form.geminiApiKey,
+      form.geminiModel,
+      form.groqApiKey,
+      form.groqModel,
+      form.ollamaBaseUrl,
+      form.ollamaModel,
+      form.provider,
+      saved,
+    ],
+  );
 
   const handleSave = async () => {
     setSaving(true);
@@ -395,7 +413,7 @@ export default function AiSettingsSection() {
         <Button
           type="button"
           variant="accent"
-          disabled={saving || testing}
+          disabled={saving || testing || !canSave}
           onClick={() => void handleSave()}
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -404,7 +422,7 @@ export default function AiSettingsSection() {
         <Button
           type="button"
           variant="outline"
-          disabled={saving || testing}
+          disabled={saving || testing || !canSave}
           onClick={() => void handleTest()}
         >
           {testing && <Loader2 className="h-4 w-4 animate-spin" />}

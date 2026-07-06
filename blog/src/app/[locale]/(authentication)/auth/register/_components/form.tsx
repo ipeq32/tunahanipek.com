@@ -33,6 +33,7 @@ import {
 } from '@/lib/address/types';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -150,6 +151,8 @@ export default function RegisterForm() {
     },
     ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control);
 
   const onSubmit = async (data: FormData) => {
 
@@ -462,7 +465,7 @@ export default function RegisterForm() {
           type="submit"
           variant="accent"
           className="w-full"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={submitDisabled}
         >
           {form.formState.isSubmitting
             ? t('Form.Submit.loading')

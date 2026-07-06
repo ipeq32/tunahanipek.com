@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/navigation';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 
 const passwordMin = FIELD_LIMITS.password.min;
 
@@ -54,6 +55,8 @@ export default function ResetPasswordForm() {
     defaultValues: { password: '', passwordConfirm: '' },
     ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control);
 
   if (!token) {
     return (
@@ -132,7 +135,7 @@ export default function ResetPasswordForm() {
         <Button
           type="submit"
           className="w-full"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={submitDisabled}
         >
           {t('submit')}
         </Button>

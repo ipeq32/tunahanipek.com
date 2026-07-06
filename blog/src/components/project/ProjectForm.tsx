@@ -16,6 +16,10 @@ import {
 } from '@/components/ui/form';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import {
+  useFormSubmitDisabled,
+  useTriggerInitialValidation,
+} from '@/lib/form/submit-state';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
@@ -212,6 +216,17 @@ export default function ProjectForm({
       setActiveLanguage(uiLocale);
     }
   }, [languages, uiLocale]);
+
+  useTriggerInitialValidation(
+    form,
+    !languagesLoading && languages.length > 0,
+    [languagesLoading, languages.length, defaultValues, mode, projectId],
+  );
+
+  const submitDisabled = useFormSubmitDisabled(
+    form.control,
+    languagesLoading,
+  );
 
   async function onSubmit(values: ProjectFormValues) {
     const url =
@@ -482,17 +497,14 @@ export default function ProjectForm({
             <Button
               type="submit"
               variant="accent"
-              disabled={
-                form.formState.isSubmitting ||
-                languagesLoading ||
-                !form.formState.isValid
-              }
+              disabled={submitDisabled}
             >
               {mode === 'create' ? t('add') : t('save')}
             </Button>
             <Button
               type="button"
               variant="outline"
+              disabled={form.formState.isSubmitting}
               onClick={() => router.push('/admin/project')}
             >
               {t('cancel')}

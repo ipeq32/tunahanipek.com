@@ -30,6 +30,7 @@ import {
 } from '@/lib/auth-toast';
 import type { FieldErrors } from 'react-hook-form';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { CharacterCount } from '@/components/ui/character-count';
 import {
   FormFieldFooter,
@@ -86,6 +87,8 @@ export default function LoginForm({
     },
     ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control);
 
   const onInvalid = (errors: FieldErrors<FormData>) => {
     const message =
@@ -203,7 +206,7 @@ export default function LoginForm({
           type="submit"
           variant="accent"
           className="w-full"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={submitDisabled}
         >
           {form.formState.isSubmitting
             ? t('Form.Submit.loading')

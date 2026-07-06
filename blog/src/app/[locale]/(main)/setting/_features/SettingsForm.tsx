@@ -27,6 +27,10 @@ import {
 } from '@/components/ui/form';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import {
+  useFormSubmitDisabled,
+  useTriggerInitialValidation,
+} from '@/lib/form/submit-state';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { ContentCard } from '@/components/layout/content-card';
@@ -288,6 +292,8 @@ export default function SettingsForm({
     ...LIVE_FORM_OPTIONS,
   });
 
+  useTriggerInitialValidation(profileForm);
+
   type PasswordFormValues = z.infer<ReturnType<typeof createPasswordFormSchema>>;
 
   const passwordSchema = useMemo(
@@ -356,6 +362,8 @@ export default function SettingsForm({
     }
   };
 
+  const profileSubmitDisabled = useFormSubmitDisabled(profileForm.control);
+  const passwordSubmitDisabled = useFormSubmitDisabled(passwordForm.control);
   const profileSubmitting = profileForm.formState.isSubmitting;
   const passwordSubmitting = passwordForm.formState.isSubmitting;
 
@@ -502,7 +510,7 @@ export default function SettingsForm({
               <Button
                 type="submit"
                 variant="accent"
-                disabled={profileSubmitting || !profileForm.formState.isValid}
+                disabled={profileSubmitDisabled}
               >
                 {profileSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -576,7 +584,7 @@ export default function SettingsForm({
               <Button
                 type="submit"
                 variant="accent"
-                disabled={passwordSubmitting || !passwordForm.formState.isValid}
+                disabled={passwordSubmitDisabled}
               >
                 {passwordSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

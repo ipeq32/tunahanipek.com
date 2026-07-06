@@ -20,6 +20,7 @@ import {
   FormRequiredIndicator,
 } from '@/components/ui/form';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { MessageSquare, SendHorizontal } from 'lucide-react';
 
 type FormValues = {
@@ -47,6 +48,8 @@ export function ContactForm() {
     defaultValues: { name: '', email: '', message: '' },
     ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -187,7 +190,7 @@ export function ContactForm() {
                 variant="accent"
                 size="lg"
                 className="w-full sm:w-auto"
-                disabled={form.formState.isSubmitting || !form.formState.isValid}
+                disabled={submitDisabled}
               >
                 {form.formState.isSubmitting ? (
                   t('submitting')

@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/navigation';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { CharacterCount } from '@/components/ui/character-count';
 
 export default function ForgotPasswordForm() {
@@ -43,6 +44,8 @@ export default function ForgotPasswordForm() {
     defaultValues: { email: '' },
     ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control);
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
@@ -90,7 +93,7 @@ export default function ForgotPasswordForm() {
             type="submit"
             variant="accent"
             className="w-full"
-            disabled={form.formState.isSubmitting || !form.formState.isValid}
+            disabled={submitDisabled}
           >
             {t('submit')}
           </Button>

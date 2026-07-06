@@ -35,3 +35,44 @@ export const aiContentRequestSchema = z.object({
 
 export type UpsertAiSettingsInput = z.infer<typeof upsertAiSettingsSchema>;
 export type AiContentRequestInput = z.infer<typeof aiContentRequestSchema>;
+
+type AiSettingsSubmitInput = {
+  enabled: boolean;
+  provider: z.infer<typeof aiProviderSchema>;
+  geminiApiKey?: string;
+  groqApiKey?: string;
+  geminiModel: string;
+  groqModel: string;
+  ollamaBaseUrl: string;
+  ollamaModel: string;
+  autoTranslateOnSave: boolean;
+};
+
+type AiSettingsKeyState = {
+  hasGeminiKey: boolean;
+  hasGroqKey: boolean;
+};
+
+/** AI ayarları formu kaydedilebilir / test edilebilir mi? */
+export function canSubmitAiSettings(
+  input: AiSettingsSubmitInput,
+  keyState: AiSettingsKeyState | null,
+): boolean {
+  if (!upsertAiSettingsSchema.safeParse(input).success) {
+    return false;
+  }
+
+  if (!input.enabled) {
+    return true;
+  }
+
+  if (input.provider === 'gemini') {
+    return Boolean(input.geminiApiKey?.trim() || keyState?.hasGeminiKey);
+  }
+
+  if (input.provider === 'groq') {
+    return Boolean(input.groqApiKey?.trim() || keyState?.hasGroqKey);
+  }
+
+  return Boolean(input.ollamaBaseUrl.trim() && input.ollamaModel.trim());
+}

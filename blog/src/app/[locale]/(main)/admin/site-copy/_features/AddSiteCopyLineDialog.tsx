@@ -25,7 +25,8 @@ import {
   FormRequiredIndicator,
 } from '@/components/ui/form';
 import { CharacterCount } from '@/components/ui/character-count';
-import { FIELD_LIMITS } from '@/lib/form/field-limits';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { locales } from '@/config';
@@ -97,9 +98,10 @@ export function AddSiteCopyLineDialog({
   const form = useForm<AddSiteCopyLineFormValues>({
     resolver: zodResolver(schema),
     defaultValues,
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    ...LIVE_FORM_OPTIONS,
   });
+
+  const submitDisabled = useFormSubmitDisabled(form.control, disabled || aiBusy !== null);
 
   const canUseAi = hasUserPermission(
     session?.user?.permissions,
@@ -471,7 +473,7 @@ export function AddSiteCopyLineDialog({
               <Button
                 type="submit"
                 variant="accent"
-                disabled={formDisabled || !form.formState.isValid}
+                disabled={submitDisabled}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 {t('addLineSubmit')}

@@ -50,7 +50,8 @@ import {
 } from '@/lib/validations/access-role';
 import { cn } from '@/lib/utils';
 import { CharacterCount } from '@/components/ui/character-count';
-import { FIELD_LIMITS } from '@/lib/form/field-limits';
+import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -163,23 +164,19 @@ export default function AdminRolesEditor({
   const createForm = useForm<CreateRoleFormValues>({
     resolver: zodResolver(createSchema),
     defaultValues: EMPTY_CREATE_FORM,
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    ...LIVE_FORM_OPTIONS,
   });
 
   const editForm = useForm<UpdateRoleFormValues>({
     resolver: zodResolver(updateSchema),
     defaultValues: EMPTY_UPDATE_FORM,
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    ...LIVE_FORM_OPTIONS,
   });
 
-  const isFormValid =
-    mode === 'create'
-      ? createForm.formState.isValid
-      : mode === 'edit'
-        ? editForm.formState.isValid
-        : false;
+  const submitDisabled = useFormSubmitDisabled(
+    mode === 'edit' ? editForm.control : createForm.control,
+    saving || !mode,
+  );
 
   const resolveMutationError = useCallback(
     (code: string) => {
@@ -228,6 +225,7 @@ export default function AdminRolesEditor({
     setMode('create');
     setEditingRole(null);
     createForm.reset(EMPTY_CREATE_FORM);
+    void createForm.trigger();
   };
 
   const openEdit = (role: AccessRoleDto) => {
@@ -243,6 +241,7 @@ export default function AdminRolesEditor({
         )
       ),
     });
+    void editForm.trigger();
   };
 
   const closeEditor = () => {
@@ -728,7 +727,7 @@ export default function AdminRolesEditor({
             <Button
               type="submit"
               form="role-editor-form"
-              disabled={saving || !isFormValid}
+              disabled={submitDisabled}
             >
               {saving ? t('saving') : t('save')}
             </Button>
