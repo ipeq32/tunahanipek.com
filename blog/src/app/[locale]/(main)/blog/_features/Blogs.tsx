@@ -1,5 +1,3 @@
-'use client';
-
 import { IGetBlog } from '@/types/blog';
 import NotfoundComponent from '../_components/notfound';
 import BlogCard from '@/components/blog/BlogCard';
@@ -8,7 +6,7 @@ type BlogFeatureProps = {
   data: IGetBlog[];
 };
 
-const BlogsFeature = ({ data }: BlogFeatureProps) => {
+export default function BlogsFeature({ data }: BlogFeatureProps) {
   const publishedData = data.filter((blog) => blog.published);
 
   if (!publishedData.length) {
@@ -22,6 +20,4 @@ const BlogsFeature = ({ data }: BlogFeatureProps) => {
       ))}
     </div>
   );
-};
-
-export default BlogsFeature;
+}

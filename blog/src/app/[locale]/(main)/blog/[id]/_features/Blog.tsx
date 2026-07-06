@@ -1,7 +1,5 @@
-'use client';
-
 import { IGetBlog } from '@/types/blog';
-import { useFormatter, useTranslations } from 'next-intl';
+import { getFormatter, getTranslations } from 'next-intl/server';
 import NotfoundComponent from '../../_components/notfound';
 import { LocaleFallbackBanner } from '@/components/locale-fallback-banner';
 import BlogImage from '@/components/blog/BlogImage';
@@ -15,9 +13,9 @@ type BlogFeatureProps = {
   data: IGetBlog;
 };
 
-const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
-  const format = useFormatter();
-  const t = useTranslations('Blog');
+export default async function BlogFeature({ data: blogData }: BlogFeatureProps) {
+  const format = await getFormatter();
+  const t = await getTranslations('Blog');
 
   const data = blogData.published ? blogData : null;
 
@@ -109,6 +107,4 @@ const BlogFeature = ({ data: blogData }: BlogFeatureProps) => {
       <RichContentView html={data.content} />
     </article>
   );
-};
-
-export default BlogFeature;
+}

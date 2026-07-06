@@ -106,7 +106,7 @@ export default async function ProjectPage({
       <HeaderTemplate title={t('title')} description={t('description')} />
 
       {hasProjects ? (
-        <section className="space-y-6">
+        <section key={locale} className="space-y-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 dark:text-teal-400">

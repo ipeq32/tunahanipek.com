@@ -6,7 +6,7 @@ import { getApprovedCommentViewsPaginated } from '@/lib/data/comments';
 import { DEFAULT_PAGE_SIZE } from '@/lib/pagination';
 import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/json-ld';
 import { buildArticleJsonLd } from '@/lib/json-ld';
@@ -20,16 +20,17 @@ export const revalidate = 60;
 
 type Props = {
   params: Promise<{
+    locale: string;
     id: string;
   }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const locale = parseLocale(await getLocale());
+  const { id, locale: localeParam } = await params;
+  const locale = parseLocale(localeParam);
   const [blog, t] = await Promise.all([
     getPublishedBlogById(id, locale),
-    getTranslations('Blog'),
+    getTranslations({ locale, namespace: 'Blog' }),
   ]);
 
   if (!blog) {
@@ -70,8 +71,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function page({ params }: Props) {
-  const { id } = await params;
-  const locale = parseLocale(await getLocale());
+  const { id, locale: localeParam } = await params;
+  const locale = parseLocale(localeParam);
+  setRequestLocale(locale);
 
   const session = await getSession();
   const [blogData, commentsResult] = await Promise.all([
@@ -99,7 +101,7 @@ async function page({ params }: Props) {
           dateModified: blogData.updatedAt,
         })}
       />
-      <BlogFeature data={blogData} />
+      <BlogFeature key={`${locale}-${id}`} data={blogData} />
       <BlogComments
         blogId={id}
         locale={locale}

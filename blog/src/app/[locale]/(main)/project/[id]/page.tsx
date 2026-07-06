@@ -6,7 +6,7 @@ import { Link } from '@/navigation';
 import { getPublishedProjectById } from '@/lib/data/projects';
 import { parseLocale } from '@/i18n/request';
 import type { Metadata } from 'next';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/json-ld';
 import { buildCreativeWorkJsonLd } from '@/lib/json-ld';
@@ -21,15 +21,15 @@ import { ArrowLeft, ArrowUpRight, ExternalLink, FolderGit2 } from 'lucide-react'
 export const revalidate = 60;
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const locale = parseLocale(await getLocale());
+  const { id, locale: localeParam } = await params;
+  const locale = parseLocale(localeParam);
   const [project, t] = await Promise.all([
     getPublishedProjectById(id, locale),
-    getTranslations('Pages.Project'),
+    getTranslations({ locale, namespace: 'Pages.Project' }),
   ]);
 
   if (!project) {
@@ -75,11 +75,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
-  const { id } = await params;
-  const locale = parseLocale(await getLocale());
+  const { id, locale: localeParam } = await params;
+  const locale = parseLocale(localeParam);
+  setRequestLocale(locale);
   const [project, t] = await Promise.all([
     getPublishedProjectById(id, locale),
-    getTranslations('Pages.Project'),
+    getTranslations({ locale, namespace: 'Pages.Project' }),
   ]);
 
   if (!project) {
@@ -94,7 +95,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     .slice(0, 160);
 
   return (
-    <article className="min-w-0 w-full max-w-full">
+    <article key={`${locale}-${id}`} className="min-w-0 w-full max-w-full">
       <JsonLd
         data={buildCreativeWorkJsonLd({
           locale,

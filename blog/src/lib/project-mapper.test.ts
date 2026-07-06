@@ -68,16 +68,22 @@ describe('mapProjectToDto', () => {
     expect(dto.published).toBe(true);
   });
 
-  it('marks project as draft when no translation is published in admin mode', () => {
+  it('falls back to default locale when requested locale is unpublished', () => {
     const project = buildProject();
-    project.translations.forEach((translation) => {
-      translation.published = false;
-    });
+    project.translations[0].published = false;
 
-    const dto = mapProjectToDto(project, 'en', {
-      includeAllTranslations: true,
-    });
+    const dto = mapProjectToDto(project, 'en');
 
-    expect(dto.published).toBe(false);
+    expect(dto.title).toBe('Projem');
+    expect(dto.locale).toBe('tr');
+    expect(dto.isLocaleFallback).toBe(true);
+  });
+
+  it('uses requested locale when its translation is published', () => {
+    const dto = mapProjectToDto(buildProject(), 'en');
+
+    expect(dto.title).toBe('My project');
+    expect(dto.locale).toBe('en');
+    expect(dto.isLocaleFallback).toBe(false);
   });
 });

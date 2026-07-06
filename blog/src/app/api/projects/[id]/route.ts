@@ -132,11 +132,22 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     if (data.translations?.length) {
       after(async () => {
+        const wasPublished =
+          (await prisma.projectTranslation.count({
+            where: { projectId: id, published: true },
+          })) > 0;
+
         await autoFillMissingTranslations({
           entityType: 'project',
           entityId: id,
           providedTranslations: data.translations ?? [],
         });
+
+        if (wasPublished) {
+          await updateAllProjectTranslationsPublished(id, true);
+          revalidateProjectDetail(id);
+          revalidateProjectList();
+        }
       });
     }
 

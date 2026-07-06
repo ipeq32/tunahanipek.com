@@ -48,11 +48,7 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
       (locales as readonly string[]).includes(code),
     );
 
-  function onSelectChange(value: LocaleType) {
-    if (value === locale) {
-      return;
-    }
-
+  function switchLocale(value: LocaleType) {
     if (pathname === '/blog/[id]' && typeof params.id === 'string') {
       router.replace(
         { pathname: '/blog/[id]', params: { id: params.id } },
@@ -105,6 +101,15 @@ function ToggleLanguage({ locale: localeProp }: ToggleLanguageProps) {
     }
 
     router.replace(pathname as StaticPathname, { locale: value });
+  }
+
+  function onSelectChange(value: LocaleType) {
+    if (value === locale) {
+      return;
+    }
+
+    switchLocale(value);
+    router.refresh();
   }
 
   return (

@@ -69,7 +69,7 @@ async function page({ params, searchParams }: Props) {
         activeTag={tag}
         activeCategory={category}
       />
-      <BlogsFeature data={blogData} />
+      <BlogsFeature key={locale} data={blogData} />
       <PaginationComponent
         total={total}
         currentPage={currentPage}

@@ -2,7 +2,7 @@ import { PERMISSIONS } from '@/lib/auth/permissions';
 import { requirePermission } from '@/lib/auth/guards';
 import { getAdminProjectsPaginated, getAllAdminProjectsForSort } from '@/lib/data/projects';
 import { mapProjectToDto, projectDetailInclude } from '@/lib/project-mapper';
-import { upsertProjectTranslations } from '@/lib/project-translations';
+import { upsertProjectTranslations, updateAllProjectTranslationsPublished } from '@/lib/project-translations';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { revalidateProjectDetail } from '@/lib/revalidate-public';
@@ -116,11 +116,21 @@ export async function POST(request: Request) {
     revalidateProjectDetail(project.id);
 
     after(async () => {
+      const wasPublished =
+        (await prisma.projectTranslation.count({
+          where: { projectId: project.id, published: true },
+        })) > 0;
+
       await autoFillMissingTranslations({
         entityType: 'project',
         entityId: project.id,
         providedTranslations: translations,
       });
+
+      if (wasPublished) {
+        await updateAllProjectTranslationsPublished(project.id, true);
+        revalidateProjectDetail(project.id);
+      }
     });
 
     return NextResponse.json(
