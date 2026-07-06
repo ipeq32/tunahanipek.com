@@ -29,7 +29,6 @@ import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import {
   useFormSubmitDisabled,
-  useTriggerInitialValidation,
 } from '@/lib/form/submit-state';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -292,8 +291,6 @@ export default function SettingsForm({
     ...LIVE_FORM_OPTIONS,
   });
 
-  useTriggerInitialValidation(profileForm);
-
   type PasswordFormValues = z.infer<ReturnType<typeof createPasswordFormSchema>>;
 
   const passwordSchema = useMemo(
@@ -362,7 +359,9 @@ export default function SettingsForm({
     }
   };
 
-  const profileSubmitDisabled = useFormSubmitDisabled(profileForm.control);
+  const profileSubmitDisabled = useFormSubmitDisabled(profileForm.control, {
+    requireDirty: true,
+  });
   const passwordSubmitDisabled = useFormSubmitDisabled(passwordForm.control);
   const profileSubmitting = profileForm.formState.isSubmitting;
   const passwordSubmitting = passwordForm.formState.isSubmitting;

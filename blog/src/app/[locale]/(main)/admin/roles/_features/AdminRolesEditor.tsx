@@ -173,10 +173,19 @@ export default function AdminRolesEditor({
     ...LIVE_FORM_OPTIONS,
   });
 
-  const submitDisabled = useFormSubmitDisabled(
-    mode === 'edit' ? editForm.control : createForm.control,
-    saving || !mode,
-  );
+  const createSubmitDisabled = useFormSubmitDisabled(createForm.control, {
+    extraDisabled: saving || mode !== 'create',
+  });
+  const editSubmitDisabled = useFormSubmitDisabled(editForm.control, {
+    extraDisabled: saving || mode !== 'edit',
+    requireDirty: true,
+  });
+  const submitDisabled =
+    mode === 'edit'
+      ? editSubmitDisabled
+      : mode === 'create'
+        ? createSubmitDisabled
+        : true;
 
   const resolveMutationError = useCallback(
     (code: string) => {
@@ -224,24 +233,25 @@ export default function AdminRolesEditor({
   const openCreate = () => {
     setMode('create');
     setEditingRole(null);
-    createForm.reset(EMPTY_CREATE_FORM);
-    void createForm.trigger();
+    createForm.reset(EMPTY_CREATE_FORM, { keepDefaultValues: false });
   };
 
   const openEdit = (role: AccessRoleDto) => {
     if (role.isSystem) return;
     setMode('edit');
     setEditingRole(role);
-    editForm.reset({
-      name: role.name,
-      description: role.description ?? '',
-      permissions: withDefaultRolePermissions(
-        role.permissions.filter((item): item is Permission =>
-          isValidPermission(item)
-        )
-      ),
-    });
-    void editForm.trigger();
+    editForm.reset(
+      {
+        name: role.name,
+        description: role.description ?? '',
+        permissions: withDefaultRolePermissions(
+          role.permissions.filter((item): item is Permission =>
+            isValidPermission(item)
+          )
+        ),
+      },
+      { keepDefaultValues: false },
+    );
   };
 
   const closeEditor = () => {

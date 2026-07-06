@@ -103,6 +103,29 @@ function mapToForm(data: AiSettingsData | null): FormState {
   };
 }
 
+function hasAiSettingsChanges(
+  form: FormState,
+  saved: AiSettingsData | null,
+): boolean {
+  if (!saved) {
+    return true;
+  }
+
+  const baseline = mapToForm(saved);
+
+  return (
+    form.enabled !== baseline.enabled ||
+    form.provider !== baseline.provider ||
+    form.geminiModel !== baseline.geminiModel ||
+    form.groqModel !== baseline.groqModel ||
+    form.ollamaBaseUrl !== baseline.ollamaBaseUrl ||
+    form.ollamaModel !== baseline.ollamaModel ||
+    form.autoTranslateOnSave !== baseline.autoTranslateOnSave ||
+    Boolean(form.geminiApiKey.trim()) ||
+    Boolean(form.groqApiKey.trim())
+  );
+}
+
 export default function AiSettingsSection() {
   const t = useTranslations('Settings.Ai');
   const [loading, setLoading] = useState(true);
@@ -157,6 +180,11 @@ export default function AiSettingsSection() {
       form.provider,
       saved,
     ],
+  );
+
+  const hasChanges = useMemo(
+    () => hasAiSettingsChanges(form, saved),
+    [form, saved],
   );
 
   const handleSave = async () => {
@@ -413,7 +441,7 @@ export default function AiSettingsSection() {
         <Button
           type="button"
           variant="accent"
-          disabled={saving || testing || !canSave}
+          disabled={saving || testing || !canSave || !hasChanges}
           onClick={() => void handleSave()}
         >
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}

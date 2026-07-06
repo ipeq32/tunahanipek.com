@@ -17,8 +17,7 @@ import {
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import {
-  useFormSubmitDisabled,
-  useTriggerInitialValidation,
+  useZodFormSubmitDisabled,
 } from '@/lib/form/submit-state';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import { Input } from '@/components/ui/input';
@@ -199,15 +198,18 @@ export default function ProjectForm({
 
   useEffect(() => {
     if (!languagesLoading && languages.length > 0) {
-      form.reset({
-        url: defaultValues.url,
-        image: defaultValues.image,
-        gallery: defaultValues.gallery ?? [],
-        translations: defaultValues.translations
-          ? projectTranslationsFromDto(languages, defaultValues.translations)
-          : buildEmptyProjectTranslations(languages),
-        published: initialPublished,
-      });
+      form.reset(
+        {
+          url: defaultValues.url,
+          image: defaultValues.image,
+          gallery: defaultValues.gallery ?? [],
+          translations: defaultValues.translations
+            ? projectTranslationsFromDto(languages, defaultValues.translations)
+            : buildEmptyProjectTranslations(languages),
+          published: initialPublished,
+        },
+        { keepDefaultValues: false },
+      );
     }
   }, [defaultValues, form, initialPublished, languages, languagesLoading]);
 
@@ -217,16 +219,10 @@ export default function ProjectForm({
     }
   }, [languages, uiLocale]);
 
-  useTriggerInitialValidation(
-    form,
-    !languagesLoading && languages.length > 0,
-    [languagesLoading, languages.length, defaultValues, mode, projectId],
-  );
-
-  const submitDisabled = useFormSubmitDisabled(
-    form.control,
-    languagesLoading,
-  );
+  const submitDisabled = useZodFormSubmitDisabled(form, formSchema, {
+    extraDisabled: languagesLoading,
+    requireDirty: mode === 'edit',
+  });
 
   async function onSubmit(values: ProjectFormValues) {
     const url =
@@ -322,12 +318,14 @@ export default function ProjectForm({
                       form.setValue(
                         `translations.${language.code}.title`,
                         fields.title,
+                        { shouldValidate: true, shouldDirty: true },
                       );
                     }
                     if (fields.description) {
                       form.setValue(
                         `translations.${language.code}.description`,
                         fields.description,
+                        { shouldValidate: true, shouldDirty: true },
                       );
                     }
                   }}
@@ -423,9 +421,15 @@ export default function ProjectForm({
             hasExistingMedia={Boolean(form.watch('image') || form.watch('gallery').length > 0)}
             disabled={form.formState.isSubmitting}
             cleanup={imageCleanup}
-            onApply={({ image, gallery }) => {
-              form.setValue('image', image, { shouldValidate: true });
-              form.setValue('gallery', gallery, { shouldValidate: true });
+                  onApply={({ image, gallery }) => {
+              form.setValue('image', image, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+              form.setValue('gallery', gallery, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
             }}
           />
 

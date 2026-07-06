@@ -1,31 +1,86 @@
-import { useEffect } from 'react';
 import type { Control, FieldValues, UseFormReturn } from 'react-hook-form';
 import { useFormState } from 'react-hook-form';
+import type { ZodTypeAny } from 'zod';
 
-/** Submit butonu devre dışı mı? (gönderim + geçersiz form + ek koşullar) */
+export type FormSubmitOptions = {
+  extraDisabled?: boolean;
+  /** Düzenleme formlarında kaydet yalnızca değişiklik yapıldığında aktif olur */
+  requireDirty?: boolean;
+};
+
+function resolveSubmitOptions(
+  options?: boolean | FormSubmitOptions,
+): FormSubmitOptions {
+  if (typeof options === 'boolean') {
+    return { extraDisabled: options };
+  }
+
+  return options ?? {};
+}
+
+export function isFormSubmitDisabledState(state: {
+  isSubmitting: boolean;
+  isValid: boolean;
+  isDirty: boolean;
+  extraDisabled?: boolean;
+  requireDirty?: boolean;
+}): boolean {
+  const { isSubmitting, isValid, isDirty, extraDisabled = false, requireDirty = false } =
+    state;
+
+  if (isSubmitting || extraDisabled) {
+    return true;
+  }
+
+  if (!isValid) {
+    return true;
+  }
+
+  if (requireDirty && !isDirty) {
+    return true;
+  }
+
+  return false;
+}
+
+/** react-hook-form `isValid` ile submit kilidi (basit formlar). */
 export function useFormSubmitDisabled<T extends FieldValues>(
   control: Control<T>,
-  extraDisabled = false,
+  options?: boolean | FormSubmitOptions,
 ): boolean {
-  const { isSubmitting, isValid } = useFormState({ control });
-  return isSubmitting || !isValid || extraDisabled;
+  const { extraDisabled = false, requireDirty = false } =
+    resolveSubmitOptions(options);
+  const { isSubmitting, isValid, isDirty } = useFormState({ control });
+
+  return isFormSubmitDisabledState({
+    isSubmitting,
+    isValid,
+    isDirty,
+    extraDisabled,
+    requireDirty,
+  });
 }
 
 /**
- * Reset veya önceden doldurulmuş formlarda `isValid` başlangıçta false kalır.
- * Düzenleme sayfalarında submit'in doğru durumda olması için mount sonrası tetikler.
+ * Zod şeması ile güvenilir validasyon (superRefine içeren formlar).
+ * `form.watch()` ile değerleri izler; RHF `isValid` ile uyumsuzlukları önler.
  */
-export function useTriggerInitialValidation<T extends FieldValues>(
+export function useZodFormSubmitDisabled<T extends FieldValues>(
   form: UseFormReturn<T>,
-  enabled = true,
-  deps: readonly unknown[] = [],
-): void {
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
+  schema: ZodTypeAny,
+  options?: boolean | FormSubmitOptions,
+): boolean {
+  const { extraDisabled = false, requireDirty = false } =
+    resolveSubmitOptions(options);
+  const values = form.watch();
+  const { isSubmitting, isDirty } = useFormState({ control: form.control });
+  const isValid = schema.safeParse(values).success;
 
-    void form.trigger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- caller-controlled deps
-  }, [form, enabled, ...deps]);
+  return isFormSubmitDisabledState({
+    isSubmitting,
+    isValid,
+    isDirty,
+    extraDisabled,
+    requireDirty,
+  });
 }

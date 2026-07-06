@@ -17,8 +17,7 @@ import {
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import {
-  useFormSubmitDisabled,
-  useTriggerInitialValidation,
+  useZodFormSubmitDisabled,
 } from '@/lib/form/submit-state';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import { CardStackPlusIcon } from '@radix-ui/react-icons';
@@ -178,15 +177,18 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
 
   useEffect(() => {
     if (!languagesLoading && languages.length > 0) {
-      form.reset({
-        image: defaultValues.image,
-        shortImage: defaultValues.shortImage,
-        tags: defaultValues.tags,
-        categories: defaultValues.categories,
-        translations: defaultValues.translations
-          ? blogTranslationsFromDto(languages, defaultValues.translations)
-          : buildEmptyBlogTranslations(languages),
-      });
+      form.reset(
+        {
+          image: defaultValues.image,
+          shortImage: defaultValues.shortImage,
+          tags: defaultValues.tags,
+          categories: defaultValues.categories,
+          translations: defaultValues.translations
+            ? blogTranslationsFromDto(languages, defaultValues.translations)
+            : buildEmptyBlogTranslations(languages),
+        },
+        { keepDefaultValues: false },
+      );
     }
   }, [
     defaultValues,
@@ -201,16 +203,10 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
     }
   }, [languages, uiLocale]);
 
-  useTriggerInitialValidation(
-    form,
-    !languagesLoading && languages.length > 0,
-    [languagesLoading, languages.length, defaultValues, mode, blogId],
-  );
-
-  const submitDisabled = useFormSubmitDisabled(
-    form.control,
-    languagesLoading,
-  );
+  const submitDisabled = useZodFormSubmitDisabled(form, formSchema, {
+    extraDisabled: languagesLoading,
+    requireDirty: mode === 'edit',
+  });
 
   async function onSubmit(values: BlogFormValues) {
     const url = mode === 'create' ? `/api/blog/add` : `/api/blog/${blogId}`;
@@ -319,18 +315,21 @@ export default function BlogForm({ mode, blogId, defaultValues }: BlogFormProps)
                       form.setValue(
                         `translations.${language.code}.title`,
                         fields.title,
+                        { shouldValidate: true, shouldDirty: true },
                       );
                     }
                     if (fields.content) {
                       form.setValue(
                         `translations.${language.code}.content`,
                         fields.content,
+                        { shouldValidate: true, shouldDirty: true },
                       );
                     }
                     if (fields.summary) {
                       form.setValue(
                         `translations.${language.code}.summary`,
                         fields.summary,
+                        { shouldValidate: true, shouldDirty: true },
                       );
                     }
                   }}
