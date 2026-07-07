@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, Images, Loader2, X } from 'lucide-react';
@@ -12,8 +13,8 @@ type ProjectGalleryProps = {
   title: string;
 };
 
-const SWIPE_THRESHOLD_PX = 48;
-const SWIPE_MAX_ANGLE_RATIO = 1.25;
+const SWIPE_OFFSET_PX = 56;
+const SWIPE_VELOCITY = 420;
 
 function preloadImage(url: string) {
   const img = new window.Image();
@@ -36,6 +37,42 @@ function useAdjacentPreload(images: string[], activeIndex: number | null) {
   }, [activeIndex, images]);
 }
 
+function useLightboxScrollLock(active: boolean) {
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTop = body.style.top;
+    const previousBodyWidth = body.style.width;
+    const previousBodyTouchAction = body.style.touchAction;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
+    body.style.touchAction = 'none';
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.top = previousBodyTop;
+      body.style.width = previousBodyWidth;
+      body.style.touchAction = previousBodyTouchAction;
+      window.scrollTo(0, scrollY);
+    };
+  }, [active]);
+}
+
 type LightboxImageProps = {
   src: string;
   alt: string;
@@ -52,7 +89,7 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
     <div className="relative flex h-full w-full items-center justify-center">
       {!loaded && (
         <div
-          className="absolute inset-6 flex items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10 sm:inset-10"
+          className="absolute inset-4 flex items-center justify-center rounded-2xl bg-neutral-900 ring-1 ring-white/10 sm:inset-8"
           aria-hidden
         >
           <Loader2 className="h-8 w-8 animate-spin text-white/70" />
@@ -60,7 +97,7 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
       )}
       <div
         className={cn(
-          'relative h-full w-full max-h-full transition-opacity duration-300',
+          'relative h-full w-full transition-opacity duration-300',
           loaded ? 'opacity-100' : 'opacity-0',
         )}
       >
@@ -83,26 +120,26 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
 export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
   const t = useTranslations('Pages.Project');
   const reduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [slideDirection, setSlideDirection] = useState(0);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swipeSurfaceRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => setActiveIndex(null), []);
 
-  const goTo = useCallback(
-    (nextIndex: number) => {
-      setActiveIndex((current) => {
-        if (current === null) {
-          return nextIndex;
-        }
-
-        const delta = nextIndex - current;
-        setSlideDirection(delta >= 0 ? 1 : -1);
+  const goTo = useCallback((nextIndex: number) => {
+    setActiveIndex((current) => {
+      if (current === null) {
         return nextIndex;
-      });
-    },
-    [],
-  );
+      }
+
+      if (nextIndex !== current) {
+        setSlideDirection(nextIndex > current ? 1 : -1);
+      }
+
+      return nextIndex;
+    });
+  }, []);
 
   const showPrev = useCallback(() => {
     setActiveIndex((current) => {
@@ -131,7 +168,12 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
     setActiveIndex(index);
   }, []);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useAdjacentPreload(images, activeIndex);
+  useLightboxScrollLock(activeIndex !== null);
 
   useEffect(() => {
     if (activeIndex === null) {
@@ -150,54 +192,97 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
       }
     };
 
-    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, close, showNext, showPrev]);
 
-  const onTouchStart = (event: React.TouchEvent) => {
-    const touch = event.touches[0];
-    if (!touch) {
+  useEffect(() => {
+    if (activeIndex === null || images.length < 2) {
       return;
     }
 
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
-
-  const onTouchEnd = (event: React.TouchEvent) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-
-    if (!start || images.length < 2) {
+    const node = swipeSurfaceRef.current;
+    if (!node) {
       return;
     }
 
-    const touch = event.changedTouches[0];
-    if (!touch) {
-      return;
-    }
+    let startX = 0;
+    let startY = 0;
+    let tracking = false;
 
-    const deltaX = touch.clientX - start.x;
-    const deltaY = touch.clientY - start.y;
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) {
+        return;
+      }
 
-    if (
-      Math.abs(deltaX) < SWIPE_THRESHOLD_PX ||
-      Math.abs(deltaX) < Math.abs(deltaY) * SWIPE_MAX_ANGLE_RATIO
-    ) {
-      return;
-    }
+      startX = touch.clientX;
+      startY = touch.clientY;
+      tracking = true;
+    };
 
-    if (deltaX > 0) {
-      showPrev();
-      return;
-    }
+    const onTouchMove = (event: TouchEvent) => {
+      if (!tracking) {
+        return;
+      }
 
-    showNext();
-  };
+      const touch = event.touches[0];
+      if (!touch) {
+        return;
+      }
+
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      if (
+        Math.abs(deltaX) > Math.abs(deltaY) &&
+        Math.abs(deltaX) > 8
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (!tracking) {
+        return;
+      }
+
+      tracking = false;
+      const touch = event.changedTouches[0];
+      if (!touch) {
+        return;
+      }
+
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      if (
+        Math.abs(deltaX) < SWIPE_OFFSET_PX ||
+        Math.abs(deltaX) < Math.abs(deltaY)
+      ) {
+        return;
+      }
+
+      if (deltaX > 0) {
+        showPrev();
+        return;
+      }
+
+      showNext();
+    };
+
+    node.addEventListener('touchstart', onTouchStart, { passive: true });
+    node.addEventListener('touchmove', onTouchMove, { passive: false });
+    node.addEventListener('touchend', onTouchEnd, { passive: true });
+    node.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      node.removeEventListener('touchstart', onTouchStart);
+      node.removeEventListener('touchmove', onTouchMove);
+      node.removeEventListener('touchend', onTouchEnd);
+      node.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [activeIndex, images.length, showNext, showPrev]);
 
   if (images.length === 0) {
     return null;
@@ -212,20 +297,156 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
     : {
         enter: (direction: number) => ({
           opacity: 0,
-          x: direction >= 0 ? 72 : -72,
-          scale: 0.98,
+          x: direction >= 0 ? 56 : -56,
         }),
         center: {
           opacity: 1,
           x: 0,
-          scale: 1,
         },
         exit: (direction: number) => ({
           opacity: 0,
-          x: direction >= 0 ? -72 : 72,
-          scale: 0.98,
+          x: direction >= 0 ? -56 : 56,
         }),
       };
+
+  const lightbox =
+    activeIndex !== null ? (
+      <div
+        className="fixed inset-0 z-[9999] isolate flex h-[100dvh] w-screen flex-col bg-black text-white"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('galleryLightboxLabel', { title })}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 bg-black"
+          aria-hidden
+        />
+
+        <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-black px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-5">
+          <div className="min-w-0 flex-1 pr-2">
+            <p className="truncate text-sm font-medium text-white">{title}</p>
+            <p className="text-xs text-white/60">
+              {activeIndex + 1} / {images.length}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={close}
+            className="pointer-events-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/20 transition hover:bg-white/25 active:scale-95"
+            aria-label={t('galleryClose')}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div
+          ref={swipeSurfaceRef}
+          className="relative z-10 min-h-0 flex-1 touch-none overscroll-none"
+          style={{ touchAction: 'pan-x pinch-zoom' }}
+        >
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={showPrev}
+                className="absolute left-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-white/25 active:scale-95 md:inline-flex"
+                aria-label={t('galleryPrev')}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                onClick={showNext}
+                className="absolute right-3 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/20 backdrop-blur-sm transition hover:bg-white/25 active:scale-95 md:inline-flex"
+                aria-label={t('galleryNext')}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            </>
+          )}
+
+          <div className="absolute inset-0 px-2 py-2 sm:px-10">
+            <AnimatePresence mode="wait" custom={slideDirection}>
+              <motion.div
+                key={activeIndex}
+                custom={slideDirection}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: reduceMotion ? 0.1 : 0.2, ease: 'easeOut' }}
+                drag={images.length > 1 && !reduceMotion ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.14}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x > SWIPE_OFFSET_PX || info.velocity.x > SWIPE_VELOCITY) {
+                    showPrev();
+                  } else if (
+                    info.offset.x < -SWIPE_OFFSET_PX ||
+                    info.velocity.x < -SWIPE_VELOCITY
+                  ) {
+                    showNext();
+                  }
+                }}
+                className="relative h-full w-full cursor-grab active:cursor-grabbing"
+              >
+                <LightboxImage
+                  src={images[activeIndex]}
+                  alt={t('galleryImageAlt', {
+                    title,
+                    index: activeIndex + 1,
+                  })}
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {images.length > 1 && (
+          <div className="relative z-10 shrink-0 border-t border-white/10 bg-black px-3 py-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:hidden">
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={showPrev}
+                className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-white/12 text-sm font-medium text-white ring-1 ring-white/15 active:scale-[0.98] active:bg-white/20"
+                aria-label={t('galleryPrev')}
+              >
+                <ChevronLeft className="h-5 w-5 shrink-0" />
+                <span className="truncate">{t('galleryPrev')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={showNext}
+                className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-white/12 text-sm font-medium text-white ring-1 ring-white/15 active:scale-[0.98] active:bg-white/20"
+                aria-label={t('galleryNext')}
+              >
+                <span className="truncate">{t('galleryNext')}</span>
+                <ChevronRight className="h-5 w-5 shrink-0" />
+              </button>
+            </div>
+            <div className="mt-3 flex justify-center gap-1.5 overflow-x-auto px-1">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => goTo(index)}
+                  className={cn(
+                    'h-2 shrink-0 rounded-full transition-all',
+                    index === activeIndex
+                      ? 'w-7 bg-teal-400'
+                      : 'w-2 bg-white/35 active:bg-white/55',
+                  )}
+                  aria-label={t('galleryImageAlt', {
+                    title,
+                    index: index + 1,
+                  })}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    ) : null;
 
   return (
     <>
@@ -274,8 +495,8 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
                 priority={index === 0}
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-70 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100" />
-              <span className="absolute bottom-2.5 right-2.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-70 md:opacity-0 md:transition-opacity md:group-hover:opacity-100" />
+              <span className="absolute bottom-2.5 right-2.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
                 {t('galleryExpand')}
               </span>
             </button>
@@ -283,125 +504,7 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
         </div>
       </section>
 
-      {activeIndex !== null && (
-        <div
-          className="fixed inset-0 z-[220] flex flex-col bg-black/95 backdrop-blur-md"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t('galleryLightboxLabel', { title })}
-        >
-          <div className="relative z-30 flex shrink-0 items-center justify-between gap-3 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-5">
-            <div className="min-w-0 flex-1 pr-2">
-              <p className="truncate text-sm font-medium text-white/90">{title}</p>
-              <p className="text-xs text-white/55">
-                {activeIndex + 1} / {images.length}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={close}
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/12 text-white ring-1 ring-white/15 transition hover:bg-white/20 active:scale-95"
-              aria-label={t('galleryClose')}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div
-            className="relative z-20 min-h-0 flex-1 touch-pan-y"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
-            {images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={showPrev}
-                  className="absolute left-3 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white ring-1 ring-white/15 backdrop-blur-md transition hover:bg-black/60 active:scale-95 sm:inline-flex md:left-5"
-                  aria-label={t('galleryPrev')}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  type="button"
-                  onClick={showNext}
-                  className="absolute right-3 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white ring-1 ring-white/15 backdrop-blur-md transition hover:bg-black/60 active:scale-95 sm:inline-flex md:right-5"
-                  aria-label={t('galleryNext')}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            )}
-
-            <div className="absolute inset-0 px-1 sm:px-8 sm:pb-4">
-              <AnimatePresence mode="wait" custom={slideDirection}>
-                <motion.div
-                  key={activeIndex}
-                  custom={slideDirection}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: reduceMotion ? 0.12 : 0.22, ease: 'easeOut' }}
-                  className="relative h-full w-full"
-                >
-                  <LightboxImage
-                    src={images[activeIndex]}
-                    alt={t('galleryImageAlt', {
-                      title,
-                      index: activeIndex + 1,
-                    })}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {images.length > 1 && (
-            <div className="relative z-30 shrink-0 border-t border-white/10 bg-black/40 px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={showPrev}
-                  className="inline-flex h-12 min-w-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-white/10 text-sm font-medium text-white ring-1 ring-white/10 transition active:scale-[0.98] active:bg-white/15"
-                  aria-label={t('galleryPrev')}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                  <span>{t('galleryPrev')}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={showNext}
-                  className="inline-flex h-12 min-w-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-white/10 text-sm font-medium text-white ring-1 ring-white/10 transition active:scale-[0.98] active:bg-white/15"
-                  aria-label={t('galleryNext')}
-                >
-                  <span>{t('galleryNext')}</span>
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="mt-3 flex justify-center gap-1.5">
-                {images.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => goTo(index)}
-                    className={cn(
-                      'h-1.5 rounded-full transition-all',
-                      index === activeIndex
-                        ? 'w-6 bg-teal-400'
-                        : 'w-1.5 bg-white/35 hover:bg-white/55',
-                    )}
-                    aria-label={t('galleryImageAlt', {
-                      title,
-                      index: index + 1,
-                    })}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {mounted && lightbox ? createPortal(lightbox, document.body) : null}
     </>
   );
 }
