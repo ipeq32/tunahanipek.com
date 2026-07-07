@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
 import Image from 'next/image';
-import { LATEST_INSTAGRAM_POST } from '@/lib/instagram';
+import { PROFILE_INSTAGRAM_POST } from '@/lib/instagram';
 
 export const revalidate = 300;
 
@@ -85,14 +85,14 @@ export default async function AboutPage() {
       <ContentCard className="mt-2">
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
           <a
-            href={LATEST_INSTAGRAM_POST.url}
+            href={PROFILE_INSTAGRAM_POST.url}
             target="_blank"
             rel="noopener noreferrer"
             className="group relative block h-24 w-24 shrink-0 overflow-hidden rounded-2xl shadow-lg shadow-teal-500/25 ring-2 ring-teal-500/20 transition hover:shadow-teal-500/35 hover:ring-teal-500/40"
             aria-label={t('profilePhotoAria')}
           >
             <Image
-              src={LATEST_INSTAGRAM_POST.src}
+              src={PROFILE_INSTAGRAM_POST.src}
               alt={t('profilePhotoAlt')}
               width={96}
               height={96}

@@ -23,4 +23,4 @@ export const INSTAGRAM_POSTS: InstagramPost[] = [
   },
 ];
 
-export const LATEST_INSTAGRAM_POST = INSTAGRAM_POSTS[0];
+export const PROFILE_INSTAGRAM_POST = INSTAGRAM_POSTS[3];
