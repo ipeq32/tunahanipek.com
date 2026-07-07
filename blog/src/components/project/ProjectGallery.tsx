@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  type PanInfo,
+} from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, Images, Loader2, X } from 'lucide-react';
 import BlogImage from '@/components/blog/BlogImage';
@@ -15,6 +21,9 @@ type ProjectGalleryProps = {
 
 const SWIPE_OFFSET_PX = 56;
 const SWIPE_VELOCITY = 420;
+const SLIDE_GAP_PX = 14;
+const PEEK_PX_MOBILE = 36;
+const PEEK_PX_DESKTOP = 52;
 
 function preloadImage(url: string) {
   const img = new window.Image();
@@ -78,6 +87,159 @@ type LightboxImageProps = {
   alt: string;
 };
 
+type LightboxCarouselProps = {
+  images: string[];
+  activeIndex: number;
+  reduceMotion: boolean | null;
+  onGoTo: (index: number) => void;
+  onPrev: () => void;
+  onNext: () => void;
+  imageAlt: (index: number) => string;
+};
+
+function LightboxCarousel({
+  images,
+  activeIndex,
+  reduceMotion,
+  onGoTo,
+  onPrev,
+  onNext,
+  imageAlt,
+}: LightboxCarouselProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [peekPx, setPeekPx] = useState(PEEK_PX_MOBILE);
+  const x = useMotionValue(0);
+  const skipAnimationRef = useRef(true);
+
+  const slideWidth =
+    containerWidth > 0 ? Math.max(containerWidth - peekPx * 2, 0) : 0;
+  const stride = slideWidth + SLIDE_GAP_PX;
+  const targetX = stride > 0 ? peekPx - activeIndex * stride : 0;
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) {
+      return;
+    }
+
+    const updateLayout = () => {
+      const width = node.clientWidth;
+      setContainerWidth(width);
+      setPeekPx(width >= 768 ? PEEK_PX_DESKTOP : PEEK_PX_MOBILE);
+    };
+
+    updateLayout();
+
+    const observer = new ResizeObserver(updateLayout);
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (stride <= 0) {
+      return;
+    }
+
+    if (skipAnimationRef.current || reduceMotion) {
+      x.set(targetX);
+      skipAnimationRef.current = false;
+      return;
+    }
+
+    const controls = animate(x, targetX, {
+      type: 'spring',
+      stiffness: 380,
+      damping: 36,
+      mass: 0.82,
+    });
+
+    return () => controls.stop();
+  }, [reduceMotion, stride, targetX, x]);
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (stride <= 0) {
+      return;
+    }
+
+    if (info.offset.x > SWIPE_OFFSET_PX || info.velocity.x > SWIPE_VELOCITY) {
+      onPrev();
+      return;
+    }
+
+    if (info.offset.x < -SWIPE_OFFSET_PX || info.velocity.x < -SWIPE_VELOCITY) {
+      onNext();
+      return;
+    }
+
+    if (reduceMotion) {
+      x.set(targetX);
+      return;
+    }
+
+    animate(x, targetX, {
+      type: 'spring',
+      stiffness: 380,
+      damping: 36,
+      mass: 0.82,
+    });
+  };
+
+  if (images.length === 1) {
+    return (
+      <div ref={containerRef} className="h-full w-full">
+        <LightboxImage src={images[0]} alt={imageAlt(0)} />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className="h-full w-full overflow-hidden">
+      <motion.div
+        className="flex h-full cursor-grab items-center active:cursor-grabbing"
+        style={{ x, gap: SLIDE_GAP_PX }}
+        drag={reduceMotion ? false : 'x'}
+        dragElastic={0.1}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+      >
+        {images.map((src, index) => {
+          const isActive = index === activeIndex;
+
+          return (
+            <motion.div
+              key={`${src}-${index}`}
+              className={cn(
+                'relative h-[88%] shrink-0 overflow-hidden rounded-2xl bg-neutral-950 ring-1 transition-shadow duration-300 sm:h-[90%]',
+                isActive
+                  ? 'shadow-2xl shadow-black/60 ring-white/15'
+                  : 'shadow-lg shadow-black/30 ring-white/5',
+              )}
+              style={{ width: slideWidth > 0 ? slideWidth : '84%' }}
+              animate={{
+                scale: isActive ? 1 : 0.94,
+                opacity: isActive ? 1 : 0.5,
+              }}
+              transition={{
+                duration: reduceMotion ? 0.05 : 0.22,
+                ease: 'easeOut',
+              }}
+              onClick={() => {
+                if (!isActive) {
+                  onGoTo(index);
+                }
+              }}
+            >
+              <LightboxImage src={src} alt={imageAlt(index)} />
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    </div>
+  );
+}
+
 function LightboxImage({ src, alt }: LightboxImageProps) {
   const [loaded, setLoaded] = useState(false);
 
@@ -122,23 +284,11 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [slideDirection, setSlideDirection] = useState(0);
-  const swipeSurfaceRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => setActiveIndex(null), []);
 
   const goTo = useCallback((nextIndex: number) => {
-    setActiveIndex((current) => {
-      if (current === null) {
-        return nextIndex;
-      }
-
-      if (nextIndex !== current) {
-        setSlideDirection(nextIndex > current ? 1 : -1);
-      }
-
-      return nextIndex;
-    });
+    setActiveIndex(nextIndex);
   }, []);
 
   const showPrev = useCallback(() => {
@@ -147,7 +297,6 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
         return null;
       }
 
-      setSlideDirection(-1);
       return (current - 1 + images.length) % images.length;
     });
   }, [images.length]);
@@ -158,13 +307,11 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
         return null;
       }
 
-      setSlideDirection(1);
       return (current + 1) % images.length;
     });
   }, [images.length]);
 
   const openAt = useCallback((index: number) => {
-    setSlideDirection(0);
     setActiveIndex(index);
   }, []);
 
@@ -196,118 +343,9 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, close, showNext, showPrev]);
 
-  useEffect(() => {
-    if (activeIndex === null || images.length < 2) {
-      return;
-    }
-
-    const node = swipeSurfaceRef.current;
-    if (!node) {
-      return;
-    }
-
-    let startX = 0;
-    let startY = 0;
-    let tracking = false;
-
-    const onTouchStart = (event: TouchEvent) => {
-      const touch = event.touches[0];
-      if (!touch) {
-        return;
-      }
-
-      startX = touch.clientX;
-      startY = touch.clientY;
-      tracking = true;
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (!tracking) {
-        return;
-      }
-
-      const touch = event.touches[0];
-      if (!touch) {
-        return;
-      }
-
-      const deltaX = touch.clientX - startX;
-      const deltaY = touch.clientY - startY;
-
-      if (
-        Math.abs(deltaX) > Math.abs(deltaY) &&
-        Math.abs(deltaX) > 8
-      ) {
-        event.preventDefault();
-      }
-    };
-
-    const onTouchEnd = (event: TouchEvent) => {
-      if (!tracking) {
-        return;
-      }
-
-      tracking = false;
-      const touch = event.changedTouches[0];
-      if (!touch) {
-        return;
-      }
-
-      const deltaX = touch.clientX - startX;
-      const deltaY = touch.clientY - startY;
-
-      if (
-        Math.abs(deltaX) < SWIPE_OFFSET_PX ||
-        Math.abs(deltaX) < Math.abs(deltaY)
-      ) {
-        return;
-      }
-
-      if (deltaX > 0) {
-        showPrev();
-        return;
-      }
-
-      showNext();
-    };
-
-    node.addEventListener('touchstart', onTouchStart, { passive: true });
-    node.addEventListener('touchmove', onTouchMove, { passive: false });
-    node.addEventListener('touchend', onTouchEnd, { passive: true });
-    node.addEventListener('touchcancel', onTouchEnd, { passive: true });
-
-    return () => {
-      node.removeEventListener('touchstart', onTouchStart);
-      node.removeEventListener('touchmove', onTouchMove);
-      node.removeEventListener('touchend', onTouchEnd);
-      node.removeEventListener('touchcancel', onTouchEnd);
-    };
-  }, [activeIndex, images.length, showNext, showPrev]);
-
   if (images.length === 0) {
     return null;
   }
-
-  const slideVariants = reduceMotion
-    ? {
-        enter: { opacity: 0 },
-        center: { opacity: 1 },
-        exit: { opacity: 0 },
-      }
-    : {
-        enter: (direction: number) => ({
-          opacity: 0,
-          x: direction >= 0 ? 56 : -56,
-        }),
-        center: {
-          opacity: 1,
-          x: 0,
-        },
-        exit: (direction: number) => ({
-          opacity: 0,
-          x: direction >= 0 ? -56 : 56,
-        }),
-      };
 
   const lightbox =
     activeIndex !== null ? (
@@ -340,9 +378,8 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
         </div>
 
         <div
-          ref={swipeSurfaceRef}
-          className="relative z-10 min-h-0 flex-1 touch-none overscroll-none"
-          style={{ touchAction: 'pan-x pinch-zoom' }}
+          className="relative z-10 min-h-0 flex-1 overscroll-none"
+          style={{ touchAction: 'pan-x' }}
         >
           {images.length > 1 && (
             <>
@@ -365,40 +402,21 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
             </>
           )}
 
-          <div className="absolute inset-0 px-2 py-2 sm:px-10">
-            <AnimatePresence mode="wait" custom={slideDirection}>
-              <motion.div
-                key={activeIndex}
-                custom={slideDirection}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: reduceMotion ? 0.1 : 0.2, ease: 'easeOut' }}
-                drag={images.length > 1 && !reduceMotion ? 'x' : false}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.14}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x > SWIPE_OFFSET_PX || info.velocity.x > SWIPE_VELOCITY) {
-                    showPrev();
-                  } else if (
-                    info.offset.x < -SWIPE_OFFSET_PX ||
-                    info.velocity.x < -SWIPE_VELOCITY
-                  ) {
-                    showNext();
-                  }
-                }}
-                className="relative h-full w-full cursor-grab active:cursor-grabbing"
-              >
-                <LightboxImage
-                  src={images[activeIndex]}
-                  alt={t('galleryImageAlt', {
-                    title,
-                    index: activeIndex + 1,
-                  })}
-                />
-              </motion.div>
-            </AnimatePresence>
+          <div className="absolute inset-0 py-2">
+            <LightboxCarousel
+              images={images}
+              activeIndex={activeIndex}
+              reduceMotion={reduceMotion}
+              onGoTo={goTo}
+              onPrev={showPrev}
+              onNext={showNext}
+              imageAlt={(index) =>
+                t('galleryImageAlt', {
+                  title,
+                  index: index + 1,
+                })
+              }
+            />
           </div>
         </div>
 
