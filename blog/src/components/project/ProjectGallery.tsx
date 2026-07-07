@@ -421,8 +421,8 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
         </div>
 
         {images.length > 1 && (
-          <div className="relative z-10 shrink-0 border-t border-white/10 bg-black px-3 py-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:hidden">
-            <div className="flex items-center gap-2.5">
+          <div className="relative z-10 shrink-0 border-t border-white/10 bg-black px-3 py-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:py-4">
+            <div className="flex items-center gap-2.5 md:hidden">
               <button
                 type="button"
                 onClick={showPrev}
@@ -442,7 +442,7 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
                 <ChevronRight className="h-5 w-5 shrink-0" />
               </button>
             </div>
-            <div className="mt-3 flex justify-center gap-1.5 overflow-x-auto px-1">
+            <div className="mt-3 flex justify-center gap-1.5 overflow-x-auto px-1 md:mt-0">
               {images.map((_, index) => (
                 <button
                   key={index}
@@ -452,12 +452,13 @@ export default function ProjectGallery({ images, title }: ProjectGalleryProps) {
                     'h-2 shrink-0 rounded-full transition-all',
                     index === activeIndex
                       ? 'w-7 bg-teal-400'
-                      : 'w-2 bg-white/35 active:bg-white/55',
+                      : 'w-2 bg-white/35 hover:bg-white/50 active:bg-white/55',
                   )}
                   aria-label={t('galleryImageAlt', {
                     title,
                     index: index + 1,
                   })}
+                  aria-current={index === activeIndex ? 'true' : undefined}
                 />
               ))}
             </div>
