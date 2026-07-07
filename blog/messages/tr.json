@@ -1049,6 +1049,8 @@
       "description": "Mikroservis, real-time sistemler ve DevOps süreçlerinde uzmanlaşmış Senior Full Stack geliştirici.",
       "role": "Senior Full Stack Developer & DevOps Architect",
       "location": "Denizli, Türkiye",
+      "profilePhotoAlt": "Tunahan İPEK — Instagram'daki son fotoğraf",
+      "profilePhotoAria": "Instagram'daki son fotoğrafı görüntüle",
       "intro": "Merhaba, ben Tunahan İPEK. Karmaşık mikroservis mimarileri, real-time veri akışları ve ileri seviye DevOps süreçlerinde uzmanlaşmış, çözüm odaklı bir Senior Full Stack geliştiriciyim. Modern JavaScript ekosistemi (Next.js, NestJS, Svelte) ve konteyner orkestrasyonu (Kubernetes) konularında derin teknik bilgiye sahibim. Kendi fiziksel sunucularımda kurduğum self-hosted altyapılardan teknik ekiplere liderlik etmeye kadar uçtan uca ürün geliştirme tecrübem var; temiz mimari, ölçeklenebilirlik ve sürdürülebilir kod benim için önceliklidir.",
       "highlights": [
         "Senior Full-Stack",

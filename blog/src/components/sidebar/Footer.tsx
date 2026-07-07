@@ -16,6 +16,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { RotatingMotto } from './_features/RotatingMotto';
 import { SiteContainer } from '@/components/layout/site-container';
+import { INSTAGRAM_POSTS } from '@/lib/instagram';
 import { SOCIAL_LINKS } from '@/lib/social';
 import type { SiteOwnerProfile } from '@/lib/site-owner';
 import { buildTelHref, formatPhoneDisplay } from '@/lib/contact/display';
@@ -45,25 +46,6 @@ const Footer = ({ isAuthenticated, userName, mottos, siteOwner }: FooterProps) =
   });
 
   const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-
-  const instagramLinks = [
-    {
-      src: '/insta-photo-1.jpg',
-      url: 'https://www.instagram.com/p/BtYoiKplxjKfBcFcpjSfCRhiBgWjmFYyCMQMqM0/',
-    },
-    {
-      src: '/insta-photo-2.jpg',
-      url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
-    },
-    {
-      src: '/insta-photo-3.jpg',
-      url: 'https://www.instagram.com/p/BtRVtURFUM2kWGGaaq_VektF2mH1Jl81ApwhQg0/',
-    },
-    {
-      src: '/insta-photo-4.jpg',
-      url: 'https://www.instagram.com/p/CzXScHENJP_IaA1kbULM4rGAt_e3F_ljwHfguw0/',
-    },
-  ];
 
   const usefulLinks: Array<{
     href: '/about-me' | '/project' | '/faq' | '/contact' | '/privacy' | '/terms';
@@ -175,7 +157,7 @@ const Footer = ({ isAuthenticated, userName, mottos, siteOwner }: FooterProps) =
             Instagram
           </h3>
           <div className="grid w-full max-w-none grid-cols-2 gap-2.5 sm:max-w-[180px]">
-            {instagramLinks.map((link, index) => (
+            {INSTAGRAM_POSTS.map((link, index) => (
               <Link
                 key={index}
                 href={link.url}

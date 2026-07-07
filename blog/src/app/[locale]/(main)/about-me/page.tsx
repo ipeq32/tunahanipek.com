@@ -3,6 +3,8 @@ import { ContentCard } from '@/components/layout/content-card';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/page-metadata';
+import Image from 'next/image';
+import { LATEST_INSTAGRAM_POST } from '@/lib/instagram';
 
 export const revalidate = 300;
 
@@ -82,9 +84,22 @@ export default async function AboutPage() {
 
       <ContentCard className="mt-2">
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 text-3xl font-bold text-white shadow-lg shadow-teal-500/25">
-            Tİ
-          </div>
+          <a
+            href={LATEST_INSTAGRAM_POST.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative block h-24 w-24 shrink-0 overflow-hidden rounded-2xl shadow-lg shadow-teal-500/25 ring-2 ring-teal-500/20 transition hover:shadow-teal-500/35 hover:ring-teal-500/40"
+            aria-label={t('profilePhotoAria')}
+          >
+            <Image
+              src={LATEST_INSTAGRAM_POST.src}
+              alt={t('profilePhotoAlt')}
+              width={96}
+              height={96}
+              priority
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </a>
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               <span className="font-medium text-foreground">{t('role')}</span>
