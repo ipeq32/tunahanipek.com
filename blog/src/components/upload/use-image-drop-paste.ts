@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  dataTransferHasFiles,
   getImageFilesFromClipboard,
   getImageFilesFromDataTransfer,
 } from '@/lib/upload/image-files';
@@ -43,13 +44,12 @@ export function useImageDropPaste({
         return;
       }
 
-      dragDepthRef.current += 1;
-      if (
-        event.dataTransfer.types.includes('Files') ||
-        getImageFilesFromDataTransfer(event.dataTransfer).length > 0
-      ) {
-        setIsDragging(true);
+      if (!dataTransferHasFiles(event.dataTransfer)) {
+        return;
       }
+
+      dragDepthRef.current += 1;
+      setIsDragging(true);
     },
     [disabled],
   );
@@ -67,7 +67,7 @@ export function useImageDropPaste({
     (event: React.DragEvent<HTMLElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      if (disabled) {
+      if (disabled || !dataTransferHasFiles(event.dataTransfer)) {
         return;
       }
       event.dataTransfer.dropEffect = 'copy';
@@ -81,7 +81,7 @@ export function useImageDropPaste({
       event.stopPropagation();
       dragDepthRef.current = 0;
       setIsDragging(false);
-      if (disabled) {
+      if (disabled || !dataTransferHasFiles(event.dataTransfer)) {
         return;
       }
 
@@ -90,6 +90,12 @@ export function useImageDropPaste({
     },
     [disabled, processFiles],
   );
+
+  // Alan içindeki önizleme görsellerinin sürüklenmesini engelle; aksi halde
+  // önizlemeyi tutup aynı alana bırakmak yanlış bir "yeni dosya" gibi algılanır.
+  const onDragStart = useCallback((event: React.DragEvent<HTMLElement>) => {
+    event.preventDefault();
+  }, []);
 
   const onMouseEnter = useCallback(() => {
     isHoveringRef.current = true;
@@ -133,6 +139,7 @@ export function useImageDropPaste({
     zoneRef,
     isDragging,
     dropZoneProps: {
+      onDragStart,
       onDragEnter,
       onDragLeave,
       onDragOver,

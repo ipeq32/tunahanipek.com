@@ -2,6 +2,22 @@ export function isImageFile(file: File): boolean {
   return file.type.startsWith('image/');
 }
 
+/**
+ * Yalnızca işletim sisteminden gelen gerçek dosya sürüklemelerinde `true` döner.
+ * Sayfa içi `<img>`/metin sürüklemelerinde `types` yalnızca `text/*` içerir ve
+ * `'Files'` bulunmaz; bu sayede önizleme görselini sürükleyip bırakmak yanlışlıkla
+ * yeniden yükleme tetiklemez.
+ */
+export function dataTransferHasFiles(
+  dataTransfer: DataTransfer | null,
+): boolean {
+  if (!dataTransfer) {
+    return false;
+  }
+
+  return Array.from(dataTransfer.types).includes('Files');
+}
+
 export function getImageFilesFromDataTransfer(
   dataTransfer: DataTransfer | null,
 ): File[] {
