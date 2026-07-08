@@ -31,15 +31,15 @@ export default function ProjectCard({ project, visitLabel }: ProjectCardProps) {
             </span>
           )}
         </div>
-        <div className="flex flex-1 flex-col gap-2 p-5">
+        <div className="flex min-h-0 flex-1 flex-col gap-2 p-5">
           <h3 className="text-lg font-semibold leading-snug tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400">
             {project.title}
           </h3>
-          <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
+          <p className="line-clamp-3 text-sm text-muted-foreground">
             {stripHtmlText(project.description)}
           </p>
           {project.url && (
-            <span className="mt-1 inline-flex items-center text-sm font-medium text-teal-600 dark:text-teal-400">
+            <span className="mt-auto inline-flex items-center text-sm font-medium text-teal-600 dark:text-teal-400">
               {visitLabel}
               <ArrowUpRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </span>
