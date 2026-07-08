@@ -4,11 +4,10 @@ import { Menu, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
-import { site } from "@/app/_content/site";
 import { ToggleLanguage } from "@/app/_components/controls/ToggleLanguage";
 import { ToggleTheme } from "@/app/_components/controls/ToggleTheme";
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
-import { getBlogContactUrl } from "@/app/_lib/blog-urls";
+import { getBlogContactUrl, getBlogHomeUrl } from "@/app/_lib/blog-urls";
 import type { Locale } from "@/config";
 import { NavbarLogo } from "./NavbarLogo";
 
@@ -27,16 +26,17 @@ export default function Navbar() {
   const locale = useLocale() as Locale;
   const [mobileOpen, setMobileOpen] = useState(false);
   const contactUrl = getBlogContactUrl(locale);
+  const blogUrl = getBlogHomeUrl(locale);
 
   const navItems = useMemo<NavItem[]>(
     () => [
       { key: "home", href: "#home" },
       { key: "about", href: "#about" },
       { key: "experience", href: "#experience" },
-      { key: "blog", href: site.blogUrl, external: true },
+      { key: "blog", href: blogUrl, external: true },
       { key: "contact", href: CONTACT_SECTION },
     ],
-    [],
+    [blogUrl],
   );
 
   return (

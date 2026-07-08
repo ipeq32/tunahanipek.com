@@ -1,18 +1,22 @@
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import ResumeDownloadButton from "@/app/_components/resume/ResumeDownloadButton";
 import { site } from "@/app/_content/site";
+import { getBlogProjectsUrl } from "@/app/_lib/blog-urls";
 import type { PublicResume } from "@/app/_lib/resume";
+import type { Locale } from "@/config";
 
 type HeroProps = {
   resume: PublicResume | null;
 };
 
 export default async function Hero({ resume }: HeroProps) {
+  const locale = (await getLocale()) as Locale;
   const t = await getTranslations("Hero");
+  const projectsUrl = getBlogProjectsUrl(locale);
 
   return (
     <section id="home" className="scroll-mt-20 py-16 lg:py-24">
@@ -33,7 +37,7 @@ export default async function Hero({ resume }: HeroProps) {
           <div className="mt-8 flex flex-wrap gap-3">
             <ResumeDownloadButton resume={resume} />
             <a
-              href={site.projectsUrl}
+              href={projectsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-outline"

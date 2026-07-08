@@ -23,6 +23,18 @@ export function getBlogPageUrl(locale: Locale, pathname: BlogPathname): string {
   return `${blogBase}/${locale}${path}`;
 }
 
+export function getBlogHomeUrl(locale: Locale): string {
+  return getBlogPageUrl(locale, "/");
+}
+
+export function getBlogListingUrl(locale: Locale): string {
+  return getBlogPageUrl(locale, "/blog");
+}
+
+export function getBlogProjectsUrl(locale: Locale): string {
+  return getBlogPageUrl(locale, "/project");
+}
+
 export function getBlogContactUrl(locale: Locale): string {
   return getBlogPageUrl(locale, "/contact");
 }

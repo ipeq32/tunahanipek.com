@@ -1,11 +1,14 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
-import { site } from "@/app/_content/site";
+import { getBlogHomeUrl } from "@/app/_lib/blog-urls";
+import type { Locale } from "@/config";
 import { Link } from "@/navigation";
 
 export default async function LocaleNotFound() {
+  const locale = (await getLocale()) as Locale;
   const t = await getTranslations("NotFound");
+  const blogUrl = getBlogHomeUrl(locale);
 
   return (
     <SiteContainer
@@ -21,7 +24,7 @@ export default async function LocaleNotFound() {
         <Link href="/" className="btn-dark">
           {t("home")}
         </Link>
-        <a href={site.blogUrl} className="btn-outline">
+        <a href={blogUrl} className="btn-outline">
           {t("blog")}
         </a>
       </div>

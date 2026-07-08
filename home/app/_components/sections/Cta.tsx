@@ -1,21 +1,25 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { SiteContainer } from "@/app/_components/layout/SiteContainer";
 import { site } from "@/app/_content/site";
+import { getBlogHomeUrl } from "@/app/_lib/blog-urls";
 import type { PublicContact } from "@/app/_lib/contact";
+import type { Locale } from "@/config";
 
 type CtaProps = {
   contact: PublicContact;
 };
 
 export default async function Cta({ contact }: CtaProps) {
+  const locale = (await getLocale()) as Locale;
   const t = await getTranslations("Cta");
+  const blogUrl = getBlogHomeUrl(locale);
 
   const socialLinks = [
     { key: "linkedin", href: site.social.linkedin },
     { key: "github", href: site.social.github },
     { key: "twitter", href: site.social.twitter },
-    { key: "blog", href: site.blogUrl },
+    { key: "blog", href: blogUrl },
   ] as const;
 
   return (

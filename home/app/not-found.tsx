@@ -1,7 +1,8 @@
-import { site } from "@/app/_content/site";
+import { getBlogHomeUrl } from "@/app/_lib/blog-urls";
 import { defaultLocale } from "@/config";
 
 export default function NotFound() {
+  const blogUrl = getBlogHomeUrl(defaultLocale);
   return (
     <html lang={defaultLocale}>
       <body className="min-h-screen bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-50">
@@ -19,7 +20,7 @@ export default function NotFound() {
               Home
             </a>
             <a
-              href={site.blogUrl}
+              href={blogUrl}
               className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold dark:border-slate-700"
             >
               Blog
