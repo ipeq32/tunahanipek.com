@@ -10,6 +10,8 @@ type CharacterCountProps = {
   max?: number;
   trim?: boolean;
   className?: string;
+  /** false iken boş/min-altı alanlar gri kalır */
+  showMinWarning?: boolean;
 };
 
 export function getCharacterLength(
@@ -21,13 +23,13 @@ export function getCharacterLength(
 
 export function getCharacterCountState(
   length: number,
-  { min, max }: { min?: number; max?: number }
+  { min, max, showMinWarning = false }: { min?: number; max?: number; showMinWarning?: boolean }
 ): CharacterCountState {
   if (max !== undefined && length > max) {
     return 'over-max';
   }
 
-  if (min !== undefined && length < min) {
+  if (min !== undefined && length < min && showMinWarning) {
     return 'below-min';
   }
 
@@ -40,9 +42,10 @@ export function CharacterCount({
   max,
   trim = true,
   className,
+  showMinWarning = false,
 }: CharacterCountProps) {
   const length = getCharacterLength(value, { trim });
-  const state = getCharacterCountState(length, { min, max });
+  const state = getCharacterCountState(length, { min, max, showMinWarning });
   const denominator = max ?? min;
 
   if (denominator === undefined) {

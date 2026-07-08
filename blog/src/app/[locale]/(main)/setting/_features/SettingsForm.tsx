@@ -27,9 +27,8 @@ import {
 } from '@/components/ui/form';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
-import {
-  useFormSubmitDisabled,
-} from '@/lib/form/submit-state';
+import { useFormBaseline } from '@/lib/form/form-baseline';
+import { useFormSubmitDisabled } from '@/lib/form/submit-state';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { ContentCard } from '@/components/layout/content-card';
@@ -43,7 +42,7 @@ import {
   type LucideIcon,
   UserRound,
 } from 'lucide-react';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import AiSettingsSection from './AiSettingsSection';
 import ConnectedAccountsSection from './ConnectedAccountsSection';
 import ResumeSettingsSection from './ResumeSettingsSection';
@@ -209,7 +208,7 @@ function IconField<T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
           <FormLabel>
             {label}
@@ -244,6 +243,7 @@ function IconField<T extends FieldValues>({
                 min={minLength}
                 max={maxLength}
                 trim={countTrim}
+                showMinWarning={fieldState.isDirty || fieldState.isTouched}
               />
             )}
           </FormFieldFooter>
@@ -291,6 +291,17 @@ export default function SettingsForm({
     ...LIVE_FORM_OPTIONS,
   });
 
+  const {
+    baseline: profileBaseline,
+    baselineVersion: profileBaselineVersion,
+    syncBaselineAfterReset: syncProfileBaseline,
+  } = useFormBaseline(profileForm);
+
+  useEffect(() => {
+    profileForm.reset(initialUser);
+    syncProfileBaseline();
+  }, [initialUser, profileForm, syncProfileBaseline]);
+
   type PasswordFormValues = z.infer<ReturnType<typeof createPasswordFormSchema>>;
 
   const passwordSchema = useMemo(
@@ -331,6 +342,7 @@ export default function SettingsForm({
       // Görsel kaydedildi; oturum temizliğinde silinmesini engelle.
       imageCleanup.commit();
       await update();
+      syncProfileBaseline();
       toast.success(t('profileSuccess'));
     } catch {
       toast.error(t('profileError'));
@@ -361,6 +373,8 @@ export default function SettingsForm({
 
   const profileSubmitDisabled = useFormSubmitDisabled(profileForm.control, {
     requireDirty: true,
+    baseline: profileBaseline,
+    baselineVersion: profileBaselineVersion,
   });
   const passwordSubmitDisabled = useFormSubmitDisabled(passwordForm.control);
   const profileSubmitting = profileForm.formState.isSubmitting;
@@ -383,7 +397,7 @@ export default function SettingsForm({
               <FormField
                 control={profileForm.control}
                 name="image"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>{t('image')}</FormLabel>
                     <ImageUpload
@@ -412,7 +426,7 @@ export default function SettingsForm({
                   <FormField
                     control={profileForm.control}
                     name="phone"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel>
                           {t('phone')}
@@ -445,6 +459,7 @@ export default function SettingsForm({
                             value={parsePhoneDigits(String(field.value ?? ''))}
                             min={FIELD_LIMITS.profile.phone.min}
                             max={FIELD_LIMITS.profile.phone.min}
+                            showMinWarning={fieldState.isDirty || fieldState.isTouched}
                           />
                         </FormFieldFooter>
                       </FormItem>
@@ -492,7 +507,7 @@ export default function SettingsForm({
                 <FormField
                   control={profileForm.control}
                   name="bio"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>{t('bio')}</FormLabel>
                       <FormControl>

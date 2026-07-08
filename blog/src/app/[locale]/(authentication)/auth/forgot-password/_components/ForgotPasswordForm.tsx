@@ -70,7 +70,7 @@ export default function ForgotPasswordForm() {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }) => (
+                render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>
                   {t('emailPlaceholder')}
@@ -84,6 +84,7 @@ export default function ForgotPasswordForm() {
                   <CharacterCount
                     value={field.value}
                     max={FIELD_LIMITS.contact.email.max}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>

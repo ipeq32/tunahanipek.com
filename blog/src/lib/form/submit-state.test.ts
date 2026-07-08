@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest';
+import { deepEqual } from './form-values-equal';
 import { isFormSubmitDisabledState } from './submit-state';
+
+describe('deepEqual', () => {
+  it('compares primitives and nested objects', () => {
+    expect(deepEqual(1, 1)).toBe(true);
+    expect(deepEqual(1, 2)).toBe(false);
+    expect(
+      deepEqual({ a: 1, b: { c: ['x'] } }, { a: 1, b: { c: ['x'] } }),
+    ).toBe(true);
+    expect(
+      deepEqual({ a: 1, b: { c: ['x'] } }, { a: 1, b: { c: ['y'] } }),
+    ).toBe(false);
+  });
+});
 
 describe('isFormSubmitDisabledState', () => {
   const validClean = {

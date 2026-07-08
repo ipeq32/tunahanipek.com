@@ -48,12 +48,18 @@ export default function RichTextEditor({
   onChange,
   placeholder,
 }: RichTextEditorProps) {
+  const handleChange = (next: string) => {
+    if (next !== (value ?? '')) {
+      onChange?.(next);
+    }
+  };
+
   return (
     <div className="rich-editor">
       <ReactQuill
         theme="snow"
         value={value ?? ''}
-        onChange={onChange}
+        onChange={handleChange}
         placeholder={placeholder}
         modules={MODULES}
         formats={FORMATS}

@@ -94,7 +94,7 @@ export default function ResetPasswordForm() {
         <FormField
           control={form.control}
           name="password"
-          render={({ field }) => (
+              render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>
                 {t('passwordPlaceholder')}
@@ -105,7 +105,12 @@ export default function ResetPasswordForm() {
               </FormControl>
               <FormFieldFooter>
                 <FormMessage />
-                <CharacterCount value={field.value} min={passwordMin} trim={false} />
+                <CharacterCount
+                  value={field.value}
+                  min={passwordMin}
+                  trim={false}
+                  showMinWarning={fieldState.isDirty || fieldState.isTouched}
+                />
               </FormFieldFooter>
             </FormItem>
           )}
@@ -113,7 +118,7 @@ export default function ResetPasswordForm() {
         <FormField
           control={form.control}
           name="passwordConfirm"
-          render={({ field }) => (
+              render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>
                 {t('passwordConfirmPlaceholder')}
@@ -127,7 +132,12 @@ export default function ResetPasswordForm() {
               </FormControl>
               <FormFieldFooter>
                 <FormMessage />
-                <CharacterCount value={field.value} min={passwordMin} trim={false} />
+                <CharacterCount
+                  value={field.value}
+                  min={passwordMin}
+                  trim={false}
+                  showMinWarning={fieldState.isDirty || fieldState.isTouched}
+                />
               </FormFieldFooter>
             </FormItem>
           )}

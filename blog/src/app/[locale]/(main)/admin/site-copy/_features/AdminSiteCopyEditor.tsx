@@ -24,6 +24,7 @@ import {
   validateSnippetContent,
 } from '@/lib/validations/site-snippets';
 import { FIELD_LIMITS } from '@/lib/form/field-limits';
+import { cloneFormValues, deepEqual } from '@/lib/form/form-values-equal';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -78,6 +79,17 @@ function toDraftsFromStrings(contents: string[]): SnippetDraft[] {
   }));
 }
 
+function normalizeDraftsForCompare(drafts: SnippetDraft[]) {
+  return drafts.map((draft) => ({
+    content: draft.content,
+    isActive: draft.isActive,
+  }));
+}
+
+function draftBaselineKey(tab: EditorTab, localeCode: string) {
+  return `${tab}:${localeCode}`;
+}
+
 function buildDraftState(
   dataByLocale: Record<string, LocaleSnippetData>,
   key: 'tips' | 'mottos'
@@ -119,6 +131,12 @@ export default function AdminSiteCopyEditor({
   const [addLineOpen, setAddLineOpen] = useState(false);
   const [listPage, setListPage] = useState(1);
   const [listLimit, setListLimit] = useState<PageSize>(DEFAULT_PAGE_SIZE);
+  const [draftBaselines, setDraftBaselines] = useState<
+    Record<string, SnippetDraft[]>
+  >({});
+  const [touchedDraftIds, setTouchedDraftIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   const currentDrafts = useMemo(() => {
     const store = activeTab === 'TIP' ? tipsByLocale : mottosByLocale;
@@ -138,7 +156,47 @@ export default function AdminSiteCopyEditor({
   useEffect(() => {
     setListPage(1);
     setSelectedIndex(null);
+    setTouchedDraftIds(new Set());
   }, [activeTab, locale, currentDrafts.length]);
+
+  const currentBaselineKey = draftBaselineKey(activeTab, locale);
+  const currentBaseline = draftBaselines[currentBaselineKey] ?? null;
+
+  useEffect(() => {
+    setDraftBaselines((previous) => {
+      if (previous[currentBaselineKey]) {
+        return previous;
+      }
+
+      return {
+        ...previous,
+        [currentBaselineKey]: cloneFormValues(currentDrafts),
+      };
+    });
+  }, [currentBaselineKey, currentDrafts]);
+
+  const hasDraftChanges = useMemo(() => {
+    if (!currentBaseline) {
+      return false;
+    }
+
+    return !deepEqual(
+      normalizeDraftsForCompare(currentDrafts),
+      normalizeDraftsForCompare(currentBaseline),
+    );
+  }, [currentBaseline, currentDrafts]);
+
+  const markDraftTouched = useCallback((localId: string) => {
+    setTouchedDraftIds((current) => {
+      if (current.has(localId)) {
+        return current;
+      }
+
+      const next = new Set(current);
+      next.add(localId);
+      return next;
+    });
+  }, []);
 
   const activeCount = currentDrafts.filter(
     (item) => item.isActive && item.content.trim()
@@ -152,8 +210,8 @@ export default function AdminSiteCopyEditor({
   }, [currentDrafts]);
 
   const canSave = useMemo(
-    () => canSaveSnippetDrafts(currentDrafts, contentMessages),
-    [contentMessages, currentDrafts]
+    () => canSaveSnippetDrafts(currentDrafts, contentMessages) && hasDraftChanges,
+    [contentMessages, currentDrafts, hasDraftChanges],
   );
 
   const sourceLocale = useMemo(() => {
@@ -261,6 +319,17 @@ export default function AdminSiteCopyEditor({
         ...prev,
         ...Object.fromEntries(results.map((item) => [item.code, item.mottos])),
       }));
+      setDraftBaselines((previous) => {
+        const next = { ...previous };
+        for (const item of results) {
+          next[draftBaselineKey('TIP', item.code)] = cloneFormValues(item.tips);
+          next[draftBaselineKey('FOOTER_MOTTO', item.code)] = cloneFormValues(
+            item.mottos,
+          );
+        }
+        return next;
+      });
+      setTouchedDraftIds(new Set());
       setSelectedIndex(null);
       toast.success(t('refreshed'));
     } catch {
@@ -308,6 +377,12 @@ export default function AdminSiteCopyEditor({
       } else {
         setMottosByLocale((prev) => ({ ...prev, [locale]: nextDrafts }));
       }
+
+      setDraftBaselines((previous) => ({
+        ...previous,
+        [draftBaselineKey(activeTab, locale)]: cloneFormValues(nextDrafts),
+      }));
+      setTouchedDraftIds(new Set());
 
       toast.success(t('saved'));
     } catch {
@@ -585,6 +660,8 @@ export default function AdminSiteCopyEditor({
                     item.content,
                     contentMessages
                   );
+                  const isDraftTouched = touchedDraftIds.has(item.localId);
+                  const showContentError = isDraftTouched && Boolean(contentError);
                   return (
                   <div
                     key={item.localId}
@@ -675,9 +752,13 @@ export default function AdminSiteCopyEditor({
 
                     <Textarea
                       value={item.content}
-                      onFocus={() => setSelectedIndex(index)}
+                      onFocus={() => {
+                        setSelectedIndex(index);
+                        markDraftTouched(item.localId);
+                      }}
                       onChange={(event) => {
                         const value = event.target.value;
+                        markDraftTouched(item.localId);
                         setCurrentDrafts((items) =>
                           items.map((draft, draftIndex) =>
                             draftIndex === index
@@ -688,14 +769,14 @@ export default function AdminSiteCopyEditor({
                       }}
                       rows={3}
                       placeholder={t('contentPlaceholder')}
-                      aria-invalid={Boolean(contentError)}
+                      aria-invalid={showContentError}
                       className={cn(
                         'font-mono text-[13px] leading-relaxed',
-                        contentError &&
+                        showContentError &&
                           'border-destructive focus-visible:ring-destructive/30'
                       )}
                     />
-                    {contentError ? (
+                    {showContentError ? (
                       <p className="text-xs text-destructive">{contentError}</p>
                     ) : null}
                     <div className="flex justify-end">
@@ -703,6 +784,7 @@ export default function AdminSiteCopyEditor({
                         value={item.content}
                         min={FIELD_LIMITS.siteSnippet.content.min}
                         max={FIELD_LIMITS.siteSnippet.content.max}
+                        showMinWarning={isDraftTouched}
                       />
                     </div>
                   </div>

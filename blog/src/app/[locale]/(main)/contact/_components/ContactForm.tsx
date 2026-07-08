@@ -111,7 +111,7 @@ export function ContactForm() {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
                       {t('nameLabel')}
@@ -126,6 +126,7 @@ export function ContactForm() {
                         value={field.value}
                         min={limits.name.min}
                         max={limits.name.max}
+                        showMinWarning={fieldState.isDirty || fieldState.isTouched}
                       />
                     </FormFieldFooter>
                   </FormItem>
@@ -134,7 +135,7 @@ export function ContactForm() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
                       {t('emailLabel')}
@@ -149,7 +150,11 @@ export function ContactForm() {
                     </FormControl>
                     <FormFieldFooter>
                       <FormMessage />
-                      <CharacterCount value={field.value} max={limits.email.max} />
+                      <CharacterCount
+                        value={field.value}
+                        max={limits.email.max}
+                        showMinWarning={fieldState.isDirty || fieldState.isTouched}
+                      />
                     </FormFieldFooter>
                   </FormItem>
                 )}
@@ -158,7 +163,7 @@ export function ContactForm() {
             <FormField
               control={form.control}
               name="message"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>
                     {t('messageLabel')}
@@ -178,6 +183,7 @@ export function ContactForm() {
                       value={field.value}
                       min={limits.message.min}
                       max={limits.message.max}
+                      showMinWarning={fieldState.isDirty || fieldState.isTouched}
                     />
                   </FormFieldFooter>
                 </FormItem>

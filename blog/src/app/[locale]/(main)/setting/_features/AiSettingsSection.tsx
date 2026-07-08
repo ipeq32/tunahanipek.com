@@ -134,6 +134,20 @@ export default function AiSettingsSection() {
   const [saved, setSaved] = useState<AiSettingsData | null>(null);
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
 
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(() => new Set());
+
+  const markTouched = useCallback((field: string) => {
+    setTouchedFields((current) => {
+      if (current.has(field)) {
+        return current;
+      }
+
+      const next = new Set(current);
+      next.add(field);
+      return next;
+    });
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -345,15 +359,17 @@ export default function AiSettingsSection() {
               </label>
               <Input
                 value={form.geminiModel}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, geminiModel: e.target.value }))
-                }
+                onChange={(e) => {
+                  markTouched('geminiModel');
+                  setForm((prev) => ({ ...prev, geminiModel: e.target.value }));
+                }}
               />
               <div className="flex justify-end">
                 <CharacterCount
                   value={form.geminiModel}
                   min={FIELD_LIMITS.aiModel.min}
                   max={FIELD_LIMITS.aiModel.max}
+                  showMinWarning={touchedFields.has('geminiModel')}
                 />
               </div>
             </div>
@@ -384,15 +400,17 @@ export default function AiSettingsSection() {
               </label>
               <Input
                 value={form.groqModel}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, groqModel: e.target.value }))
-                }
+                onChange={(e) => {
+                  markTouched('groqModel');
+                  setForm((prev) => ({ ...prev, groqModel: e.target.value }));
+                }}
               />
               <div className="flex justify-end">
                 <CharacterCount
                   value={form.groqModel}
                   min={FIELD_LIMITS.aiModel.min}
                   max={FIELD_LIMITS.aiModel.max}
+                  showMinWarning={touchedFields.has('groqModel')}
                 />
               </div>
             </div>
@@ -421,15 +439,17 @@ export default function AiSettingsSection() {
               </label>
               <Input
                 value={form.ollamaModel}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, ollamaModel: e.target.value }))
-                }
+                onChange={(e) => {
+                  markTouched('ollamaModel');
+                  setForm((prev) => ({ ...prev, ollamaModel: e.target.value }));
+                }}
               />
               <div className="flex justify-end">
                 <CharacterCount
                   value={form.ollamaModel}
                   min={FIELD_LIMITS.aiModel.min}
                   max={FIELD_LIMITS.aiModel.max}
+                  showMinWarning={touchedFields.has('ollamaModel')}
                 />
               </div>
             </div>

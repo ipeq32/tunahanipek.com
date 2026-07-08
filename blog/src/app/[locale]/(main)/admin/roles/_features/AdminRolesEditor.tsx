@@ -52,6 +52,7 @@ import { cn } from '@/lib/utils';
 import { CharacterCount } from '@/components/ui/character-count';
 import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import { useFormSubmitDisabled } from '@/lib/form/submit-state';
+import { useFormBaseline } from '@/lib/form/form-baseline';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
@@ -173,12 +174,20 @@ export default function AdminRolesEditor({
     ...LIVE_FORM_OPTIONS,
   });
 
+  const {
+    baseline: editBaseline,
+    baselineVersion: editBaselineVersion,
+    syncBaselineAfterReset: syncEditBaseline,
+  } = useFormBaseline(editForm);
+
   const createSubmitDisabled = useFormSubmitDisabled(createForm.control, {
     extraDisabled: saving || mode !== 'create',
   });
   const editSubmitDisabled = useFormSubmitDisabled(editForm.control, {
     extraDisabled: saving || mode !== 'edit',
     requireDirty: true,
+    baseline: editBaseline,
+    baselineVersion: editBaselineVersion,
   });
   const submitDisabled =
     mode === 'edit'
@@ -252,6 +261,7 @@ export default function AdminRolesEditor({
       },
       { keepDefaultValues: false },
     );
+    syncEditBaseline();
   };
 
   const closeEditor = () => {
@@ -476,7 +486,7 @@ export default function AdminRolesEditor({
                     <FormField
                       control={createForm.control}
                       name="name"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <FormLabel htmlFor="role-name">
                             {t('name')}
@@ -504,6 +514,7 @@ export default function AdminRolesEditor({
                               value={field.value}
                               min={FIELD_LIMITS.role.name.min}
                               max={FIELD_LIMITS.role.name.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>
@@ -513,7 +524,7 @@ export default function AdminRolesEditor({
                     <FormField
                       control={createForm.control}
                       name="slug"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <FormLabel htmlFor="role-slug">
                             {t('slug')}
@@ -528,6 +539,7 @@ export default function AdminRolesEditor({
                               value={field.value}
                               min={FIELD_LIMITS.role.slug.min}
                               max={FIELD_LIMITS.role.slug.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>
@@ -537,7 +549,7 @@ export default function AdminRolesEditor({
                     <FormField
                       control={createForm.control}
                       name="description"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem className="md:col-span-2">
                           <FormLabel htmlFor="role-description">
                             {t('descriptionLabel')}
@@ -554,6 +566,7 @@ export default function AdminRolesEditor({
                             <CharacterCount
                               value={field.value ?? ''}
                               max={FIELD_LIMITS.role.description.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>
@@ -575,7 +588,7 @@ export default function AdminRolesEditor({
                     <FormField
                       control={editForm.control}
                       name="name"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <FormLabel htmlFor="role-name">
                             {t('name')}
@@ -590,6 +603,7 @@ export default function AdminRolesEditor({
                               value={field.value}
                               min={FIELD_LIMITS.role.name.min}
                               max={FIELD_LIMITS.role.name.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>
@@ -599,7 +613,7 @@ export default function AdminRolesEditor({
                     <FormField
                       control={editForm.control}
                       name="description"
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem className="md:col-span-2">
                           <FormLabel htmlFor="role-description">
                             {t('descriptionLabel')}
@@ -616,6 +630,7 @@ export default function AdminRolesEditor({
                             <CharacterCount
                               value={field.value ?? ''}
                               max={FIELD_LIMITS.role.description.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>

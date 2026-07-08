@@ -265,7 +265,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Email.label')}
@@ -284,6 +284,7 @@ export default function RegisterForm() {
                   <CharacterCount
                     value={field.value}
                     max={FIELD_LIMITS.contact.email.max}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>
@@ -292,7 +293,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="name"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Name.label')}
@@ -310,6 +311,7 @@ export default function RegisterForm() {
                   <CharacterCount
                     value={field.value}
                     min={FIELD_LIMITS.register.name.min}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>
@@ -318,7 +320,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="passwordForm.password"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Password.label')}
@@ -337,6 +339,7 @@ export default function RegisterForm() {
                     value={field.value}
                     min={FIELD_LIMITS.password.min}
                     trim={false}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>
@@ -345,7 +348,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="passwordForm.passwordConfirm"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.PasswordConfirm.label')}
@@ -364,6 +367,7 @@ export default function RegisterForm() {
                     value={field.value}
                     min={FIELD_LIMITS.password.min}
                     trim={false}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>
@@ -372,7 +376,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="phone"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Phone.label')}
@@ -390,6 +394,7 @@ export default function RegisterForm() {
                   <CharacterCount
                     value={field.value}
                     min={FIELD_LIMITS.register.phone.min}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>
@@ -398,7 +403,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="website"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Website.label')}
@@ -436,7 +441,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="bio"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Bio.label')}
@@ -454,6 +459,7 @@ export default function RegisterForm() {
                   <CharacterCount
                     value={field.value ?? ''}
                     min={FIELD_LIMITS.register.bio.min}
+                    showMinWarning={fieldState.isDirty || fieldState.isTouched}
                   />
                 </FormFieldFooter>
               </FormItem>

@@ -1,21 +1,45 @@
 import type { Control, FieldValues, UseFormReturn } from 'react-hook-form';
-import { useFormState } from 'react-hook-form';
+import { useFormState, useWatch } from 'react-hook-form';
 import type { ZodTypeAny } from 'zod';
+import { deepEqual } from '@/lib/form/form-values-equal';
 
-export type FormSubmitOptions = {
+export type FormSubmitOptions<T extends FieldValues = FieldValues> = {
   extraDisabled?: boolean;
   /** Düzenleme formlarında kaydet yalnızca değişiklik yapıldığında aktif olur */
   requireDirty?: boolean;
+  /** Reset sonrası yakalanan snapshot; varsa RHF isDirty yerine kullanılır */
+  baseline?: T | null;
+  baselineVersion?: number;
 };
 
-function resolveSubmitOptions(
-  options?: boolean | FormSubmitOptions,
-): FormSubmitOptions {
+function resolveSubmitOptions<T extends FieldValues>(
+  options?: boolean | FormSubmitOptions<T>,
+): FormSubmitOptions<T> {
   if (typeof options === 'boolean') {
     return { extraDisabled: options };
   }
 
   return options ?? {};
+}
+
+function resolveHasChanges<T extends FieldValues>({
+  baseline,
+  baselineVersion,
+  values,
+  isDirty,
+}: {
+  baseline?: T | null;
+  baselineVersion?: number;
+  values: T;
+  isDirty: boolean;
+}): boolean {
+  void baselineVersion;
+
+  if (baseline != null) {
+    return !deepEqual(values, baseline);
+  }
+
+  return isDirty;
 }
 
 export function isFormSubmitDisabledState(state: {
@@ -46,16 +70,23 @@ export function isFormSubmitDisabledState(state: {
 /** react-hook-form `isValid` ile submit kilidi (basit formlar). */
 export function useFormSubmitDisabled<T extends FieldValues>(
   control: Control<T>,
-  options?: boolean | FormSubmitOptions,
+  options?: boolean | FormSubmitOptions<T>,
 ): boolean {
-  const { extraDisabled = false, requireDirty = false } =
+  const { extraDisabled = false, requireDirty = false, baseline, baselineVersion } =
     resolveSubmitOptions(options);
   const { isSubmitting, isValid, isDirty } = useFormState({ control });
+  const values = useWatch({ control }) as T;
+  const hasChanges = resolveHasChanges({
+    baseline,
+    baselineVersion,
+    values,
+    isDirty,
+  });
 
   return isFormSubmitDisabledState({
     isSubmitting,
     isValid,
-    isDirty,
+    isDirty: hasChanges,
     extraDisabled,
     requireDirty,
   });
@@ -68,18 +99,24 @@ export function useFormSubmitDisabled<T extends FieldValues>(
 export function useZodFormSubmitDisabled<T extends FieldValues>(
   form: UseFormReturn<T>,
   schema: ZodTypeAny,
-  options?: boolean | FormSubmitOptions,
+  options?: boolean | FormSubmitOptions<T>,
 ): boolean {
-  const { extraDisabled = false, requireDirty = false } =
+  const { extraDisabled = false, requireDirty = false, baseline, baselineVersion } =
     resolveSubmitOptions(options);
   const values = form.watch();
   const { isSubmitting, isDirty } = useFormState({ control: form.control });
   const isValid = schema.safeParse(values).success;
+  const hasChanges = resolveHasChanges({
+    baseline,
+    baselineVersion,
+    values,
+    isDirty,
+  });
 
   return isFormSubmitDisabledState({
     isSubmitting,
     isValid,
-    isDirty,
+    isDirty: hasChanges,
     extraDisabled,
     requireDirty,
   });

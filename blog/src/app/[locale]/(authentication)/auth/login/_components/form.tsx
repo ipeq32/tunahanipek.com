@@ -151,7 +151,7 @@ export default function LoginForm({
         <FormField
           control={form.control}
           name="email"
-          render={({ field }) => (
+            render={({ field, fieldState }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
                 {t('Form.Email.label')}
@@ -170,6 +170,7 @@ export default function LoginForm({
                 <CharacterCount
                   value={field.value}
                   max={FIELD_LIMITS.contact.email.max}
+                  showMinWarning={fieldState.isDirty || fieldState.isTouched}
                 />
               </FormFieldFooter>
             </FormItem>
@@ -178,7 +179,7 @@ export default function LoginForm({
         <FormField
           control={form.control}
           name="password"
-          render={({ field }) => (
+            render={({ field, fieldState }) => (
             <FormItem className="w-full">
               <FormLabel className="text-xs text-black dark:text-white">
                 {t('Form.Password.label')}
@@ -197,6 +198,7 @@ export default function LoginForm({
                   value={field.value}
                   min={FIELD_LIMITS.password.min}
                   trim={false}
+                  showMinWarning={fieldState.isDirty || fieldState.isTouched}
                 />
               </FormFieldFooter>
             </FormItem>

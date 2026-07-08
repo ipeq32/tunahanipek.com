@@ -357,7 +357,7 @@ export function AddSiteCopyLineDialog({
                       key={code}
                       control={form.control}
                       name={code}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <FormItem>
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <FormLabel htmlFor={contentId}>
@@ -424,6 +424,7 @@ export function AddSiteCopyLineDialog({
                               value={field.value}
                               min={FIELD_LIMITS.siteSnippet.content.min}
                               max={FIELD_LIMITS.siteSnippet.content.max}
+                              showMinWarning={fieldState.isDirty || fieldState.isTouched}
                             />
                           </FormFieldFooter>
                         </FormItem>

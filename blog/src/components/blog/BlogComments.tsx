@@ -438,6 +438,7 @@ function CommentDraftField({
           value={value}
           min={COMMENT_LIMITS.min}
           max={COMMENT_LIMITS.max}
+          showMinWarning={trimmed.length > 0}
         />
       </div>
     </div>

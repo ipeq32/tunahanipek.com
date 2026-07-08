@@ -19,6 +19,7 @@ import { FIELD_LIMITS, LIVE_FORM_OPTIONS } from '@/lib/form/field-limits';
 import {
   useZodFormSubmitDisabled,
 } from '@/lib/form/submit-state';
+import { useFormBaseline } from '@/lib/form/form-baseline';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import { Input } from '@/components/ui/input';
 import ImageUpload from '@/components/upload/ImageUpload';
@@ -196,6 +197,8 @@ export default function ProjectForm({
     ...LIVE_FORM_OPTIONS,
   });
 
+  const { baseline, baselineVersion, syncBaselineAfterReset } = useFormBaseline(form);
+
   useEffect(() => {
     if (!languagesLoading && languages.length > 0) {
       form.reset(
@@ -210,8 +213,12 @@ export default function ProjectForm({
         },
         { keepDefaultValues: false },
       );
+
+      if (mode === 'edit') {
+        syncBaselineAfterReset();
+      }
     }
-  }, [defaultValues, form, initialPublished, languages, languagesLoading]);
+  }, [defaultValues, form, initialPublished, languages, languagesLoading, mode, syncBaselineAfterReset]);
 
   useEffect(() => {
     if (languages.some((l) => l.code === uiLocale)) {
@@ -222,6 +229,8 @@ export default function ProjectForm({
   const submitDisabled = useZodFormSubmitDisabled(form, formSchema, {
     extraDisabled: languagesLoading,
     requireDirty: mode === 'edit',
+    baseline: mode === 'edit' ? baseline : null,
+    baselineVersion,
   });
 
   async function onSubmit(values: ProjectFormValues) {
@@ -294,15 +303,14 @@ export default function ProjectForm({
             />
           </div>
 
-          {languages.map((language) => {
-            const hidden = language.code !== activeLanguage;
+          {(() => {
+            const language = languages.find((item) => item.code === activeLanguage);
+            if (!language) {
+              return null;
+            }
 
             return (
-              <div
-                key={language.id}
-                className={hidden ? 'hidden' : 'space-y-5'}
-                aria-hidden={hidden}
-              >
+              <div key={language.id} className="space-y-5">
                 <AiContentActions
                   contentType="project"
                   activeLanguage={language.code}
@@ -334,7 +342,7 @@ export default function ProjectForm({
                 <FormField
                   control={form.control}
                   name={`translations.${language.code}.title`}
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="text-xs">
                         {t('fieldTitle')} ({language.name})
@@ -349,6 +357,7 @@ export default function ProjectForm({
                           value={field.value}
                           min={FIELD_LIMITS.project.title.min}
                           max={FIELD_LIMITS.project.title.max}
+                          showMinWarning={fieldState.isDirty || fieldState.isTouched}
                         />
                       </FormFieldFooter>
                     </FormItem>
@@ -371,26 +380,20 @@ export default function ProjectForm({
                         />
                       </FormControl>
                       <FormFieldFooter>
-                        {fieldState.error ? (
-                          <p className="text-sm font-medium text-destructive">
-                            {fieldState.error.message}
-                          </p>
-                        ) : (
-                          <span />
-                        )}
+                        <FormMessage />
                         <CharacterCount
                           value={stripHtmlText(field.value)}
                           min={FIELD_LIMITS.project.description.min}
                           max={FIELD_LIMITS.project.description.max}
+                          showMinWarning={fieldState.isDirty || fieldState.isTouched}
                         />
                       </FormFieldFooter>
                     </FormItem>
                   )}
                 />
-
               </div>
             );
-          })}
+          })()}
 
           <FormField
             control={form.control}

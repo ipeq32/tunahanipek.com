@@ -5,11 +5,13 @@ import type * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
 import {
   Controller,
+  ControllerFieldState,
   ControllerProps,
   FieldPath,
   FieldValues,
   FormProvider,
   useFormContext,
+  useFormState,
 } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
@@ -60,9 +62,20 @@ const useFormField = () => {
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
+    isSubmitted: formState.isSubmitted,
     ...fieldState,
   };
 };
+
+export function shouldShowFieldError(
+  fieldState: Pick<ControllerFieldState, 'error' | 'isDirty' | 'isTouched'>,
+  isSubmitted = false,
+): boolean {
+  return Boolean(
+    fieldState.error &&
+      (fieldState.isDirty || fieldState.isTouched || isSubmitted),
+  );
+}
 
 type FormItemContextValue = {
   id: string;
@@ -90,12 +103,13 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField();
+  const { error, isDirty, isTouched, isSubmitted, formItemId } = useFormField();
+  const showError = shouldShowFieldError({ error, isDirty, isTouched }, isSubmitted);
 
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-destructive', className)}
+      className={cn(showError && 'text-destructive', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -107,19 +121,27 @@ const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } =
-    useFormField();
+  const {
+    error,
+    isDirty,
+    isTouched,
+    isSubmitted,
+    formItemId,
+    formDescriptionId,
+    formMessageId,
+  } = useFormField();
+  const showError = shouldShowFieldError({ error, isDirty, isTouched }, isSubmitted);
 
   return (
     <Slot
       ref={ref}
       id={formItemId}
       aria-describedby={
-        !error
+        !showError
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={showError}
       {...props}
     />
   );
@@ -147,8 +169,9 @@ const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
-  const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message) : children;
+  const { error, isDirty, isTouched, isSubmitted, formMessageId } = useFormField();
+  const showError = shouldShowFieldError({ error, isDirty, isTouched }, isSubmitted);
+  const body = showError ? String(error?.message) : children;
 
   if (!body) {
     return null;
@@ -166,6 +189,26 @@ const FormMessage = React.forwardRef<
   );
 });
 FormMessage.displayName = 'FormMessage';
+
+type DeferredFieldErrorProps = {
+  fieldState: ControllerFieldState;
+  className?: string;
+};
+
+function DeferredFieldError({ fieldState, className }: DeferredFieldErrorProps) {
+  const { isSubmitted } = useFormState();
+  const showError = shouldShowFieldError(fieldState, isSubmitted);
+
+  if (!showError || !fieldState.error?.message) {
+    return null;
+  }
+
+  return (
+    <p className={cn('text-sm font-medium text-destructive', className)}>
+      {fieldState.error.message}
+    </p>
+  );
+}
 
 function FormRequiredIndicator({ className }: { className?: string }) {
   return (
@@ -196,6 +239,7 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
+  DeferredFieldError,
   FormField,
   FormRequiredIndicator,
   FormFieldFooter,

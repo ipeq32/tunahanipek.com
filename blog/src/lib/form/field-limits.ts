@@ -44,6 +44,6 @@ export const FIELD_LIMITS = {
 } as const;
 
 export const LIVE_FORM_OPTIONS = {
-  mode: 'onChange' as const,
+  mode: 'onTouched' as const,
   reValidateMode: 'onChange' as const,
 };
