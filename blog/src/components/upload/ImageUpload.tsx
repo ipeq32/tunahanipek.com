@@ -9,9 +9,12 @@ import {
   Loader2,
   Trash2,
   UploadCloud,
+  ZoomIn,
 } from 'lucide-react';
 import BlogImage from '@/components/blog/BlogImage';
 import { MediaPreviewImage } from '@/components/ui/media-preview-image';
+import { ImagePreviewDialog } from '@/components/upload/image-preview-dialog';
+import { useLocalImagePreview } from '@/hooks/use-local-image-preview';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
@@ -48,6 +51,13 @@ export default function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const { previewUrl, setPreviewFromFile, clearPreview } = useLocalImagePreview();
+
+  const displaySrc = previewUrl ?? value ?? '';
+  const hasPreview = Boolean(displaySrc);
+  const isLocalPreview = Boolean(previewUrl);
+  const isUploaded = Boolean(value) && !isLocalPreview;
 
   const { startUpload, isUploading } = useUploadThing(endpoint, {
     onUploadProgress: setProgress,
@@ -60,20 +70,28 @@ export default function ImageUpload({
         onChange(url);
         toast.success(t('success'));
       }
+      clearPreview();
       setProgress(0);
     },
     onUploadError: () => {
       toast.error(t('error'));
+      clearPreview();
       setProgress(0);
     },
   });
 
   const handleRemove = () => {
     if (value) cleanup?.release(value);
+    clearPreview();
     onChange('');
   };
 
   const busy = isUploading || isCompressing;
+
+  const openPreview = () => {
+    if (!hasPreview || busy) return;
+    setPreviewOpen(true);
+  };
 
   const openPicker = () => {
     if (disabled || busy) return;
@@ -84,6 +102,8 @@ export default function ImageUpload({
     async (files: File[]) => {
       const file = files[0];
       if (!file) return;
+
+      setPreviewFromFile(file);
 
       const { maxFileSizeBytes, maxFileSizeLabel, compression } =
         UPLOAD_CONFIG[endpoint];
@@ -96,6 +116,7 @@ export default function ImageUpload({
           fileToUpload = await compressImage(file, compression);
         } catch {
           toast.error(t('compressFailed'));
+          clearPreview();
           return;
         } finally {
           setIsCompressing(false);
@@ -104,12 +125,13 @@ export default function ImageUpload({
 
       if (fileToUpload.size > maxFileSizeBytes) {
         toast.error(t('tooLarge', { size: maxFileSizeLabel }));
+        clearPreview();
         return;
       }
 
       await startUpload([fileToUpload]);
     },
-    [endpoint, startUpload, t],
+    [clearPreview, endpoint, setPreviewFromFile, startUpload, t],
   );
 
   const { zoneRef, isDragging, dropZoneProps } = useImageDropPaste({
@@ -151,21 +173,34 @@ export default function ImageUpload({
       >
         {fileInput}
         <div className="group relative h-28 w-28">
-          {value ? (
-            <div
+          {hasPreview ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={openPreview}
               className={cn(
-                'relative h-full w-full overflow-hidden rounded-full border border-border/60 bg-muted/30 shadow-sm ring-2 ring-teal-500/20',
+                'relative h-full w-full overflow-hidden rounded-full border border-border/60 bg-muted/30 shadow-sm ring-2 ring-teal-500/20 transition hover:ring-teal-500/35 disabled:cursor-default',
                 dropHighlightClass,
               )}
+              aria-label={t('previewExpand')}
             >
-              <BlogImage
-                key={value}
-                src={value}
-                alt="avatar preview"
-                fill
-                sizes="112px"
-                className="object-cover"
-              />
+              {isLocalPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={displaySrc}
+                  alt={t('previewAlt')}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <BlogImage
+                  key={displaySrc}
+                  src={displaySrc}
+                  alt={t('previewAlt')}
+                  fill
+                  sizes="112px"
+                  className="object-cover"
+                />
+              )}
               {busy && (
                 <UploadingOverlay
                   progress={progress}
@@ -174,7 +209,7 @@ export default function ImageUpload({
                   compressing={isCompressing}
                 />
               )}
-            </div>
+            </button>
           ) : (
             <button
               type="button"
@@ -200,8 +235,18 @@ export default function ImageUpload({
             </button>
           )}
 
-          {value && !busy && (
+          {hasPreview && !busy && (
             <div className="absolute -bottom-1 -right-1 flex gap-1">
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={openPreview}
+                aria-label={t('previewExpand')}
+                title={t('previewExpand')}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white shadow-md transition hover:bg-black/85 disabled:opacity-50"
+              >
+                <ZoomIn className="h-3.5 w-3.5" />
+              </button>
               <button
                 type="button"
                 disabled={disabled}
@@ -226,6 +271,12 @@ export default function ImageUpload({
           )}
         </div>
         <span className="text-xs text-muted-foreground">{t('avatarHint')}</span>
+        <ImagePreviewDialog
+          src={displaySrc}
+          alt={t('previewAlt')}
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+        />
       </div>
     );
   }
@@ -238,7 +289,7 @@ export default function ImageUpload({
     >
       {fileInput}
 
-      {value ? (
+      {hasPreview ? (
         <div
           className={cn(
             'group relative w-full overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-sm ring-1 ring-black/5 dark:ring-white/5',
@@ -246,16 +297,43 @@ export default function ImageUpload({
             dropHighlightClass,
           )}
         >
-          <MediaPreviewImage
-            src={value}
-            alt="upload preview"
-            sizes="(max-width: 640px) 100vw, 480px"
-            quality={92}
-            priority
-            imageClassName="object-cover"
-          />
+          <button
+            type="button"
+            disabled={busy}
+            onClick={openPreview}
+            className="relative h-full w-full cursor-zoom-in disabled:cursor-default"
+            aria-label={t('previewExpand')}
+          >
+            {isLocalPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={displaySrc}
+                alt={t('previewAlt')}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <MediaPreviewImage
+                src={displaySrc}
+                alt={t('previewAlt')}
+                sizes="(max-width: 640px) 100vw, 480px"
+                quality={92}
+                priority
+                imageClassName="object-cover"
+              />
+            )}
+          </button>
 
           <div className="absolute right-2 top-2 flex gap-1.5">
+            <button
+              type="button"
+              disabled={disabled || busy}
+              onClick={openPreview}
+              aria-label={t('previewExpand')}
+              title={t('previewExpand')}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 disabled:opacity-50"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
             <button
               type="button"
               disabled={disabled || busy}
@@ -278,12 +356,14 @@ export default function ImageUpload({
             </button>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/65 via-black/20 to-transparent px-3 pb-2.5 pt-8">
-            <CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />
-            <span className="text-xs font-medium text-white/90">
-              {t('uploaded')}
-            </span>
-          </div>
+          {isUploaded && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/65 via-black/20 to-transparent px-3 pb-2.5 pt-8">
+              <CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />
+              <span className="text-xs font-medium text-white/90">
+                {t('uploaded')}
+              </span>
+            </div>
+          )}
 
           {busy && (
             <UploadingOverlay
@@ -324,6 +404,12 @@ export default function ImageUpload({
           )}
         </button>
       )}
+      <ImagePreviewDialog
+        src={displaySrc}
+        alt={t('previewAlt')}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+      />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ImagePlus, Loader2, Trash2, ZoomIn } from 'lucide-react';
 import { MediaPreviewImage } from '@/components/ui/media-preview-image';
+import { ImagePreviewDialog } from '@/components/upload/image-preview-dialog';
+import { usePendingGalleryPreviews } from '@/hooks/use-local-image-preview';
 import { useUploadThing } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 import { UPLOAD_CONFIG, type ImageUploadEndpoint } from '@/lib/upload-config';
@@ -35,6 +37,10 @@ export default function GalleryUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [previewAlt, setPreviewAlt] = useState('');
+  const { pendingItems, setPendingFromFiles, clearPending } = usePendingGalleryPreviews();
 
   const remaining = maxImages - value.length;
   const canAdd = remaining > 0;
@@ -43,16 +49,21 @@ export default function GalleryUpload({
     onUploadProgress: setProgress,
     onClientUploadComplete: (res) => {
       const urls = res.map((file) => file.ufsUrl).filter(Boolean) as string[];
-      if (urls.length === 0) return;
+      if (urls.length === 0) {
+        clearPending();
+        return;
+      }
 
       const allowed = urls.slice(0, remaining);
       allowed.forEach((url) => cleanup?.track(url));
       onChange([...value, ...allowed]);
       toast.success(t('success', { count: allowed.length }));
+      clearPending();
       setProgress(0);
     },
     onUploadError: () => {
       toast.error(t('error'));
+      clearPending();
       setProgress(0);
     },
   });
@@ -62,6 +73,13 @@ export default function GalleryUpload({
   const openPicker = () => {
     if (disabled || busy || !canAdd) return;
     inputRef.current?.click();
+  };
+
+  const openPreview = (src: string, alt: string) => {
+    if (busy) return;
+    setPreviewSrc(src);
+    setPreviewAlt(alt);
+    setPreviewOpen(true);
   };
 
   const handleRemove = (url: string) => {
@@ -94,15 +112,18 @@ export default function GalleryUpload({
         }
       } catch {
         toast.error(t('compressFailed'));
+        clearPending();
         return;
       } finally {
         setIsCompressing(false);
       }
 
       if (prepared.length === 0) return;
+
+      setPendingFromFiles(prepared);
       await startUpload(prepared);
     },
-    [canAdd, endpoint, remaining, startUpload, t],
+    [canAdd, clearPending, endpoint, remaining, setPendingFromFiles, startUpload, t],
   );
 
   const { zoneRef, isDragging, dropZoneProps } = useImageDropPaste({
@@ -137,7 +158,7 @@ export default function GalleryUpload({
         }}
       />
 
-      {value.length > 0 && (
+      {(value.length > 0 || pendingItems.length > 0) && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {value.map((url, index) => (
             <div
@@ -150,15 +171,37 @@ export default function GalleryUpload({
                 'dark:ring-white/5',
               )}
             >
-              <MediaPreviewImage
-                src={url}
-                alt={t('previewAlt', { index: index + 1 })}
-                sizes="(max-width: 640px) 50vw, 240px"
-                quality={90}
-                imageClassName="transition-transform duration-500 group-hover:scale-105"
-              />
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() =>
+                  openPreview(url, t('previewAlt', { index: index + 1 }))
+                }
+                className="relative h-full w-full cursor-zoom-in disabled:cursor-default"
+                aria-label={t('previewExpand', { index: index + 1 })}
+              >
+                <MediaPreviewImage
+                  src={url}
+                  alt={t('previewAlt', { index: index + 1 })}
+                  sizes="(max-width: 640px) 50vw, 240px"
+                  quality={90}
+                  imageClassName="transition-transform duration-500 group-hover:scale-105"
+                />
+              </button>
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <button
+                  type="button"
+                  disabled={disabled || busy}
+                  onClick={() =>
+                    openPreview(url, t('previewAlt', { index: index + 1 }))
+                  }
+                  aria-label={t('previewExpand', { index: index + 1 })}
+                  title={t('previewExpand', { index: index + 1 })}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-black/55 text-white backdrop-blur-md transition hover:bg-black/75 disabled:opacity-50"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </button>
                 <button
                   type="button"
                   disabled={disabled || busy}
@@ -173,6 +216,47 @@ export default function GalleryUpload({
               <span className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white/95 backdrop-blur-md">
                 <ZoomIn className="h-3 w-3" />
                 {index + 1}
+              </span>
+            </div>
+          ))}
+
+          {pendingItems.map((item, index) => (
+            <div
+              key={item.id}
+              className={cn(
+                'group relative aspect-[4/3] overflow-hidden rounded-xl',
+                'border border-dashed border-teal-500/35 bg-muted/20 shadow-sm',
+                'ring-1 ring-teal-500/10',
+              )}
+            >
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() =>
+                  openPreview(
+                    item.url,
+                    t('pendingPreviewAlt', { index: value.length + index + 1 }),
+                  )
+                }
+                className="relative h-full w-full cursor-zoom-in disabled:cursor-default"
+                aria-label={t('previewExpand', {
+                  index: value.length + index + 1,
+                })}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.url}
+                  alt={t('pendingPreviewAlt', { index: value.length + index + 1 })}
+                  className="h-full w-full object-cover"
+                />
+              </button>
+              {busy && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/70 backdrop-blur-[1px]">
+                  <Loader2 className="h-6 w-6 animate-spin text-teal-500" />
+                </div>
+              )}
+              <span className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white/95 backdrop-blur-md">
+                {t('pending')}
               </span>
             </div>
           ))}
@@ -210,6 +294,13 @@ export default function GalleryUpload({
           )}
         </button>
       )}
+
+      <ImagePreviewDialog
+        src={previewSrc}
+        alt={previewAlt}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+      />
     </div>
   );
 }
