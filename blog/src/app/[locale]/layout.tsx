@@ -12,6 +12,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { CookieConsent } from '@/components/cookie-consent';
 import InitialLoader from '@/components/loading/InitialLoader';
+import { NavigationScrollReset } from '@/components/navigation/navigation-scroll-reset';
 import { SiteAnalytics } from '@/components/site-analytics';
 import { getMetadataBase } from '@/lib/page-metadata';
 import { getSiteUrl } from '@/config';
@@ -123,6 +124,7 @@ export default async function LocaleLayout({
     >
       <NextIntlClientProvider messages={messages} locale={locale} now={now}>
         <InitialLoader>
+          <NavigationScrollReset />
           {children}
           <Toaster position="bottom-right" />
           <CookieConsent />
