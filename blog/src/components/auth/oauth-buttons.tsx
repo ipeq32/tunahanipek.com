@@ -176,7 +176,7 @@ export function OAuthButtons({
             key={id}
             type="button"
             variant="outline"
-            className="w-full justify-center gap-2"
+            className="w-full justify-center gap-2 text-foreground hover:text-accent-foreground"
             disabled={loadingProvider !== null}
             onClick={() => handleOAuthSignIn(id)}
           >

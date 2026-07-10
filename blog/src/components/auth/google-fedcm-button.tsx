@@ -77,7 +77,7 @@ export function GoogleFedCmButton({
       <Button
         type="button"
         variant="outline"
-        className="pointer-events-none w-full justify-center gap-2"
+        className="pointer-events-none w-full justify-center gap-2 text-foreground hover:text-accent-foreground"
         disabled={disabled || loading}
         tabIndex={-1}
       >
