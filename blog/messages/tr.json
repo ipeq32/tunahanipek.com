@@ -1744,6 +1744,7 @@
         "title": "Bir sorun oluştu",
         "file": "~/error.log",
         "comment": "// Beklenmeyen bir hata yakalandı",
+        "safeMessage": "Sayfa şu anda yüklenemedi. Lütfen kısa süre sonra tekrar deneyin.",
         "Button": {
           "try": "Tekrar Deneyin...",
           "back": "Ana Sayfaya Geri Dön"

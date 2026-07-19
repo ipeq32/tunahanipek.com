@@ -403,7 +403,7 @@ export default function RegisterForm() {
           <FormField
             control={form.control}
             name="website"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="text-xs text-foreground">
                   {t('Form.Website.label')}

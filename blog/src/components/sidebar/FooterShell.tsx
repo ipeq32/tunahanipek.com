@@ -1,6 +1,7 @@
 import { getLocale } from 'next-intl/server';
 
 import { getSession } from '@/lib/cached-session';
+import { logger } from '@/lib/logger';
 import { getSiteOwner } from '@/lib/site-owner';
 import { getSiteSnippetLines } from '@/lib/site-snippets';
 
@@ -15,9 +16,20 @@ async function loadMottos(locale: string): Promise<string[] | undefined> {
   }
 }
 
+async function loadSession() {
+  try {
+    return await getSession();
+  } catch (error) {
+    logger.error('Footer session lookup failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    return null;
+  }
+}
+
 const FooterShell = async () => {
   const [session, locale, siteOwner] = await Promise.all([
-    getSession(),
+    loadSession(),
     getLocale(),
     getSiteOwner(),
   ]);

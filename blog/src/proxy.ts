@@ -3,6 +3,13 @@ import { defaultLocale, locales, pathnames, routing } from './config';
 import { auth } from '@/auth';
 import { canAccessAdminPanel } from '@/lib/auth-roles';
 import { isPrimarySuperAdmin } from '@/lib/admin/users/primary-super-admin';
+import {
+  adminPages,
+  authPages,
+  protectedPages,
+  superAdminPages,
+  testPagesRegex,
+} from '@/lib/route-access';
 import createIntlMiddleware from 'next-intl/middleware';
 
 type AppLocale = (typeof locales)[number];
@@ -26,58 +33,7 @@ function localizePath(
   return `/${locale}${route[locale]}`;
 }
 
-const protectedPages = [
-  pathnames['/blog/add'],
-  pathnames['/profile'],
-  pathnames['/setting'],
-  '/blog/*/edit',
-  '/blog/*/duzenle',
-  '/project/*',
-];
-
-const adminPages = [
-  pathnames['/admin/blog'],
-  pathnames['/admin/project'],
-  '/admin/project/*',
-  '/admin/proje/*',
-  pathnames['/admin/comments'],
-  pathnames['/admin/users'],
-  pathnames['/admin/roles'],
-  pathnames['/admin/site-copy'],
-  pathnames['/admin/stats'],
-  '/admin/stats/*',
-  '/admin/istatistikler/*',
-  pathnames['/admin/webhooks'],
-];
-
-const superAdminPages = [pathnames['/admin/webhooks']];
-
-const authPages = [
-  pathnames['/auth/login'],
-  pathnames['/auth/register'],
-  pathnames['/auth/forgot-password'],
-  pathnames['/auth/reset-password'],
-];
-
 const intlMiddleware = createIntlMiddleware(routing);
-
-const testPagesRegex = (
-  pages: (string | Record<string, string>)[],
-  pathname: string
-) => {
-  const regexParts = pages.map((page) => {
-    if (typeof page === 'string') {
-      return page.replace('/*', '.*');
-    }
-    return Object.values(page)
-      .map((p) => p.replace('/*', '.*'))
-      .join('|');
-  });
-
-  const regex = `^(/(${locales.join('|')}))?(${regexParts.join('|')})/?$`;
-
-  return new RegExp(regex, 'i').test(pathname);
-};
 
 const handleAuth = async (
   req: NextRequest,

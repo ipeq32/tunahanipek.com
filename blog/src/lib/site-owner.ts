@@ -92,7 +92,14 @@ async function querySiteOwner(): Promise<SiteOwnerProfile | null> {
 }
 
 const getCachedSiteOwner = unstable_cache(
-  querySiteOwner,
+  async (): Promise<SiteOwnerProfile | null> => {
+    try {
+      return await querySiteOwner();
+    } catch {
+      // Layout/footer her sayfada çağırır; DB kesintisinde tüm UI'yi düşürme.
+      return null;
+    }
+  },
   ['site-owner'],
   { revalidate: 300, tags: [SITE_OWNER_CACHE_TAG] }
 );

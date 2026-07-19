@@ -58,7 +58,6 @@ function patchComment(
 
 export default function BlogComments({
   blogId,
-  locale,
   isAuthenticated,
   initialComments,
   initialPagination,

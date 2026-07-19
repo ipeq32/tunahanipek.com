@@ -1,5 +1,7 @@
+import { attachDatabasePool } from '@vercel/functions';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
 
 function getConnectionString() {
   return (
@@ -10,8 +12,29 @@ function getConnectionString() {
   );
 }
 
+/**
+ * Vercel (Fluid) + Prisma 7 `pg` adapter: her instance kendi havuzunu tutar.
+ * Varsayılan max=10 bağlantı limitini kolayca tüketir; serverless'te düşük tut.
+ * `attachDatabasePool` idle bağlantıları suspend öncesi kapatır.
+ */
+function createPool() {
+  const pool = new Pool({
+    connectionString: getConnectionString(),
+    max: process.env.VERCEL ? 3 : 10,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 5_000,
+  });
+
+  if (process.env.VERCEL) {
+    attachDatabasePool(pool);
+  }
+
+  return pool;
+}
+
 const prismaClientSingleton = () => {
-  const adapter = new PrismaPg({ connectionString: getConnectionString() });
+  const pool = createPool();
+  const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 };
 
@@ -20,20 +43,19 @@ const globalForPrisma = globalThis as typeof globalThis & {
 };
 
 function getPrismaClient() {
-  const cached = globalForPrisma.prismaGlobal;
-
-  if (process.env.NODE_ENV === 'production') {
-    return cached ?? prismaClientSingleton();
+  if (!globalForPrisma.prismaGlobal) {
+    globalForPrisma.prismaGlobal = prismaClientSingleton();
   }
 
   // Dev: schema değişince (migrate + generate) eski singleton yeni modelleri içermez.
-  if (cached && 'aiUsageLog' in cached) {
-    return cached;
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    !('aiUsageLog' in globalForPrisma.prismaGlobal)
+  ) {
+    globalForPrisma.prismaGlobal = prismaClientSingleton();
   }
 
-  const client = prismaClientSingleton();
-  globalForPrisma.prismaGlobal = client;
-  return client;
+  return globalForPrisma.prismaGlobal;
 }
 
 export const prisma = getPrismaClient();

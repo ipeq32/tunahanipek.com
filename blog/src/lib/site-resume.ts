@@ -31,7 +31,13 @@ async function querySiteResume(): Promise<SiteResumeRecord | null> {
 }
 
 const getCachedSiteResume = unstable_cache(
-  querySiteResume,
+  async (): Promise<SiteResumeRecord | null> => {
+    try {
+      return await querySiteResume();
+    } catch {
+      return null;
+    }
+  },
   ['site-resume'],
   { revalidate: 300, tags: ['site-resume'] },
 );

@@ -185,7 +185,6 @@ export default function ImageUpload({
               aria-label={t('previewExpand')}
             >
               {isLocalPreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={displaySrc}
                   alt={t('previewAlt')}
@@ -305,7 +304,6 @@ export default function ImageUpload({
             aria-label={t('previewExpand')}
           >
             {isLocalPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={displaySrc}
                 alt={t('previewAlt')}

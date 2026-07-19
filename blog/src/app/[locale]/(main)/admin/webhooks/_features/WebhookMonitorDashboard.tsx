@@ -20,7 +20,6 @@ import {
   Server,
   Trash2,
   Webhook,
-  XCircle,
   Zap,
   ChevronDown,
 } from 'lucide-react';

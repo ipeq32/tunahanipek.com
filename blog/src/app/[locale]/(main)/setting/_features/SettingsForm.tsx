@@ -397,7 +397,7 @@ export default function SettingsForm({
               <FormField
                 control={profileForm.control}
                 name="image"
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('image')}</FormLabel>
                     <ImageUpload
@@ -507,7 +507,7 @@ export default function SettingsForm({
                 <FormField
                   control={profileForm.control}
                   name="bio"
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('bio')}</FormLabel>
                       <FormControl>

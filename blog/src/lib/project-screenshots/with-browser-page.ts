@@ -20,7 +20,7 @@ export async function withBrowserPage<T>(
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     if (isBrowserUnavailableError(message)) {
-      throw new Error(`Browser launch failed: ${message}`);
+      throw new Error(`Browser launch failed: ${message}`, { cause: error });
     }
     throw error;
   }

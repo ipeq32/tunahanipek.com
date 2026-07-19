@@ -1,7 +1,6 @@
 import type { WebhookIntegrationDefinition } from '@/lib/webhooks/integrations/types';
 import {
   asRecord,
-  fallbackParsedEvent,
   formatEventLabel,
   inferSeverityFromEventType,
   readString,

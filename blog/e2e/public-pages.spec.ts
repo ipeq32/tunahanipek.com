@@ -13,7 +13,7 @@ test.describe('Public pages', () => {
 
   test('login page loads', async ({ page }) => {
     await page.goto('/en/auth/login');
-    await expect(page.getByRole('button')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
   });
 
   test('about page loads', async ({ page }) => {

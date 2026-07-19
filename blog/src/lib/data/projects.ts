@@ -139,10 +139,7 @@ export type AdminProjectStats = {
   drafts: number;
 };
 
-export async function getAdminProjectStats(
-  localeInput?: string
-): Promise<AdminProjectStats> {
-  const locale = await resolveLanguageCode(localeInput);
+export async function getAdminProjectStats(): Promise<AdminProjectStats> {
   const baseWhere = { deletedAt: null };
 
   const [total, published] = await Promise.all([
@@ -185,7 +182,7 @@ export async function getAdminProjectsPaginated(
       orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
       include: projectDetailInclude,
     }),
-    getAdminProjectStats(locale),
+    getAdminProjectStats(),
   ]);
 
   return {

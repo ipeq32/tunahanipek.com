@@ -35,7 +35,6 @@ export function ImagePreviewDialog({
         {src ? (
           <div className="flex max-h-[85vh] min-h-[12rem] items-center justify-center">
             {isBlob ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={src}
                 alt={alt}
