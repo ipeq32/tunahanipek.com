@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Link } from '@/navigation';
 import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getPublishedProjects } from '@/lib/data/projects';
+import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import { prisma } from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import { buildPageMetadata } from '@/lib/page-metadata';
@@ -103,9 +104,17 @@ export default async function HomePage({
 
   const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount, siteOwner] =
     await Promise.all([
-      getPublishedBlogs(1, 3, { locale }),
-      getPublishedProjects(locale),
-      prisma.category.count({ where: { deletedAt: null } }),
+      withPublicDataFallback(
+        'home.recentBlogs',
+        () => getPublishedBlogs(1, 3, { locale }),
+        { data: [], total: 0, page: 1, limit: 3 },
+      ),
+      withPublicDataFallback('home.projects', () => getPublishedProjects(locale), []),
+      withPublicDataFallback(
+        'home.topicsCount',
+        () => prisma.category.count({ where: { deletedAt: null } }),
+        0,
+      ),
       getSiteOwner(),
     ]);
 

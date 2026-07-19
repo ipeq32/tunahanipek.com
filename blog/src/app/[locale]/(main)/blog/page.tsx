@@ -4,6 +4,7 @@ import PaginationComponent from '@/components/pagination';
 import BlogSearch from '@/components/blog/BlogSearch';
 import TaxonomyFilter from '@/components/blog/TaxonomyFilter';
 import { getPublishedBlogs } from '@/lib/data/blogs';
+import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import { getAllCategories, getAllTags } from '@/lib/blog-taxonomy';
 import { DEFAULT_PAGE_SIZE, parseLimit, parsePage } from '@/lib/pagination';
 import { getTranslations } from 'next-intl/server';
@@ -51,12 +52,17 @@ async function page({ params, searchParams }: Props) {
   const [tags, categories, { data: blogData, total }] = await Promise.all([
     getAllTags(),
     getAllCategories(),
-    getPublishedBlogs(currentPage, limit, {
-      search: query || undefined,
-      tag,
-      category,
-      locale,
-    }),
+    withPublicDataFallback(
+      'blog.list',
+      () =>
+        getPublishedBlogs(currentPage, limit, {
+          search: query || undefined,
+          tag,
+          category,
+          locale,
+        }),
+      { data: [], total: 0, page: currentPage, limit },
+    ),
   ]);
 
   return (

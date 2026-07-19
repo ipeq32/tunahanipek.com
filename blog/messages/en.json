@@ -1745,6 +1745,7 @@
         "title": "There was a problem",
         "file": "~/error.log",
         "comment": "// An unexpected error was caught",
+        "safeMessage": "This page could not be loaded right now. Please try again shortly.",
         "Button": {
           "try": "Try Again...",
           "back": "Go Back Home"

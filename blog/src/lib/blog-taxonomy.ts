@@ -63,13 +63,29 @@ async function queryAllCategories() {
   });
 }
 
-export const getAllTags = unstable_cache(queryAllTags, ['blog-tags'], {
-  revalidate: 300,
-  tags: ['blog-tags'],
-});
+export const getAllTags = unstable_cache(
+  async () => {
+    try {
+      return await queryAllTags();
+    } catch {
+      return [];
+    }
+  },
+  ['blog-tags'],
+  {
+    revalidate: 300,
+    tags: ['blog-tags'],
+  },
+);
 
 export const getAllCategories = unstable_cache(
-  queryAllCategories,
+  async () => {
+    try {
+      return await queryAllCategories();
+    } catch {
+      return [];
+    }
+  },
   ['blog-categories'],
   { revalidate: 300, tags: ['blog-categories'] },
 );

@@ -6,12 +6,15 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { TerminalCard, TerminalLine } from '@/components/ui/terminal-card';
 import { logger } from '@/lib/logger';
+import { resolveDisplayErrorMessage } from '@/lib/ui-error';
 
 const COPY = {
   tr: {
     title: 'Kritik bir hata oluştu',
     file: '~/global-error.log',
     comment: '// Kök layout veya uygulama çöktü',
+    safeMessage:
+      'Uygulama şu anda yüklenemedi. Lütfen kısa süre sonra tekrar deneyin.',
     try: 'Tekrar Deneyin...',
     back: 'Ana Sayfaya Geri Dön',
   },
@@ -19,6 +22,8 @@ const COPY = {
     title: 'A critical error occurred',
     file: '~/global-error.log',
     comment: '// Root layout or application crashed',
+    safeMessage:
+      'The application could not be loaded right now. Please try again shortly.',
     try: 'Try again...',
     back: 'Back to home',
   },
@@ -44,6 +49,10 @@ export default function GlobalError({
   const locale = resolveLocale();
   const t = COPY[locale];
   const showDigest = process.env.NODE_ENV === 'development' && error.digest;
+  const displayMessage = resolveDisplayErrorMessage(
+    error.message,
+    t.safeMessage,
+  );
 
   useEffect(() => {
     logger.error('Unhandled global error boundary', {
@@ -71,7 +80,7 @@ export default function GlobalError({
                 </p>
                 <p className="pl-4 text-slate-500">{t.comment}</p>
                 <TerminalLine prompt="" className="pl-4 text-red-300/90">
-                  {error.message}
+                  {displayMessage}
                 </TerminalLine>
                 {showDigest ? (
                   <TerminalLine prompt="" className="pl-4 text-slate-500">

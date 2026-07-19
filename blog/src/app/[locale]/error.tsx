@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { TerminalCard, TerminalLine } from '@/components/ui/terminal-card';
 import { DidYouKnow } from '@/components/ui/did-you-know';
-import { logger } from '@/lib/logger';
+import { logUiError, resolveDisplayErrorMessage } from '@/lib/ui-error';
 
 export default function Error({
   error,
@@ -15,12 +15,13 @@ export default function Error({
   reset: () => void;
 }) {
   const t = useTranslations('Error.Main.Error');
+  const displayMessage = resolveDisplayErrorMessage(
+    error.message,
+    t('safeMessage'),
+  );
 
   useEffect(() => {
-    logger.error('Unhandled UI error boundary', {
-      message: error.message,
-      digest: error.digest,
-    });
+    logUiError('Unhandled UI error boundary', error);
   }, [error]);
 
   return (
@@ -40,7 +41,7 @@ export default function Error({
             </p>
             <p className="pl-4 text-slate-500">{t('comment')}</p>
             <TerminalLine prompt="" className="pl-4 text-red-300/90">
-              {error.message}
+              {displayMessage}
             </TerminalLine>
             <p>{'}'}</p>
           </div>

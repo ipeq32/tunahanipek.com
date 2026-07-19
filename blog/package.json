@@ -42,6 +42,7 @@
     "@tsconfig/recommended": "^1.0.7",
     "@uploadthing/react": "^7.3.3",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/functions": "^3.7.5",
     "@vercel/speed-insights": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "browser-image-compression": "^2.0.2",
