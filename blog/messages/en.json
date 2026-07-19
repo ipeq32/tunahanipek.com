@@ -23,6 +23,12 @@
     "contactAddress": "Address",
     "contactWebsite": "Website"
   },
+  "Service": {
+    "Unavailable": {
+      "title": "Content is temporarily unavailable",
+      "description": "The database cannot be reached right now. Your posts and projects were not deleted; they will show up again once connectivity is restored."
+    }
+  },
   "Blog": {
     "title": "Blog",
     "description": "Published articles and updates.",

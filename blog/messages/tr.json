@@ -23,6 +23,12 @@
     "contactAddress": "Adres",
     "contactWebsite": "Web sitesi"
   },
+  "Service": {
+    "Unavailable": {
+      "title": "İçerik geçici olarak yüklenemiyor",
+      "description": "Veritabanına şu an ulaşılamıyor. Eklediğiniz yazılar ve projeler silinmedi; bağlantı düzelince yeniden görünecek."
+    }
+  },
   "Blog": {
     "title": "Bloglar",
     "description": "Yayınlanmış blog yazıları ve güncellemeler.",
