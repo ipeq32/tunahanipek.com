@@ -3,6 +3,7 @@ import BlogsFeature from './_features/Blogs';
 import PaginationComponent from '@/components/pagination';
 import BlogSearch from '@/components/blog/BlogSearch';
 import TaxonomyFilter from '@/components/blog/TaxonomyFilter';
+import { ContentUnavailableNotice } from '@/components/layout/content-unavailable-notice';
 import { getPublishedBlogs } from '@/lib/data/blogs';
 import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import { getAllCategories, getAllTags } from '@/lib/blog-taxonomy';
@@ -49,7 +50,7 @@ async function page({ params, searchParams }: Props) {
   const category = resolvedSearchParams.category;
   const t = await getTranslations('Blog');
 
-  const [tags, categories, { data: blogData, total }] = await Promise.all([
+  const [tags, categories, blogResult] = await Promise.all([
     getAllTags(),
     getAllCategories(),
     withPublicDataFallback(
@@ -64,27 +65,34 @@ async function page({ params, searchParams }: Props) {
       { data: [], total: 0, page: currentPage, limit },
     ),
   ]);
+  const { data: blogData, total } = blogResult.value;
 
   return (
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
-      <BlogSearch initialQuery={query} />
-      <TaxonomyFilter
-        tags={tags}
-        categories={categories}
-        activeTag={tag}
-        activeCategory={category}
-      />
-      <BlogsFeature key={locale} data={blogData} />
-      <PaginationComponent
-        total={total}
-        currentPage={currentPage}
-        limit={limit}
-        isShowPagination={total > limit}
-        searchQuery={query || undefined}
-        activeTag={tag}
-        activeCategory={category}
-      />
+      {blogResult.unavailable ? (
+        <ContentUnavailableNotice />
+      ) : (
+        <>
+          <BlogSearch initialQuery={query} />
+          <TaxonomyFilter
+            tags={tags}
+            categories={categories}
+            activeTag={tag}
+            activeCategory={category}
+          />
+          <BlogsFeature key={locale} data={blogData} />
+          <PaginationComponent
+            total={total}
+            currentPage={currentPage}
+            limit={limit}
+            isShowPagination={total > limit}
+            searchQuery={query || undefined}
+            activeTag={tag}
+            activeCategory={category}
+          />
+        </>
+      )}
     </>
   );
 }

@@ -10,6 +10,7 @@ import { JsonLd } from '@/components/json-ld';
 import { buildPersonJsonLd, buildWebSiteJsonLd } from '@/lib/json-ld';
 import { Button } from '@/components/ui/button';
 import { SiteContactDetails } from '@/components/layout/site-contact-details';
+import { ContentUnavailableNotice } from '@/components/layout/content-unavailable-notice';
 import { getSiteOwner } from '@/lib/site-owner';
 
 export async function generateMetadata({
@@ -102,7 +103,7 @@ export default async function HomePage({
   const t = await getTranslations('HomePage');
   const tProject = await getTranslations('Pages.Project');
 
-  const [{ data: recentBlogs, total: postsTotal }, projects, topicsCount, siteOwner] =
+  const [blogsResult, projectsResult, topicsResult, siteOwner] =
     await Promise.all([
       withPublicDataFallback(
         'home.recentBlogs',
@@ -118,12 +119,21 @@ export default async function HomePage({
       getSiteOwner(),
     ]);
 
+  const { data: recentBlogs, total: postsTotal } = blogsResult.value;
+  const projects = projectsResult.value;
+  const topicsCount = topicsResult.value;
+  const contentUnavailable =
+    blogsResult.unavailable ||
+    projectsResult.unavailable ||
+    topicsResult.unavailable;
+
   const featuredProjects = projects.slice(0, 3);
 
   return (
     <div className="space-y-12 py-6 md:py-8">
       <JsonLd data={buildWebSiteJsonLd(locale)} />
       <JsonLd data={buildPersonJsonLd(siteOwner)} />
+      {contentUnavailable ? <ContentUnavailableNotice /> : null}
       <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-sm md:p-10">
         <div
           className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl"

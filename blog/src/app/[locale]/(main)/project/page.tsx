@@ -4,6 +4,7 @@ import { FeatureCard } from '@/components/layout/feature-card';
 import BlogImage from '@/components/blog/BlogImage';
 import ProjectCard from '@/components/project/ProjectCard';
 import { Link } from '@/navigation';
+import { ContentUnavailableNotice } from '@/components/layout/content-unavailable-notice';
 import { getPublishedProjectsPaginated } from '@/lib/data/projects';
 import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import type { ProjectDto } from '@/lib/project-mapper';
@@ -96,11 +97,12 @@ export default async function ProjectPage({
   const currentPage = parsePage(resolvedSearchParams.page);
   const limit = parseLimit(resolvedSearchParams.limit ?? DEFAULT_PAGE_SIZE);
   const t = await getTranslations('Pages.Project');
-  const { data: projects, pagination } = await withPublicDataFallback(
+  const projectResult = await withPublicDataFallback(
     'project.list',
     () => getPublishedProjectsPaginated(locale, currentPage, limit),
     buildPaginatedResult([], currentPage, limit, 0),
   );
+  const { data: projects, pagination } = projectResult.value;
 
   const showFeatured = currentPage === 1 && projects.length > 0;
   const featured = showFeatured ? projects[0] : null;
@@ -111,7 +113,9 @@ export default async function ProjectPage({
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
 
-      {hasProjects ? (
+      {projectResult.unavailable ? (
+        <ContentUnavailableNotice />
+      ) : hasProjects ? (
         <section key={locale} className="space-y-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="space-y-1">
