@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { FIELD_LIMITS } from '@/lib/form/field-limits';
-import { optionalNullableUrlField, optionalUrlField } from './url-field';
+import { optionalNullableUrlField } from './url-field';
 
 const httpUrl = z.string().trim().url();
 

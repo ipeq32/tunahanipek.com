@@ -5,7 +5,6 @@ import type { Page } from 'playwright-core';
 import { extractInternalPaths } from '@/lib/ai/site-context-parse';
 import { logger } from '@/lib/logger';
 import {
-  SCREENSHOT_DEVICE_SCALE_FACTOR,
   SCREENSHOT_JPEG_QUALITY,
   SCREENSHOT_SCROLL_SETTLE_MS,
   SCREENSHOT_VIEWPORT,

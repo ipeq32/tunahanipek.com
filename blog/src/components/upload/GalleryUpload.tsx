@@ -243,7 +243,6 @@ export default function GalleryUpload({
                   index: value.length + index + 1,
                 })}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={item.url}
                   alt={t('pendingPreviewAlt', { index: value.length + index + 1 })}

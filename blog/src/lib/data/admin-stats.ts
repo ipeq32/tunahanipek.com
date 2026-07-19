@@ -453,7 +453,7 @@ export async function getAdminDashboardStats(
   const [blogs, projects, users, comments, siteSnippets, ai, settings] =
     await Promise.all([
       getAdminBlogStats(locale),
-      getAdminProjectStats(locale),
+      getAdminProjectStats(),
       getAdminUserStats(),
       getCommentStats(),
       getSiteSnippetStats(),

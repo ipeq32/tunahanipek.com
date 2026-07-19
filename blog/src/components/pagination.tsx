@@ -2,7 +2,6 @@
 
 import { DataPagination } from '@/components/ui/data-pagination';
 import { parseLimit, parsePage, type PageSize } from '@/lib/pagination';
-import { useTranslations } from 'next-intl';
 
 type PaginationComponentProps = {
   total: number;
