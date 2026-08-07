@@ -4,6 +4,10 @@ import { getPublishedBlogs } from '@/lib/data/blogs';
 import { getPublishedProjects } from '@/lib/data/projects';
 import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import { prisma } from '@/lib/prisma';
+import {
+  queryPublishedBlogsFromSnapshot,
+  queryPublishedProjectsFromSnapshot,
+} from '@/lib/public-snapshot/query';
 import { getTranslations } from 'next-intl/server';
 import { buildPageMetadata } from '@/lib/page-metadata';
 import { JsonLd } from '@/components/json-ld';
@@ -109,12 +113,27 @@ export default async function HomePage({
         'home.recentBlogs',
         () => getPublishedBlogs(1, 3, { locale }),
         { data: [], total: 0, page: 1, limit: 3 },
+        {
+          fromSnapshot: (snapshot) =>
+            queryPublishedBlogsFromSnapshot(snapshot, 1, 3, { locale }),
+        },
       ),
-      withPublicDataFallback('home.projects', () => getPublishedProjects(locale), []),
+      withPublicDataFallback(
+        'home.projects',
+        () => getPublishedProjects(locale),
+        [],
+        {
+          fromSnapshot: (snapshot) =>
+            queryPublishedProjectsFromSnapshot(snapshot, locale),
+        },
+      ),
       withPublicDataFallback(
         'home.topicsCount',
         () => prisma.category.count({ where: { deletedAt: null } }),
         0,
+        {
+          fromSnapshot: (snapshot) => snapshot.categories.length,
+        },
       ),
       getSiteOwner(),
     ]);

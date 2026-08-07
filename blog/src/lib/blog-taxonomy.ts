@@ -1,6 +1,11 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
+import { loadPublicSnapshot } from '@/lib/public-snapshot/load';
+import {
+  queryCategoriesFromSnapshot,
+  queryTagsFromSnapshot,
+} from '@/lib/public-snapshot/query';
 
 function parseNames(input?: string): string[] {
   if (!input?.trim()) return [];
@@ -48,29 +53,33 @@ export async function syncBlogTaxonomy(
 }
 
 async function queryAllTags() {
-  return prisma.tag.findMany({
-    where: { deletedAt: null },
-    orderBy: { name: 'asc' },
-    select: { id: true, name: true },
-  });
+  try {
+    return await prisma.tag.findMany({
+      where: { deletedAt: null },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true },
+    });
+  } catch {
+    const snapshot = await loadPublicSnapshot();
+    return snapshot ? queryTagsFromSnapshot(snapshot) : [];
+  }
 }
 
 async function queryAllCategories() {
-  return prisma.category.findMany({
-    where: { deletedAt: null },
-    orderBy: { name: 'asc' },
-    select: { id: true, name: true },
-  });
+  try {
+    return await prisma.category.findMany({
+      where: { deletedAt: null },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true },
+    });
+  } catch {
+    const snapshot = await loadPublicSnapshot();
+    return snapshot ? queryCategoriesFromSnapshot(snapshot) : [];
+  }
 }
 
 export const getAllTags = unstable_cache(
-  async () => {
-    try {
-      return await queryAllTags();
-    } catch {
-      return [];
-    }
-  },
+  async () => queryAllTags(),
   ['blog-tags'],
   {
     revalidate: 300,
@@ -79,13 +88,7 @@ export const getAllTags = unstable_cache(
 );
 
 export const getAllCategories = unstable_cache(
-  async () => {
-    try {
-      return await queryAllCategories();
-    } catch {
-      return [];
-    }
-  },
+  async () => queryAllCategories(),
   ['blog-categories'],
   { revalidate: 300, tags: ['blog-categories'] },
 );

@@ -60,16 +60,26 @@ async function fetchPublishedProjectById(
 ): Promise<ProjectDto | null> {
   const locale = await resolveLanguageCode(localeInput);
 
-  const project = await prisma.project.findFirst({
-    where: {
-      id,
-      deletedAt: null,
-      translations: publishedTranslationFilter(locale),
-    },
-    include: projectDetailInclude,
-  });
+  try {
+    const project = await prisma.project.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+        translations: publishedTranslationFilter(locale),
+      },
+      include: projectDetailInclude,
+    });
 
-  return project ? mapProjectToDto(project, locale) : null;
+    return project ? mapProjectToDto(project, locale) : null;
+  } catch (error) {
+    const { loadPublicSnapshot } = await import('@/lib/public-snapshot/load');
+    const { queryPublishedProjectByIdFromSnapshot } = await import(
+      '@/lib/public-snapshot/query'
+    );
+    const snapshot = await loadPublicSnapshot();
+    if (!snapshot) throw error;
+    return queryPublishedProjectByIdFromSnapshot(snapshot, id, locale);
+  }
 }
 
 /** Metadata + sayfa dedupe için request-scoped cache. */

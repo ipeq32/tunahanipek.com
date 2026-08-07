@@ -96,8 +96,16 @@ const getCachedSiteOwner = unstable_cache(
     try {
       return await querySiteOwner();
     } catch {
-      // Layout/footer her sayfada çağırır; DB kesintisinde tüm UI'yi düşürme.
-      return null;
+      try {
+        const { loadPublicSnapshot } = await import('@/lib/public-snapshot/load');
+        const { querySiteOwnerFromSnapshot } = await import(
+          '@/lib/public-snapshot/query'
+        );
+        const snapshot = await loadPublicSnapshot();
+        return snapshot ? querySiteOwnerFromSnapshot(snapshot) : null;
+      } catch {
+        return null;
+      }
     }
   },
   ['site-owner'],

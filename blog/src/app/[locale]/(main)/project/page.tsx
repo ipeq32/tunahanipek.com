@@ -8,6 +8,7 @@ import { ContentUnavailableNotice } from '@/components/layout/content-unavailabl
 import { getPublishedProjectsPaginated } from '@/lib/data/projects';
 import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
 import type { ProjectDto } from '@/lib/project-mapper';
+import { queryPublishedProjectsPaginatedFromSnapshot } from '@/lib/public-snapshot/query';
 import { stripHtmlText } from '@/lib/translation-form-utils';
 import {
   buildPaginatedResult,
@@ -101,6 +102,15 @@ export default async function ProjectPage({
     'project.list',
     () => getPublishedProjectsPaginated(locale, currentPage, limit),
     buildPaginatedResult([], currentPage, limit, 0),
+    {
+      fromSnapshot: (snapshot) =>
+        queryPublishedProjectsPaginatedFromSnapshot(
+          snapshot,
+          locale,
+          currentPage,
+          limit,
+        ),
+    },
   );
   const { data: projects, pagination } = projectResult.value;
 
@@ -113,9 +123,9 @@ export default async function ProjectPage({
     <>
       <HeaderTemplate title={t('title')} description={t('description')} />
 
-      {projectResult.unavailable ? (
-        <ContentUnavailableNotice />
-      ) : hasProjects ? (
+      {projectResult.unavailable ? <ContentUnavailableNotice /> : null}
+
+      {hasProjects ? (
         <section key={locale} className="space-y-6">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="space-y-1">

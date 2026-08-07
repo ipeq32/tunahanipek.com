@@ -21,6 +21,7 @@ async function handleBackup(request: Request) {
       fileName: result.fileName,
       key: result.key,
       bytes: result.bytes,
+      publicSnapshot: result.publicSnapshot,
       pruned: result.pruned,
       rowCounts: result.rowCounts,
     });

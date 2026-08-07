@@ -2,9 +2,12 @@
 
 ## Ne işe yarar?
 
-Haftalık Vercel Cron (`0 3 * * 0` UTC) Neon/Postgres içeriğini JSON olarak alır, gzip’ler ve UploadThing’e `db-backup-YYYY-MM-DD` customId ile yükler.
+Haftalık Vercel Cron (`0 3 * * 0` UTC) iki şey üretir:
 
-Bu bir **felaket kurtarma** yedeğidir. Neon compute hours bitince site yine düşer; son yedekten başka bir Postgres’e restore edip Vercel env’lerini güncelleyerek geri açarsın.
+1. **Full DB yedeği** (`db-backup-YYYY-MM-DD`) — felaket kurtarma / restore
+2. **Public snapshot** (`public-snapshot-latest`) — secret’sız okuma kopyası (blog, proje, dil, taxonomy, site owner). DB kapalıyken public GET’ler buradan beslenir.
+
+Neon compute hours bitince admin/yazma yine çalışmaz; public sayfalar son snapshot ile okunur kalır. Full restore için yine yeni Postgres + dump gerekir.
 
 ## Otomatik yedek
 
@@ -13,7 +16,11 @@ Bu bir **felaket kurtarma** yedeğidir. Neon compute hours bitince site yine dü
 | Endpoint | `GET` / `POST` `/api/cron/db-backup` |
 | Schedule | Pazar ~03:00 UTC (Hobby’de saat içinde kayabilir) |
 | Auth | `Authorization: Bearer ${CRON_SECRET}` |
-| Saklama | Son 4 haftalık + ayın 1’i yedeklerinden son 3 |
+| Full saklama | Son 4 haftalık + ayın 1’i yedeklerinden son 3 |
+| Son yedek | **En güncel full yedek asla silinmez** (DB uzun süre kapalı kalsa bile) |
+| Public snapshot | Tek dosya; her başarılı yedekte üzerine yazılır; retention dokunmaz |
+
+Not: DB kapalıyken Cron yeni yedek alamaz → prune de çalışmaz → mevcut yedekler zaten durur. Pin kuralı, ara sıra başarılı yedek + agresif budama olsa bile son dump’ın silinmesini engeller.
 
 ### Gerekli env (Vercel)
 
@@ -23,17 +30,17 @@ Bu bir **felaket kurtarma** yedeğidir. Neon compute hours bitince site yine dü
 
 ### Manuel tetikleme
 
-```bash
-curl -X POST "https://<blog-domain>/api/cron/db-backup" \
-  -H "Authorization: Bearer $CRON_SECRET"
+```powershell
+curl.exe -X POST "https://blog.tunahanipek.com/api/cron/db-backup" `
+  -H "Authorization: Bearer $env:CRON_SECRET"
 ```
 
-Başarıda `{ ok: true, customId, bytes, pruned, rowCounts }` döner.
+Başarıda `{ ok: true, customId, bytes, publicSnapshot, pruned, rowCounts }` döner.
 
 ## Yedeği indirme
 
-1. UploadThing dashboard’da `db-backup-*.json.gz` dosyasını bul, veya
-2. Sunucuda `UTApi.listFiles` / `generateSignedURL` ile `customId` üzerinden signed URL al.
+1. UploadThing dashboard’da `db-backup-*.json.gz` veya `public-snapshot-latest.json.gz` bul, veya
+2. Sunucuda `UTApi.getSignedURL(customId, { keyType: 'customId' })` kullan.
 
 ```bash
 gunzip -k db-backup-YYYY-MM-DD.json.gz
@@ -68,7 +75,8 @@ Script tabloları FK sırasıyla `createMany` ile yazar; `_BlogToTag` / `_BlogTo
 
 ## Notlar
 
-- Dump içinde API anahtarları, hash’lenmiş şifreler ve webhook secret’ları vardır; dosyayı gizli tut.
+- Full dump içinde API anahtarları, hash’lenmiş şifreler ve webhook secret’ları vardır; dosyayı gizli tut.
+- Public snapshot’ta şifre / OAuth / AI key / webhook secret **yok**.
 - UploadThing uygulama ayarında mümkünse dosyaları private tut; indirme için signed URL kullan.
-- Aynı gün ikinci yedek aynı `customId`’yi değiştirir (önce silinir, yeniden yüklenir).
-- Neon compute tükenmişken Cron fail eder; UploadThing’teki son başarılı yedek kalır.
+- Aynı gün ikinci full yedek aynı `customId`’yi değiştirir (önce silinir, yeniden yüklenir).
+- Neon compute tükenmişken Cron fail eder; UploadThing’teki son başarılı full yedek + public snapshot kalır.

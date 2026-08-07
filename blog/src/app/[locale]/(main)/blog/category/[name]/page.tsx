@@ -3,7 +3,10 @@ import HeaderTemplate from '@/components/templates/HeaderTemplate';
 import BlogsFeature from '../../_features/Blogs';
 import PaginationComponent from '@/components/pagination';
 import TaxonomySearch from '@/components/blog/TaxonomySearch';
+import { ContentUnavailableNotice } from '@/components/layout/content-unavailable-notice';
 import { getPublishedBlogs } from '@/lib/data/blogs';
+import { withPublicDataFallback } from '@/lib/data/with-public-data-fallback';
+import { queryPublishedBlogsFromSnapshot } from '@/lib/public-snapshot/query';
 import { DEFAULT_PAGE_SIZE, parseLimit, parsePage } from '@/lib/pagination';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -63,11 +66,25 @@ export default async function BlogCategoryPage({
   const limit = parseLimit(limitParam ?? DEFAULT_PAGE_SIZE);
   const t = await getTranslations('Blog.Taxonomy');
 
-  const { data, total } = await getPublishedBlogs(currentPage, limit, {
-    category: name,
-    search,
-    locale,
-  });
+  const blogResult = await withPublicDataFallback(
+    'blog.category',
+    () =>
+      getPublishedBlogs(currentPage, limit, {
+        category: name,
+        search,
+        locale,
+      }),
+    { data: [], total: 0, page: currentPage, limit },
+    {
+      fromSnapshot: (snapshot) =>
+        queryPublishedBlogsFromSnapshot(snapshot, currentPage, limit, {
+          category: name,
+          search,
+          locale,
+        }),
+    },
+  );
+  const { data, total } = blogResult.value;
 
   return (
     <>
@@ -76,6 +93,7 @@ export default async function BlogCategoryPage({
         title={t('categoryTitle', { name })}
         description={t('categoryDescription', { name })}
       />
+      {blogResult.unavailable ? <ContentUnavailableNotice /> : null}
       <TaxonomySearch scope="category" name={name} initialQuery={search} />
       <BlogsFeature data={data} />
       <PaginationComponent

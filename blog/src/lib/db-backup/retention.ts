@@ -41,6 +41,7 @@ export function toDatedBackupRefs(files: BackupFileRef[]): DatedBackupRef[] {
 
 /**
  * Son N haftalık + ayın 1’indeki son M yedeği tutar; silinecek file key’leri döner.
+ * En güncel yedek her zaman korunur (DB uzun süre kapalı kalsa bile son dump silinmez).
  */
 export function selectBackupKeysToDelete(
   files: BackupFileRef[],
@@ -51,6 +52,9 @@ export function selectBackupKeysToDelete(
   if (dated.length === 0) return [];
 
   const keepCustomIds = new Set<string>();
+
+  // Pin: en yeni yedek asla silinmez.
+  keepCustomIds.add(dated[0].customId);
 
   for (const file of dated.slice(0, weeklyKeep)) {
     keepCustomIds.add(file.customId);

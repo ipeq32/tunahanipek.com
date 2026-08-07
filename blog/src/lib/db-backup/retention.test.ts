@@ -60,4 +60,19 @@ describe('selectBackupKeysToDelete', () => {
       ]),
     ).toEqual([]);
   });
+
+  it('never deletes the newest backup even when keep counts are zero', () => {
+    const deleted = selectBackupKeysToDelete(
+      [
+        { key: 'newest', customId: 'db-backup-2026-08-03' },
+        { key: 'old', customId: 'db-backup-2026-01-01' },
+        { key: 'older', customId: 'db-backup-2025-12-01' },
+      ],
+      0,
+      0,
+    );
+
+    expect(deleted.sort()).toEqual(['old', 'older'].sort());
+    expect(deleted).not.toContain('newest');
+  });
 });

@@ -82,16 +82,26 @@ async function fetchPublishedBlogById(
 ): Promise<IGetBlog | null> {
   const locale = await resolveLanguageCode(localeInput);
 
-  const blog = await prisma.blog.findFirst({
-    where: {
-      id,
-      deletedAt: null,
-      translations: publishedTranslationFilter(locale),
-    },
-    include: blogDetailInclude,
-  });
+  try {
+    const blog = await prisma.blog.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+        translations: publishedTranslationFilter(locale),
+      },
+      include: blogDetailInclude,
+    });
 
-  return blog ? mapBlogToResponse(blog, locale) : null;
+    return blog ? mapBlogToResponse(blog, locale) : null;
+  } catch (error) {
+    const { loadPublicSnapshot } = await import('@/lib/public-snapshot/load');
+    const { queryPublishedBlogByIdFromSnapshot } = await import(
+      '@/lib/public-snapshot/query'
+    );
+    const snapshot = await loadPublicSnapshot();
+    if (!snapshot) throw error;
+    return queryPublishedBlogByIdFromSnapshot(snapshot, id, locale);
+  }
 }
 
 /** Metadata + sayfa dedupe için request-scoped cache. */
