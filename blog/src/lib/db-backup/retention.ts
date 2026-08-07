@@ -15,7 +15,7 @@ export type DatedBackupRef = BackupFileRef & {
 };
 
 /**
- * customId `db-backup-YYYY-MM-DD` ise tarih bilgisini döner.
+ * customId `db-backup-YYYY-MM-DD...` ise takvim tarihini döner.
  */
 export function parseBackupCustomId(
   customId: string | null | undefined,
@@ -36,12 +36,13 @@ export function toDatedBackupRefs(files: BackupFileRef[]): DatedBackupRef[] {
     dated.push({ key: file.key, customId: file.customId, date });
   }
 
-  return dated.sort((a, b) => b.date.localeCompare(a.date));
+  // Aynı gün birden fazla unique id olabilir; full customId ile en yeniyi üste al.
+  return dated.sort((a, b) => b.customId.localeCompare(a.customId));
 }
 
 /**
  * Son N haftalık + ayın 1’indeki son M yedeği tutar; silinecek file key’leri döner.
- * En güncel yedek her zaman korunur (DB uzun süre kapalı kalsa bile son dump silinmez).
+ * En güncel yedek her zaman korunur.
  */
 export function selectBackupKeysToDelete(
   files: BackupFileRef[],
@@ -53,7 +54,6 @@ export function selectBackupKeysToDelete(
 
   const keepCustomIds = new Set<string>();
 
-  // Pin: en yeni yedek asla silinmez.
   keepCustomIds.add(dated[0].customId);
 
   for (const file of dated.slice(0, weeklyKeep)) {
@@ -70,13 +70,24 @@ export function selectBackupKeysToDelete(
     .map((file) => file.key);
 }
 
+/**
+ * Her yüklemede unique customId — UploadThing silinen id’yi hemen recycle etmez.
+ */
 export function buildBackupCustomId(date = new Date()): string {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const day = String(date.getUTCDate()).padStart(2, '0');
-  return `db-backup-${year}-${month}-${day}`;
+  const unique = `${date.getUTCHours().toString().padStart(2, '0')}${date
+    .getUTCMinutes()
+    .toString()
+    .padStart(2, '0')}${date.getUTCSeconds().toString().padStart(2, '0')}-${date.getUTCMilliseconds().toString().padStart(3, '0')}`;
+  return `db-backup-${year}-${month}-${day}-${unique}`;
 }
 
 export function buildBackupFileName(customId: string): string {
   return `${customId}.json.gz`;
+}
+
+export function buildPublicSnapshotCustomId(date = new Date()): string {
+  return `public-snapshot-${date.getTime()}`;
 }

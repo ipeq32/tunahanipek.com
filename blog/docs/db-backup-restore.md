@@ -17,10 +17,10 @@ Neon compute hours bitince admin/yazma yine çalışmaz; public sayfalar son sna
 | Schedule | Pazar ~03:00 UTC (Hobby’de saat içinde kayabilir) |
 | Auth | `Authorization: Bearer ${CRON_SECRET}` |
 | Full saklama | Son 4 haftalık + ayın 1’i yedeklerinden son 3 |
-| Son yedek | **En güncel full yedek asla silinmez** (DB uzun süre kapalı kalsa bile) |
-| Public snapshot | Tek dosya; her başarılı yedekte üzerine yazılır; retention dokunmaz |
+| Son yedek | **En güncel full yedek asla silinmez** |
+| Public snapshot | Unique id ile yüklenir; en son 2 tutulur; **önce silme yok** |
 
-Not: DB kapalıyken Cron yeni yedek alamaz → prune de çalışmaz → mevcut yedekler zaten durur. Pin kuralı, ara sıra başarılı yedek + agresif budama olsa bile son dump’ın silinmesini engeller.
+UploadThing silinen `customId`’yi hemen yeniden kullanmaya izin vermez. Bu yüzden her yedek `db-backup-YYYY-MM-DD-<unique>` alır; yüklemeden önce silme yapılmaz.
 
 ### Gerekli env (Vercel)
 

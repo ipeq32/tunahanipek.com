@@ -21,7 +21,9 @@ export type UploadedBackup = {
 };
 
 /**
- * Aynı günün yedeği varsa siler, gzip’li dump’ı UploadThing’e yükler.
+ * Gzip’li dump’ı UploadThing’e yükler.
+ * Önce silmez — UploadThing silinen customId’yi hemen yeniden kullanmaya izin vermez;
+ * her yükleme unique customId alır.
  */
 export async function uploadDatabaseBackup(
   json: string,
@@ -31,18 +33,9 @@ export async function uploadDatabaseBackup(
   const fileName = buildBackupFileName(customId);
   const compressed = gzipSync(Buffer.from(json, 'utf8'));
 
-  try {
-    await utapi.deleteFiles(customId, { keyType: 'customId' });
-  } catch (error) {
-    logger.warn('No existing backup to replace (or delete failed)', {
-      customId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-
   const file = new UTFile([compressed], fileName, {
     customId,
-    type: 'application/gzip',
+    type: 'application/octet-stream',
   });
 
   const [result] = await utapi.uploadFiles([file], {
@@ -50,11 +43,19 @@ export async function uploadDatabaseBackup(
   });
 
   if (!result || result.error || !result.data) {
+    const message = result?.error?.message ?? 'Unknown upload error';
+    const code = result?.error?.code;
     logger.error('Database backup upload failed', {
       customId,
-      error: result?.error?.message ?? 'Unknown upload error',
+      bytes: compressed.byteLength,
+      error: message,
+      code,
     });
-    throw new Error('Database backup upload failed');
+    throw new Error(
+      code
+        ? `Database backup upload failed: ${code} — ${message}`
+        : `Database backup upload failed: ${message}`,
+    );
   }
 
   return {

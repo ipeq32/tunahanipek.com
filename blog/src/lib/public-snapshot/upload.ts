@@ -5,8 +5,10 @@ import { gzipSync } from 'node:zlib';
 import { UTApi, UTFile } from 'uploadthing/server';
 
 import {
-  PUBLIC_SNAPSHOT_CUSTOM_ID,
+  PUBLIC_SNAPSHOT_CUSTOM_ID_PREFIX,
+  PUBLIC_SNAPSHOT_KEEP,
 } from '@/lib/db-backup/constants';
+import { buildPublicSnapshotCustomId } from '@/lib/db-backup/retention';
 import { logger } from '@/lib/logger';
 
 const utapi = new UTApi();
@@ -18,28 +20,65 @@ export type UploadedPublicSnapshot = {
   bytes: number;
 };
 
+async function pruneOldPublicSnapshots(keepCustomId: string): Promise<void> {
+  const toDelete: string[] = [];
+  let offset = 0;
+  let hasMore = true;
+
+  const snapshots: { key: string; customId: string; uploadedAt: number }[] = [];
+
+  while (hasMore) {
+    const page = await utapi.listFiles({ limit: 500, offset });
+    for (const file of page.files) {
+      if (
+        file.status === 'Uploaded' &&
+        file.customId?.startsWith(PUBLIC_SNAPSHOT_CUSTOM_ID_PREFIX)
+      ) {
+        snapshots.push({
+          key: file.key,
+          customId: file.customId,
+          uploadedAt: file.uploadedAt,
+        });
+      }
+    }
+    hasMore = page.hasMore;
+    offset += page.files.length;
+    if (page.files.length === 0) break;
+  }
+
+  snapshots.sort((a, b) => b.uploadedAt - a.uploadedAt);
+
+  const keep = new Set<string>([keepCustomId]);
+  for (const file of snapshots.slice(0, PUBLIC_SNAPSHOT_KEEP)) {
+    keep.add(file.customId);
+  }
+
+  for (const file of snapshots) {
+    if (!keep.has(file.customId)) {
+      toDelete.push(file.key);
+    }
+  }
+
+  if (toDelete.length === 0) return;
+
+  await utapi.deleteFiles(toDelete);
+  logger.info('Pruned old public snapshots', { deleted: toDelete.length });
+}
+
 /**
- * Public snapshot’ı sabit customId ile UploadThing’e yazar (üzerine yazar).
+ * Public snapshot’ı unique customId ile yükler; başarıdan sonra eskileri budar.
+ * Önce silme yok — mevcut snapshot kaybolmaz.
  */
 export async function uploadPublicSnapshot(
   json: string,
 ): Promise<UploadedPublicSnapshot> {
-  const customId = PUBLIC_SNAPSHOT_CUSTOM_ID;
+  const customId = buildPublicSnapshotCustomId();
   const fileName = `${customId}.json.gz`;
   const compressed = gzipSync(Buffer.from(json, 'utf8'));
 
-  try {
-    await utapi.deleteFiles(customId, { keyType: 'customId' });
-  } catch (error) {
-    logger.warn('No existing public snapshot to replace (or delete failed)', {
-      customId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-
   const file = new UTFile([compressed], fileName, {
     customId,
-    type: 'application/gzip',
+    type: 'application/octet-stream',
   });
 
   const [result] = await utapi.uploadFiles([file], {
@@ -47,11 +86,27 @@ export async function uploadPublicSnapshot(
   });
 
   if (!result || result.error || !result.data) {
+    const message = result?.error?.message ?? 'Unknown upload error';
+    const code = result?.error?.code;
     logger.error('Public snapshot upload failed', {
       customId,
-      error: result?.error?.message ?? 'Unknown upload error',
+      bytes: compressed.byteLength,
+      error: message,
+      code,
     });
-    throw new Error('Public snapshot upload failed');
+    throw new Error(
+      code
+        ? `Public snapshot upload failed: ${code} — ${message}`
+        : `Public snapshot upload failed: ${message}`,
+    );
+  }
+
+  try {
+    await pruneOldPublicSnapshots(customId);
+  } catch (error) {
+    logger.warn('Public snapshot prune failed (new snapshot is uploaded)', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 
   return {

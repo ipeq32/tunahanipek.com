@@ -6,6 +6,7 @@ import { UTApi } from 'uploadthing/server';
 
 import {
   PUBLIC_SNAPSHOT_CUSTOM_ID,
+  PUBLIC_SNAPSHOT_CUSTOM_ID_PREFIX,
   PUBLIC_SNAPSHOT_FORMAT_VERSION,
 } from '@/lib/db-backup/constants';
 import { logger } from '@/lib/logger';
@@ -33,9 +34,39 @@ function isValidSnapshot(value: unknown): value is PublicSnapshot {
   );
 }
 
+async function resolveLatestSnapshotCustomId(): Promise<string | null> {
+  let offset = 0;
+  let hasMore = true;
+  let latest: { customId: string; uploadedAt: number } | null = null;
+
+  while (hasMore) {
+    const page = await utapi.listFiles({ limit: 500, offset });
+    for (const file of page.files) {
+      if (
+        file.status !== 'Uploaded' ||
+        !file.customId?.startsWith(PUBLIC_SNAPSHOT_CUSTOM_ID_PREFIX)
+      ) {
+        continue;
+      }
+
+      if (!latest || file.uploadedAt > latest.uploadedAt) {
+        latest = { customId: file.customId, uploadedAt: file.uploadedAt };
+      }
+    }
+    hasMore = page.hasMore;
+    offset += page.files.length;
+    if (page.files.length === 0) break;
+  }
+
+  return latest?.customId ?? PUBLIC_SNAPSHOT_CUSTOM_ID;
+}
+
 async function fetchSnapshotFromUploadThing(): Promise<PublicSnapshot | null> {
   try {
-    const signed = await utapi.getSignedURL(PUBLIC_SNAPSHOT_CUSTOM_ID, {
+    const customId = await resolveLatestSnapshotCustomId();
+    if (!customId) return null;
+
+    const signed = await utapi.getSignedURL(customId, {
       keyType: 'customId',
       expiresIn: 60 * 10,
     });
@@ -45,6 +76,7 @@ async function fetchSnapshotFromUploadThing(): Promise<PublicSnapshot | null> {
     if (!response.ok) {
       logger.error('Failed to download public snapshot', {
         status: response.status,
+        customId,
       });
       return null;
     }
