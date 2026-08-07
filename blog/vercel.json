@@ -4,7 +4,16 @@
   "env": {
     "AWS_LAMBDA_JS_RUNTIME": "nodejs22.x"
   },
+  "crons": [
+    {
+      "path": "/api/cron/db-backup",
+      "schedule": "0 3 * * 0"
+    }
+  ],
   "functions": {
+    "src/app/api/cron/db-backup/route.ts": {
+      "maxDuration": 60
+    },
     "src/app/api/ai/project-screenshots/route.ts": {
       "memory": 1024,
       "maxDuration": 60

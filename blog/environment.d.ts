@@ -20,6 +20,7 @@ declare global {
       PORT?: string;
       VERCEL_URL?: string;
       UPLOADTHING_TOKEN?: string;
+      CRON_SECRET?: string;
       RESEND_API_KEY?: string;
       EMAIL_FROM?: string;
       ALLOW_PUBLIC_REGISTRATION?: string;

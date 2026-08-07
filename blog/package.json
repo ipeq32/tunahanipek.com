@@ -20,6 +20,7 @@
     "seed": "npx prisma db seed",
     "db:baseline": "ts-node -P prisma/tsconfig.json prisma/baseline.ts",
     "db:migrate:deploy": "npx prisma migrate deploy",
+    "db:restore-backup": "ts-node -P prisma/tsconfig.json scripts/restore-db-backup.ts",
     "db:reset": "ts-node -P prisma/tsconfig.json prisma/reset.ts",
     "db:reset:seed": "yarn db:reset --force && yarn seed"
   },

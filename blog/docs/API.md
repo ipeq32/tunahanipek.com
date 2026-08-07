@@ -6,6 +6,10 @@ Base URL: `NEXT_PUBLIC_API_URL` (ör. `http://localhost:3000`)
 
 - `GET /api/health` — `{ status, db }` servis ve veritabanı durumu
 
+## Cron / ops
+
+- `GET|POST /api/cron/db-backup` — haftalık DB yedeği (Vercel Cron; `Authorization: Bearer $CRON_SECRET`). Ayrıntı: [db-backup-restore.md](./db-backup-restore.md)
+
 ## İletişim
 
 - `POST /api/contact` — `{ name, email, message }` iletişim formu (rate limit; Resend gerekli)
