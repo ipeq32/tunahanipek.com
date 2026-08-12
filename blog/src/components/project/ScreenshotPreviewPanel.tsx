@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ImageIcon, Sparkles, X } from 'lucide-react';
+import { Check, ImageIcon, Sparkles, X, ZoomIn } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MediaPreviewImage } from '@/components/ui/media-preview-image';
@@ -8,6 +8,7 @@ import {
   HorizontalMediaCarousel,
   HorizontalMediaCarouselSlide,
 } from '@/components/ui/horizontal-media-carousel';
+import { ImageLightbox } from '@/components/media/image-lightbox';
 import { Button } from '@/components/ui/button';
 import { useHorizontalDragScroll } from '@/hooks/use-horizontal-drag-scroll';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ export function ScreenshotPreviewPanel({
     [coverUrl, gallery],
   );
   const [activeIndex, setActiveIndex] = useState(0);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [loadedUrls, setLoadedUrls] = useState<Set<string>>(() => new Set());
   const thumbScrollRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +80,8 @@ export function ScreenshotPreviewPanel({
   };
 
   return (
-    <div className="animate-fade-in-up overflow-hidden rounded-2xl border border-border/50 bg-card/80 shadow-lg shadow-black/5 backdrop-blur-sm">
+    <>
+      <div className="animate-fade-in-up overflow-hidden rounded-2xl border border-border/50 bg-card/80 shadow-lg shadow-black/5 backdrop-blur-sm">
       <div className="flex items-center justify-between gap-3 border-b border-border/40 bg-muted/20 px-4 py-3">
         <div className="min-w-0 space-y-0.5">
           <p className="truncate text-sm font-medium text-foreground">
@@ -108,11 +111,18 @@ export function ScreenshotPreviewPanel({
 
             return (
               <HorizontalMediaCarouselSlide key={url}>
-                <div
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveIndex(index);
+                    setPreviewOpen(true);
+                  }}
                   className={cn(
-                    'relative aspect-[16/10] overflow-hidden rounded-xl border border-border/50',
-                    'bg-muted/30 shadow-inner ring-1 ring-black/5 dark:ring-white/5',
+                    'relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/50',
+                    'bg-neutral-950/80 shadow-inner ring-1 ring-black/5 dark:ring-white/5',
+                    'cursor-zoom-in',
                   )}
+                  aria-label={t('previewAlt', { index: index + 1 })}
                 >
                   <MediaPreviewImage
                     src={url}
@@ -120,17 +130,17 @@ export function ScreenshotPreviewPanel({
                     sizes="(max-width: 640px) 100vw, 1120px"
                     quality={92}
                     priority={index === 0}
-                    imageClassName="object-cover object-top"
+                    imageClassName="object-contain"
                     onReady={() => markReady(url)}
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
                   {isCover && (
                     <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
                       <ImageIcon className="h-3.5 w-3.5" />
                       {t('coverBadge')}
                     </span>
                   )}
-                  <span className="absolute bottom-3 right-3 rounded-full border border-white/15 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur-md">
+                  <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur-md">
+                    <ZoomIn className="h-3 w-3" />
                     {index + 1} / {images.length}
                   </span>
                   {!allReady && index === 0 && (
@@ -143,7 +153,7 @@ export function ScreenshotPreviewPanel({
                       />
                     </div>
                   )}
-                </div>
+                </button>
               </HorizontalMediaCarouselSlide>
             );
           })}
@@ -222,6 +232,16 @@ export function ScreenshotPreviewPanel({
           </Button>
         </div>
       </div>
-    </div>
+      </div>
+      <ImageLightbox
+        open={previewOpen}
+        images={images}
+        activeIndex={activeIndex}
+        title={pageTitle || t('previewUntitled')}
+        imageAlt={(index) => t('previewAlt', { index: index + 1 })}
+        onClose={() => setPreviewOpen(false)}
+        onIndexChange={setActiveIndex}
+      />
+    </>
   );
 }

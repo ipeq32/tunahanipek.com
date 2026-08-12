@@ -1923,6 +1923,16 @@
     "Password": {
       "show": "Şifreyi göster",
       "hide": "Şifreyi gizle"
+    },
+    "Lightbox": {
+      "label": "Görsel önizleme",
+      "labelWithTitle": "{title} görsel önizlemesi",
+      "close": "Kapat",
+      "prev": "Önceki görsel",
+      "next": "Sonraki görsel",
+      "zoomIn": "Yakınlaştır",
+      "zoomOut": "Uzaklaştır",
+      "hint": "Kıstırarak veya çift dokunarak yakınlaştır"
     }
   },
   "Footer": {
