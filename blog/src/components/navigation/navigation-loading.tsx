@@ -8,7 +8,6 @@ import {
   isAuthPath,
   isInternalNavigationLink,
   isModifiedClick,
-  scrollWindowToTop,
 } from '@/lib/navigation/scroll-to-top';
 
 const SHOW_DELAY_MS = 80;
@@ -55,7 +54,6 @@ export function NavigationLoading() {
       const hide = () => {
         visibleRef.current = false;
         setVisible(false);
-        scrollWindowToTop();
       };
 
       if (!visibleRef.current) {
@@ -89,7 +87,6 @@ export function NavigationLoading() {
         shownAtRef.current = Date.now();
         visibleRef.current = true;
         setVisible(true);
-        scrollWindowToTop();
       }, SHOW_DELAY_MS);
 
       failsafeTimer.current = window.setTimeout(finish, FAILSAFE_MS);
