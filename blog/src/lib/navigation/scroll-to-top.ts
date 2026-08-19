@@ -4,6 +4,20 @@ export function scrollWindowToTop() {
   document.body.scrollTop = 0;
 }
 
+export function isModifiedClick(event: MouseEvent): boolean {
+  return (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  );
+}
+
+export function isAuthPath(pathname: string): boolean {
+  return /(?:^|\/)auth\//.test(pathname);
+}
+
 export function isInternalNavigationLink(anchor: HTMLAnchorElement): boolean {
   if (anchor.target === '_blank' || anchor.hasAttribute('download')) {
     return false;
@@ -32,11 +46,7 @@ export function isInternalNavigationLink(anchor: HTMLAnchorElement): boolean {
   }
 
   const current = new URL(window.location.href);
-  if (
-    url.pathname === current.pathname &&
-    url.search === current.search &&
-    url.hash
-  ) {
+  if (url.pathname === current.pathname && url.search === current.search) {
     return false;
   }
 
